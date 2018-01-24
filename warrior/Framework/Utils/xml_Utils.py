@@ -99,7 +99,8 @@ def getRoot(filename):
 
 def convert_element_to_string(element):
     """Converts the provided xml element to string """
-    string = tostring(element)
+    # In Python 3, tostring output a bytes, so it has to changed back to string
+    string = tostring(element).decode(encoding='utf-8')
     return string
 
 def getNodeValuebyAttribute (filename, node, attribute):

@@ -23,6 +23,7 @@ as it will lead to cyclic imports.
 import xml.etree.ElementTree as ET
 import inspect
 import re
+import traceback
 
 from Framework.Utils.print_Utils import  print_info, print_debug, print_warning,\
 print_error, print_exception, print_sub, print_notype
@@ -503,7 +504,7 @@ class TestcaseUtils(object):
                 resultfile.flush()
                 resultfile.close()
         except Exception as err:
-            print_info('unexpected error: {0}'.format(str(err)))
+            print_info('unexpected error: {0}'.format(traceback.format_exc()))
 
     @staticmethod
     def compute_status_using_impact(input_status_list, input_impact_list, status=True):
