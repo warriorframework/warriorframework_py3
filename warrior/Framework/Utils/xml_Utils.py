@@ -874,10 +874,8 @@ def compare_xml(xml1, xml2, output_file=False, sorted_json=True,
         sorted_json1 = JsonUtils().sort_json_object(output1)
         sorted_json2 = JsonUtils().sort_json_object(output2)
 
-        json_obj1 = json.dumps(
-            sorted_json1, indent=4, separators=(',', ':'), encoding="utf-8")
-        json_obj2 = json.dumps(
-            sorted_json2, indent=4, separators=(',', ':'), encoding="utf-8")
+        json_obj1 = json.dumps(sorted_json1, indent=4, separators=(',', ':'))
+        json_obj2 = json.dumps(sorted_json2, indent=4, separators=(',', ':'))
 
         if sorted_json:
             sorted_file1 = "sorted_file1.json"

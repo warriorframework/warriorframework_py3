@@ -31,8 +31,7 @@ class JsonUtils(object):
             return sorted((k, self.sort_json_object(v)) for k, v in list(json_object.items()))
         if isinstance(json_object, list):
             return sorted(self.sort_json_object(x) for x in json_object)
-        else:
-            return json_object
+        return json_object or []
 
     def nested_json_object(self,json_object):
         """
