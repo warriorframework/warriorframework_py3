@@ -952,7 +952,7 @@ class WarriorCli(object):
                 smart_log = main_log.name.replace(".log", "pre_.log")
             else:
                 smart_log = main_log.name.replace(".log", "post_.log")
-            session_object.logfile = open(smart_log, "a")
+            session_object.logfile = open(smart_log, "ab")
             self.send_commands_from_testdata(connect_testdata, session_object,
                                              title=tag_value,
                                              system_name=call_system_name)
@@ -1088,7 +1088,7 @@ class ParamikoConnect(object):
 
         self.paramiko = None
         self.__import_paramiko()
-        self.conn_string = ""
+        self.conn_string = "".encode("utf-8")
         self.response = ""
         self.target_host = None
         self.channel = None
@@ -1179,7 +1179,7 @@ class ParamikoConnect(object):
             # self.conn_string = self.target_host.get_transport().get_banner()
             # Use invoke_shell option to get conn_string value
             self.channel = self.target_host.invoke_shell()
-            self.conn_string = self.channel.recv(9999).decode("utf-8")
+            self.conn_string = self.channel.recv(9999)
         except Exception as exception:
             self.target_host = None
             print_exception(exception)
@@ -1259,7 +1259,7 @@ class PexpectConnect(object):
 
         self.pexpect = None
         self.__import_pexpect()
-        self.conn_string = ""
+        self.conn_string = "".encode("utf-8")
         self.response = ""
         self.target_host = None
         self.channel = None
@@ -1300,7 +1300,7 @@ class PexpectConnect(object):
             return
 
         self.target_host = None
-        self.conn_string = ""
+        self.conn_string = "".encode("utf-8")
         self.port = self.port if self.port else "22"
         conn_options = "" if self.conn_options is False or \
             self.conn_options is None else self.conn_options
@@ -1327,7 +1327,7 @@ class PexpectConnect(object):
 
         if self.logfile is not None:
             try:
-                fdobj = open(self.logfile, "a")
+                fdobj = open(self.logfile, "ab")
                 if fdobj:
                     child.logfile = fdobj
             except Exception as exception:
@@ -1392,7 +1392,7 @@ class PexpectConnect(object):
         """
 
         self.target_host = None
-        self.conn_string = ""
+        self.conn_string = "".encode("utf-8")
         self.port = self.port if self.port else "23"
         conn_options = "" if self.conn_options is False or \
             self.conn_options is None else self.conn_options
@@ -1411,7 +1411,7 @@ class PexpectConnect(object):
                                                   env={"TERM": "dumb"})
 
         try:
-            child.logfile = open(self.logfile, "a")
+            child.logfile = open(self.logfile, "ab")
         except Exception:
             child.logfile = None
 

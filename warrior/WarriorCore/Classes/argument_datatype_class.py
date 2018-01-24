@@ -86,7 +86,7 @@ class ArgumentDatatype(object):
             tc_path = config_Utils.tc_path
             fname = file_Utils.getAbsPath(self.arg_value, tc_path)
             try:
-                self.arg_value = file(fname)
+                self.arg_value = open(fname)
             except IOError:
                 print_warning("given file {} does not exist, please check, it "
                               "should be relative to testcase path {}".format(

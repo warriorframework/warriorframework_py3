@@ -205,7 +205,7 @@ class WRest(object):
         """
         if response is not None and expected_api_response is not None:
             if expected_response_type in response.headers['Content-Type']:
-                extracted_response = response.content
+                extracted_response = response.content.decode('utf-8')
                 extension = Utils.rest_Utils.get_extension_from_path(
                                         expected_api_response)
                 if 'xml' in response.headers['Content-Type']:
@@ -232,6 +232,7 @@ class WRest(object):
                             return False
                         expected_api_response = JSON.loads(
                                                 expected_api_response)
+                    extracted_response
                     extracted_response = JSON.loads(extracted_response)
                     status = self.json_utils.write_json_diff_to_file(
                         extracted_response, expected_api_response, output_file)

@@ -534,7 +534,6 @@ def getAbsPath(relative_path, start_directory="."):
     if relative_path and start_directory:
         relative_path = relative_path.strip()
         try:
-            #print relative_path
             os.chdir(start_directory)
             path = os.path.abspath(relative_path)
             value = path

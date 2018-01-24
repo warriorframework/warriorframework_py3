@@ -14,6 +14,7 @@ import os
 import re
 from collections import OrderedDict
 from ast import literal_eval
+from io import IOBase
 from Framework.Utils import xml_Utils, string_Utils, testcase_Utils, config_Utils, file_Utils
 from Framework.Utils.testcase_Utils import pNote
 from Framework.Utils.print_Utils import (print_info, print_warning, print_error,
@@ -143,7 +144,7 @@ def get_actual_cred_value(tag, value, etype, startdir=''):
     """
     adt = ArgumentDatatype(tag, value)
     adt.datatype = adt.get_type_func(etype)
-    if adt.datatype is file:
+    if adt.datatype is IOBase:
         val = file_Utils.getAbsPath(value, startdir)
     else:
         val = adt.convert_string_to_datatype()

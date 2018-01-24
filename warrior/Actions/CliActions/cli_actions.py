@@ -356,7 +356,7 @@ class CliActions(object):
                     if wc_obj.conn_obj is not None and wc_obj.conn_obj.target_host is not None:
                         conn_string = wc_obj.conn_obj.conn_string
                         output_dict[session_id] = wc_obj
-                        output_dict[session_id + "_connstring"] = conn_string.replace("\r\n", "")
+                        output_dict[session_id + "_connstring"] = conn_string.replace(b"\r\n", b"")
                         output_dict[session_id + "_td_response"] = {}
                         result = True
                         pNote("Connection to system-subsystem-session={0}-{1}-{2}"

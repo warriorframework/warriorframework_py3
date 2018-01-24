@@ -77,7 +77,7 @@ class ModuleOperations(object):
         for module in self.module_list:
             for name, obj in inspect.getmembers(module, inspect.isclass):
                 if inspect.getmodule(obj) == module:
-                    class_list.append(obj)
+                    class_list.append(obj())
                     class_name_list.append(name)
         return class_list
 
@@ -87,7 +87,7 @@ class ModuleOperations(object):
         method_list = []
         method_name_list = []
         for class_object in self.class_list:
-            for name, obj in inspect.getmembers(class_object, inspect.isfunction):
+            for name, obj in inspect.getmembers(class_object, inspect.ismethod):
                 method_list.append(obj)
                 method_name_list.append(name)
         return method_list
@@ -276,10 +276,10 @@ class KeywordOperations(object):
                 Hi there, major issue here
 
                 """
-                print(dir(self.exec_obj))
-                print(self.exec_obj.__class__)
-                print(self.exec_obj.__module__)
-                keyword_result = self.exec_obj(self.exec_obj, **kwargs)
+                # print(dir(self.exec_obj))
+                # print(self.exec_obj.__class__)
+                # print(self.exec_obj.__module__)
+                keyword_result = self.exec_obj(**kwargs)
             except Exception as exception:
                 trcback = print_exception(exception)
                 keyword_result = ("EXCEPTION", trcback)

@@ -12,6 +12,7 @@ limitations under the License.
 '''
 import os
 import time
+from io import IOBase
 from Framework import Utils
 from Framework.Utils import data_Utils, file_Utils, datetime_utils
 from Framework.Utils.testcase_Utils import pNote
@@ -348,35 +349,35 @@ class CIregressionActions(object):
         file_contents = "Checking file datatype in wtags"
         status = True
         err_msg = "{} is not an {} value but of type {}"
-        if type(str_value) is not str:
+        if not isinstance(str_value, str):
             # this block checks if str_value is string type
             pNote(err_msg.format(str_value, "str", type(str_value)), "error")
             status = False
-        if type(int_value) is not int:
+        if not isinstance(int_value, int):
             # this block checks if int_value is int type
             pNote(err_msg.format(int_value, "int", type(int_value)), "error")
             status = False
-        if type(float_value) is not float:
+        if not isinstance(float_value, float):
             # this block checks if float_value is float type
             pNote(err_msg.format(float_value, "float", type(float_value)), "error")
             status = False
-        if type(bool_value) is not bool:
+        if not isinstance(bool_value, bool):
             # this block checks if bool_value is bool type
             pNote(err_msg.format(bool_value, "bool", type(bool_value)), "error")
             status = False
-        if type(list_value) is not list:
+        if not isinstance(list_value, list):
             # this block checks if list_value is list type
             pNote(err_msg.format(list_value, "list", type(list_value)), "error")
             status = False
-        if type(tuple_value) is not tuple:
+        if not isinstance(tuple_value, tuple):
             # this block checks if tuple_value is tuple type
             pNote(err_msg.format(tuple_value, "tuple", type(tuple_value)), "error")
             status = False
-        if type(dict_value) is not dict:
+        if not isinstance(dict_value, dict):
             # this block checks if dict_value is dict type
             pNote(err_msg.format(dict_value, "dict", type(dict_value)), "error")
             status = False
-        if type(file_value) is not file:
+        if not isinstance(file_value, IOBase):
             # this block checks if file_value is file type
             pNote(err_msg.format(file_value, "file", type(file_value)), "error")
             status = False
