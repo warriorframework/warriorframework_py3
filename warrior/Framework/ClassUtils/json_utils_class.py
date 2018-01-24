@@ -228,12 +228,8 @@ class JsonUtils(object):
             status = False
             sorted_json1 = self.sort_json_object(json_object1)
             sorted_json2 = self.sort_json_object(json_object2)
-            json_obj1 = json.dumps(
-                sorted_json1, indent=4, separators=(',', ':'),
-                encoding="utf-8")
-            json_obj2 = json.dumps(
-                sorted_json2, indent=4, separators=(',', ':'),
-                encoding="utf-8")
+            json_obj1 = json.dumps(sorted_json1, indent=4, separators=(',', ':'))
+            json_obj2 = json.dumps(sorted_json2, indent=4, separators=(',', ':'))
             te = open(output_file, 'w')
             diff = ("\n".join(
                 difflib.ndiff(json_obj1.splitlines(), json_obj2.splitlines())))

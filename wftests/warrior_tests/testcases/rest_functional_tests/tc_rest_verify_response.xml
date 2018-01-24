@@ -105,8 +105,8 @@
 			<onError action="next"/>
 			<Description>This step verifies the API response with the expected API response</Description>
 			<Execute ExecType="Yes"/>
-			<context>positive</context>
-			<impact>noimpact</impact>
+			<context>negative</context>
+			<impact>impact</impact>
 		</step>
 		<step Driver="rest_driver" Keyword="verify_response" TS="8">
 			<Arguments>
@@ -119,8 +119,8 @@
 			<onError action="next"/>
 			<Description>This step verifies the API response with the expected API response</Description>
 			<Execute ExecType="Yes"/>
-			<context>positive</context>
-			<impact>noimpact</impact>
+			<context>negative</context>
+			<impact>impact</impact>
 		</step>
 		<step Driver="rest_driver" Keyword="verify_response" TS="9">
 			<Arguments>
@@ -132,8 +132,8 @@
 			<onError action="next"/>
 			<Description>This step verifies the API response with the expected API response</Description>
 			<Execute ExecType="Yes"/>
-			<context>positive</context>
-			<impact>noimpact</impact>
+			<context>negative</context>
+			<impact>impact</impact>
 		</step>
 		<step Driver="rest_driver" Keyword="verify_response" TS="10">
 			<Arguments>
@@ -145,8 +145,8 @@
 			<onError action="next"/>
 			<Description>This step verifies the API response with the expected API response</Description>
 			<Execute ExecType="Yes"/>
-			<context>positive</context>
-			<impact>noimpact</impact>
+			<context>negative</context>
+			<impact>impact</impact>
 		</step>
 		<step Driver="rest_driver" Keyword="verify_response" TS="11">
 			<Arguments>
@@ -158,8 +158,8 @@
 			<onError action="next"/>
 			<Description>This step verifies the API response with the expected API response</Description>
 			<Execute ExecType="Yes"/>
-			<context>positive</context>
-			<impact>noimpact</impact>
+			<context>negative</context>
+			<impact>impact</impact>
 		</step>
 	</Steps>
 </Testcase>
