@@ -937,9 +937,10 @@ def verify_cmd_response(match_list, context_list, command, response,
         elif context_list[i] and match_list[i] == "":
             noiimpact, found = get_no_impact_logic(context_list[i])
             found = string_Utils.conv_str_to_bool(found)
-            escapes = ''.join([chr(char) for char in range(1, 32)])
+
+            escapes = response.maketrans({chr(char):None for char in range(1, 32)})
             response = re.sub(endprompt, "", response).strip()
-            response = response.translate(None, escapes)
+            response = response.translate(escapes)
             if found:
                 # found = context
                 result = True if response == "" else False
