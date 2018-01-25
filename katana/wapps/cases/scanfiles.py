@@ -21,10 +21,10 @@ def fetch_action_file_names(basedir,name,num):
             dirs = glob.glob(basedir + '/**/*actions.py')
         else:
             action_directory=basedir+'/'+num+'Actions'
-            print 'action direcory %s'%action_directory
+            print('action direcory %s'%action_directory)
             dirs = glob.glob(action_directory+'/*actions.py')
-        print '\n'
-        for d in dirs: print d
+        print('\n')
+        for d in dirs: print(d)
     
         sa = {}
         for d in dirs:
@@ -35,10 +35,10 @@ def fetch_action_file_names(basedir,name,num):
     elif name=='driver':
         
         basedir = basedir + 'ProductDrivers'
-        print 'enterd driver %s'%basedir
+        print('enterd driver %s'%basedir)
         dirs = glob.glob(basedir + '/*driver.py')
-        print '\n'
-        for d in dirs: print d
+        print('\n')
+        for d in dirs: print(d)
     
         sa = {}
         for d in dirs:
@@ -49,8 +49,8 @@ def fetch_action_file_names(basedir,name,num):
 
         
 
-    for k, v in sa.iteritems():
-        print k, v
+    for k, v in sa.items():
+        print(k, v)
     return sa
 if __name__ == '__main__':
 #    fetch_action_file_names('/home/vap/labs/fujitsu/raw/python')

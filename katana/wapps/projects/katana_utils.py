@@ -6,19 +6,19 @@ def mkactiondirs(driverpath):  # changed
     actions_dirpath_list = []
     actions_package_list = get_action_dirlist(driverpath)
     if len(actions_package_list) == 0:
-        print "the driver {0} does not import any actions package or import format is wrong".format(
-            os.path.basename(driverpath))
+        print("the driver {0} does not import any actions package or import format is wrong".format(
+            os.path.basename(driverpath)))
     # print "action package list in mkactions dir", actions_package_list
     # print type(actions_package_list)
 
     elif len(actions_package_list) > 0:
         for package in actions_package_list:
             try:
-                print package
+                print(package)
                 package = package.replace(' ', '')
                 pkg = re.sub('[\n\t' '\\\]', '', package)
-                print pkg
-                print package
+                print(pkg)
+                print(package)
                 if pkg == 'Actions':
                     actions_dirpath = gpysrcdir + os.sep + 'Actions'
                 elif pkg.startswith('Actions.'):
@@ -27,14 +27,14 @@ def mkactiondirs(driverpath):  # changed
                 else:
                     path = pkg.replace('.', os.sep)
                     actions_dirpath = gpysrcdir + os.sep + 'Actions' + os.sep + path
-                    print actions_dirpath
+                    print(actions_dirpath)
                 if os.path.isdir(actions_dirpath):
                     actions_dirpath_list.append(actions_dirpath)
                 else:
-                    print "the actions package {0} does not exist or the location is not compatible with warrior framework:".format(
-                        actions_dirpath)
-            except Exception, e:
-                print str(e)
+                    print("the actions package {0} does not exist or the location is not compatible with warrior framework:".format(
+                        actions_dirpath))
+            except Exception as e:
+                print(str(e))
     return actions_dirpath_list
 
 
@@ -60,7 +60,7 @@ def get_action_dirlist(driverpath):  # changed
                 # print match_string
                 actions_package_list = match_string.split('[')[1].split(']')[
                     0].split(',')
-                print "\n action package list: ", actions_package_list
+                print("\n action package list: ", actions_package_list)
                 # for line in lines:
                 # if re.search(search, line):
                 # print "package_list found"
@@ -69,10 +69,10 @@ def get_action_dirlist(driverpath):  # changed
                 # print "\n action package list: ", actions_package_list
             return actions_package_list
         else:
-            print "file {0} does not exist".format(driverpath)
+            print("file {0} does not exist".format(driverpath))
             return actions_package_list
-    except Exception, e:
-        print str(e)
+    except Exception as e:
+        print(str(e))
     return actions_package_list
 
 
@@ -90,8 +90,8 @@ def mkactionpyfiles(dirlist):  # changed
                     pyfile_list.remove(pyfile)
             final_py_list.extend(pyfile_list)
         return final_py_list
-    except Exception, e:
-        print str(e)
+    except Exception as e:
+        print(str(e))
         return final_py_list
 
 
@@ -115,46 +115,46 @@ def fetch_comments(sa):
 
 def py_file_details():  # changed
     global gpysrcdir
-    print gpysrcdir
+    print(gpysrcdir)
     cfg = readconfig()
-    print cfg
+    print(cfg)
     # gpysrcdir = fetchpath('pythonsrcdir')
     # gpysrcdir = pathname(cfg['pythonsrcdir'])
     gpysrcdir = cfg['pythonsrcdir']
-    print ">>> source directory:", gpysrcdir
+    print(">>> source directory:", gpysrcdir)
 
     pyfiles_list = glob.glob(
         gpysrcdir + os.sep + 'ProductDrivers' + os.sep + '*.py')
     pyfiles = []
     for fl in pyfiles_list:
-        print fl
+        print(fl)
         if os.path.isfile(fl):
-            print "is a file:", fl
+            print("is a file:", fl)
             if os.path.basename(fl) != '__init__.py':
-                print "not init hence accepting"
+                print("not init hence accepting")
                 pyfiles.append(fl)
         else:
-            print "not a file", fl
+            print("not a file", fl)
 
-    driver_nameonly = map(lambda f: os.path.basename(f), pyfiles)
+    driver_nameonly = [os.path.basename(f) for f in pyfiles]
     drivers = sorted([df[:df.find('.py')] for df in driver_nameonly])
     drivers_fpath = sorted([df for df in pyfiles])
     # print 'drivers', json.dumps(drivers)
     # print 'drivers_fpath', json.dumps(drivers_fpath)
-    print "\n*****pyfiles : \n\n", pyfiles
-    print "\n***** drivers nameonly: \n\n", driver_nameonly
-    print "\n***** drivers: \n\n", drivers
-    print "\n***** drivers fullpath: \n\n", drivers_fpath
+    print("\n*****pyfiles : \n\n", pyfiles)
+    print("\n***** drivers nameonly: \n\n", driver_nameonly)
+    print("\n***** drivers: \n\n", drivers)
+    print("\n***** drivers fullpath: \n\n", drivers_fpath)
 
     # actiondirs = []
     # for path in drivers_fpath:
     #     for directory in mkactiondirs(path):
     #         actiondirs.append(directory)
-    actiondirs = map(mkactiondirs, drivers_fpath)
-    print "\n\n drivers: \n\n", json.dumps(drivers_fpath, indent=2)
-    print '\n\nactiondirs: \n\n', json.dumps(actiondirs, indent=2)
+    actiondirs = list(map(mkactiondirs, drivers_fpath))
+    print("\n\n drivers: \n\n", json.dumps(drivers_fpath, indent=2))
+    print('\n\nactiondirs: \n\n', json.dumps(actiondirs, indent=2))
 
-    actionpyfiles = map(mkactionpyfiles, actiondirs)
-    drivercomments = fetch_comments(zip(drivers, actionpyfiles))
+    actionpyfiles = list(map(mkactionpyfiles, actiondirs))
+    drivercomments = fetch_comments(list(zip(drivers, actionpyfiles)))
     # print 'driver:docs\n', json.dumps(drivercomments, indent=2)
     return drivercomments

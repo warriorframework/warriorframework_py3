@@ -44,7 +44,7 @@ def getJSONSuiteData(request):
 	x= json.loads(open(path_to_config_file).read());
 	path_to_testcases = x['testsuitedir'];
 	filename = request.GET.get('fname')
-	print "Getting data for ", filename;
+	print("Getting data for ", filename);
 	try:
 		xml_d = xmltodict.parse(open(filename).read());
 	except:
@@ -114,10 +114,10 @@ def editSuite(request):
 
 	template = loader.get_template("./editSuite.html")
 	filename = request.GET.get('fname')
-	print "Asked for ", filename
+	print("Asked for ", filename)
 	if filename.find("..") == 0: 
 		filename = fpath + os.sep + filename
-	print "Attempting to read ...", filename 
+	print("Attempting to read ...", filename) 
 
 
 	xml_r = {}
@@ -153,7 +153,7 @@ def editSuite(request):
 		except:
 			pass
 
-	print xml_d["TestSuite"]['Details']
+	print(xml_d["TestSuite"]['Details'])
 
 
 	try:
@@ -216,19 +216,19 @@ def getSuiteDataBack(request):
 	config = json.loads(open(path_to_config).read())
 	fpath = config['testsuitedir']
 
-	fname = request.POST.get(u'filetosave')
-	ufpath = request.POST.get(u'savefilepath')
+	fname = request.POST.get('filetosave')
+	ufpath = request.POST.get('savefilepath')
 	#ijs = request.POST.get(u'json')  # This is a json string 
 	
 	#print "--------------TREE----------------"
 	#xml = request.POST.get(u'Suite') 
-	ijs = request.POST.get(u'json')  # This is a json string 
-	print ijs;
+	ijs = request.POST.get('json')  # This is a json string 
+	print(ijs);
 	xml = xmltodict.unparse(json.loads(ijs), pretty=True)
 	
 	#print "---
 	if fname.find(".xml") < 2: fname = fname + ".xml"
-	print "save to ", ufpath + os.sep + fname 
+	print("save to ", ufpath + os.sep + fname) 
 	fd = open(fpath + os.sep + fname,'w');
 	fd.write(xml);
 	fd.close();

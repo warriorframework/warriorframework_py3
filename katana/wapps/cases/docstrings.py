@@ -9,7 +9,7 @@ def read_lines(pyfile):
     lines = []
     with open(pyfile, 'r') as f:
         lines = f.readlines()
-    lines = map(lambda r: r.strip(), lines)
+    lines = [r.strip() for r in lines]
     return lines
 
 
@@ -66,7 +66,7 @@ def nameType(name, type, lno):
         fndef = name.split()[1].split('(')[0].strip()
 
         # print parts[2].split(',')
-        args = map(read_arg, parts[2].split(','))
+        args = list(map(read_arg, parts[2].split(',')))
         # print 'ARGS:', args
         argsmap = args_to_map(args)
         # print 'ARGSMAP:', argsmap
@@ -167,8 +167,8 @@ def parse_docs(lines, defs, pyfile):
     Also, update the wdesc field for the function definitions.
     '''
     # Figure out the number of lines to scan.
-    lineindex = map(lambda r: r['line'], defs)
-    dists = map(lambda r: r[0]-r[1], zip(lineindex[1:], lineindex[:-1]))
+    lineindex = [r['line'] for r in defs]
+    dists = [r[0]-r[1] for r in zip(lineindex[1:], lineindex[:-1])]
     if len(lines): dists.append(len(lines) - lineindex[-1])
     defi = 0
     started_comment = False
@@ -230,7 +230,7 @@ def parse_docs(lines, defs, pyfile):
         defi += 1
     for offset, index in enumerate(sorted(ignore_method)):
         fn = defs[index-offset]['type']
-        print("going to delete "+str(defs[index-offset][fn])+" in list "+str(index-offset))
+        print(("going to delete "+str(defs[index-offset][fn])+" in list "+str(index-offset)))
         del defs[index-offset]
 
 def parse_py_file(filename):
@@ -244,9 +244,9 @@ def parse_py_file(filename):
 
 def main():
     if len(sys.argv) == 1:
-        print 'Usage:', sys.argv[0], '<python file to get docstrings from>'
+        print('Usage:', sys.argv[0], '<python file to get docstrings from>')
         return
-    print json.dumps(parse_py_file(sys.argv[1]), indent=2)
+    print(json.dumps(parse_py_file(sys.argv[1]), indent=2))
 
 
 if __name__ == '__main__':

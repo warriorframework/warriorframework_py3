@@ -52,5 +52,5 @@ class Apps:
 
         extra_app_dirs = available_apps.union(settings_apps) - settings_apps
         for app in extra_app_dirs:
-            print "--Warning-- {0} package is available for installation, but has not been " \
-                  "installed.".format(app)
+            print("--Warning-- {0} package is available for installation, but has not been " \
+                  "installed.".format(app))

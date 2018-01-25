@@ -1,6 +1,6 @@
 
 import os
-from directory_traversal_utils import get_parent_directory
+from .directory_traversal_utils import get_parent_directory
 
 class Navigator(object):
 
@@ -77,7 +77,7 @@ class Navigator(object):
                 except IOError:
                     pass
                 except Exception as e:
-                    print "-- An Error Occurred -- {0}".format(e)
+                    print("-- An Error Occurred -- {0}".format(e))
                 else:
                     if "children" in layout:
                         layout['children'].append(children)

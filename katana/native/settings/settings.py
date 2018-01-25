@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 import os
 from utils.navigator_util import Navigator
 from wui.core.apps import validate_config_json
 try:
     import xmltodict
 except ImportError:
-    print "Please install xmltodict"
+    print("Please install xmltodict")
 import json
 import xml.etree.ElementTree as xml_controler
 
@@ -45,7 +45,7 @@ class Settings:
         if request.method == 'POST':
             w_settings_data = {'Setting': {'Logsdir': '', 'Resultsdir': '', '@name': ''}}
             returned_json = json.loads(request.POST.get('data'))
-            for k, v in w_settings_data['Setting'].items():
+            for k, v in list(w_settings_data['Setting'].items()):
                 w_settings_data['Setting'][k] = returned_json[0][k]
                 del returned_json[0][k]
 
@@ -120,7 +120,7 @@ class Settings:
                 if not isinstance( xmldoc['jira']['system'], list):
                     xmldoc['jira']['system'] = [ xmldoc['jira']['system']]
                 for system in xmldoc['jira']['system']:
-                    for k, v in system.items():
+                    for k, v in list(system.items()):
                         if k == 'issue_type':
                             v = json.dumps(v)
                             system[k] = v

@@ -44,7 +44,7 @@ def get_sub_folders(path, abs_path=False):
             folders.append(folder)
     only_folders = [f.replace("\\", '/') for f in folders]
     if not abs_path:
-        only_folders = map(lambda f: f.rpartition('/')[2], only_folders)
+        only_folders = [f.rpartition('/')[2] for f in only_folders]
     return only_folders
 
 
@@ -63,7 +63,7 @@ def get_sub_files(path, abs_path=False):
     files = glob.glob(path + os.sep + "*.*")
     only_files = [f.replace("\\", '/') for f in files]
     if not abs_path:
-        only_files = map(lambda f: f.rpartition('/')[2], only_files)
+        only_files = [f.rpartition('/')[2] for f in only_files]
     return only_files
 
 
@@ -86,7 +86,7 @@ def get_abs_path(relative_path, base_path=None, silence_error=False):
     path = os.path.join(base_path.strip(), relative_path.strip())
 
     if not silence_error and not os.path.exists(path):
-        print "An Error Occurred: {0} does not exist".format(path)
+        print("An Error Occurred: {0} does not exist".format(path))
         path = None
 
     return path
@@ -174,13 +174,13 @@ def get_relative_path(path, start_directory):
 
     """
     if start_directory == "":
-        print "-- Error -- start_directory is empty."
+        print("-- Error -- start_directory is empty.")
         relpath = path
     else:
         try:
             relpath = os.path.relpath(path, start_directory)
         except Exception as e:
-            print "-- Error -- {0}".format(e)
+            print("-- Error -- {0}".format(e))
             relpath = None
         else:
             if not relpath.startswith(".") and not relpath.startswith(os.sep):
@@ -195,7 +195,7 @@ def create_dir(path):
     except OSError as exception:
         if exception.errno != errno.EEXIST:
             output = False
-            print "-- A Error Occurred -- {0}".format(exception)
+            print("-- A Error Occurred -- {0}".format(exception))
     return output
 
 
@@ -204,6 +204,6 @@ def delete_dir(src):
     try:
         shutil.rmtree(src)
     except Exception as e:
-        print e
+        print(e)
         output = False
     return output

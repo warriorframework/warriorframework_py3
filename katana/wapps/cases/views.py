@@ -26,8 +26,8 @@ from django.db.models.query import QuerySet
 from django.template import Library
 import json
 from utils.navigator_util import Navigator
-from katana_utils import *
-import scanfiles
+from .katana_utils import *
+from . import scanfiles
 
 
 navigator = Navigator();
@@ -103,11 +103,11 @@ def getListOfKeywords(request):
 		
 	if driver != "To_Be_Developed":
 			
-		print dir(details);
-		print driver
-		print len(details[driver][0])	
+		print(dir(details));
+		print(driver)
+		print(len(details[driver][0]))	
 		for item in details[driver][0]: 
-			print item['fn']
+			print(item['fn'])
 			responseBack['keywords'].append(item['fn']);
 	return JsonResponse(responseBack)
 
@@ -136,7 +136,7 @@ def getListOfComments(request):
 	keyword = request.GET.get('keyword');
 	responseBack = { 'fields': [] }
 	
-	print "LOOOK::-->",  driver, " ", keyword;
+	print("LOOOK::-->",  driver, " ", keyword);
 
 	if driver == "To_Be_Developed" :
 		return JsonResponse(responseBack)
@@ -145,17 +145,17 @@ def getListOfComments(request):
 		items = details[driver]
 	except:
 		return JsonResponse(responseBack)
-	print "inputs = ", driver,  keyword
-	print "items == ", items;
+	print("inputs = ", driver,  keyword)
+	print("items == ", items);
 	try: 
 		for item in details[driver][0]: 
-			print "fn ==> ", item['fn'], driver, keyword
+			print("fn ==> ", item['fn'], driver, keyword)
 			if item['fn'] == keyword: 
-				print item.keys();
+				print(list(item.keys()));
 				responseBack['fields'].append(item);
 				break;
 	except:
-		print details[driver]
+		print(details[driver])
 	return JsonResponse(responseBack)
 
 def getEmpty():
@@ -226,16 +226,16 @@ def editCase(request):
 	
 	# Set up defaults for an xml_r object
 
-	print "Asked for ", filename
-	print "Path to cases ", path_to_testcases
+	print("Asked for ", filename)
+	print("Path to cases ", path_to_testcases)
 	if filename.find("..") == 0: 
 		f = filename.find('testcases')
-		print "f == ", f, filename 
+		print("f == ", f, filename) 
 		if f > -1: 
 			filename = os.path.dirname(path_to_testcases) + os.sep + filename[f:]
 		else: 
 			filename = path_to_testcases + os.sep + filename
-	print "Attempting to read ...", filename 
+	print("Attempting to read ...", filename) 
 
 	xml_r = {}
 	xml_r["Testcase"] = {}
@@ -283,7 +283,7 @@ def editCase(request):
 	for xstr in ["Name", "Title", "Category", "Date", "Time", "InputDataFile dict_constructor=dict", "Engineer", \
 		"Datatype", "default_onError", "Logsdir", "Resultsdir", "ExpectedResults"]:
 		try:
-			if not xml_r["Testcase"]["Details"].has_key(xstr): 
+			if xstr not in xml_r["Testcase"]["Details"]: 
 				xml_r["Testcase"]["Details"][xstr]="";
 			xml_r["Testcase"]["Details"][xstr] = copy.copy(xml_d["Testcase"]["Details"].get(xstr,""))
 		except:
@@ -336,7 +336,7 @@ def getJSONcaseDataBack(request):
 	x= json.loads(open(path_to_config_file).read());
 	path_to_testcases = x['xmldir'];
 	filename = request.GET.get('fname')
-	print "Getting data for ", filename;
+	print("Getting data for ", filename);
 	try:
 		xml_d = xmltodict.parse(open(filename).read());
 	except:
@@ -357,11 +357,11 @@ def getCaseDataBack(request):
 	path_to_config_file = navigator.get_katana_dir() + os.sep + "config.json"
 	x= json.loads(open(path_to_config_file).read());
 	path_to_testcases = x['xmldir'];
-	ijs = request.POST.get(u'json')
-	fn = request.POST.get(u'filetosave')
-	sb = request.POST.get(u'savesubdir')
+	ijs = request.POST.get('json')
+	fn = request.POST.get('filetosave')
+	sb = request.POST.get('savesubdir')
 	fname = sb + os.sep + fn;  
-	print "save case to ", fname 
+	print("save case to ", fname) 
  
 	xml = xmltodict.unparse(json.loads(ijs), pretty=True)	
 	fd = open(fname,'w');

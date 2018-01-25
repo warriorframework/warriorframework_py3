@@ -41,7 +41,7 @@ class Uninstaller:
 
         if not output:
             if self.__recover_app():
-                print "App successfully recovered."
+                print("App successfully recovered.")
 
         output = self.__delete_cache_dir()
 
@@ -86,14 +86,14 @@ class Uninstaller:
                                                                   self.cache_dir,
                                                                   silence_error=True))
             else:
-                print "-- An Error Occurred -- Could not backup the plugins. Uninstallation " \
-                      "suspended."
+                print("-- An Error Occurred -- Could not backup the plugins. Uninstallation " \
+                      "suspended.")
         if output:
             output = output and copy_dir(self.app_path, get_abs_path(self.app_name,
                                                                      self.cache_dir,
                                                                      silence_error=True))
         else:
-            print "-- An Error Occurred -- Could not backup the app. Uninstallation suspended."
+            print("-- An Error Occurred -- Could not backup the app. Uninstallation suspended.")
 
         return output
 
@@ -112,7 +112,7 @@ class Uninstaller:
         return output
 
     def __remove_app_from_urls(self):
-        print self.include_urls
+        print(self.include_urls)
         data = readlines_from_file(self.urls_file)
 
         urls_data = ""

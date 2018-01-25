@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 
 import json, xmltodict, os, copy
 from utils.navigator_util import Navigator
@@ -15,7 +15,7 @@ JSON_CONFIG = Navigator().get_katana_dir() + os.sep + "config.json"
 # Create your views here.
 def process_xml(data):
     # The first and only key in xml file should be the only root tag
-    root = data.keys()[0]
+    root = list(data.keys())[0]
 
     if not isinstance(data[root]["system"], list):
         # The whole xml only has one system
@@ -25,7 +25,7 @@ def process_xml(data):
             if isinstance(sys["subsystem"], list):
                 # Multiple subsystems
                 for subsys in sys["subsystem"]:
-                    for k, v in subsys.items():
+                    for k, v in list(subsys.items()):
                         subsys[k] = "" if subsys[k] is None else subsys[k]
                         if k.startswith("@") and k != "@name" and k != "@default":
                             # Change attribute type value into tag type value
@@ -38,7 +38,7 @@ def process_xml(data):
             else:
                 # One subsystem
                 subsys = sys["subsystem"]
-                for k, v in sys["subsystem"].items():
+                for k, v in list(sys["subsystem"].items()):
                     subsys[k] = "" if subsys[k] is None else subsys[k]
                     if k.startswith("@") and k != "@name" and k != "@default":
                         subsys[k[1:]] = v
@@ -47,14 +47,14 @@ def process_xml(data):
                         del subsys[k]
         else:
             # No subsystem
-            for k, v in sys.items():
+            for k, v in list(sys.items()):
                 sys[k] = "" if sys[k] is None else sys[k]
                 if k.startswith("@") and k != "@name" and k != "@default":
                     sys[k[1:]] = v
                     del sys[k]
                 elif k == "#text":
                     del sys[k]
-    print(json.dumps(data[root], indent=4))
+    print((json.dumps(data[root], indent=4)))
 
     ref_dict = copy.deepcopy(data[root])
     return data, ref_dict
@@ -78,7 +78,7 @@ def index(request):
             filepath = filepath[1:] if filepath.startswith(os.sep) else filepath
 
             # xml should only has 1 root
-            root = xml_data.keys()[0]
+            root = list(xml_data.keys())[0]
 
             data, ref_dict = process_xml(xml_data)
             return render(request, 'wdf_edit/index.html', 
@@ -124,8 +124,8 @@ def combine_values(data):
     """
     result = OrderedDict()
     for pair in data:
-        key = pair.keys()[0]
-        val = pair.values()[0]
+        key = list(pair.keys())[0]
+        val = list(pair.values())[0]
         if isinstance(val, list):
             # If the value is a list of dict
             # that means there are multiple tags with same key name
@@ -187,12 +187,12 @@ def on_post(request):
     result["credentials"]["system"] = systems
 
     from xml.dom.minidom import parseString as miniparse
-    print miniparse(xmltodict.unparse(result)).toprettyxml()
+    print(miniparse(xmltodict.unparse(result)).toprettyxml())
 
     config = read_json_data(JSON_CONFIG)
     wdfdir = config["idfdir"]
     filepath = os.path.join(wdfdir, filepath)
-    print "Filepath:", filepath
+    print("Filepath:", filepath)
     f = open(filepath, "w")
     f.write(miniparse(xmltodict.unparse(result)).toprettyxml())
     return render(request, 'wdf_edit/file_list.html')

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
+
 import json
 from django.apps import AppConfig
 from utils.directory_traversal_utils import get_abs_path, join_path

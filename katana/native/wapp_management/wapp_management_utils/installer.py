@@ -43,7 +43,7 @@ class Installer:
 
         if not output:
             if self.__revert_installation():
-                print "App installation successfully reverted."
+                print("App installation successfully reverted.")
 
         return output
 
@@ -56,7 +56,7 @@ class Installer:
                 if os.path.exists(temp_pl_path):
                     output = False
                     message = "-- An Error Occurred -- Directory already exists: {0}.".format(temp_pl_path)
-                    print message
+                    print(message)
                     self.message += message
                 else:
                     output = copy_dir(plugin, temp_pl_path)
@@ -68,7 +68,7 @@ class Installer:
         if os.path.exists(temp_app_path):
             output = False
             message = "-- An Error Occurred -- Directory already exists: {0}.".format(temp_app_path)
-            print message
+            print(message)
             self.message += message
         else:
             output = copy_dir(self.path_to_app, temp_app_path)

@@ -28,7 +28,7 @@ def readlines_from_file(path, start=None, end=None):
         with open(path, "r") as f:
             data = f.readlines()
     except IOError:
-        print "--Error-- {0} does not exist".format(path)
+        print("--Error-- {0} does not exist".format(path))
     else:
         output_list = []
 
@@ -55,7 +55,7 @@ def copy_dir(src, dest):
             shutil.copy(src, dest)
         else:
             output = False
-            print "-- An Error Occurred -- {0}".format(e)
+            print("-- An Error Occurred -- {0}".format(e))
     return output
 
 
@@ -65,7 +65,7 @@ def write_to_file(path, data):
         with open(path, 'w') as f:
             f.write(data)
     except Exception as e:
-        print "-- An Error Occurred -- {0}".format(e)
+        print("-- An Error Occurred -- {0}".format(e))
         output = False
     return output
 

@@ -52,7 +52,7 @@ if __name__ == "__main__":
     for i in range(0, len(args)):
         if args[i] == "-p":
             if i+1 >= len(args):
-                print "No port number given. Exiting."
+                print("No port number given. Exiting.")
                 sys.exit()
             else:
                 port = args[i+1]

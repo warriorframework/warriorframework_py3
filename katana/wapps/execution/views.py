@@ -156,8 +156,8 @@ class Execution(object):
                 elif os.path.isdir(path):
                      shutil.rmtree(path, 'ignore_errors')
         except Exception as err:
-            print "error ceaning up dir {0}".format(data_live_dir)
-            print err
+            print("error ceaning up dir {0}".format(data_live_dir))
+            print(err)
             status = 'failure'
             
         return HttpResponse(status)

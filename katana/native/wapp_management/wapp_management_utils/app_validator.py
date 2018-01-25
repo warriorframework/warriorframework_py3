@@ -31,7 +31,7 @@ class AppValidator:
                 else:
                     output["status"] = False
                     output["message"] = "wf_config.json is not in the correct format."
-                    print "-- An Error Occurred -- {0}".format(output["message"])
+                    print("-- An Error Occurred -- {0}".format(output["message"]))
 
                 # validate databases if any
                 if "database" in data:
@@ -44,20 +44,20 @@ class AppValidator:
             else:
                 output["status"] = False
                 output["message"] = "wf_config.json is not in the correct format."
-                print "-- An Error Occurred -- {0}".format(output["message"])
+                print("-- An Error Occurred -- {0}".format(output["message"]))
 
             if output["status"]:
                 output = self.__validate_static_directory()
         else:
             output["status"] = False
             output["message"] = "wf_config.json does not exist."
-            print "-- An Error Occurred -- {0}".format(output["message"])
+            print("-- An Error Occurred -- {0}".format(output["message"]))
         return output
 
     def __verify_app_details(self, app_details):
         output = {"status": True, "message": ""}
         if "name" not in app_details or "url" not in app_details or "include" not in app_details:
-            print "-- An Error Occurred -- wf_config.json file is not in the correct format."
+            print("-- An Error Occurred -- wf_config.json file is not in the correct format.")
             output["status"] = False
         else:
             self.urls_inclusions.append("url(r'^" + app_details["url"] +
@@ -72,7 +72,7 @@ class AppValidator:
             if not os.path.isfile(path_to_urls_abs):
                 output["status"] = False
                 output["message"] = "Package {0} does not exist.".format(app_details["include"])
-                print "-- An Error Occurred -- {0}".format(output["message"])
+                print("-- An Error Occurred -- {0}".format(output["message"]))
         return output
 
     def __verify_db_details(self, db_details):
@@ -81,7 +81,7 @@ class AppValidator:
             if not key.startswith(self.app_name):
                 output["status"] = False
                 output["message"] = "wf_config.json file is not formatted correctly"
-                print "-- An Error Occurred -- {0}".format(output["message"])
+                print("-- An Error Occurred -- {0}".format(output["message"]))
         return output
 
     def __validate_static_directory(self):
@@ -92,13 +92,13 @@ class AppValidator:
                 output["status"] = False
                 output["message"] = "static directory does not follow the required " \
                                     "directory structure."
-                print "-- An Error Occurred -- {0}".format(output["message"])
+                print("-- An Error Occurred -- {0}".format(output["message"]))
             else:
                 if not os.path.isdir(join_path(self.path_to_app, "static", self.app_name)):
                     output["status"] = False
                     output["message"] = "static directory does not follow the required " \
                                         "directory structure."
-                    print "-- An Error Occurred -- {0}".format(output["message"])
+                    print("-- An Error Occurred -- {0}".format(output["message"]))
                 else:
                         
                     subs_files = get_paths_of_subfiles(join_path(self.path_to_app, "static",
@@ -109,5 +109,5 @@ class AppValidator:
                         if not sub_file.startswith(path_to_js):
                             output["status"] = False
                             output["message"] = "A .js file cannot be outside the 'js' folder."
-                            print "-- An Error Occurred -- {0}".format(output["message"])
+                            print("-- An Error Occurred -- {0}".format(output["message"]))
         return output

@@ -11,7 +11,7 @@ limitations under the License.
 
 """
 
-from __future__ import unicode_literals
+
 import os
 import shutil
 import zipfile
@@ -90,7 +90,7 @@ def install_an_app(request):
         else:
             output_data["status"] = False
             output_data["message"] = "-- An Error Occurred -- {0} does not exist".format(app_path)
-            print output_data["message"]
+            print(output_data["message"])
     else:
         if os.path.isdir(app_path):
             filename = get_dir_from_path(app_path)
@@ -99,7 +99,7 @@ def install_an_app(request):
         else:
             output_data["status"] = False
             output_data["message"] = "-- An Error Occurred -- {0} does not exist".format(app_path)
-            print output_data["message"]
+            print(output_data["message"])
     installer_obj = Installer(get_parent_directory(nav_obj.get_katana_dir()), app_path)
     installer_obj.install()
     if installer_obj.message != "":
@@ -223,7 +223,7 @@ def validate_app_path(request):
             else:
                 output["status"] = False
                 output["message"] = "{0} does not exist".format(detail_info)
-                print "-- An Error Occurred -- ".format(output["message"])
+                print("-- An Error Occurred -- ".format(output["message"]))
         elif detail_type == "filepath":
             if os.path.isdir(detail_info):
                 filename = get_dir_from_path(detail_info)
@@ -232,13 +232,13 @@ def validate_app_path(request):
             else:
                 output["status"] = False
                 output["message"] = "{0} does not exist or is not a directory".format(detail_info)
-                print "-- An Error Occurred -- {0}".format(output["message"])
+                print("-- An Error Occurred -- {0}".format(output["message"]))
         else:
-            print "-- An Error Occurred -- Type of validation not given."
+            print("-- An Error Occurred -- Type of validation not given.")
         if app_path:
             app_validator_obj = AppValidator(app_path)
             output = app_validator_obj.is_valid()
     else:
-        print "-- An Error Occurred -- Could not create temporary directory."
+        print("-- An Error Occurred -- Could not create temporary directory.")
     return JsonResponse(output)
 
