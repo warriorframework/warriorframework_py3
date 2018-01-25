@@ -115,6 +115,8 @@ class ThreadedLog(Base):
             try:
                 # default timeout for pexpect-spawn object is 30s
                 string = session.read_nonblocking(1024, timeout=30)
+                if isinstance(string, bytes):
+                    string = string.decode("utf-8")
                 response = response + string
                 time.sleep(0.5)
                 self.data = response

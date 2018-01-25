@@ -15,6 +15,9 @@ limitations under the License.
 
 import os
 import base64
+import codecs
+import traceback
+import binascii
 
 from Framework.Utils import file_Utils
 from Framework.Utils.print_Utils import print_exception, print_error, print_info
@@ -64,11 +67,18 @@ def encrypt(message, encoded_key=False):
 """This is decryption"""
 def decrypt(message, encoded_key=False):
     """This is decryption"""
-    IV, CIPHER = get_key(encoded_key)
+    iv, cipher = get_key(encoded_key)
     try:
-        return CIPHER.decrypt(message.decode("hex"))[len(IV):]
-    except BaseException:
+        # in python2, can just use message.decode("hex")
+        # but in python3, str.decode is removed 
+        return cipher.decrypt(codecs.decode(message, "hex"))[len(iv):]
+    except binascii.Error as err:
+        # This is dangerous...
+        # using exception to handle if encrypted/not encrypted condition
         return message
+    except Exception:
+        print_error(traceback.format_exc())
+
 
 def set_secret_key(plain_text_key):
     encoded_key = False

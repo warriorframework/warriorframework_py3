@@ -1221,9 +1221,9 @@ class ParamikoConnect(object):
             # execution.we can't fail the command execution based on
             # recv_exit_status value.
             if stdout:
-                response = response + stdout.read()
+                response = response + stdout.read().decode("utf-8")
             if stderr:
-                response = response + stderr.read()
+                response = response + stderr.read().decode("utf-8")
 
             pNote("[{0}] Command execution completed".format(end_time))
             pNote("Response:\n{0}\n".format(response))
