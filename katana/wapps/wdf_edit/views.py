@@ -177,7 +177,7 @@ def on_post(request):
     """
         Main function that handles a post request with edited xml data
     """
-    data = json.loads(request.body)
+    data = json.loads(request.body.decode("utf-8"))
     filepath = data.get("filepath", None)
     desc = data.get("description", "")
     systems = build_xml_dict(data["systems"])
