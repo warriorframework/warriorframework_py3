@@ -1569,8 +1569,8 @@ class PexpectConnect(object):
             except Exception as exception:
                 print_exception(exception)
             else:
-                response = self.target_host.before
-                response = str(response) + str(self.target_host.after)
+                response = self.target_host.before.decode('utf-8')
+                response = response + self.target_host.after.decode('utf-8')
                 pNote("Response:\n{0}\n".format(response))
                 pNote(msg, "debug")
                 if status is True:

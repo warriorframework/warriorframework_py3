@@ -210,7 +210,7 @@ class TestcaseUtils(object):
         if write_locn is None:
             write_locn = self.current_pointer
         if ptc and print_type not in print_util_types:
-                p_type(txt)
+            p_type(txt)
         # self.current_pointer may be None,which is not a intended behavior
         if write_locn is not None:
             doc = ET.SubElement(write_locn, "Note")
@@ -232,7 +232,7 @@ class TestcaseUtils(object):
         try:
             txt = re.sub(r'[^\x20-\x7E|\x09-\x0A]','', txt)
             # remove non-ascii characters
-            txt = repr(txt)[1:-1]
+            # txt = repr(txt)[1:-1]
         except Exception as exception:
             print_exception(exception)
         return txt
