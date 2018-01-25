@@ -442,7 +442,7 @@ class BrowserManagement(object):
             binary = "firefox"
         version = False
         try:
-            raw_version = check_output([binary, "-v"])
+            raw_version = check_output([binary, "-v"]).decode("utf-8")
             match = re.search(r"\d+\.\d+", raw_version)
             if match is not None:
                 version = LooseVersion(match.group(0))
