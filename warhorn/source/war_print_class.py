@@ -42,7 +42,7 @@ def print_main(message, print_type, con_log, pr_log_name, color_message=None,
     if len(kwargs) > 0:
         print_string = (print_type + " " + str(message) + str(kwargs))
 
-    print print_string
+    print(print_string)
     pr_log = open(pr_log_name, "a")
     pr_log.write(print_string + "\n")
     pr_log.close()
@@ -50,7 +50,7 @@ def print_main(message, print_type, con_log, pr_log_name, color_message=None,
         con_log.write(print_string + "\n")
         con_log.flush()
     except ValueError:
-        print print_string + "\n"
+        print(print_string + "\n")
     return print_string
 
 
@@ -84,7 +84,7 @@ class RedirectPrint(object):
 
     def isatty(self):
         """Check if sys.stdout is a tty """
-        print self.stdout.isatty()
+        print(self.stdout.isatty())
         return self.stdout.isatty()
 
     def flush(self):

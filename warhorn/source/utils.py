@@ -21,7 +21,7 @@ import imp
 import subprocess
 import datetime
 import sys
-from war_print_class import print_main
+from .war_print_class import print_main
 """
 Utility functions for warhorn.py
 """

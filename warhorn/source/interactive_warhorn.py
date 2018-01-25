@@ -25,7 +25,7 @@ from xml.etree.ElementTree import Element
 import re
 import sys
 
-from utils import get_firstlevel_children, create_dir, get_repository_name, \
+from .utils import get_firstlevel_children, create_dir, get_repository_name, \
     get_subfiles, delete_read_only, get_relative_path, get_parent_dir
 
 
@@ -45,7 +45,7 @@ def confirm_url(question, attrib_value):
 
     """
     if not check_url_is_a_valid_repo(attrib_value):
-        attrib_value = raw_input("Please enter a valid URL: ")
+        attrib_value = input("Please enter a valid URL: ")
         attrib_value = confirm_url(question, attrib_value)
     return attrib_value
 
@@ -76,8 +76,8 @@ def validate_input(question, attrib_name, answer):
         elif neg_pattern.match(answer):
             return "no"
         else:
-            print "The command was not recognized. Please answer 'yes' or 'no'."
-            answer = raw_input(question.text)
+            print("The command was not recognized. Please answer 'yes' or 'no'.")
+            answer = input(question.text)
             answer = validate_input(question, attrib_name, answer)
     if attrib_name == "clone":
         if aff_pattern.match(answer):
@@ -89,8 +89,8 @@ def validate_input(question, attrib_name, answer):
             STATE = "no"
             return "no"
         else:
-            print "The command was not recognized. Please answer 'yes' or 'no'."
-            answer = raw_input(question.text)
+            print("The command was not recognized. Please answer 'yes' or 'no'.")
+            answer = input(question.text)
             answer = validate_input(question, attrib_name, answer)
     elif attrib_name == "destination":
         answer = validate_path(answer)
@@ -100,8 +100,8 @@ def validate_input(question, attrib_name, answer):
         elif neg_pattern.match(answer):
             return "no"
         else:
-            print "The command was not recognized. Please answer 'yes' or 'no'."
-            answer = raw_input(question.text)
+            print("The command was not recognized. Please answer 'yes' or 'no'.")
+            answer = input(question.text)
             answer = validate_input(question, attrib_name, answer)
     return answer
 
@@ -130,12 +130,12 @@ def show_suggestion_get_answer(node, attrib_value, suggestion):
     suggestion_content = suggestion.text
     if node.attrib["name"] == 'repository':
         suggestion_content = suggestion_content + attrib_value + ".git"
-        print "The suggested URL is: " + suggestion_content
+        print("The suggested URL is: " + suggestion_content)
     else:
-        print "The suggested URL is: " + suggestion_content
-    answer = raw_input("Do you want to use this URL? (yes[Enter]/no):")
+        print("The suggested URL is: " + suggestion_content)
+    answer = input("Do you want to use this URL? (yes[Enter]/no):")
     if not (aff_pattern.match(answer) or neg_pattern.match(answer)):
-        print "The command was not recognized. Please answer yes or no."
+        print("The command was not recognized. Please answer yes or no.")
         suggestion_content, answer = show_suggestion_get_answer(node,
                                                                 attrib_value,
                                                                 suggestion)
@@ -157,9 +157,9 @@ def check_url_is_a_valid_repo(url):
     try:
         _ = subprocess.check_output(["git", "ls-remote", url])
     except:
-        print url + " is not a valid git repository"
+        print(url + " is not a valid git repository")
         return False
-    print url + " is available"
+    print(url + " is available")
     return True
 
 
@@ -185,7 +185,7 @@ def get_driver_list(pd_file_names):
     for subfile in pd_file_names:
         if subfile.endswith('.py'):
             subfiles.append(subfile)
-    for i, subfile in zip(range(0, len(subfiles)), subfiles):
+    for i, subfile in zip(list(range(0, len(subfiles))), subfiles):
         driver_list.append(str(i+1))
         driver_list.append(subfile)
     return driver_list
@@ -203,18 +203,18 @@ def get_corresponding_numbers():
 
     """
     number_set = set()
-    answer = raw_input("Please enter the corresponding number of the drivers "
+    answer = input("Please enter the corresponding number of the drivers "
                        "you want to clone. Separate the numbers with a space: ")
     pattern = re.compile("^[0-9]*$")
 
     for characters in answer.split():
         if pattern.match(characters):
             if characters == '0':
-                print characters + " does not have a corresponding driver."
+                print(characters + " does not have a corresponding driver.")
             else:
                 number_set.add(int(characters))
         else:
-            print characters + " is not a valid number"
+            print(characters + " is not a valid number")
 
     return list(number_set)
 
@@ -232,14 +232,14 @@ def add_drivers_to_tags(tag, drivers, driver_numbers):
     the driver names that the user wants.
 
     """
-    print "Selected drivers:"
+    print("Selected drivers:")
     for driver_number in driver_numbers:
         driver_number = driver_number * 2 - 1
         if driver_number > len(drivers):
-            print "Corresponding driver for " + str((driver_number+1)/2) +\
-                  " not found."
+            print("Corresponding driver for " + str((driver_number+1)/2) +\
+                  " not found.")
             continue
-        print str((driver_number+1)/2) + ". " + drivers[driver_number]
+        print(str((driver_number+1)/2) + ". " + drivers[driver_number])
         driver_tag = Element("driver")
         driver_tag.set("name", drivers[driver_number])
         tag.append(driver_tag)
@@ -277,12 +277,12 @@ def clone_kw_repo(root, question, attrib_value, tag):
     aff_pattern = re.compile("^(|y|yes)$", re.IGNORECASE)
     neg_pattern = re.compile("^(n|no)$", re.IGNORECASE)
     if not check_url_is_a_valid_repo(attrib_value):
-        attrib_value = raw_input("Please enter a valid url: ")
+        attrib_value = input("Please enter a valid url: ")
         attrib_value = clone_kw_repo(root, question, attrib_value, tag)
     else:
         if root.tag == "drivers":
             name = get_repository_name(attrib_value)
-            answer = raw_input("Do you want to clone all the drivers? "
+            answer = input("Do you want to clone all the drivers? "
                                "(yes[Enter]/no): ")
             answer = transform_response(answer)
             tag.set("all_drivers", answer)
@@ -298,13 +298,13 @@ def clone_kw_repo(root, question, attrib_value, tag):
                 drivers = get_driver_list(temp)
 
                 for i in range(1, len(drivers), 2):
-                    print drivers[i-1] + ". " + drivers[i]
+                    print(drivers[i-1] + ". " + drivers[i])
 
                 driver_numbers = get_corresponding_numbers()
                 add_drivers_to_tags(tag, drivers, driver_numbers)
                 shutil.rmtree(path, onerror=delete_read_only)
             elif not aff_pattern.match(answer):
-                print "The command was not recognized. Please answer yes or no."
+                print("The command was not recognized. Please answer yes or no.")
                 attrib_value = clone_kw_repo(root, question, attrib_value, tag)
     return attrib_value
 
@@ -334,14 +334,14 @@ def populate_repo_tags(root, current_element, attrib_value, node, tag):
     suggestion_content = ""
     info = current_element.find("info")
     if info is not None:
-        print info.text
+        print(info.text)
     suggestion = current_element.find("suggestion")
     if suggestion is not None:
         suggestion_content = suggestion.text + attrib_value + ".git"
-        print "The suggested URL is: " + suggestion_content
-        answer = raw_input("Do you want to use this URL? (yes[Enter]/no): ")
+        print("The suggested URL is: " + suggestion_content)
+        answer = input("Do you want to use this URL? (yes[Enter]/no): ")
         if not (aff_pattern.match(answer) or neg_pattern.match(answer)):
-            print "The command was not recognized. Please answer yes or no."
+            print("The command was not recognized. Please answer yes or no.")
             suggestion_content, answer = \
                 show_suggestion_get_answer(node, attrib_value, suggestion)
     question = current_element.find("question")
@@ -351,7 +351,7 @@ def populate_repo_tags(root, current_element, attrib_value, node, tag):
             if current_element.attrib["name"] == "url":
                 attrib_value = clone_kw_repo(root, question, attrib_value, tag)
         else:
-            attrib_value = raw_input(question.text)
+            attrib_value = input(question.text)
             if current_element.attrib["name"] == "url":
                 attrib_value = clone_kw_repo(root, question, attrib_value, tag)
             else:
@@ -377,7 +377,7 @@ def get_multiple_repos(root, node, attrib_value, temp_values_list):
     """
     aff_pattern = re.compile("^(|y|yes)$", re.IGNORECASE)
     neg_pattern = re.compile("^(n|no)$", re.IGNORECASE)
-    response = raw_input("Do you want to clone another repository? "
+    response = input("Do you want to clone another repository? "
                          "(yes[Enter]/no): ")
     if aff_pattern.match(response):
         tag = Element(node.attrib["name"])
@@ -387,7 +387,7 @@ def get_multiple_repos(root, node, attrib_value, temp_values_list):
                                               attrib_value, node, tag)
         get_multiple_repos(root, node, attrib_value, temp_values_list)
     elif not neg_pattern.match(response):
-        print "The command was not recognized. Please answer yes or no."
+        print("The command was not recognized. Please answer yes or no.")
         get_multiple_repos(root, node, attrib_value, temp_values_list)
 
 
@@ -409,9 +409,9 @@ def install_all_dependencies(root, node, tag, attribute, values, answer):
     """
     aff_pattern = re.compile("^(|y|yes)$", re.IGNORECASE)
     if aff_pattern.match(answer):
-        print "All dependencies will get installed"
+        print("All dependencies will get installed")
     else:
-        print "No dependencies will get installed"
+        print("No dependencies will get installed")
     answer = transform_response(answer)
     for i in range(0, len(values)):
         if i != 0:
@@ -447,7 +447,7 @@ def install_select_dependencies(root, node, tag, attribute, values):
             root.append(newnode)
         question = values[i].find("question")
         if question is not None:
-            attrib_value = raw_input(question.text)
+            attrib_value = input(question.text)
             attrib_value = validate_input(question, node.attrib["name"],
                                           attrib_value)
             if i == 0:
@@ -477,8 +477,8 @@ def get_answer_for_depen(root, node, tag, attribute, values):
     aff_pattern = re.compile("^(|y|yes)$", re.IGNORECASE)
     neg_pattern = re.compile("^(n|no)$", re.IGNORECASE)
     sel_pattern = re.compile("^(select)$", re.IGNORECASE)
-    print ""
-    answer = raw_input("Please enter 'yes' if you want to install all the "
+    print("")
+    answer = input("Please enter 'yes' if you want to install all the "
                        "dependencies, 'no' if you don't want to install any "
                        "of the dependency, and 'select' if you would like to "
                        "choose which dependency to install. "
@@ -488,8 +488,8 @@ def get_answer_for_depen(root, node, tag, attribute, values):
     elif sel_pattern.match(answer):
         install_select_dependencies(root, node, tag, attribute, values)
     else:
-        print "The command was not recognized. Please answer yes or no or " \
-              "select."
+        print("The command was not recognized. Please answer yes or no or " \
+              "select.")
         get_answer_for_depen(root, node, tag, attribute, values)
 
 
@@ -512,9 +512,9 @@ def diff_attributes_values(root, node, tag, attribute, values):
     for i in range(0, len(values)):
         info = values[i].find("info")
         if info is not None:
-            print info.text
-    print "Warrior recommends that all these dependencies be installed on" \
-          " your machine."
+            print(info.text)
+    print("Warrior recommends that all these dependencies be installed on" \
+          " your machine.")
     get_answer_for_depen(root, node, tag, attribute, values)
 
 
@@ -524,8 +524,8 @@ def get_and_validate_response(response, repo_type):
     if aff_pattern.match(response) or neg_pattern.match(response):
         return response
     else:
-        print "Command not recognized. Please type 'yes' or 'no'."
-        response = raw_input("Do you want to clone a " + repo_type +
+        print("Command not recognized. Please type 'yes' or 'no'.")
+        response = input("Do you want to clone a " + repo_type +
                              "repository? (yes[Enter]/no): ")
         response = get_and_validate_response(response, repo_type)
     return response
@@ -540,7 +540,7 @@ def get_final_attrib_value(question, answer, suggestion_content, attribute):
     if aff_pattern.match(answer):
         attrib_value = suggestion_content
     else:
-        attrib_value = raw_input(question.text)
+        attrib_value = input(question.text)
         if attribute.attrib["name"] == "url":
             attrib_value = confirm_url(question, attrib_value)
         else:
@@ -557,11 +557,11 @@ def get_url_for_main_repos(suggestion, node):
     suggestion_content = suggestion.text
     repo_name = suggestion_content.rsplit('/', 1)[-1]
     repo_name = repo_name.split(".")[0]
-    print "For " + repo_name + ": "
-    print "The suggested URL is: " + suggestion_content
-    answer = raw_input("Do you want to use this URL? (yes[Enter]/no): ")
+    print("For " + repo_name + ": ")
+    print("The suggested URL is: " + suggestion_content)
+    answer = input("Do you want to use this URL? (yes[Enter]/no): ")
     if not (aff_pattern.match(answer) or neg_pattern.match(answer)):
-        print "The command was not recognized. Please answer yes or no."
+        print("The command was not recognized. Please answer yes or no.")
         suggestion_content, answer = show_suggestion_get_answer(node, "", suggestion)
     return suggestion_content, answer
 
@@ -590,7 +590,7 @@ def same_attributes_values(root, node, tag, attributes, repo_type):
         suggestion_content = ""
         if node.attrib["name"] == 'repository':
             if not temp_values_list:
-                response = raw_input("Do you want to clone a " + repo_type +
+                response = input("Do you want to clone a " + repo_type +
                                      " repository? (yes[Enter]/no): ")
                 response = get_and_validate_response(response, repo_type)
             if aff_pattern.match(response):
@@ -608,7 +608,7 @@ def same_attributes_values(root, node, tag, attributes, repo_type):
                 if "warrior" not in tag.tag and STATE == "no":
                         pass
                 else:
-                    print info.text
+                    print(info.text)
             suggestion = attributes[i].find("suggestion")
             if suggestion is not None:
                 global STATE
@@ -680,7 +680,7 @@ def validate_new_file_name(path, new_file_name):
     if not os.path.exists(os.path.join(path, new_file_name)):
         new_file_path = os.path.join(path, new_file_name)
     else:
-        answer = raw_input("A file with the same name already exists in the "
+        answer = input("A file with the same name already exists in the "
                            "given directory. Please enter a new name "
                            "for the file: ")
         if answer.endswith(".xml"):
@@ -706,10 +706,10 @@ def validate_path(path):
     """
     if path == "":
         current_dir = get_parent_dir(os.path.realpath(__file__))
-        print "Path: " + current_dir
+        print("Path: " + current_dir)
         return current_dir
     if not os.path.exists(path):
-        path = raw_input("Invalid path! Please provide a correct path to "
+        path = input("Invalid path! Please provide a correct path to "
                          "the folder: ")
         path = validate_path(path)
     return path
@@ -731,7 +731,7 @@ def get_dir_path_to_save_file(new_file_name):
     """
     aff_pattern = re.compile("^(|y|yes)$", re.IGNORECASE)
     neg_pattern = re.compile("^(n|no)$", re.IGNORECASE)
-    answer = raw_input("Would you like to store " +
+    answer = input("Would you like to store " +
                        new_file_name +
                        " in the user_generated folder? (yes[Enter]/no): ")
     if aff_pattern.match(answer):
@@ -740,13 +740,13 @@ def get_dir_path_to_save_file(new_file_name):
                                      "user_generated", new_file_name)
         new_file_path = os.path.join(rel_path)
     elif neg_pattern.match(answer):
-        path = raw_input("Please enter a new path. If nothing is entered, " +
+        path = input("Please enter a new path. If nothing is entered, " +
                          new_file_name +
                          " will get stored in the home folder: ")
         path = validate_path(path)
         new_file_path = validate_new_file_name(path, new_file_name)
     else:
-        print "The command was not recognized. Please answer 'yes' or 'no'."
+        print("The command was not recognized. Please answer 'yes' or 'no'.")
         new_file_path = get_dir_path_to_save_file(new_file_name)
     return new_file_path
 
@@ -764,9 +764,9 @@ def get_filename(temp_xml):
     1. new_file_name (str) = This is the new name of the xml file
 
     """
-    answer = raw_input("Please enter a name for this file: ")
+    answer = input("Please enter a name for this file: ")
     if answer == "":
-        print "You cannot save a file without a name."
+        print("You cannot save a file without a name.")
         new_file_name = get_filename(temp_xml)
     elif answer.endswith(".xml"):
         new_file_name = answer
@@ -778,12 +778,12 @@ def get_filename(temp_xml):
 def check_if_writable(new_file_name, new_file_path):
     try:
         shutil.copy(new_file_name, new_file_path)
-        print "File saved as: " + new_file_name + \
-              " in " + os.path.dirname(new_file_path)
+        print("File saved as: " + new_file_name + \
+              " in " + os.path.dirname(new_file_path))
         os.remove(new_file_name)
     except:
-        print "Oops! Warhorn doesn't have the necessary permissions to write " \
-              "in" + new_file_path + " !"
+        print("Oops! Warhorn doesn't have the necessary permissions to write " \
+              "in" + new_file_path + " !")
         new_file_path = get_dir_path_to_save_file(new_file_name)
         check_if_writable(new_file_name, new_file_path)
 
@@ -801,7 +801,7 @@ def save_file(temp_xml):
     """
     aff_pattern = re.compile("^(|y|yes)$", re.IGNORECASE)
     neg_pattern = re.compile("^(n|no)$", re.IGNORECASE)
-    answer = raw_input("Do you want to save this file? (yes[Enter]/no):")
+    answer = input("Do you want to save this file? (yes[Enter]/no):")
     if aff_pattern.match(answer):
         new_file_name = get_filename(temp_xml)
         shutil.copy(temp_xml, new_file_name)
@@ -810,11 +810,11 @@ def save_file(temp_xml):
         check_if_writable(new_file_name, new_file_path)
         run_file(new_file_path, 1)
     elif neg_pattern.match(answer):
-        print "File won't be saved."
+        print("File won't be saved.")
         run_file(temp_xml, 0)
         os.remove(temp_xml)
     else:
-        print "The command was not recognized. Please answer 'yes' or 'no'."
+        print("The command was not recognized. Please answer 'yes' or 'no'.")
         save_file(temp_xml)
 
 
@@ -829,21 +829,21 @@ def run_file(filename, counter):
     """
     aff_pattern = re.compile("^(|y|yes)$", re.IGNORECASE)
     neg_pattern = re.compile("^(n|no)$", re.IGNORECASE)
-    answer = raw_input("Do you want to run this file now? (yes[Enter]/no): ")
+    answer = input("Do you want to run this file now? (yes[Enter]/no): ")
     if aff_pattern.match(answer):
-        print "Running Warhorn"
+        print("Running Warhorn")
         dir_path = os.path.dirname(os.path.realpath(sys.argv[0]))
         rel_path = get_relative_path(os.path.dirname(dir_path), "warhorn.py")
         subprocess.call(["python", rel_path, filename])
         if counter == 0:
-            print "You can view the config file in the logs folder."
+            print("You can view the config file in the logs folder.")
     elif neg_pattern.match(answer):
         if counter == 0:
-            print "File discarded."
+            print("File discarded.")
         elif counter == 1:
-            print "File saved for later use."
+            print("File saved for later use.")
     else:
-        print "The command was not recognized. Please answer 'yes' or 'no'."
+        print("The command was not recognized. Please answer 'yes' or 'no'.")
         run_file(filename, counter)
 
 

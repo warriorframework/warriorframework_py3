@@ -168,7 +168,7 @@ def overwrite_files(path, destination, overwrite, logfile, print_log_name):
                 try:
                     shutil.copy(os.path.join(path, sub_file),
                                 os.path.join(destination, sub_file))
-                except Exception, e:
+                except Exception as e:
                     print_error("Exception Trace: {0}".format(e),
                                 logfile, print_log_name)
                     print_error("Error while copying {0}.".format(sub_file),
@@ -177,7 +177,7 @@ def overwrite_files(path, destination, overwrite, logfile, print_log_name):
             try:
                 shutil.copy(os.path.join(path, sub_file),
                             os.path.join(destination, sub_file))
-            except Exception, e:
+            except Exception as e:
                 print_error("Exception Trace: {0}".format(e),
                             logfile, print_log_name)
                 print_error("Error while copying {0}.".format(sub_file),
@@ -1061,7 +1061,7 @@ def activate_virtualenv(node, destination, logfile, print_log_name):
         venv_cmd = os.path.expanduser(ve_loc)
         subprocess.check_call([venv_cmd, "--system-site-packages", ve_dest])
         venv_file = "{}/bin/activate_this.py".format(ve_dest)
-        execfile(venv_file, dict(__file__=venv_file))
+        exec(compile(open(venv_file).read(), venv_file, 'exec'), dict(__file__=venv_file))
         return True
     except Exception as e:
         print_error("Activating virtual env at {} resulted in exception {}".format(
