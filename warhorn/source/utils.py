@@ -426,8 +426,8 @@ def verify_python_version(str_version, regex_str, logfile, print_log_name):
         print_error("You are currently using Python " + str_version + ". It is strongly "
                     "recommended that you install the correct version of Python (2.7.0 or "
                     "above in the 2.7 family).", logfile, print_log_name)
-        setDone(1)
-        getDone(logfile, print_log_name)
+        # setDone(1)
+        # getDone(logfile, print_log_name)
     else:
         print_info("Python version satisfies requirements.", logfile, print_log_name)
 
@@ -571,7 +571,7 @@ def install_depen(dependency, dependency_name, logfile, print_log_name,
         print_info("installing "+dependency, logfile, print_log_name)
         sp_output = subprocess.Popen(pip_cmds, stdout=subprocess.PIPE,
                                      stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-        output = sp_output.stdout.read()
+        output = sp_output.stdout.read() + sp_output.stderr.read()
         print_info(output, logfile, print_log_name)
     except IOError:
         counter = 1
