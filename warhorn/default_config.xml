@@ -5,15 +5,15 @@
 <data>
     <warhorn name="Warhorn">
         <dependency name="jira" install="no" user="no"/>
-        <dependency name="lxml" install="yes" user="no"/>
+        <dependency name="lxml" install="no" user="no"/>
         <dependency name="ncclient" install="no" user="no"/>
-        <dependency name="paramiko" install="yes" user="no"/>
-        <dependency name="pexpect" install="yes" user="no"/>
-        <dependency name="pysnmp" install="yes" user="no"/>
-        <dependency name="requests" install="yes" user="no"/>
-        <dependency name="selenium" install="yes" user="no"/>
+        <dependency name="paramiko" install="no" user="no"/>
+        <dependency name="pexpect" install="no" user="no"/>
+        <dependency name="pysnmp" install="no" user="no"/>
+        <dependency name="requests" install="no" user="no"/>
+        <dependency name="selenium" install="no" user="no"/>
         <dependency name="xlrd" install="no" user="no"/>
-        <dependency name="cloudshell-automation-api" install="yes" user="no"/>
+        <dependency name="cloudshell-automation-api" install="no" user="no"/>
     </warhorn>
 
     <!-- Fill this out with the details of the virtual environment
@@ -27,7 +27,7 @@
          admin privileges to install virtual env.
          -->
 
-    <virtualenv name="war_virtualenv" location="~/.local/bin/virtualenv" install="no" />
+    <virtualenv name="" location="~/.local/bin/virtualenv" install="no" />
 
 	<warriorframework url="https://github.com/warriorframework/warriorframework.git"
                       label="" clean_install="yes" clone="no">
