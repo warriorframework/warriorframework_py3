@@ -89,9 +89,8 @@ def check_basic_requirements(logfile, config_file_name, console_log_name,
 
     """
     str_version = check_installed_python_version(logfile, print_log_name)
-    print_info("Warrior requires Python 2.7.0 - till the latest release in the "
-               "2.7 family.", logfile, print_log_name)
-    verify_python_version(str_version, r"^(2\.7)",
+    print_info("Warrior requires Python 2.7.* or 3.4+.", logfile, print_log_name)
+    verify_python_version(str_version, r"^(2\.7)|^(3\.[4-9])",
                           logfile, print_log_name)
 
     str_package = 'pip'
@@ -117,15 +116,12 @@ def check_basic_requirements(logfile, config_file_name, console_log_name,
         print_info("Setuptools package is available.", logfile, print_log_name)
 
     try:
-        null = open("/dev/null", "w")
-        sp_output = subprocess.Popen("git", stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE,
-                                     stdin=subprocess.PIPE, shell=True)
-        null.close()
-        output = sp_output.stdout.read()
+        sp_output = subprocess.check_output("git --version", stderr=subprocess.STDOUT, shell=True)
+        output = sp_output.decode('utf-8')
         print_info(output, logfile, print_log_name)
         print_info("Git is available", logfile, print_log_name)
-    except OSError:
+    except subprocess.CalledProcessError as error:
+        print_error(error.output.decode('utf-8'), logfile, print_log_name)
         print_error("Git is not installed on the system. "
                     "Please install git and restart this installation.",
                     logfile, print_log_name)
