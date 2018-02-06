@@ -550,9 +550,9 @@ def get_dict_with_versions():
 
     1. versions (dict) = Dictionary with name as Key and version as value
     """
-    versions = {'jira': '1.0.3', 'lxml': '3.3.3', 'ncclient': '0.4.6',
-                'paramiko': '1.16.0', 'pexpect': '4.2', 'pysnmp': '4.3.2',
-                'requests': '2.9.1', 'selenium': '2.48.0', 'xlrd': '1.0.0',
+    versions = {'jira': '1.0.11', 'lxml': '4.1.1', 'ncclient': '0.4.6',
+                'paramiko': '2.4.0', 'pexpect': '4.3.1', 'pysnmp': '4.3.2',
+                'requests': '2.18.4', 'selenium': '3.8.1', 'xlrd': '1.1.0',
                 'cloudshell-automation-api':'7.1.0.34'}
     return versions
 
@@ -566,29 +566,24 @@ def install_depen(dependency, dependency_name, logfile, print_log_name,
     pip_cmds = ['python3', '-m', 'pip', 'install', dependency]
     if user:
         print_info("Installing {} as user...".format(dependency), logfile, print_log_name)
-        pip_cmds.insert(2, "--user")
+        pip_cmds.insert(4, "--user")
     try:
         print_info("installing "+dependency, logfile, print_log_name)
-        sp_output = subprocess.check_output(pip_cmds, stderr=subprocess.STDOUT, shell=True)
+        sp_output = subprocess.check_output(pip_cmds, stderr=subprocess.STDOUT)
         output = sp_output.decode('utf-8')
         print_info(output, logfile, print_log_name)
-    except IOError:
+    except subprocess.CalledProcessError as err:
         counter = 1
-        print_error("Warhorn was unable to install " + dependency_name + " because Warhorn "
-                    "does not have write permissions. You need to have admin privileges to "
-                    "install anything!", logfile, print_log_name)
-        setDone(1)
-    except Exception:
-        counter = 1
+        print_error(err.output.decode('utf-8'), logfile, print_log_name)
         print_error("Warhorn was unable to install " + dependency_name + ". Warhorn could not "
                     "determine the cause for this. This could have happened because probably the "
                     "system is not connected to internet.", logfile, print_log_name)
         setDone(1)
     if counter == 0:
         try:
-            sp_output = subprocess.Popen(["pip", "show", dependency_name], stdin=subprocess.PIPE,
-                                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            output = sp_output.stdout.read()
+            sp_output = subprocess.check_output(["python3", '-m', 'pip', "show", dependency_name], 
+                stderr=subprocess.STDOUT)
+            output = sp_output.decode('utf-8')
             if output == "":
                 print_error(dependency_name + " could not be installed!!",
                             logfile, print_log_name)
@@ -596,7 +591,8 @@ def install_depen(dependency, dependency_name, logfile, print_log_name,
             else:
                 print_info(dependency_name + " installation complete!",
                            logfile, print_log_name)
-        except:
+        except subprocess.CalledProcessError as err:
+            print_error(err.output.decode('utf-8'), logfile, print_log_name)
             print_error("Warhorn wasn't able to determine if " + dependency_name + " was "
                         "installed successfully or not!", logfile, print_log_name)
             setDone(1)
