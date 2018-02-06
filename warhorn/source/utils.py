@@ -441,7 +441,7 @@ def get_latest_tag(base_path="", current_dir=""):
     try:
         if base_path != "":
             os.chdir(base_path)
-        latest_tag = subprocess.check_output(["git", "tag"])
+        latest_tag = subprocess.check_output(["git", "tag"]).decode('utf-8')
         if current_dir != "":
             os.chdir(current_dir)
     except:
