@@ -581,8 +581,8 @@ def install_depen(dependency, dependency_name, logfile, print_log_name,
         setDone(1)
     if counter == 0:
         try:
-            sp_output = subprocess.check_output(["python3", '-m', 'pip', "show", dependency_name], 
-                stderr=subprocess.STDOUT)
+            sp_output = subprocess.check_output(["python3", '-m', 'pip', "show", dependency_name],
+                                                stderr=subprocess.STDOUT)
             output = sp_output.decode('utf-8')
             if output == "":
                 print_error(dependency_name + " could not be installed!!",
@@ -773,7 +773,7 @@ def git_checkout_label(label, base_path="", current_dir=""):
         # checking out label
         subprocess.check_call(["git", "checkout", label])
         # getting current commit id (%H) and label (%d)
-        current_label = subprocess.check_output(["git", "show", '--format="%H%d"', "--no-patch"])
+        current_label = subprocess.check_output(["git", "show", '--format="%H%d"', "--no-patch"]).decode('utf-8')
     except:
         check = False
     if label not in current_label:
