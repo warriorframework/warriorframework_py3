@@ -563,15 +563,14 @@ def install_depen(dependency, dependency_name, logfile, print_log_name,
      then it raises an error.
     """
     counter = 0
-    pip_cmds = ['pip', 'install', dependency]
+    pip_cmds = ['python3', '-m', 'pip', 'install', dependency]
     if user:
         print_info("Installing {} as user...".format(dependency), logfile, print_log_name)
         pip_cmds.insert(2, "--user")
     try:
         print_info("installing "+dependency, logfile, print_log_name)
-        sp_output = subprocess.Popen(pip_cmds, stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE, stdin=subprocess.PIPE)
-        output = sp_output.stdout.read() + sp_output.stderr.read()
+        sp_output = subprocess.check_output(pip_cmds, stderr=subprocess.STDOUT, shell=True)
+        output = sp_output.decode('utf-8')
         print_info(output, logfile, print_log_name)
     except IOError:
         counter = 1
@@ -579,7 +578,7 @@ def install_depen(dependency, dependency_name, logfile, print_log_name,
                     "does not have write permissions. You need to have admin privileges to "
                     "install anything!", logfile, print_log_name)
         setDone(1)
-    except:
+    except Exception:
         counter = 1
         print_error("Warhorn was unable to install " + dependency_name + ". Warhorn could not "
                     "determine the cause for this. This could have happened because probably the "
