@@ -145,7 +145,7 @@ def get_actual_cred_value(tag, value, etype, startdir=''):
     try:
         adt = ArgumentDatatype(tag, value)
         adt.datatype = adt.get_type_func(etype)
-        if adt.datatype is file:
+        if adt.datatype is IOBase:
             val = file_Utils.getAbsPath(value, startdir)
         else:
             val = adt.convert_string_to_datatype()
