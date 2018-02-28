@@ -482,7 +482,8 @@ class CliActions(object):
                                                                                     session_id))
                 if not credentials["timeout"]:
                     credentials["timeout"] = int_timeout
-                credentials["password"] = decrypt(credentials["password"])
+                if credentials["password"]:
+                    credentials["password"] = decrypt(credentials["password"])
 
                 if ip_type != "ip":
                     credentials['ip'] = credentials[ip_type]
