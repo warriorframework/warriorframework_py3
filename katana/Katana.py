@@ -14,8 +14,8 @@ limitations under the License.
 import sys
 import subprocess
 import signal
-from .utils.directory_traversal_utils import get_parent_dir_path, join_path
-from .simple_server import main
+from utils.directory_traversal_utils import get_parent_dir_path, join_path
+from simple_server import main
 use_py_server = False
 
 try:
@@ -44,7 +44,7 @@ class Katana:
         args[0] = self.manage_path
         if len(args) > 1 and args[1] == 'database':
             args.remove('database')
-        return 'python ' + ' '.join(args)
+        return 'python3 ' + ' '.join(args)
 
     def katana_init(self, args):
         args[0] = self.manage_path
@@ -55,9 +55,9 @@ class Katana:
         signal.pause()
 
     def database_init(self):
-        proc = self.run_process('python {0} makemigrations'.format(self.manage_path))
+        proc = self.run_process('python3 {0} makemigrations'.format(self.manage_path))
         proc.wait()
-        proc = self.run_process('python {0} migrate --run-syncdb'.format(self.manage_path))
+        proc = self.run_process('python3 {0} migrate --run-syncdb'.format(self.manage_path))
         proc.wait()
 
 
