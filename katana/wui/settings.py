@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'wapps.cases',
     'wapps.execution',
     'wapps.wdf_edit',
+    'wapps.assembler',
+    'wapps.cli_data',
 ]
 
 MIDDLEWARE = [

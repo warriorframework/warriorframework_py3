@@ -1,7 +1,6 @@
 import os
 import os.path 
-import re, glob, json
-from . import docstrings
+import re, glob, json, docstrings
 #gpysrcdir = pathname(cfg['pythonsrcdir'])
 gpysrcdir = "/home/khusain/Projects/forDemo/warriorframework/warrior"
 

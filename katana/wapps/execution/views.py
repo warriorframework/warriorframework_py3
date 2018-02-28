@@ -196,7 +196,7 @@ def stream_warrior_output(warrior_exe, cmd_string, file_list, live_html_res_file
     """
     Start warrior execution and stream console logs output to client
     """
-    pypath = python_path if python_path else 'python3'
+    pypath = python_path if python_path else 'python'
     
     print_cmd = '{0} {1} {2}'.format(pypath, warrior_exe, cmd_string )
     warrior_cmd = '{0} {1} -livehtmllocn {2} {3}'.format(pypath, warrior_exe, live_html_res_file, cmd_string )
