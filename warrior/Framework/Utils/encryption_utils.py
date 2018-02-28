@@ -61,7 +61,7 @@ def encrypt(message, encoded_key=False):
           "the secret.key file seems to be incorrect."
     if IV is not None and CIPHER is not None:
         msg = IV+CIPHER.encrypt(message)
-        msg = msg.encode("hex")
+        msg = msg.encode("hex_codec")
     return msg
 
 """This is decryption"""
@@ -71,7 +71,7 @@ def decrypt(message, encoded_key=False):
     try:
         # in python2, can just use message.decode("hex")
         # but in python3, str.decode is removed 
-        return cipher.decrypt(codecs.decode(message, "hex"))[len(iv):]
+        return cipher.decrypt(codecs.decode(message, "hex_codec"))[len(iv):]
     except binascii.Error as err:
         # This is dangerous...
         # using exception to handle if encrypted/not encrypted condition
