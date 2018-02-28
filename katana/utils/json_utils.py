@@ -28,7 +28,7 @@ def read_json_data(file_path):
 def read_xml_get_json(file_path):
     json_data = {}
     try:
-        xml_contents = open(file_path, 'r')
+        xml_contents = open(file_path, 'rb')
     except IOError:
         print("-- An Error Occurred -- {0} file does not exist".format(file_path))
         json_data["error"] = "File does not exist".format(file_path)

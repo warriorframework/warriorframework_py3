@@ -106,10 +106,10 @@ def save_and_run_warhorn_config_file(request):
     output = ""
     if response["saved"]:
         os.chdir(warhorn_dir)
-        output = subprocess.Popen(["python", "warhorn.py", filepath], stdout=subprocess.PIPE).communicate()[0]
+        output = subprocess.Popen(["python3", "warhorn.py", filepath], stdout=subprocess.PIPE).communicate()[0]
         os.chdir(current_dir)
         os.remove(filepath)
-    return JsonResponse({"output": output})
+    return JsonResponse({"output": output.decode('utf-8')})
 
 
 def _save_file(filepath, data):
