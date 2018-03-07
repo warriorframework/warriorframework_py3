@@ -11,12 +11,12 @@ class Navigator(object):
 
     def get_katana_dir(self):
         """will get katanas main directory"""
-        katana_dir = get_parent_directory(__file__, 3) + os.sep + 'katana' + os.sep
+        katana_dir = get_parent_directory(os.path.abspath(__file__), 3) + os.sep + 'katana' + os.sep
         return katana_dir
 
     def get_warrior_dir(self):
         """will get warriors main directory"""
-        warrior_dir = get_parent_directory(__file__, 3) + os.sep + 'warrior' + os.sep
+        warrior_dir = get_parent_directory(os.path.abspath(__file__), 3) + os.sep + 'warrior' + os.sep
         return warrior_dir
 
     def get_engineer_name(self):
@@ -33,12 +33,12 @@ class Navigator(object):
       
     def get_warhorn_dir(self):
         """will get warriors main directory"""
-        warrior_dir = get_parent_directory(__file__, 3) + os.sep + 'warhorn' + os.sep
+        warrior_dir = get_parent_directory(os.path.abspath(__file__), 3) + os.sep + 'warhorn' + os.sep
         return warrior_dir
 
     def get_wf_version(self):
         """Gets the current warriorframework version"""
-        wf_dir = get_parent_directory(__file__, 3)
+        wf_dir = get_parent_directory(os.path.abspath(__file__), 3)
         version_file = join_path(wf_dir, "version.txt")
         with open(version_file, 'r') as f:
             data = f.readlines()
