@@ -16,7 +16,7 @@ conditional execution of a step in Testcase/Suite/Project """
 
 from Framework.Utils.data_Utils import get_object_from_datarepository, verify_data
 from Framework.Utils.print_Utils import print_error, print_info
-from .Classes.argument_datatype_class import ArgumentDatatype
+from Classes.argument_datatype_class import ArgumentDatatype
 from Framework.Utils.testcase_Utils import pNote
 
 MATH_OPERATION = {
@@ -316,7 +316,7 @@ def decision_maker(exec_node):
         status = expression_parser(expression, rules)
         if exec_type.upper() == 'IF NOT':
             status = not status
-    except ElseException as else_action:
+    except ElseException, else_action:
         # do something
         status = False
         if else_action.action is not None:
@@ -327,7 +327,7 @@ def decision_maker(exec_node):
 
     return status, action
 
-def main(step):
+def main(step, skip_invoked=True):
     """
         Entry function for execute nodes in a step
         Handle checking and call the logical decision functions
@@ -342,7 +342,6 @@ def main(step):
     if exec_node is None:
         return True, None
 
-    decision = True
     trigger_action = None
     exec_type = exec_node.get("ExecType", "")
     if exec_type.upper() == 'IF' or exec_type.upper() == 'IF NOT':
@@ -352,9 +351,12 @@ def main(step):
         trigger_action = "SKIP"
     elif exec_type.upper() == 'YES':
         decision = True
+    elif exec_type.upper() == "INVOKED":
+        decision = not skip_invoked
+        trigger_action = "SKIP_INVOKED"
     else:
         decision = False
-        supported_values = ['no', 'yes', 'if', 'if not']
+        supported_values = ['no', 'yes', 'if', 'if not', "invoked"]
         print_error("Unsupported value used for ExecType, supported values are:"
                     "{0} and case-insensitive".format(supported_values))
 
