@@ -20,9 +20,9 @@ def process_file_list(input_file, rc_file):
 
     result = [x for x in filelist if all([y not in x for y in ignore])]
     if result:
-        print "The following files will be tested with Pylint:\n", "\n".join(result), "\n"
+        print("The following files will be tested with Pylint:\n", "\n".join(result), "\n")
     else:
-        print "No file requires pylint check, exiting"
+        print("No file requires pylint check, exiting")
         exit(0)
     return result
 
@@ -32,7 +32,7 @@ def pylint(file_list):
     """
     file_score = {}
     for fi in file_list:
-        print "linting", fi
+        print("linting", fi)
         try:
             output = subprocess.check_output('pylint --rcfile=.pylintrc {}'.format(fi), shell=True)
         except subprocess.CalledProcessError as e:
@@ -44,41 +44,41 @@ def pylint(file_list):
             # code has been rated
             file_score[fi] = [score[0], output]
         else:
-            print fi, "doesn't get a Pylint score on this branch"
+            print(fi, "doesn't get a Pylint score on this branch")
     return file_score
 
 def report(branch_file_score):
     """
         print out pylint result for each file
     """
-    print "\n\n\n!---------- Detail score for branch {} ----------!\n".format(sys.argv[4])
-    for k, v in branch_file_score.items():
-        print k, "\n", v[1]
+    print("\n\n\n!---------- Detail score for branch {} ----------!\n".format(sys.argv[4]))
+    for k, v in list(branch_file_score.items()):
+        print(k, "\n", v[1])
 
-    print "\n\n\n!---------- Summary score for branch {} ----------!\n".format(sys.argv[4])
-    for k, v in branch_file_score.items():
-        print k, v[0]
+    print("\n\n\n!---------- Summary score for branch {} ----------!\n".format(sys.argv[4]))
+    for k, v in list(branch_file_score.items()):
+        print(k, v[0])
 
 def judge(branch_file_score):
     """
         Check the score and difference for each file
     """
     status = True
-    for k, v in branch_file_score.items():
+    for k, v in list(branch_file_score.items()):
         # print k, v[0]
         score = v[0].split("/")[0]
         if float(score) < 5:
             status = False
-            print k, "failed with a score lower than 5"
+            print(k, "failed with a score lower than 5")
 
         if "previous" in v[0]:
             improvement = float(v[0].split(",")[1][:-1])
             if improvement < -0.1:
                 status = False
-                print k, "failed with a decreasing score"
+                print(k, "failed with a decreasing score")
 
         if float(score) >= 5 and "previous" in v[0] and improvement >= -0.1:
-            print k, "pass"
+            print(k, "pass")
     return status
 
 def custom_rules(file_list):
@@ -93,7 +93,7 @@ def custom_rules(file_list):
             output = e.output
             status = False
 
-        print output
+        print(output)
     return status
 
 def main():
@@ -103,29 +103,29 @@ def main():
     if len(sys.argv) > 4:
         file_list = process_file_list(sys.argv[1], sys.argv[2])
 
-        print "target branch:", sys.argv[3], "\nsource branch:", sys.argv[4]
+        print("target branch:", sys.argv[3], "\nsource branch:", sys.argv[4])
         subprocess.check_output("git checkout {}".format(sys.argv[3]), shell=True)
-        print "Running pylint on", sys.argv[3]
+        print("Running pylint on", sys.argv[3])
         pylint(file_list)
 
-        print "\n"
+        print("\n")
         subprocess.check_output("git checkout {}".format(sys.argv[4]), shell=True)
-        print "\nRunning pylint on", sys.argv[4]
+        print("\nRunning pylint on", sys.argv[4])
         branch_file_score = pylint(file_list)
 
         report(branch_file_score)
 
-        print "\n\n\n!---------- Judging score for branch {} ----------!\n".format(sys.argv[4])
+        print("\n\n\n!---------- Judging score for branch {} ----------!\n".format(sys.argv[4]))
         status = judge(branch_file_score)
 
-        print "\n\n\n!---------- Custom Rules Checker for branch {} ----------!\n".format(sys.argv[4])
+        print("\n\n\n!---------- Custom Rules Checker for branch {} ----------!\n".format(sys.argv[4]))
         status &= custom_rules(file_list)
         if status:
             exit(0)
         else:
             exit(1)
     else:
-        print "Missing arguments, require filenames, pylintrc_file, target_branch, source_branch"
+        print("Missing arguments, require filenames, pylintrc_file, target_branch, source_branch")
 
 if __name__ == "__main__":
     main()

@@ -1,8 +1,8 @@
 # set -x
-pip install pylint
+pip3 install pylint
 
 cd ../
-git clone https://github.com/warriorframework/warriorframework.git pylint_warrior
+git clone https://github.com/warriorframework/warriorframework_py3.git pylint_warrior
 cd pylint_warrior
 
 if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_PULL_REQUEST_BRANCH}" != release* ]]; then
@@ -21,7 +21,7 @@ git branch
 filelist=$(git --no-pager diff "${TRAVIS_BRANCH}" --name-only --diff-filter=d | grep ".py$\|Warrior$")
 if [[ "$filelist" ]]; then
     echo "$filelist" > filelist.txt
-    python ../warriorframework/wftests/ci/pylint_checker.py filelist.txt .pylintrc "${TRAVIS_BRANCH}" "${TRAVIS_PULL_REQUEST_BRANCH}"
+    python3 ../warriorframework/wftests/ci/pylint_checker.py filelist.txt .pylintrc "${TRAVIS_BRANCH}" "${TRAVIS_PULL_REQUEST_BRANCH}"
 else
     echo "no .py file has changed in this commit, exiting"
 fi
