@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 '''
 Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,61 +10,61 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+
+"""
+This class will trap stdout and redirects the message to logfile and stdout
+It takes console_logfile and write_to_stdout ( boolean flag) as arguments.
+
+!!! Important!!!
+DO NOT import any modules from warrior/Framework package that uses
+warrior/Framework/Utils/print_Utils.py at module level into this module
+as it will lead to cyclic imports.
+
+"""
 import sys
 import re
-"""
-This class will trap trap stdout and redirects the message to logfile and stdout
-It takes console_logfile and write_to_stdout ( boolean flag) as arguments.
-"""
 
 
-def print_main(message, print_type, con_log, pr_log_name, color_message=None,
-               *kwargs):
+def print_main(message, print_type, color_message=None, *kwargs):
     """The main print function will be called by other print functions
-
-    :Arguments:
-
-    1. color_message = color of the message (currently non functional)
-    2. pr_log_name (str) = Name of the print_log file
-    3. con_log (str) = Name of the console_log file
-    4. print_type (str) = Type of print message (-I-, -W-, -E-, etc.)
-    5. message (object) = message that needs to be printed.
-
-    :Returns:
-
     """
     if color_message is not None:
         print_string = print_type + " " + str(color_message)
     elif color_message is None:
         print_string = print_type + " " + str(message)
-    if len(kwargs) > 0:
+    if kwargs:
         print_string = (print_type + " " + str(message) + str(kwargs))
-
-    print(print_string)
-    pr_log = open(pr_log_name, "a")
-    pr_log.write(print_string + "\n")
-    pr_log.close()
-    try:
-        con_log.write(print_string + "\n")
-        con_log.flush()
-    except ValueError:
-        print(print_string + "\n")
+    # print print_string
+    sys.stdout.write(print_string + '\n')
+    sys.stdout.flush()
+    from Framework.Utils.testcase_Utils import TCOBJ
+    TCOBJ.p_note_level(message, print_type)
     return print_string
 
 
 class RedirectPrint(object):
     """Class that has methods to redirect prints
     from stdout to correct console log files """
-    def __init__(self, console_log):
+    def __init__(self, console_logfile):
         """Constructor"""
-        self.file = console_log
-        self.get_file()
-        self.write_to_stdout = self.write_to_stdout
+        self.get_file(console_logfile)
+#         self.write_to_stdout = write_to_stdout
         self.stdout = sys.stdout
+        self.console_full_log = None
+        self.console_add = None
+        self.katana_obj = None
 
-    def get_file(self):
+    def katana_console_log(self, katana_obj):
+        """
+            set the console log object to be the katana communcation object
+        """
+        self.katana_obj = katana_obj
+
+    def get_file(self, console_logfile):
         """If the console logfile is not None redirect sys.stdout to
-        console logfile"""
+        console logfile
+        """
+        self.file = console_logfile
         if self.file is not None:
             sys.stdout = self
 
@@ -74,17 +72,20 @@ class RedirectPrint(object):
         """
         - Writes data to the sys.stdout
         - Removes the ansii escape chars before writing to file
-        :param data:
         """
         self.stdout.write(data)
         ansi_escape = re.compile(r'\x1b[^m]*m')
         data = ansi_escape.sub('', data)
         self.file.write(data)
         self.file.flush()
+        if self.katana_obj is not None and "console_full_log" in self.katana_obj\
+        and "console_add" in self.katana_obj:
+            self.katana_obj["console_full_log"] += data
+            self.katana_obj["console_add"] += data
 
     def isatty(self):
         """Check if sys.stdout is a tty """
-        print(self.stdout.isatty())
+        # print self.stdout.isatty()
         return self.stdout.isatty()
 
     def flush(self):
