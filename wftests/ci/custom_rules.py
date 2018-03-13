@@ -121,7 +121,7 @@ def main(kw=False):
             status &= func_check(child, kw)
         elif isinstance(child, ast.ClassDef):
             status &= class_check(child, kw)
-        elif isinstance(child, ast.Expr):
+        elif isinstance(child, ast.Expr) and hasattr(child.value, "s"):
             license_text = \
 '''
 Copyright 2017, Fujitsu Network Communications, Inc.
