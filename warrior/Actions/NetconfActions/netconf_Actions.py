@@ -225,8 +225,7 @@ class NetconfActions(object):
         pNote("close session-id=%s" % netconf_session_id)
         reply = netconf_object.close()
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('close-session: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -268,8 +267,7 @@ class NetconfActions(object):
         reply = netconf_object.get_config(
             datastore, filter_string, filter_type)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('get-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -306,8 +304,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.copy_config(source, target)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('copy-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -340,8 +337,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.delete_config(datastore)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('delete-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -374,8 +370,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.discard_changes()
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('discard-changes: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -478,8 +473,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.commit(confirmed, timeout, persist, persist_id)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('commit: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -513,8 +507,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.lock(datastore)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('lock: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -548,8 +541,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.unlock(datastore)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('unlock: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -585,8 +577,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.get(filter_string, filter_type)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('get: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -620,8 +611,7 @@ class NetconfActions(object):
             netconf_session_id = "0"
         reply = netconf_object.kill_session(netconf_session_id)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('kill-session: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -653,8 +643,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.validate(datastore)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('validate: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -702,8 +691,7 @@ class NetconfActions(object):
         if netconf_object.isCOMPLD:
             status = True
             if reply:
-                reply = parseString(reply).toprettyxml(
-                    indent="  ", encoding="UTF-8")
+                reply = parseString(reply).toprettyxml(indent="  ")
             pNote('edit-config: Reply= {}'.format(reply))
         else:
             pNote('edit-config: Reply= {}'.format(reply))
@@ -750,8 +738,7 @@ class NetconfActions(object):
                                                    start_time,
                                                    stop_time)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('create-subscription: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -905,8 +892,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.cancel_commit(persist_id)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('cancel-commit: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -982,8 +968,7 @@ class NetconfActions(object):
         reply = netconf_object.get_schema(
             identifier, version_number, format_type)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('get-schema: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
