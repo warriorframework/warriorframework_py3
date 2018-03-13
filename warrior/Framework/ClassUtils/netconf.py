@@ -208,9 +208,8 @@ class client(Thread):
             dispdata = data.replace("\n", "")
             dispdata = re.sub("> +<", "><", dispdata)
             pNote("netconf send: \n" + \
-                  parseString(dispdata).toprettyxml(
-                  indent="  ", encoding="utf-8"))
-            #
+                  parseString(dispdata).toprettyxml(indent="  "))
+
             try:
                 if data.endswith("\n"):
                     data = data[:-1]
@@ -338,9 +337,9 @@ class client(Thread):
                 rlist, wlist, xlist = select(
                     [self.__chan], [], [], POLL_INTERVAL)
                 if rlist:
-                    data = self.__chan.recv(BUF_SIZE)
+                    data = self.__chan.recv(BUF_SIZE).decode('utf-8')
                     if data:
-                        self.__temp_buf += str(data)
+                        self.__temp_buf += data
                     else:
                         # in case of something unexpected happens
                         if len(self.__temp_buf) > 0:
