@@ -36,7 +36,7 @@ def pylint(file_list):
         try:
             output = subprocess.check_output('pylint --rcfile=.pylintrc {}'.format(fi), shell=True).decode("utf-8")
         except subprocess.CalledProcessError as e:
-            output = e.output
+            output = e.output.decode("utf-8")
 
         score = output.split('\n')
         score = [x.replace("Your code has been rated at ", "") for x in score if x.startswith("Your code has been")]
