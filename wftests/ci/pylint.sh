@@ -21,7 +21,7 @@ git branch
 filelist=$(git --no-pager diff "${TRAVIS_BRANCH}" --name-only --diff-filter=d | grep ".py$\|Warrior$")
 if [[ "$filelist" ]]; then
     echo "$filelist" > filelist.txt
-    python3 ../warriorframework/wftests/ci/pylint_checker.py filelist.txt .pylintrc "${TRAVIS_BRANCH}" "${TRAVIS_PULL_REQUEST_BRANCH}"
+    python3 wftests/ci/pylint_checker.py filelist.txt .pylintrc "${TRAVIS_BRANCH}" "${TRAVIS_PULL_REQUEST_BRANCH}"
 else
     echo "no .py file has changed in this commit, exiting"
 fi
