@@ -4,80 +4,72 @@ matrix:
   include:
     - os: linux
       env: INSTALL=no TESTFILE=./wftests/warrior_tests/projects/pj_common_actions.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/ci/pylint.sh PYLINT=yes
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_runmode_retry_at_suite_level_at_project_file.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_iterative_execution.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_parallel_execution.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_cond_var.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_glob.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_rest.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_retry.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_parallel_execution_2.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_exec_summary.xml
       python: 2.7
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/testcases/selenium_tests/tc_selenium_headless.xml SELENIUM=yes
-      python: 2.7
-      addons:
-        firefox: "46.0"
-    - os: linux
-      env: INSTALL=yes TESTFILE=./wftests/warrior_tests/testcases/selenium_tests/tc_selenium_headless.xml SELENIUM=yes SELENIUM3=yes
-      python: 2.7
+      python: 3.4
       addons:
         firefox: "46.0"
     - os: linux
       env: INSTALL=no  TESTFILE=./wftests/warrior_tests/projects/pj_common_actions.xml COPILOT=yes
-      python: 2.7
+      python: 3.4
 install:
     - if [ ${COPILOT} = "yes" ]; then
         python setup.py install ;
       fi
 
     - if [ ${INSTALL} = "yes" ]; then
-        pip install pexpect==4.2 ;
-        pip install requests==2.9.1 ;
-        pip install selenium==2.53.0 ;
-        pip install lxml==3.3.3 ;
-        pip install paramiko==1.16.0 ;
-        pip install pysnmp==4.3.2 ;
+        pip3 install pexpect==4.2 ;
+        pip3 install requests==2.9.1 ;
+        pip3 install selenium==3.8.0 ;
+        pip3 install lxml==3.3.3 ;
+        pip3 install paramiko==1.16.0 ;
+        pip3 install pysnmp==4.3.2 ;
       fi
     - if [ ${SELENIUM} = "yes" ]; then
-        pip install pyvirtualdisplay==0.2.1 ;
+        pip3 install pyvirtualdisplay==0.2.1 ;
         sudo apt-get install xvfb ;
         wget https://chromedriver.storage.googleapis.com/2.34/chromedriver_linux64.zip;
         unzip chromedriver_linux64.zip;
         chmod +x chromedriver;
         sudo mv chromedriver /usr/local/bin/;
       fi
-    - if [ ${SELENIUM3} = "yes" ]; then
-        pip install selenium==3.8 ;
-      fi
 
 script:
     - if [ ${PYLINT} = "yes" ]; then
         $TESTFILE ;
       else
-        python ./warrior/Warrior $TESTFILE ;
+        python3 ./warrior/Warrior $TESTFILE ;
       fi
 after_success:
   - bash <(curl -s https://copilot.blackducksoftware.com/ci/travis/scripts/upload)
