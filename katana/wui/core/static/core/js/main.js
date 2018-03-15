@@ -405,12 +405,13 @@ var katana = {
     var tabContainer = $('.tabs');
     katana.$view.addClass('edit-mode');
     tabContainer.sortable({
-      items: "div:not(.complete)",
+      items: "div:not(.edit-mode-fixed)",
       disabled: false,
       revert: true,
-      tolerance: "pointer"
+      tolerance: "pointer",
+      animation: 150
     })
-    tabContainer.append($("<div>",{"id": "trash", "class": "trash-mild-shake fa fa-trash"}).droppable({
+    tabContainer.append($("<div>",{"id": "trash", "class": "trash-mild-shake fa fa-trash edit-mode-fixed"}).droppable({
         accept: '.tab',
         tolerance: 'touch',
         over: function(e, u) {
@@ -434,8 +435,8 @@ var katana = {
         console.log("over")
     });
 //    $('.tab').addClass("tab-mild-rotate");
-    tabContainer.append('<div  id="undo" class="undo fa fa-undo" katana-click="katana.undoApp">');
-    tabContainer.append('<div class="complete fa fa-check" katana-click="katana.finishOrder">');
+    tabContainer.append('<div class="undo fa fa-undo edit-mode-fixed" katana-click="katana.undoApp">').after(function(){$('.undo').hide()});
+    tabContainer.append('<div class="complete fa fa-check edit-mode-fixed" katana-click="katana.finishOrder">');
     katana.$view.find('.rc-menu.active').remove();
   },
 
@@ -446,8 +447,9 @@ var katana = {
 //    $('.tab').removeClass("tab-mild-rotate");
     tabContainer.sortable("disable");
     this.remove();
+    katana.editStack = null;
     $('#trash').remove();
-    $('#undo').remove();
+    $('.undo').remove();
   },
 
   undoApp: function(e, u) {
@@ -470,11 +472,13 @@ var katana = {
                 easing: "easeOutBounce"
             });
         });
+    katana.editStack.length() == 0 ? $('.undo').fadeOut():$('.undo').fadeIn();
   },
 
   removeApp: function(e, u) {
     //this.closest('.tab').remove();
     if(katana.editStack == null) katana.editStack = new katana.utils.Stack();
+    $('.undo').fadeIn();
     katana.editStack.push($(u.draggable));
     $(u.draggable).remove();
   },
