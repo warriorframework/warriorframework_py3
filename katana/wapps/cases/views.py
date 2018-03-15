@@ -36,6 +36,7 @@ All_case_action_details = py_file_details(json.loads(open(path_to_src_python_fil
 setPythonSrcDir(All_case_action_details);
 
 def index(request):
+	print("Im here!!!!")
 	path_to_config_file = navigator.get_katana_dir() + os.sep + "config.json"
 	x= json.loads(open(path_to_config_file).read());
 	path_to_testcases = x['xmldir'];

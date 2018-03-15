@@ -1,0 +1,13 @@
+{
+
+  "icon": "universe",
+  "color": "grey",
+  "developer": "Warrior Framework",
+  "description": "Satya App",
+  "app" : {"name" : "Satya", "url" : "/katana/satya/", "include": "wapps.satya.urls"},
+  "warrior-compatibility": ":warrior-3.7.0",
+  "warrior-incompatibility": "",
+  "version": "1.0.0",
+  "permissions": "",
+  "availability": ""
+}

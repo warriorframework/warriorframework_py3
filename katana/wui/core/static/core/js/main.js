@@ -3,6 +3,10 @@ var katana = {
   $activeTab: null,
   $view: 'null',
   $prevTab: null,
+  holdDuration: 0,
+  LONG_HOLD_TIME: 500,
+  timeout: null,
+  editStack: null,
 
   initApp: function() {
     katana.loadView();
@@ -23,18 +27,69 @@ var katana = {
   },
 
   initEventHandlers: function() {
-    katana.$view.on('click', '[katana-click]', function(e) {
-      $elem = $(this);
-      e.stopPropagation();
-      var toCall = $elem.attr('katana-click').replace(/\(.*?\)/, '');
-      katana.methodCaller(toCall, $elem);
+//    katana.$view.on('click', '[katana-click]', function(e) {
+//      $elem = $(this);
+//      e.stopPropagation();
+//      var toCall = $elem.attr('katana-click').replace(/\(.*?\)/, '');
+//      katana.methodCaller(toCall, $elem);
+//    });
+    katana.$view.on('mousedown', '[katana-click]', function(e) {
+        switch(e.which){
+            case 1:
+                katana.holdDuration = new Date().getTime();
+                $elem = $(this);
+                e.stopPropagation();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                katana.timeout = setTimeout(function() {
+                    console.log("long duration");
+                    if(!katana.$view.hasClass('edit-mode')){
+                        katana.editOrder();
+                    }
+                }, katana.LONG_HOLD_TIME);
+                break;
+            default:
+        }
+    });
+    katana.$view.on('mouseleave', '[katana-click]', function(e) {
+        switch(e.which){
+            case 1:
+                katana.holdDuration = 0;
+                clearTimeout(katana.timeout);
+                break;
+            default:
+        }
+    });
+    katana.$view.on('mouseup', '[katana-click]', function(e) {
+        switch(e.which){
+            case 1:
+                $elem = $(this);
+                katana.holdDuration = new Date().getTime() - katana.holdDuration;
+                if (katana.holdDuration < katana.LONG_HOLD_TIME) {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    var toCall = $elem.attr('katana-click').replace(/\(.*?\)/, '');
+                    katana.methodCaller(toCall, $elem);
+                    clearTimeout(katana.timeout);
+                } else {
+
+                }
+                break;
+            default:
+        }
     });
     katana.$view.on('contextmenu', '[katana-rclick]', function(e) {
-      $elem = $(this);
-      e.stopPropagation();
-      e.preventDefault();
-      var toCall = $elem.attr('katana-rclick').replace(/\(.*?\)/, '');
-      katana.methodCaller(toCall, $elem, e);
+        switch(e.which){
+            case 3:
+                $elem = $(this);
+                e.stopPropagation();
+                e.preventDefault();
+                var toCall = $elem.attr('katana-rclick').replace(/\(.*?\)/, '');
+                katana.methodCaller(toCall, $elem, e);
+                break;
+             default:
+        }
     });
     katana.$view.on('change', '[katana-change]', function(e) {
       $elem = $(this);
@@ -347,13 +402,40 @@ var katana = {
   },
 
   editOrder: function() {
-    var tabContainer = this.closest('.tabs');
+    var tabContainer = $('.tabs');
     katana.$view.addClass('edit-mode');
     tabContainer.sortable({
-      items: "div:not(.complete)"
+      items: "div:not(.complete)",
+      disabled: false,
+      revert: true,
+      tolerance: "pointer"
+    })
+    tabContainer.append($("<div>",{"id": "trash", "class": "trash-mild-shake fa fa-trash"}).droppable({
+        accept: '.tab',
+        tolerance: 'touch',
+        over: function(e, u) {
+            $('#trash').removeClass("trash-mild-shake")
+            $('#trash').addClass("trash-severe-shake")
+        },
+        out: function(e, u) {
+            $('#trash').removeClass("trash-severe-shake")
+            $('#trash').addClass("trash-mild-shake")
+        },
+        drop: function(e, u){
+            $('#trash').removeClass("trash-severe-shake")
+            $('#trash').addClass("trash-mild-shake")
+            katana.removeApp(e, u);
+        }
+    }));
+    tabContainer.on('mouseout', function(e, u){
+        console.log("out")
     });
-    tabContainer.sortable("option", "disabled", false);
-    tabContainer.append('<div class="complete fa fa-check" katana-click="katana.finishOrder"></div>');
+    tabContainer.on('mouseover', function(e, u){
+        console.log("over")
+    });
+//    $('.tab').addClass("tab-mild-rotate");
+    tabContainer.append('<div  id="undo" class="undo fa fa-undo" katana-click="katana.undoApp">');
+    tabContainer.append('<div class="complete fa fa-check" katana-click="katana.finishOrder">');
     katana.$view.find('.rc-menu.active').remove();
   },
 
@@ -361,12 +443,40 @@ var katana = {
   finishOrder: function() {
     var tabContainer = this.closest('.tabs');
     katana.$view.removeClass('edit-mode');
+//    $('.tab').removeClass("tab-mild-rotate");
     tabContainer.sortable("disable");
     this.remove();
+    $('#trash').remove();
+    $('#undo').remove();
   },
 
-  removeApp: function() {
-    this.closest('.tab').remove();
+  undoApp: function(e, u) {
+    var undoneApp = katana.editStack.pop();
+    $(".tabs").append(undoneApp)
+        .after(function(){
+            var pol = undoneApp[0].offsetLeft;
+            var pot = undoneApp[0].offsetTop;
+            undoneApp.css({
+                "left": "+=" + -(undoneApp[0].offsetLeft - $('#trash')[0].offsetLeft),
+                "top": "+=" + -(undoneApp[0].offsetTop - $('#trash')[0].offsetTop),
+                "opacity": "0"
+            })
+            undoneApp.animate({
+                left: "-=" + -(pol - $('#trash')[0].offsetLeft),
+                top: "-=" + -(pot - $('#trash')[0].offsetTop),
+                opacity: '1'
+               },{
+                duration: 1000,
+                easing: "easeOutBounce"
+            });
+        });
+  },
+
+  removeApp: function(e, u) {
+    //this.closest('.tab').remove();
+    if(katana.editStack == null) katana.editStack = new katana.utils.Stack();
+    katana.editStack.push($(u.draggable));
+    $(u.draggable).remove();
   },
   validationAPI: {
       flag: [],
@@ -1241,5 +1351,15 @@ var katana = {
     },
 
   },
+
+  utils : {
+    Stack: function() {
+        this.s = new Array();
+        this.length = function(){ return this.s.length; }
+        this.pop = function(){ return this.s.pop(); }
+        this.push = function(i){ this.s.push(i); }
+    }
+  }
+
 
 };
