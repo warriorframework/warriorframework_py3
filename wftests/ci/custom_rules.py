@@ -43,11 +43,12 @@ def func_check(node, kw=False):
         elif child != node and isinstance(child, ast.ClassDef):
             tmp_status = class_check(child, kw)
             status &= tmp_status
-        elif 'war_print_class.py' not in sys.argv[1] and isinstance(child, ast.Print):
+        elif 'war_print_class.py' not in sys.argv[1] and hasattr(child, "value") and\
+            hasattr(child.value, "func") and hasattr(child.value.func, "id") and child.value.func.id == "print":
             # check for print statement
             status = False
             print("Please use print_Utils instead of print in {}: {}".format(
-                                                    sys.argv[1], child.lineno))
+                sys.argv[1], child.lineno))
         elif isinstance(child, ast.Return):
             # check for return statement
             have_return = True
