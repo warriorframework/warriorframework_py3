@@ -21,12 +21,6 @@ matrix:
       addons:
         firefox: "46.0"
         chrome: stable
-    - sudo: required
-      dist: trusty
-      env: INSTALL=yes TESTFILE=./wftests/warrior_tests/testcases/selenium_tests/tc_selenium_headless.xml SELENIUM=yes SELENIUM_3=yes
-      addons:
-        firefox: "46.0"
-        chrome: stable
     - sudo: false
       dist: trusty
       env: INSTALL=no TESTFILE=./wftests/warrior_tests/testcases/framework_tests/cond_var/pass.xml COPILOT=yes
@@ -38,7 +32,7 @@ install:
   - if [[ ${INSTALL} = "yes" ]] && [[ ! -z ${TRAVIS_PULL_REQUEST_BRANCH} ]]; then
       pip3 install pexpect==4.2 ;
       pip3 install requests==2.9.1 ;
-      pip3 install selenium==2.53.0 ;
+      pip3 install selenium==3.8.0 ;
       pip3 install lxml==3.3.3 ;
       pip3 install paramiko==1.16.0 ;
       pip3 install pysnmp==4.3.2 ;
@@ -49,9 +43,6 @@ install:
       unzip chromedriver_linux64.zip;
       chmod +x chromedriver;
       mv chromedriver ~/bin/chromedriver;
-    fi
-  - if [[ ${SELENIUM_3} = "yes" ]] && [[ ! -z ${TRAVIS_PULL_REQUEST_BRANCH} ]]; then
-      pip3 install selenium==3.8 ;
     fi
 
 script:
