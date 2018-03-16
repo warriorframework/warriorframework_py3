@@ -336,6 +336,8 @@ class WRest(object):
                 elif "json" in response.headers['Content-Type']:
                     status = self.json_utils.compare_json_using_jsonpath(extracted_response, path_list, responses_list)
                 else:
+                    if isinstance(extracted_response, bytes):
+                        extracted_response = extracted_response.decode('utf-8')
                     status = Utils.string_Utils.compare_string_using_regex(extracted_response, path_list)
             else:
                 print_error("Please provide the values for comparison_mode and expected_api_response")
