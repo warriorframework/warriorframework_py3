@@ -62,7 +62,7 @@ class Navigator(object):
             print("-- Output -- {0}".format(output))
             print("-- Errors -- {0}".format(errors))
         else:
-            temp_list = output.strip().split("\n")
+            temp_list = output.decode().strip().split("\n")
             tags_list = set()
             for el in temp_list:
                 temp = el.split()[1].strip().split('/')[2]
