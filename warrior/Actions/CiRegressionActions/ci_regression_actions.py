@@ -12,6 +12,7 @@ limitations under the License.
 '''
 import os
 import time
+from io import IOBase
 from Framework import Utils
 from Framework.Utils import data_Utils, file_Utils, datetime_utils
 from Framework.Utils.testcase_Utils import pNote

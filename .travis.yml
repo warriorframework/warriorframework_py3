@@ -34,7 +34,7 @@ matrix:
       python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/projects/pj_execute_resume.xml
-      python: 2.7
+      python: 3.4
     - os: linux
       env: INSTALL=yes TESTFILE=./wftests/warrior_tests/testcases/selenium_tests/tc_selenium_headless.xml SELENIUM=yes
       python: 3.4
