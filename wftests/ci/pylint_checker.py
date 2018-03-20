@@ -90,7 +90,7 @@ def custom_rules(file_list):
         try:
             output = subprocess.check_output('python3 wftests/ci/custom_rules.py {}'.format(fi), shell=True).decode("utf-8")
         except subprocess.CalledProcessError as e:
-            output = e.output
+            output = e.output.decode("utf-8")
             status = False
 
         print(output)
