@@ -498,6 +498,7 @@ class WRest(object):
 
     @staticmethod
     def get_output_response(api_response):
+        """ Convert the api_response.text in desired format(xml/json/text) """
         if api_response is not None:
             try:
                 output_response = parseString("".join(api_response.text))
