@@ -59,8 +59,8 @@ class Navigator(object):
         output, errors = p.communicate()
         if p.returncode != 0:
             print("-- An Error Occurred -- WarriorFramework versions could not be retrieved")
-            print("-- Output -- {0}".format(output))
-            print("-- Errors -- {0}".format(errors))
+            print("-- Output -- {0}".format(output.decode()))
+            print("-- Errors -- {0}".format(errors.decode()))
         else:
             temp_list = output.decode().strip().split("\n")
             tags_list = set()
