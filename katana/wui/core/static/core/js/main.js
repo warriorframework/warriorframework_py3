@@ -1244,12 +1244,10 @@ var katana = {
 
     utils: {
 
-        getRelativeFilepath: function (basePath, path) {
+        getRelativeFilepath: function (basePath, path, basePathIsDir) {
           /* This function gets relative path (out of a given path argument) from a basePath and path */
-          basePath = katana.utils._convertBackSlashes(basePath, true);
-          path = katana.utils._convertBackSlashes(path);
-          var basePathSeries = basePath.split('/');
-          var pathSeries = path.split('/');
+          var basePathSeries = katana.utils._convertBackSlashes(basePath, basePathIsDir).split('/');
+          var pathSeries = katana.utils._convertBackSlashes(path).split('/');
           var hold = 0;
           for (var i=0; i<basePathSeries.length && i < pathSeries.length; i++) {
             if (basePathSeries[i] !== pathSeries[i]){
@@ -1273,12 +1271,10 @@ var katana = {
           return output
         },
 
-        getAbsoluteFilepath: function (basePath, relativePath) {
+        getAbsoluteFilepath: function (basePath, relativePath, basePathIsDir) {
           /* This function gets absolute path (out of a given relativePath argument) from a basePath and path */
-          basePath = katana.utils._convertBackSlashes(basePath, true);
-          relativePath = katana.utils._convertBackSlashes(relativePath);
-          var basePathSeries = basePath.split('/');
-          var relativePathSeries = relativePath.split('/');
+          var basePathSeries = katana.utils._convertBackSlashes(basePath, basePathIsDir).split('/');
+          var relativePathSeries = katana.utils._convertBackSlashes(relativePath).split('/');
           var i = 0;
           var hold = 0;
           while (relativePathSeries[i] === ".."){
