@@ -32,7 +32,7 @@ def print_main(message, print_type, color_message=None, *kwargs):
         print_string = print_type + " " + str(color_message)
     elif color_message is None:
         print_string = print_type + " " + str(message)
-    if kwargs > 0:
+    if kwargs:
         print_string = (print_type + " " + str(message) + str(kwargs))
     # print print_string
     sys.stdout.write(print_string + '\n')
