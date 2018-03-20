@@ -557,7 +557,7 @@ def getChildElementWithSpecificXpath(start, xpath):
     xpath = a valid xml path value as supported by python, refer https://docs.python.org/2/library/xml.etree.elementtree.html
     """
     node = False
-    if isinstance(start, (file, str)):
+    if isinstance(start, (IOBase, str)):
         # check if file exist here
         if file_Utils.fileExists(start):
             node = ElementTree.parse(start).getroot()
