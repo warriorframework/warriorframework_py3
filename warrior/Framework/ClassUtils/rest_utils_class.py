@@ -334,6 +334,8 @@ class WRest(object):
                 if "xml" in response.headers['Content-Type']:
                     status = Utils.xml_Utils.compare_xml_using_xpath(extracted_response, path_list, responses_list)
                 elif "json" in response.headers['Content-Type']:
+                    if isinstance(extracted_response, bytes):
+                        extracted_response = extracted_response.decode('utf-8')
                     status = self.json_utils.compare_json_using_jsonpath(extracted_response, path_list, responses_list)
                 else:
                     if isinstance(extracted_response, bytes):
