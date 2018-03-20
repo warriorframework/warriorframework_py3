@@ -60,7 +60,7 @@ class Settings:
             elem_file.remove(def_dir_xml_obj)
             val = xmltodict.unparse(w_settings_data, pretty=True)
             elem_file.insert(0, xml_controler.fromstring(val))
-            with open(w_settings, 'w') as f:
+            with open(w_settings, 'wb') as f:
                 f.write(xml_controler.tostring(elem_file))
             with open(json_file, 'w') as f:
                 f.write(json.dumps(returned_json[0], indent=4, separators=(',', ': ')))
