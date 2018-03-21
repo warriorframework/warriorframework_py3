@@ -925,8 +925,8 @@ var katana = {
         var $elem = this;
         url = url ? url : $elem ? $elem.attr('url') : '';
         tabTitle = tabTitle ? tabTitle : 'Tab';
+        var jsURL = jsURL ? jsURL.split(',') : $elem.attr('jsurls').split(',');
         if ($elem != katana.templateAPI) {
-          var jsURL = jsURL ? jsURL.split(',') : $elem.attr('jsurls').split(',');
           if (jsURL.length > 0) {
             jsURL.pop();
             katana.templateAPI.importJS(jsURL, function() {
@@ -935,8 +935,16 @@ var katana = {
           } else {
             katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
           }
-        } else
-          katana.templateAPI.tabRequst(katana.$activeTab, tabTitle, url, limitedStyles, callBack, options);
+        } else {
+          if (jsURL.length > 0) {
+            jsURL.pop();
+            katana.templateAPI.importJS(jsURL, function() {
+              katana.templateAPI.tabRequst(katana.$activeTab, tabTitle, url, limitedStyles, callBack, options);
+            });
+          } else {
+            katana.templateAPI.tabRequst(katana.$activeTab, tabTitle, url, limitedStyles, callBack, options);
+          }
+        }
       }
     },
 
