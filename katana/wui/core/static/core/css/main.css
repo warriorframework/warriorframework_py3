@@ -3214,7 +3214,7 @@ input[type="checkbox"]+label {
 .tabs > .undo {
     position: absolute;
     top:  0;
-    right: 50;
+    right: 100;
     margin: 0;
     background: white;
     width: 40px;
@@ -3232,4 +3232,50 @@ input[type="checkbox"]+label {
 
 .tabs > .undo:hover {
     background: #ededed;
+}
+
+.tabs > .remove {
+    position: absolute;
+    top:  0;
+    right: 50;
+    margin: 0;
+    background: white;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    font-size: 24px;
+    -webkit-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.22);
+    -moz-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.22);
+    box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.22);
+    color: green;
+		border-bottom-right-radius: 5px;
+		border-bottom-left-radius: 5px;
+}
+
+.tabs > .remove:hover {
+    background: #ededed;
+}
+
+.unselected {
+	position: absolute;
+	bottom: 1;
+	right: 1;
+	width: 20%;
+	height:  20%;	
+	border-radius: 50%;
+	border: 1px solid black;
+	background: radial-gradient(circle, black , white);
+
+}
+
+.selected{
+	position: absolute;
+	bottom: 1;
+	right: 1;
+	width: 20%;
+	height:  20%;	
+	border-radius: 50%;
+	border: 1px solid black;
+	background: radial-gradient(circle, white , black);
 }

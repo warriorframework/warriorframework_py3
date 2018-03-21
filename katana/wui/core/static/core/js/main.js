@@ -7,6 +7,7 @@ var katana = {
   LONG_HOLD_TIME: 500,
   timeout: null,
   editStack: null,
+  selected: null,
 
   initApp: function() {
     katana.loadView();
@@ -39,8 +40,10 @@ var katana = {
                 katana.holdDuration = new Date().getTime();
                 $elem = $(this);
                 e.stopPropagation();
-                e.preventDefault();
-                e.stopImmediatePropagation();
+                if(katana.$view.hasClass('edit-mode')){
+                  e.preventDefault();
+                  e.stopImmediatePropagation();
+                }
                 katana.timeout = setTimeout(function() {
                     console.log("long duration");
                     if(!katana.$view.hasClass('edit-mode')){
@@ -66,9 +69,11 @@ var katana = {
                 $elem = $(this);
                 katana.holdDuration = new Date().getTime() - katana.holdDuration;
                 if (katana.holdDuration < katana.LONG_HOLD_TIME) {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
+                    if(katana.$view.hasClass('edit-mode')){
+                      e.preventDefault();
+                      // e.stopImmediatePropagation();
+                      // e.stopPropagation();
+                    }
                     var toCall = $elem.attr('katana-click').replace(/\(.*?\)/, '');
                     katana.methodCaller(toCall, $elem);
                     clearTimeout(katana.timeout);
@@ -402,6 +407,7 @@ var katana = {
   },
 
   editOrder: function() {
+    if(katana.selected == null){ katana.selected = new katana.utils.Selected()}
     var tabContainer = $('.tabs');
     katana.$view.addClass('edit-mode');
     tabContainer.sortable({
@@ -429,13 +435,29 @@ var katana = {
         }
     }));
     tabContainer.on('mouseout', function(e, u){
-        console.log("out")
+        //console.log("out")
     });
     tabContainer.on('mouseover', function(e, u){
-        console.log("over")
+        //console.log("over")
     });
 //    $('.tab').addClass("tab-mild-rotate");
+    $('.ui-sortable-handle').each(function(){
+        var s = $("<div class='unselected edit-mode-fixed'>");
+        s.click(function(){
+            if($(this).hasClass('selected')){
+              $(this).removeClass('selected')
+              $(this).addClass('unselected')
+              katana.selected.remove($(this).parent().attr('id'))
+            }else{
+              $(this).removeClass('unselected')
+              $(this).addClass('selected')
+              katana.selected.put($(this).parent().attr('id'))
+            }
+        });
+        $(this).append(s);
+    });
     tabContainer.append('<div class="undo fa fa-undo edit-mode-fixed" katana-click="katana.undoApp">').after(function(){$('.undo').hide()});
+    tabContainer.append('<div class="remove fa fa-trash edit-mode-fixed" katana-click="katana.removeApps">');
     tabContainer.append('<div class="complete fa fa-check edit-mode-fixed" katana-click="katana.finishOrder">');
     katana.$view.find('.rc-menu.active').remove();
   },
@@ -450,6 +472,10 @@ var katana = {
     katana.editStack = null;
     $('#trash').remove();
     $('.undo').remove();
+    $('.remove').remove();
+    $('.tab').each(function(){
+      $(this).find('div').remove();
+    })
   },
 
   undoApp: function(e, u) {
@@ -473,14 +499,40 @@ var katana = {
             });
         });
     katana.editStack.length() == 0 ? $('.undo').fadeOut():$('.undo').fadeIn();
+    undoneApp.find('div').removeClass('selected')
+    undoneApp.find('div').removeClass('unselected')
+    undoneApp.find('div').addClass('unselected')
+    undoneApp.find('div.unselected').click(function(){
+          if($(this).hasClass('selected')){
+            $(this).removeClass('selected')
+            $(this).addClass('unselected')
+            katana.selected.remove($(this).parent().attr('id'))
+          }else{
+            $(this).removeClass('unselected')
+            $(this).addClass('selected')
+            katana.selected.put($(this).parent().attr('id'))
+          }
+      });
+  },
+
+  removeApps: function(e, u){
+    katana.selected.each(function(key){
+      katana.removeApp(null, "#"+key);
+    })
+    katana.selected.clear();
   },
 
   removeApp: function(e, u) {
     //this.closest('.tab').remove();
     if(katana.editStack == null) katana.editStack = new katana.utils.Stack();
     $('.undo').fadeIn();
-    katana.editStack.push($(u.draggable));
-    $(u.draggable).remove();
+    if(e == null){
+      katana.editStack.push($(u));
+      $(u).remove();
+    }else {
+      katana.editStack.push($(u.draggable));
+      $(u.draggable).remove();
+    }
   },
   validationAPI: {
       flag: [],
@@ -1362,6 +1414,15 @@ var katana = {
         this.length = function(){ return this.s.length; }
         this.pop = function(){ return this.s.pop(); }
         this.push = function(i){ this.s.push(i); }
+    },
+
+    Selected: function() {
+        this.s = new Array();
+        this.put = function(key) {this.s[key] = 1}
+        this.get = function(key) {return this.s[key]}
+        this.remove = function(key) {delete this.s[key]}
+        this.each = function(cb) {for(var key in this.s) cb(key)}
+        this.clear = function(cb) {for(var key in this.s) {delete this.s[key]; this.s = new Array();}}
     }
   }
 
