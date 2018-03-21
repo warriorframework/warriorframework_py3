@@ -159,6 +159,7 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
 
     iter_count = 0 ## this iter is used for live html results
     for parameter in parameter_list:
+        default_repo = {}
         result = False
         # check if the input parameter is an xml file
         if Utils.file_Utils.get_extension_from_path(parameter) == '.xml':
@@ -168,9 +169,7 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
             print_info('Absolute path: {0}'.format(abs_filepath))
             if Utils.file_Utils.fileExists(abs_filepath):
                 if list(overwrite.items()):
-                    default_repo = overwrite
-                else:
-                    default_repo = {}
+                    default_repo.update(overwrite)
 
                 if db_obj is not False and db_obj.status is True:
                     default_repo.update({'db_obj': db_obj})
@@ -198,6 +197,7 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
         status = status and result
         iter_count += 1
     return status
+
 
 # def execution(parameter_list, a_defects, cse_execution, iron_claw,
 #          jiraproj, overwrite, jiraid, dbsystem, livehtmllocn):
