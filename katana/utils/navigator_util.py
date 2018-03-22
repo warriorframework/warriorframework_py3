@@ -80,7 +80,8 @@ class Navigator(object):
         """returns back the parent of given_dir and allows a user to run multipule times"""
         pass
 
-    def get_dir_tree_json(self, start_dir_path, dir_icon=None, file_icon='jstree-file', fl=False):
+    def get_dir_tree_json(self, start_dir_path, dir_icon=None, file_icon='jstree-file', fl=False,
+                          file_a_attr=None, dir_a_attr=None):
         """
         Takes an absolute path to a directory(start_dir_path)  as input and creates a
         json tree having the start_dir as the root.
@@ -121,14 +122,17 @@ class Navigator(object):
         """
         base_name = os.path.basename(start_dir_path)
         layout = {'text': base_name}
+        layout['data'] = {'path': start_dir_path}
         layout['li_attr'] = {'data-path': start_dir_path}
+        
         if not fl:
             layout["state"] = {"opened" : 'true' }
             fl = 'false'
         if os.path.isdir(start_dir_path):
             for x in os.listdir(start_dir_path):
                 try:
-                    children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl)
+                    layout['a_attr'] = dir_a_attr if dir_a_attr else {}
+                    children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl, file_a_attr=file_a_attr)
                 except IOError:
                     pass
                 except Exception as e:
@@ -140,4 +144,7 @@ class Navigator(object):
                         layout['children'] = [children]
         else:
             layout['icon'] = file_icon
+            layout['a_attr'] = file_a_attr if file_a_attr else {}
+        #print(layout)
+            
         return layout
