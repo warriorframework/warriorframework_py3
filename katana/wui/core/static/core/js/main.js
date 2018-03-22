@@ -1233,4 +1233,74 @@ var katana = {
 
   },
 
+    utils: {
+
+        getRelativeFilepath: function (basePath, path, basePathIsDir) {
+          /* This function gets relative path (out of a given path argument) from a basePath and path */
+          var basePathSeries = katana.utils._convertBackSlashes(basePath, basePathIsDir).split('/');
+          var pathSeries = katana.utils._convertBackSlashes(path).split('/');
+          var hold = 0;
+          for (var i=0; i<basePathSeries.length && i < pathSeries.length; i++) {
+            if (basePathSeries[i] !== pathSeries[i]){
+              hold = i;
+              break;
+            }
+          }
+          var output = "";
+          for (i=(basePathSeries.length-1); i > hold; i--) {
+              output += "../"
+          }
+          if (output !== "") {
+              output = output.slice(0, -1);
+          }
+          for (i=hold; i<pathSeries.length; i++) {
+              output += "/" + pathSeries[i]
+          }
+          if (output.startsWith("/")) {
+              output = output.slice(1, output.length);
+          }
+          return output
+        },
+
+        getAbsoluteFilepath: function (basePath, relativePath, basePathIsDir) {
+          /* This function gets absolute path (out of a given relativePath argument) from a basePath and path */
+          var basePathSeries = katana.utils._convertBackSlashes(basePath, basePathIsDir).split('/');
+          var relativePathSeries = katana.utils._convertBackSlashes(relativePath).split('/');
+          var i = 0;
+          var hold = 0;
+          while (relativePathSeries[i] === ".."){
+              hold += 1;
+              i += 1;
+          }
+          var output = "";
+          for (i=0; i<(basePathSeries.length - hold - 1); i++) {
+              output += basePathSeries[i] + "/"
+          }
+          for (i=hold; i<relativePathSeries.length; i++) {
+              output += relativePathSeries[i] + "/"
+          }
+          output = output.slice(0, -1);
+          return output
+        },
+
+        _convertBackSlashes: function (path, trailingForwardSlash) {
+          /* This function converts a file path to have only forward slashes.
+             A trailing forward slash is added at the end if trailingForwardSlash is set to true */
+          trailingForwardSlash = !!trailingForwardSlash;
+          if (path.indexOf('\\') > -1) {
+            path = path.replace('\\', '/');
+          }
+          if (trailingForwardSlash) {
+            if (!path.endsWith('/')) {
+              path = path + '/';
+            }
+          } else {
+            if (path.endsWith('/')) {
+              path = path.slice(0, -1);
+            }
+          }
+          return path;
+        }
+    }
+
 };
