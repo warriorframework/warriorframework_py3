@@ -1462,8 +1462,8 @@ i.active {
 }
 
 .popup {
-	width: 60%;
-	height: 90%;
+	width: 40%;
+	height: 60%;
 	margin: 0 auto;
 	position: fixed;
 	z-index: 999999;
@@ -1859,7 +1859,7 @@ i.active {
 	display: none;
 }
 
-.htmlResults tr[name="TestcaseRecord"].removeing~tr[name="KeywordRecord"] {
+.htmlResults tr[name="TestcaseRecord"].removing~tr[name="KeywordRecord"] {
 	-webkit-transform: scaleY(0);
 	transform: scaleY(0);
 	transition: .3s ease;
@@ -2114,7 +2114,6 @@ i.active {
 
 .popup.leftJustify {
 	width: 50%;
-	top: 0;
 	transform: translate3d(0, 0, 0) !important;
 	right: auto;
 	height: 100%;
@@ -2122,7 +2121,6 @@ i.active {
 
 .popup.rightJustify {
 	width: 50%;
-	top: 0;
 	transform: translate3d(0, 0, 0) !important;
 	left: auto;
 	height: 100%;
@@ -2186,7 +2184,7 @@ i.active {
 	}
 }
 
-.popup.removeing {
+.popup.removing {
 	opacity: .7;
 	transform: translate3d(0px, 0px, 0px) scale(.9);
 	transition: all .3s ease;
@@ -2254,13 +2252,13 @@ i.active {
 }
 
 .popup-tab-bar {
-	position: fixed;
-	z-index: 9999999999999;
+	position: fixed !important;
+	z-index: 9999999999999 !important;
 	bottom: 0;
-	left: 0;
-	padding: 0 10px;
-	display: flex;
-	width: 100%;
+	/* left: 0; */
+	padding: 0 10px !important;
+	display: flex !important;
+	width: 100% !important;
 }
 
 .popup-tab-bar .tab {
@@ -2278,6 +2276,8 @@ i.active {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	margin: 0 !important;
+	border-radius: 0 !important;
 }
 
 .pocket-fields .field {

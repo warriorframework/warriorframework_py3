@@ -163,13 +163,13 @@ var katana = {
 	    var activePopup = katana.popupController.body.find('.popup.active');
 	    if (activePopup.get(0) != popup.get(0)) {
 	      activePopup.removeClass('active');
-	      popup.removeClass('removeing hidden').addClass('active');
+	      popup.removeClass('removing hidden').addClass('active');
 	    }
 	  },
 
 	  close: function(popup) {
 	    popup.data('tabIndex').remove();
-	    popup.addClass('removeing');
+	    popup.addClass('removing');
 	    setTimeout(function() {
 	      popup.remove();
 	    }, 300);
@@ -184,7 +184,7 @@ var katana = {
 	  },
 
 	  min: function(popup) {
-	    popup.addClass('removeing');
+	    popup.addClass('removing');
 	    setTimeout(function() {
 	      popup.addClass('hidden').removeClass('active');
 	    }, 300);
