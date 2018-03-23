@@ -311,7 +311,9 @@ var katana = {
     }
 
   },
-
+  toggleSideBar: function(){
+      this.closest('.page').toggleClass('side-bar-hidden');
+  },
   translate: function(url, container) {
     $.ajaxSetup({
       async: false
