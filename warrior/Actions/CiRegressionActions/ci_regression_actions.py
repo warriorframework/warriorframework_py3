@@ -43,43 +43,43 @@ class CIregressionActions(object):
             Returns:
                 True
         """
-        data_Utils.update_datarepository({"output_file":self.logfile})
-        with open(self.logfile,"a+") as fo:
-            fo.write("\n"+"****************************")
-            fo.write("\n"+key+" ran")
-            fo.write("\n"+"Ran on "+system_name)
-            fo.write("\n"+"****************************"+"\n")
+        data_Utils.update_datarepository({"output_file": self.logfile})
+        with open(self.logfile, "a+") as fo:
+            fo.write("\n" + "****************************")
+            fo.write("\n" + key + " ran")
+            fo.write("\n" + "Ran on " + system_name)
+            fo.write("\n" + "****************************" + "\n")
         return True
 
     def once_per_tc_with_system_name_given(self, system_name, step_num):
         """
-            It is used to test the functionality of once per tc with system name given in the test case
-            Arguments:
-                system_name: Name of the system on which it needs to be run
-                step_num: It is the step_num in the test case file
-            Returns:
-                Returns True
+        It is used to test the functionality of once per tc with system name given in the test case
+        Arguments:
+            system_name: Name of the system on which it needs to be run
+            step_num: It is the step_num in the test case file
+        Returns:
+            Returns True
         """
 
         wdesc = "Once per tese case with system name given"
         pNote(wdesc)
-        key = 'once_per_tc_with_system_name_given_'+str(step_num)
+        key = 'once_per_tc_with_system_name_given_' + str(step_num)
         self.write_to_file(key, system_name)
         return True
 
     def once_per_tc_with_no_name_given(self, system_name, step_num):
         """
-            It is used to test the functionality of once per tc with no system name given in the test case
-            Arguments:
-                system_name: Name of the system on which it needs to be run
-                step_num: It is the step_num in the test case file
-            Returns:
-                Returns True
+        It is used to test the functionality of once per tc with no system name given in the test case
+        Arguments:
+            system_name: Name of the system on which it needs to be run
+            step_num: It is the step_num in the test case file
+        Returns:
+            Returns True
         """
 
         wdesc = "Once per testcase with system name not given"
         pNote(wdesc)
-        key = 'once_per_tc_with_no_name_given_'+str(step_num)
+        key = 'once_per_tc_with_no_name_given_' + str(step_num)
         self.write_to_file(key, system_name)
         return True
 
@@ -95,7 +95,7 @@ class CIregressionActions(object):
 
         wdesc = "Once per testcase with error"
         pNote(wdesc)
-        key = 'once_per_tc_with_error_'+str(step_num)
+        key = 'once_per_tc_with_error_' + str(step_num)
         self.write_to_file(key, system_name)
         raise Exception("This is raised in CIregressionActions.once_per_tc_with_error")
         return False
@@ -112,23 +112,23 @@ class CIregressionActions(object):
 
         wdesc = "Standard with system name given"
         pNote(wdesc)
-        key = 'standard_with_system_name_given_'+str(step_num)
+        key = 'standard_with_system_name_given_' + str(step_num)
         self.write_to_file(key, system_name)
         return True
 
     def standard_with_system_name_not_given(self, system_name, step_num):
         """
-            It is used to test the functionality of standard with no system name given in the test case
-            Arguments:
-                system_name: Name of the system on which it needs to be run
-                step_num: It is the step_num in the test case file
-            Returns:
-                Returns True
+        It is used to test the functionality of standard with no system name given in the test case
+        Arguments:
+            system_name: Name of the system on which it needs to be run
+            step_num: It is the step_num in the test case file
+        Returns:
+            Returns True
         """
 
         wdesc = "Standard with system name not given"
         pNote(wdesc)
-        key = 'standard_with_system_name_not_given_'+str(step_num)
+        key = 'standard_with_system_name_not_given_' + str(step_num)
         self.write_to_file(key, system_name)
         return True
 
@@ -143,38 +143,38 @@ class CIregressionActions(object):
         """
         wdesc = "Standard with error"
         pNote(wdesc)
-        key = 'standard_with_error_'+str(step_num)
+        key = 'standard_with_error_' + str(step_num)
         self.write_to_file(key, system_name)
         raise Exception("This is raised in CIregressionActions.standard_with_error")
         return False
 
     def end_of_tc_with_system_name_given(self, system_name, step_num):
         """
-            It is used to test the functionality of end of tc with system name given in the test case
-            Arguments:
-                system_name: Name of the system on which it needs to be run
-                step_num: It is the step_num in the test case file
-            Returns:
-                Returns True
+        It is used to test the functionality of end of tc with system name given in the test case
+        Arguments:
+            system_name: Name of the system on which it needs to be run
+            step_num: It is the step_num in the test case file
+        Returns:
+            Returns True
         """
         wdesc = "End of testcase with system name given"
         pNote(wdesc)
-        key = 'end_of_tc_with_system_name_given_'+str(step_num)
+        key = 'end_of_tc_with_system_name_given_' + str(step_num)
         self.write_to_file(key, system_name)
         return True
 
     def end_of_tc_with_system_name_not_given(self, system_name, step_num):
         """
-            It is used to test the functionality of end of tc with no system name given in the test case
-            Arguments:
-                system_name: Name of the system on which it needs to be run
-                step_num: It is the step_num in the test case file
-            Returns:
-                Returns True
+        It is used to test the functionality of end of tc with no system name given in the test case
+        Arguments:
+            system_name: Name of the system on which it needs to be run
+            step_num: It is the step_num in the test case file
+        Returns:
+            Returns True
         """
         wdesc = "End of testcase with system name not given"
         pNote(wdesc)
-        key = 'end_of_tc_with_system_name_not_given_'+str(step_num)
+        key = 'end_of_tc_with_system_name_not_given_' + str(step_num)
         self.write_to_file(key, system_name)
         return True
 
@@ -189,18 +189,18 @@ class CIregressionActions(object):
         """
         wdesc = "End of testcase with error"
         pNote(wdesc)
-        key = 'end_of_tc_with_error_'+str(step_num)
+        key = 'end_of_tc_with_error_' + str(step_num)
         self.write_to_file(key, system_name)
         raise Exception("This is raised in CIregressionActions.end_of_tc_with_error")
         return False
 
-    def compare_hybrid_tc_result(self,input_file):
+    def compare_hybrid_tc_result(self, input_file):
         """
-            It takes the input file path which is the expected result and compares with the log file and
-            returns True if both matches else False and prints the difference to console.
+        It takes the input file path which is the expected result and compares with the log file and
+        returns True if both matches else False and prints the difference to console.
 
-            Arguments:
-                input_file: It takes expected result file path as input
+        Arguments:
+            input_file: It takes expected result file path as input
         """
         wdesc = "Compares the test case result file with expected result file"
         pNote(wdesc)
@@ -226,9 +226,9 @@ class CIregressionActions(object):
         for j in diff:
             s = str(j[0])
             index = result_content.index(s)
-            last_index = result_content.index("****************************\n",index)
-            start_index = last_index-2
-            for i in range(start_index-1,last_index+1):
+            last_index = result_content.index("****************************\n", index)
+            start_index = last_index - 2
+            for i in range(start_index - 1, last_index + 1):
                 pNote(result_content[i].strip("\n"))
         return False
 
@@ -238,7 +238,7 @@ class CIregressionActions(object):
         if value == max, return max_status instead
         """
         value = data_Utils.get_object_from_datarepository(key)
-        if key == False:
+        if key is False:
             num = 1
         else:
             if isinstance(value, int):
@@ -279,7 +279,8 @@ class CIregressionActions(object):
             Create a temp directory for parallel execution test
         """
         path = file_Utils.createDir(file_Utils.getDirName(self.logsdir), "tmp")
-        return True, {"parallel_exec_tmp_dir": os.path.join(file_Utils.getDirName(self.logsdir), "tmp")} if path else False
+        return True, {"parallel_exec_tmp_dir": os.path.join(file_Utils.getDirName(self.logsdir),
+                                                            "tmp")} if path else False
 
     def create_sub_tmp_file(self, system_name="", filename="", delete="yes"):
         """
@@ -332,7 +333,7 @@ class CIregressionActions(object):
         return file_Utils.delFolder(path)
 
     def check_kw_arg_type_prefix(self, str_value, int_value, float_value, bool_value,
-                          list_value, tuple_value, dict_value, file_value):
+                                 list_value, tuple_value, dict_value, file_value):
         """This keyword is intended to test the type prefix for keyword arguments
         when an argument name has a type_ prefix, the variable type will become
         the type specified in the type_ prefix
@@ -349,35 +350,35 @@ class CIregressionActions(object):
         file_contents = "Checking file datatype in wtags"
         status = True
         err_msg = "{} is not an {} value but of type {}"
-        if not isinstance(str_value, str):
+        if type(str_value) is not str:
             # this block checks if str_value is string type
             pNote(err_msg.format(str_value, "str", type(str_value)), "error")
             status = False
-        if not isinstance(int_value, int):
+        if type(int_value) is not int:
             # this block checks if int_value is int type
             pNote(err_msg.format(int_value, "int", type(int_value)), "error")
             status = False
-        if not isinstance(float_value, float):
+        if type(float_value) is not float:
             # this block checks if float_value is float type
             pNote(err_msg.format(float_value, "float", type(float_value)), "error")
             status = False
-        if not isinstance(bool_value, bool):
+        if type(bool_value) is not bool:
             # this block checks if bool_value is bool type
             pNote(err_msg.format(bool_value, "bool", type(bool_value)), "error")
             status = False
-        if not isinstance(list_value, list):
+        if type(list_value) is not list:
             # this block checks if list_value is list type
             pNote(err_msg.format(list_value, "list", type(list_value)), "error")
             status = False
-        if not isinstance(tuple_value, tuple):
+        if type(tuple_value) is not tuple:
             # this block checks if tuple_value is tuple type
             pNote(err_msg.format(tuple_value, "tuple", type(tuple_value)), "error")
             status = False
-        if not isinstance(dict_value, dict):
+        if type(dict_value) is not dict:
             # this block checks if dict_value is dict type
             pNote(err_msg.format(dict_value, "dict", type(dict_value)), "error")
             status = False
-        if not isinstance(file_value, IOBase):
+        if type(file_value) is not file:
             # this block checks if file_value is file type
             pNote(err_msg.format(file_value, "file", type(file_value)), "error")
             status = False
@@ -406,6 +407,7 @@ class CIregressionActions(object):
             8. intvar = int variable
             9. anotherfile = file variable
         """
+
         def check_type(var, varname, datatype):
             """check that vars are of correct datatype
             """
@@ -416,10 +418,11 @@ class CIregressionActions(object):
                       '{} type'.format(varname, datatype, vartype), "error")
                 status = False
             return status
+
         status = True
         datafile = Utils.config_Utils.datafile
         tc_filepath = os.path.dirname(data_Utils.get_object_from_datarepository(
-                                            'wt_testcase_filepath'))
+            'wt_testcase_filepath'))
         # this block checks if strvar is string type
         status = check_type(strvar, "strvar", str) and status
         # this block checks if langs is list type
@@ -434,8 +437,9 @@ class CIregressionActions(object):
         try:
             # check if tag is present and its functionality is not broken
             if anotherfile.startswith('tag'):
-                anotherfile = data_Utils.resolve_argument_value_to_get_tag_value(
-                                        datafile, system_name, anotherfile)
+                anotherfile = data_Utils.resolve_argument_value_to_get_tag_value(datafile,
+                                                                                 system_name,
+                                                                                 anotherfile)
             # this checks if configfile and anotherfile are valid files
             # by getting the absolute path of the file
             if not os.path.isabs(configfile):
@@ -453,7 +457,7 @@ class CIregressionActions(object):
             status = False
         if type(intvar) is str and intvar.startswith('tag'):
             intvar = data_Utils.resolve_argument_value_to_get_tag_value(
-                                    datafile, system_name, intvar)
+                datafile, system_name, intvar)
         else:
             status = check_type(intvar, "intvar", int) and status
         return status
@@ -478,6 +482,7 @@ class CIregressionActions(object):
             7. configfile = file variable
             8. intvar = int variable
         """
+
         def check_type(var, varname, datatype):
             """check that vars are of correct datatype
             """
@@ -488,10 +493,11 @@ class CIregressionActions(object):
                       '{} type'.format(varname, datatype, vartype), "error")
                 status = False
             return status
+
         status = True
         datafile = Utils.config_Utils.datafile
         tc_filepath = os.path.dirname(data_Utils.get_object_from_datarepository(
-                                            'wt_testcase_filepath'))
+            'wt_testcase_filepath'))
         # this block checks if strvar is string type
         status = check_type(strvar, "strvar", str) and status
         # this block checks if langs is list type
@@ -515,8 +521,8 @@ class CIregressionActions(object):
             pNote('type of configfile is {}'.format(type(configfile)), "error")
             status = False
         if type(intvar) is str and intvar.startswith('tag'):
-            intvar = data_Utils.resolve_argument_value_to_get_tag_value(
-                                    datafile, system_name, intvar)
+            intvar = data_Utils.resolve_argument_value_to_get_tag_value(datafile, system_name,
+                                                                        intvar)
         else:
             status = check_type(intvar, "intvar", int) and status
         return status
@@ -566,6 +572,61 @@ class CIregressionActions(object):
             else:
                 status = all([x >= float_min_val for x in stored_delta])
                 if not status:
-                    pNote("Delta: {} not meet minimum value {}".\
-                        format(str(stored_delta), float_min_val))
+                    pNote("Delta: {} not meet minimum value {}". \
+                          format(str(stored_delta), float_min_val))
+        return status
+
+    def instantiate_list_key_in_data_repository(self, key):
+        """
+        This will create a key in the data_repository
+        :param key: name of the key that should be created in the data_repository.
+                    The data type of it's value will be list.
+        :return: status (bool), output_dict (dict)
+        """
+        wdesc = "This keyword will create a key in the data repository"
+        pNote(wdesc)
+        status = True
+        output_dict = {key: []}
+        pNote("Updating Data Repository with key: {0}".format(key))
+        return status, output_dict
+
+    def update_list_key_in_data_repository(self, key, value, status="True"):
+        """
+        This keyword will update an existing key in the data repository
+        :param key: key name
+        :param value: value to be updated
+        :param: status: kw will pass/fail accordingly
+        :return: status (bool), updated_dict (dict)
+        """
+        wdesc = "This keyword will update an existing key in the data repository"
+        pNote(wdesc)
+        status = status.lower() != "false"
+        data = data_Utils.get_object_from_datarepository(key)
+        data.append(value)
+        updated_dict = {key: data}
+        pNote("Updating {0} value wih {1}".format(key, format(value)))
+        return status, updated_dict
+
+    def verify_list_key_value_in_data_repo(self, key, expected_value):
+        """
+        This keyword will update an existing key in the data repository
+        :param key: key name
+        :param value: value to be updated
+        :return: status (bool), updated_dict (dict)
+        """
+        wdesc = "This keyword will verify an existing key's value"
+        pNote(wdesc)
+        status = False
+        data = data_Utils.get_object_from_datarepository(key)
+        pNote("{1} Value (as stored in Data Repository): {0}".format(data, key))
+        compare_value = [x.strip() for x in expected_value.split(",")]
+        pNote("Expected Value: {0}".format(compare_value))
+        if len(data) == len(compare_value):
+            for sub_data, sub_compare in zip(data, compare_value):
+                if sub_data != sub_compare:
+                    break
+            else:
+                status = True
+        if not status:
+            pNote("Expected Value and Existing Value do not match", "error")
         return status
