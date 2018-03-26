@@ -1462,12 +1462,12 @@ i.active {
 }
 
 .popup {
-	width: 40%;
-	height: 60%;
+	width: 50%;
+	height: 75%;
 	margin: 0 auto;
 	position: fixed;
 	z-index: 999999;
-	top: 5%;
+	top: 15%;
 	left: 0;
 	right: 0;
 	/* background: white; */
