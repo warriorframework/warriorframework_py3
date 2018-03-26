@@ -14,9 +14,9 @@ class Installer:
         self.settings_file = join_path(self.base_directory, "katana", "wui", "settings.py")
         self.urls_file = join_path(self.base_directory, "katana", "wui", "urls.py")
 
-        self.app_name = get_sub_folders(join_path(path_to_app, "warriorframework", "katana", "wapps"))[0]
-        self.path_to_app = join_path(path_to_app, "warriorframework", "katana", "wapps", self.app_name)
-        self.path_to_plugin_dir = join_path(path_to_app, "warriorframework", "warrior", "plugins")
+        self.app_name = get_sub_folders(join_path(path_to_app, "warriorframework_py3", "katana", "wapps"))[0]
+        self.path_to_app = join_path(path_to_app, "warriorframework_py3", "katana", "wapps", self.app_name)
+        self.path_to_plugin_dir = join_path(path_to_app, "warriorframework_py3", "warrior", "plugins")
         self.wf_config_file = join_path(self.path_to_app, "wf_config.json")
 
         self.plugins_paths = get_sub_folders(self.path_to_plugin_dir, abs_path=True)
