@@ -187,6 +187,7 @@ var katana = {
   },
 
   popupController: {
+    /* This is the function that controls the popup. The variables declared below hold the HTML templates for Popups */
     body: '',
     wrappertemplate: $('<div id="wui-popups"></div>'),
     tabWrapperTemplate: $('<div id="wui-popup-nav"></div>'),
@@ -202,6 +203,15 @@ var katana = {
     tabDivTemplate: $('<div class="tab"></div>'),
 
     open: function(content, title, callBack, size, fixed, currentPage, doNotMinimize) {
+      /* Opens a popup
+         content: HTML content to be shown inside the popup
+         title: Title of the popup
+         callBack: function to be called after the popup is displayed
+         size: a vaid css class to be attached to the popup (so as to modify its styles)
+         fixed: (default: false) set this to true if popup should be non-draggable
+         currentPage: (default: false) set this to true if you want the popup to be contained inside the current page
+         doNotMinimize: (default: false) set this to true if you want the popup to not be minimized
+      */
       this.body = katana.$view;
       var $attachTo = currentPage ? katana.$activeTab.find('.page-content-inner') : katana.popupController.body;
       if ($attachTo.children('#wui-popups').length === 0) {
@@ -224,11 +234,13 @@ var katana = {
     },
 
     setTitle: function(popup, title) {
+      /* Set the title of the popup */
       popup.find('.title').text(title);
       popup.data('tabIndex').text(title);
     },
 
     createTab: function(popup, $parent, doNotMinimize) {
+      /* Create a tab at the bottom. Tab will be hidden if doNotMinimize has been set to true */
       if ($parent.children('#wui-popup-nav').children('.popup-tab-bar').length === 0 ){
         var $currentTab = katana.popupController.tabTemplate.clone().appendTo($parent.children('#wui-popup-nav'));
       } else {
@@ -246,8 +258,8 @@ var katana = {
     },
 
     openWindow: function(popup, $parent) {
+      /* opens the corresponding window of the tab clicked */
       var activePopup = $parent.children('#wui-popups').find('.popup.active');
-      console.log($parent);
       if (activePopup.get(0) !== popup.get(0)) {
         activePopup.removeClass('active');
         popup.removeClass('removing hidden').addClass('active');
@@ -257,6 +269,7 @@ var katana = {
     },
 
     close: function(popup) {
+      /* Closes the popup and removes the corresponding tab at the bottom */
       popup.data('tabIndex').remove();
       popup.addClass('removing');
       setTimeout(function() {
@@ -265,6 +278,7 @@ var katana = {
     },
 
     updateActiveWindow: function(popup, $parent) {
+      /* Switched between popup windows */
       var activePopup = $parent.children('#wui-popups').find('.popup.active');
       if (activePopup.get(0) !== popup.get(0)) {
         activePopup.removeClass('active');
@@ -273,6 +287,7 @@ var katana = {
     },
 
     min: function(popup) {
+      /* Minimizes a popup window */
       popup.addClass('removing');
       setTimeout(function() {
         popup.addClass('hidden').removeClass('active');
@@ -280,6 +295,7 @@ var katana = {
     },
 
     initEvents: function(popup, fixed, $parent) {
+      /* Initializes mouse events on popup windows */
       var pressed = false;
       var xoffset = 0;
       var yoffset = 0;
