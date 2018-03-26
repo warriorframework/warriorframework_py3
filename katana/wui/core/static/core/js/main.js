@@ -188,8 +188,8 @@ var katana = {
 
   popupController: {
     body: '',
-      wrappertemplate: $('<div id="wui-popups"></div>'),
-      tabWrapperTemplate: $('<div id="wui-popup-nav"></div>'),
+    wrappertemplate: $('<div id="wui-popups"></div>'),
+    tabWrapperTemplate: $('<div id="wui-popup-nav"></div>'),
     template: $('<div class="popup">' +
                   '<div class="navbar">' +
                     '<div class="title"></div>' +
@@ -198,24 +198,26 @@ var katana = {
                   '</div>' +
                   '<div class="page-content"></div>' +
                 '</div>'),
-    tabTemplate: $('<div class="popup-tab-bar">' +
-                     '<div class="tab"></div>' +
-                  '</div>'),
+    tabTemplate: $('<div class="popup-tab-bar"></div>'),
+    tabDivTemplate: $('<div class="tab"></div>'),
 
-    open: function(content, title, callBack, size, fixed, $currentPage) {
+    open: function(content, title, callBack, size, fixed, currentPage, doNotMinimize) {
       this.body = katana.$view;
-      var $attachTo = $currentPage ? katana.$activeTab.find('.page-content-inner') : katana.popupController.body;
-      if ($attachTo.find('#wui-popups').length === 0) {
+      var $attachTo = currentPage ? katana.$activeTab.find('.page-content-inner') : katana.popupController.body;
+      if ($attachTo.children('#wui-popups').length === 0) {
         $attachTo.append(katana.popupController.wrappertemplate);
         $attachTo.append(katana.popupController.tabWrapperTemplate);
       }
-      $attachTo = $attachTo.find('#wui-popups');
-      var $parent = $currentPage ? katana.$activeTab.find('.page-content-inner') : this.body;
+      $attachTo = $attachTo.children('#wui-popups');
+      var $parent = currentPage ? katana.$activeTab.find('.page-content-inner') : this.body;
       var popup = this.template.clone().appendTo($attachTo);
+      if (doNotMinimize) {
+        popup.find('.min').hide();
+      }
       content && popup.find('.page-content').append(content);
       size && popup.addClass(size);
       katana.popupController.initEvents(popup, !!fixed, $parent);
-      katana.popupController.createTab(popup, $parent);
+      katana.popupController.createTab(popup, $parent, doNotMinimize);
       title && katana.popupController.setTitle(popup, title);
       callBack && callBack(popup);
       return popup;
@@ -226,12 +228,17 @@ var katana = {
       popup.data('tabIndex').text(title);
     },
 
-    createTab: function(popup, $parent) {
-      if (!katana.popupController.tabBar) {
-        katana.popupController.tabBar = katana.popupController.tabTemplate.clone().appendTo(katana.popupController.body.find('#wui-popup-nav'));
-        katana.popupController.tabBar.find('.tab').remove();
+    createTab: function(popup, $parent, doNotMinimize) {
+      if ($parent.children('#wui-popup-nav').children('.popup-tab-bar').length === 0 ){
+        var $currentTab = katana.popupController.tabTemplate.clone().appendTo($parent.children('#wui-popup-nav'));
+      } else {
+        $currentTab = $parent.children('#wui-popup-nav').children('.popup-tab-bar');
       }
-      var tab = katana.popupController.tabTemplate.find('.tab').first().clone().appendTo(katana.popupController.tabBar);
+
+      var tab = katana.popupController.tabDivTemplate.clone().appendTo($currentTab);
+      if (doNotMinimize) {
+        tab.hide();
+      }
       popup.data('tabIndex', tab);
       tab.on('click', function() {
         katana.popupController.openWindow(popup, $parent);
@@ -240,6 +247,7 @@ var katana = {
 
     openWindow: function(popup, $parent) {
       var activePopup = $parent.children('#wui-popups').find('.popup.active');
+      console.log($parent);
       if (activePopup.get(0) !== popup.get(0)) {
         activePopup.removeClass('active');
         popup.removeClass('removing hidden').addClass('active');
@@ -308,26 +316,30 @@ var katana = {
             $parent.removeClass('no-select');
             if ($elem.offset().left < $parent.offset().left) {
               $elem.removeClass('rightJustify').addClass('leftJustify');
-              $elem.css('top', $parent.offset().top);
-              $elem.css('left', $parent.offset().left);
+              $elem.css({width: 'calc(50% - ' + $parent.offset().left/2 + 'px)',
+                  top:  $parent.offset().top,
+                  left: $parent.offset().left});
               startPointx = 0;
               startPointy = 0;
             } else if ($elem.offset().left > ($parent.width() + $parent.offset().left ) - $elem.width()) {
               $elem.removeClass('leftJustify').addClass('rightJustify');
-              $elem.css('top', $parent.offset().top);
-              $elem.css('right',  katana.$view.width() - $parent.offset().left - $parent.width());
+              $elem.css({width: 'calc(50% - ' + $parent.offset().left/2 + 'px)',
+                  top:  $parent.offset().top,
+                  right: (katana.$view.width() - $parent.offset().left - $parent.width())});
               startPointx = 0;
               startPointy = 0;
             } else if ($elem.offset().top < $parent.offset().top) {
               $elem.removeClass('rightJustify').addClass('leftJustify');
-              $elem.css('top', $parent.offset().top);
-              $elem.css('left', $parent.offset().left);
+              $elem.css({width: 'calc(50% - ' + $parent.offset().left/2 + 'px)',
+                  top:  $parent.offset().top,
+                  left: $parent.offset().left});
               startPointx = 0;
               startPointy = 0;
             } else if (($elem.offset().top + $elem.height()) > ($parent.height() + $parent.offset().top)) {
               $elem.removeClass('leftJustify').addClass('rightJustify');
-              $elem.css('top', $parent.offset().top);
-              $elem.css('right',  katana.$view.width() - $parent.offset().left - $parent.width());
+              $elem.css({width: 'calc(50% - ' + $parent.offset().left/2 + 'px)',
+                  top:  $parent.offset().top,
+                  right: (katana.$view.width() - $parent.offset().left - $parent.width())});
               startPointx = 0;
               startPointy = 0;
             }
