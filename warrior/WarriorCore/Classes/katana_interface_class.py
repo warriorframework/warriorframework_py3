@@ -1,3 +1,7 @@
+"""
+This class is deprecated as a new communication method has been created in WAR-1440
+"""
+
 from xml.dom import minidom
 import os
 import json
