@@ -77,6 +77,11 @@ class ModuleOperations(object):
         for module in self.module_list:
             for name, obj in inspect.getmembers(module, inspect.isclass):
                 if inspect.getmodule(obj) == module:
+                    """
+                        Change in py3 inspect marks unbound method as function
+                        so obj has to be instantiated here in order to make
+                        get_method_list_from_classlist work
+                    """
                     class_list.append(obj())
                     class_name_list.append(name)
         return class_list
