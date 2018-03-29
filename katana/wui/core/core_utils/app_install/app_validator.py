@@ -11,8 +11,8 @@ class AppValidator:
 
     def __init__(self, filepath):
         self.navigator = Navigator()
-        self.app_name = get_sub_folders(join_path(filepath, "warriorframework", "katana", "wapps"))[0]
-        self.path_to_app = join_path(filepath, "warriorframework", "katana", "wapps", self.app_name)
+        self.app_name = get_sub_folders(join_path(filepath, "warriorframework_py3", "katana", "wapps"))[0]
+        self.path_to_app = join_path(filepath, "warriorframework_py3", "katana", "wapps", self.app_name)
         self.wf_config_file = join_path(self.path_to_app, "wf_config.json")
         self.urls_inclusions = []
         self.mandatory_fields = ["app", "version", "warrior-compatibility", "warrior-incompatibility"]

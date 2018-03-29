@@ -19,9 +19,9 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 import xml.etree.cElementTree as ET
-from native.wapp_management.wapp_management_utils.app_validator import AppValidator
-from native.wapp_management.wapp_management_utils.installer import Installer
-from native.wapp_management.wapp_management_utils.uninstaller import Uninstaller
+from wui.core.core_utils.app_install.app_validator import AppValidator
+from wui.core.core_utils.app_install.installer import Installer
+from wui.core.core_utils.app_install.uninstaller import Uninstaller
 from utils.directory_traversal_utils import join_path, get_sub_files, get_parent_directory, \
     create_dir, get_dir_from_path
 from utils.file_utils import copy_dir
