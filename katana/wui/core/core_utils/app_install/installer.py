@@ -8,6 +8,10 @@ from utils.json_utils import read_json_data
 class Installer:
 
     def __init__(self, base_directory, path_to_app):
+        """
+            base_directory: /path/to/warriorframework_py3
+            path_to_app: /path/to/app_repo_folder
+        """
         self.base_directory = base_directory
         self.app_directory = join_path(self.base_directory, "katana", "wapps")
         self.plugin_directory = join_path(self.base_directory, "warrior", "plugins")
