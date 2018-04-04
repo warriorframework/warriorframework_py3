@@ -1,5 +1,6 @@
 from django.shortcuts import render
+from django.views.generic import TemplateView
 
-# Create your views here.
-def index(request):
-    return render(request, 'kw_sequencer/kw_sequencer.html')
+
+class KwSequencerIndex(TemplateView):
+    template_name = 'kw_sequencer/kw_sequencer.html'
