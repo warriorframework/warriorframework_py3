@@ -1,14 +1,21 @@
 <body>
 
-    <h2>This is kw_sequncer.html</h2>
-    <div class="tool-bar">
-        <button katana-click="kwSequencer.newKeyword" class="button">New</button>
-        <button katana-click="kwSequencer.closeKeyword" class="button">Close</button>
-        <button katana-click="kwSequencer.saveKeyword" class="button">Save</button>
-    </div>
-    <div class="" auto-init="kwSequencer.init">
-
+    <div id="mainpage-div">
+        <div class="tool-bar">
+            <div class="title">Create New Keyword</div>
+            <button katana-click="kwSequencer.newKeyword" class="button">New</button>
+            <button katana-click="kwSequencer.closeKeyword" class="button">Close</button>
+            <button katana-click="kwSequencer.saveKeyword" class="button">Save</button>
+        </div>
+        <div id="content-div" auto-init="kwSequencer.init">
+            <div id="display-files" >
+            </div>
+            <div id="display-error-message" class="text-center" style="width: 100%; padding: 5rem;">
+                <h4>Please set up the configuration to use this App</h4>
+            </div>
+        </div>
     </div>
 
     <div class="csrf-container">{% csrf_token %}</div>
+
 </body>
