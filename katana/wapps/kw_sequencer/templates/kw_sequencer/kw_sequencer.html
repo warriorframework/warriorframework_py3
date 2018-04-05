@@ -1,3 +1,14 @@
 <body>
-  <h2>This is kw_sequncer.html</h2>
+
+    <h2>This is kw_sequncer.html</h2>
+    <div class="tool-bar">
+        <button katana-click="kwSequencer.newKeyword" class="button">New</button>
+        <button katana-click="kwSequencer.closeKeyword" class="button">Close</button>
+        <button katana-click="kwSequencer.saveKeyword" class="button">Save</button>
+    </div>
+    <div class="" auto-init="kwSequencer.init">
+
+    </div>
+
+    <div class="csrf-container">{% csrf_token %}</div>
 </body>
