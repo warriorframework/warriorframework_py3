@@ -76,6 +76,23 @@ var kwSequencer = {
            $currentPage.find("#create-keyword").html(data);
        });
 
-    }
+   },
+
+    closeKeyword: function(){
+        var $currentPage = katana.$activeTab;
+        var callbackOnAccept = function(){
+            $currentPage.find('[katana-click="kwSequencer.newKeyword"]').show();
+            $currentPage.find('[katana-click="kwSequencer.closeKeyword"]').hide();
+            $currentPage.find('[katana-click="kwSequencer.saveKeyword"]').hide();
+            $currentPage.find('#create-keyword').hide();
+            $currentPage.find('#display-files').show();
+        }
+        katana.openAlert({"alert_type": "warning",
+                           "heading": "Do You Want To Continue?",
+                           "text": "All changes made would be discarded.",
+                           "accept_btn_text": "Yes", "cancel_btn_text": "No"},
+                           callbackOnAccept)
+
+    },
 
 };
