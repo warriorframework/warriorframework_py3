@@ -67,6 +67,7 @@ var kwSequencer = {
            var $displayFilesDiv = $currentPage.find('#display-files');
            var $displayErrorMsgDiv = $currentPage.find('#display-error-message');
            var $createKwDiv = $currentPage.find('#create-keyword');
+           var $toolBarDiv = $currentPage.find('.tool-bar');
            $newBtn.hide();
            $closeBtn.show();
            $saveBtn.show();
@@ -74,6 +75,7 @@ var kwSequencer = {
            $displayErrorMsgDiv.hide();
            $createKwDiv.show();
            $currentPage.find("#create-keyword").html(data);
+           $toolBarDiv.find('.title').html("Katana Wrapper Keyword Editor");
        });
 
    },
@@ -86,6 +88,8 @@ var kwSequencer = {
             $currentPage.find('[katana-click="kwSequencer.saveKeyword"]').hide();
             $currentPage.find('#create-keyword').hide();
             $currentPage.find('#display-files').show();
+            var $toolBarDiv = $currentPage.find('.tool-bar');
+            $toolBarDiv.find('.title').html("Create New Keyword");
         }
         katana.openAlert({"alert_type": "warning",
                            "heading": "Do You Want To Continue?",
