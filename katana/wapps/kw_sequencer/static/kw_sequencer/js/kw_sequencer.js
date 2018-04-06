@@ -1,3 +1,4 @@
+'use strict';
 
 var kwSequencer = {
 
@@ -8,9 +9,11 @@ var kwSequencer = {
         var $saveBtn = $currentPage.find('[katana-click="kwSequencer.saveKeyword"]');
         var $displayFilesDiv = $currentPage.find('#display-files');
         var $displayErrorMsgDiv = $currentPage.find('#display-error-message');
+        var $createKwDiv = $currentPage.find('#create-keyword');
         $newBtn.hide();
         $closeBtn.hide();
         $saveBtn.hide();
+        $createKwDiv.hide();
         $.ajax({
             type: 'GET',
             url: 'read_config_file/',
@@ -50,6 +53,29 @@ var kwSequencer = {
                 });
             }
         });
+    },
+
+    newKeyword: function(){
+        $.ajax({
+           type: 'GET',
+           url: 'kw_sequencer/create_new_kw/'
+       }).done(function(data){
+           var $currentPage = katana.$activeTab;
+           var $newBtn = $currentPage.find('[katana-click="kwSequencer.newKeyword"]');
+           var $closeBtn = $currentPage.find('[katana-click="kwSequencer.closeKeyword"]');
+           var $saveBtn = $currentPage.find('[katana-click="kwSequencer.saveKeyword"]');
+           var $displayFilesDiv = $currentPage.find('#display-files');
+           var $displayErrorMsgDiv = $currentPage.find('#display-error-message');
+           var $createKwDiv = $currentPage.find('#create-keyword');
+           $newBtn.hide();
+           $closeBtn.show();
+           $saveBtn.show();
+           $displayFilesDiv.hide();
+           $displayErrorMsgDiv.hide();
+           $createKwDiv.show();
+           $currentPage.find("#create-keyword").html(data);
+       });
+
     }
 
 };
