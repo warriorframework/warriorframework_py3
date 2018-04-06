@@ -284,11 +284,12 @@ class WarriorHtmlResults:
         elem_file.close()
 
         self.lineObjs = []
-        print_info("++++ Results Summary ++++")
-        print_info("Open the Results summary file given below in a browser to "
-                   "view results summary for this execution")
-        print_info("Results sumary file: {0}".format(self.get_path()))
-        print_info("+++++++++++++++++++++++++")
+        if is_final is True:
+            print_info("++++ Results Summary ++++")
+            print_info("Open the Results summary file given below in a browser to "
+                       "view results summary for this execution")
+            print_info("Results sumary file: {0}".format(self.get_path()))
+            print_info("+++++++++++++++++++++++++")
 
     def generate_html(self, junitObj, givenPath, is_final):
         """ build the html givenPath: added this feature in case of later down the line calling from outside junit

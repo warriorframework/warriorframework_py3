@@ -926,24 +926,15 @@ var katana = {
         url = url ? url : $elem ? $elem.attr('url') : '';
         tabTitle = tabTitle ? tabTitle : 'Tab';
         var jsURL = jsURL ? jsURL.split(',') : $elem.attr('jsurls').split(',');
-        if ($elem != katana.templateAPI) {
-          if (jsURL.length > 0) {
-            jsURL.pop();
-            katana.templateAPI.importJS(jsURL, function() {
-              katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
-            });
-          } else {
-            katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
-          }
+        src_elem = $elem != katana.templateAPI ? $elem : katana.$activeTab;
+
+        if (jsURL.length > 0) {
+          jsURL.pop();
+          katana.templateAPI.importJS(jsURL, function() {
+            katana.templateAPI.tabRequst(src_elem, tabTitle, url, limitedStyles, callBack, options);
+          });
         } else {
-          if (jsURL.length > 0) {
-            jsURL.pop();
-            katana.templateAPI.importJS(jsURL, function() {
-              katana.templateAPI.tabRequst(katana.$activeTab, tabTitle, url, limitedStyles, callBack, options);
-            });
-          } else {
-            katana.templateAPI.tabRequst(katana.$activeTab, tabTitle, url, limitedStyles, callBack, options);
-          }
+          katana.templateAPI.tabRequst(src_elem, tabTitle, url, limitedStyles, callBack, options);
         }
       }
     },
@@ -1017,22 +1008,13 @@ var katana = {
       });
     },
 
-    get: function({url, csrf, toSend, dataType, callBack, fallBack, callBackData, fallBackData}={}) {
+    get: function({url, toSend, dataType, callBack, fallBack, callBackData, fallBackData}={}) {
 
       // intialize values for url, csrf, dataType, toSend
       var $elem = this ? this : katana.$activeTab;
-      var toSend = toSend ? toSend : $elem.find('input:not([name="csrfmiddlewaretoken"])').serializeArray();
-      var url = url ? url : $elem.attr('get-url');
-      var csrf = csrf ? csrf : $elem.find('.csrf-container > input').val();
-      var dataType = dataType ? dataType : 'text'
-
-      // setup csrf token in xhr header
-      $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-          if (!this.crossDomain)
-            xhr.setRequestHeader("X-CSRFToken", csrf);
-        }
-      });
+      toSend = toSend ? toSend : $elem.find('input:not([name="csrfmiddlewaretoken"])').serializeArray();
+      url = url ? url : $elem.attr('get-url');
+      dataType = dataType ? dataType : 'text';
 
       // make an ajax get call using the intialized variables,
       // on sucess the data is sent to success cal back function if one was provided
@@ -1249,5 +1231,75 @@ var katana = {
     },
 
   },
+
+    utils: {
+
+        getRelativeFilepath: function (basePath, path, basePathIsDir) {
+          /* This function gets relative path (out of a given path argument) from a basePath and path */
+          var basePathSeries = katana.utils._convertBackSlashes(basePath, basePathIsDir).split('/');
+          var pathSeries = katana.utils._convertBackSlashes(path).split('/');
+          var hold = 0;
+          for (var i=0; i<basePathSeries.length && i < pathSeries.length; i++) {
+            if (basePathSeries[i] !== pathSeries[i]){
+              hold = i;
+              break;
+            }
+          }
+          var output = "";
+          for (i=(basePathSeries.length-1); i > hold; i--) {
+              output += "../"
+          }
+          if (output !== "") {
+              output = output.slice(0, -1);
+          }
+          for (i=hold; i<pathSeries.length; i++) {
+              output += "/" + pathSeries[i]
+          }
+          if (output.startsWith("/")) {
+              output = output.slice(1, output.length);
+          }
+          return output
+        },
+
+        getAbsoluteFilepath: function (basePath, relativePath, basePathIsDir) {
+          /* This function gets absolute path (out of a given relativePath argument) from a basePath and path */
+          var basePathSeries = katana.utils._convertBackSlashes(basePath, basePathIsDir).split('/');
+          var relativePathSeries = katana.utils._convertBackSlashes(relativePath).split('/');
+          var i = 0;
+          var hold = 0;
+          while (relativePathSeries[i] === ".."){
+              hold += 1;
+              i += 1;
+          }
+          var output = "";
+          for (i=0; i<(basePathSeries.length - hold - 1); i++) {
+              output += basePathSeries[i] + "/"
+          }
+          for (i=hold; i<relativePathSeries.length; i++) {
+              output += relativePathSeries[i] + "/"
+          }
+          output = output.slice(0, -1);
+          return output
+        },
+
+        _convertBackSlashes: function (path, trailingForwardSlash) {
+          /* This function converts a file path to have only forward slashes.
+             A trailing forward slash is added at the end if trailingForwardSlash is set to true */
+          trailingForwardSlash = !!trailingForwardSlash;
+          if (path.indexOf('\\') > -1) {
+            path = path.replace('\\', '/');
+          }
+          if (trailingForwardSlash) {
+            if (!path.endsWith('/')) {
+              path = path + '/';
+            }
+          } else {
+            if (path.endsWith('/')) {
+              path = path.slice(0, -1);
+            }
+          }
+          return path;
+        }
+    }
 
 };

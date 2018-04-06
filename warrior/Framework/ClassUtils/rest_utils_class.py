@@ -334,8 +334,12 @@ class WRest(object):
                 if "xml" in response.headers['Content-Type']:
                     status = Utils.xml_Utils.compare_xml_using_xpath(extracted_response, path_list, responses_list)
                 elif "json" in response.headers['Content-Type']:
+                    if isinstance(extracted_response, bytes):
+                        extracted_response = extracted_response.decode('utf-8')
                     status = self.json_utils.compare_json_using_jsonpath(extracted_response, path_list, responses_list)
                 else:
+                    if isinstance(extracted_response, bytes):
+                        extracted_response = extracted_response.decode('utf-8')
                     status = Utils.string_Utils.compare_string_using_regex(extracted_response, path_list)
             else:
                 print_error("Please provide the values for comparison_mode and expected_api_response")
@@ -496,6 +500,7 @@ class WRest(object):
 
     @staticmethod
     def get_output_response(api_response):
+        """ Convert the api_response.text in desired format(xml/json/text) """
         if api_response is not None:
             try:
                 output_response = parseString("".join(api_response.text))
