@@ -51,6 +51,7 @@ class CommonActions(object):
 
         WDesc = "Waits for the timeout provided"
         Utils.testcase_Utils.pSubStep(WDesc)
+        print_info("Command timeout for {0} seconds".format(timeout))
         status = datetime_utils.wait_for_timeout(timeout)
         pNote('********Below Testing occured after Timeout *********')
         Utils.testcase_Utils.report_substep_status(status)

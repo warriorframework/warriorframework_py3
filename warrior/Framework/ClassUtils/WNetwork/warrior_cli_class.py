@@ -17,7 +17,7 @@ import sys
 import time
 import subprocess
 import getpass
-import xml
+import xml.etree.ElementTree as ET
 import Tools
 from Framework import Utils
 from Framework.Utils.print_Utils import print_info, print_debug,\
@@ -347,7 +347,7 @@ class WarriorCli(object):
                 patterns = []
                 # error out if any of the key element can not be retrieved
                 for key, resp_key in itertools.zip_longest(keys, resp_keys):
-                    if isinstance(resp_key, xml.etree.ElementTree.Element):
+                    if isinstance(resp_key, ET.Element):
                         patterns.append(resp_key.get("resp_pattern_req"))
                     elif isinstance(resp_key, str):
                         print_error("There is no pattern element for key '{}' corresponding"
@@ -615,7 +615,7 @@ class WarriorCli(object):
         if sleeptime > 0:
             pNote("Sleep time of '{0} seconds' requested post command "
                   "execution".format(sleeptime))
-            time.sleep(sleeptime)
+            Utils.datetime_utils.wait_for_timeout(sleeptime)
 
         try:
             remote_resp_dict = self.get_response_dict(
@@ -1540,8 +1540,8 @@ class PexpectConnect(object):
                         status = "ERROR"
                         break
                     elif result == 2:
-                        tmsg1 = "[{0}] Command timed out, command will be " \
-                            "marked as error".format(end_time)
+                        tmsg1 = "[{0}] Command timed out with {1} seconds, command will be " \
+                            "marked as error".format(end_time, timeout)
                         tmsg2 = "Will wait 60 more seconds to get end " \
                             "prompt '{0}'".format(end_prompt)
                         tmsg3 = "Irrespective of whether end prompt is " \
@@ -1550,12 +1550,16 @@ class PexpectConnect(object):
                         if not cmd_timedout:
                             self.target_host.timeout = 1
                             pNote(tmsg1, "debug")
-                            pNote(tmsg2, "debug")
-                            pNote(tmsg3, "debug")
                             tstamp = Utils.datetime_utils.\
                                 get_current_timestamp()
                         cmd_timedout = True
                         status = "ERROR"
+                        seconds = 60
+                        pNote(tmsg3, "debug")
+                        print_info(("Will wait {0} more seconds to get end prompt " + end_prompt)
+                                   .format(seconds))
+                        Utils.datetime_utils.wait_for_timeout(seconds)
+                        pNote(tmsg2, "debug")
                         tdelta = Utils.datetime_utils.get_time_delta(tstamp)
                         if int(tdelta) >= 60:
                             msg = "[{0}] Did not find end prompt '{1}' even " \

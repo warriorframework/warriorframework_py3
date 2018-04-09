@@ -16,13 +16,14 @@ import datetime
 import time
 from Framework.Utils.print_Utils import print_info, print_error, print_warning
 
+
 def wait_for_timeout(wait_time, unit="SECONDS"):
     """
-    Warrior, Wait till the time is a generic wait. The Wait is informed to the user in 10 intervals
-    equally divided from the over all wait.
+    Warrior, Wait till the time is a generic wait. The Wait is informed to the user as a countdown.
 
-    :param wait_time: Time for Warrior wait.
-    :param unit: The unit of Time supported are
+    :Arguments:
+        1.wait_time: Time for Warrior wait.
+        2.unit: The unit of Time supported are
                   1. Second (default)
                   2. Minute
                   3. Hour
@@ -30,7 +31,7 @@ def wait_for_timeout(wait_time, unit="SECONDS"):
                   5. Month (30 days is assumed for one Month)
                   6. Year (365 days is assumed for one Year)
     :return:
-    Status = Bool
+        Status = Bool
     """
     try:
         wait_time = float(wait_time)
@@ -38,26 +39,20 @@ def wait_for_timeout(wait_time, unit="SECONDS"):
             seconds = wait_time
         elif unit.upper() in ["MINUTE", "MINUTES", "MIN", "MINS"]:
             seconds = 60 * wait_time
-        elif unit.upper() in ["HOUR" ,"HOURS"]:
+        elif unit.upper() in ["HOUR", "HOURS"]:
             seconds = 60 * 60 * wait_time
         elif unit.upper() in ["DAY", "DAYS"]:
             seconds = 24 * 60 * 60 * wait_time
         elif unit.upper() in ["MONTH", "MONTHS"]:
             seconds = 30 * 24 * 60 * 60 * wait_time
         elif unit.upper() in ["YEAR", "YEARS"]:
-            seconds = 365* 24* 60 * 60 * wait_time
+            seconds = 365 * 24 * 60 * 60 * wait_time
         else:
             print_warning('The supported unit of seconds is Seconds/Minutes/Hours/Months/Years'
                           'The default unit of Seconds would be used')
-        print_info('Starting to wait for {} Seconds'.format(seconds))
-        wait_seconds = seconds
-        print_interval = wait_seconds / 10
-        print_info('Remaining wait time will be notified every {} secs'.format(print_interval))
-        for count in range(10):
-            print_info('Remaining Wait Time is {:.1f} seconds'.\
-                format(wait_seconds-count*print_interval))
-            time.sleep(print_interval)
-        print_info('Ending Wait time of {} Seconds'.format(seconds))
+        for sec in range(int(seconds), 0, -1):
+            print_info("Remaining time available is {0} seconds {1}".format(sec, '\033[1A\r'))
+            time.sleep(1)
         return True
     except TypeError:
         print_warning('Unable to parse wait_time value, Please use int/float as wait_time value.')
@@ -88,14 +83,15 @@ def get_time_delta(start_time, end_time=None):
                         eg: 2015-04-27 09:48:21
 
         Returns:
-              1. Time delta = Returns time difference between the present system time and between the time
-                  stamp which comes as argument in the format of seconds.
+              1. Time delta = Returns time difference between the present system time and between
+                 the time stamp which comes as argument in the format of seconds.
                      eg: 212342.0
     """
     if end_time is None:
         end_time = datetime.datetime.now().replace(microsecond=0)
     time_delta = end_time - start_time
     return time_delta.total_seconds()
+
 
 def get_hms_for_seconds(seconds):
     """ prints number of seconds in hours:minutes:seconds format"""
