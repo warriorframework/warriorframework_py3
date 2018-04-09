@@ -1,10 +1,10 @@
 {
-    "engineer": "",
-    "pythonsrcdir": "",
-    "xmldir": "",
-    "testsuitedir": "",
-    "projdir": "",
-    "idfdir": "",
-    "testdata": "",
+    "engineer": "", 
+    "pythonsrcdir": "/home/sanika/warriorframework_py3/warrior", 
+    "xmldir": "/home/sanika/warriorframework_py3/warrior/Warriorspace/Testcases", 
+    "testsuitedir": "/home/sanika/warriorframework_py3/warrior/Warriorspace/Suites", 
+    "projdir": "/home/sanika/warriorframework_py3/warrior/Warriorspace/Projects", 
+    "idfdir": "/home/sanika/warriorframework_py3/warrior/Warriorspace/Data", 
+    "testdata": "/home/sanika/warriorframework_py3/warrior/Warriorspace/Config_files", 
     "pythonpath": ""
 }

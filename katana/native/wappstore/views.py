@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-
+import json
 
 from django.shortcuts import render
-
 # Create your views here.
 from django.views import View
+import requests
 
 
 class WappStoreView(View):
@@ -15,9 +15,5 @@ class WappStoreView(View):
         """
         Get Request Method
         """
-
-        banner = "Thank you for visiting the Wapp Store."
-        data = "We are still working on building this awesome store for you and we will let you " \
-               "know as soon as it is ready!"
-
-        return render(request, WappStoreView.template, {"banner": banner, "data": data})
+        response = json.loads(requests.get('http://localhost:5000/wapps/get_all_wapps_data/').content)
+        return render(request, WappStoreView.template, response)

@@ -1,0 +1,35 @@
+<div class="wappstore-wapp-wrapper" katana-click="wappstore.expandWapp" name="{{ wapp.fields.name }}">
+    <div class="card" style="width: 20rem;">
+        <div class="card-body">
+            <h5 class="card-title">{{ wapp.fields.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ wapp.fields.developer }}</h6>
+            <hr>
+            <div class="wappstore-wapp-icon-wrapper">
+                <div class="wappstore-wapp-icon-container">
+                    {% if wapp.fields.icon == "pencil-alt" %}
+                    <i class="fa fa-4x fa-pencil {{ wapp.fields.color }} wappstore-wapp-icon"></i>
+                    {% else %}
+                    <i class="fa fa-4x fa-{{ wapp.fields.icon }} {{ wapp.fields.color }} wappstore-wapp-icon"></i>
+                    {% endif %}
+                </div>
+                <div class="wappstore-wapp-desc-container">
+                    <p>{{ wapp.fields.short_desc }}</p>
+                </div>
+            </div>
+            <hr>
+            <h6 class="card-subtitle mb-2 text-muted">
+                <span style="float: left !important;">
+                    {{ wapp.fields.average_stars }} <i class="fa fa-star"></i> &nbsp;
+                    {{ wapp.fields.number_of_reviews }} <i class="fa fa-users"></i>
+                </span>
+                <span style="float: right !important;">
+                    {% if wapp.fields.pricing == 0.0 %}
+                        FREE
+                    {% else %}
+                        ${{ wapp.fields.pricing }}
+                    {% endif %}
+                </span>
+            </h6>
+        </div>
+    </div>
+</div>
