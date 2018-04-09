@@ -1,6 +1,6 @@
 <div class="wappstore-wapp-wrapper" katana-click="wappstore.expandWapp" name="{{ wapp.fields.name }}">
     <div class="card" style="width: 20rem;">
-        <div class="card-body">
+        <div class="card-body" style="position: relative">
             <h5 class="card-title">{{ wapp.fields.name }}</h5>
             <h6 class="card-subtitle mb-2 text-muted">{{ wapp.fields.developer }}</h6>
             <hr>
@@ -30,6 +30,7 @@
                     {% endif %}
                 </span>
             </h6>
+            <button class="btn" style="position: absolute; right: 23px; bottom: 58px;">Install</button>
         </div>
     </div>
 </div>
