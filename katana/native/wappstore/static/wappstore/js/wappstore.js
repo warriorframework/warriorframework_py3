@@ -23,6 +23,7 @@ var wappstore = {
     },
 
     installTerminalApp: function() {
+        var $elem = $(this);
         $.ajax({
                 type: 'GET',
                 url: 'wappstore/install_terminal_app/'
@@ -31,6 +32,7 @@ var wappstore = {
                     setTimeout(function () {
                         katana.refreshLandingPage();
                         katana.openAlert({"alert_type": "success", "heading": "Installation successful", "text": "App has been installed"})
+                        $elem.html("Installed")
                     }, 2500);
                 } else {
                     setTimeout(function () {

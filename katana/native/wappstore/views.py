@@ -15,7 +15,7 @@ from utils.navigator_util import Navigator
 
 nav_obj = Navigator()
 app_path = os.path.join(nav_obj.get_katana_dir(), "native", "wappstore", ".data", "terminal")
-address_port = "http://localhost:5000"
+address_port = "http://167.254.211.230:30898"
 
 
 class WappStoreView(View):
