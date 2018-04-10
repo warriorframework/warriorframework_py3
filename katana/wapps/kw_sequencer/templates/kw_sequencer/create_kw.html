@@ -1,21 +1,41 @@
 <body>
 
-    <div>
+    <div class="container-fluid">
+
         <form>
-            <label class="text-uppercase">Wrapper Keyword Details</label>
-            <div class="form-group row">
-                <label for="wrapperkeywprd" class="col-sm-2 col-form-label" >Wrapper Keyword Name</label>
-                <div class="col-sm-4">
-                    <input type="text" class="form-control" id="wrapperKwName" placeholder="Name of the Wrapper Keyword">
+            <div class="wrapper-keyword-div">
+                <h4>Wrapper Keyword Details</h4>
+                <div class="form-group row">
+                    <label for="wrapperKwName" class="col-md-2 col-form-label" >Wrapper Keyword Name</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="wrapperKwName" placeholder="Name of the Wrapper Keyword">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="wDescription" class="col-md-2 col-form-label">W Description</label>
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="wDescription" placeholder="Wrapper Keyword Description">
+                    </div>
                 </div>
             </div>
-            <div class="form-group row">
-                <label for="description" class="col-sm-2 col-form-label">W Description</label>
-                <div class="col-sm-4">
-                    <input type="text" class="form-control" id="wDescription" placeholder="Wrapper Keyword Description">
+            <br>
+            <div class="sub-keyword-div">
+                <h4>SubKeyword Details</h4>
+                <p>A Wrapper Keyword requires at least one Subkeyword definition.<br>Please use the 'New Subkeyword' button below to create a Subkeyword.</p>
+                <div class="form-group row">
+                    <div class="col-md-2">
+                        <button class="btn btn-primary">New Subkeyword</button>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-4 ">
+                        <button class="btn btn-default">Save Wrapper Keyword</button>
+                        <button class="btn btn-default">Cancel</button>
+                    </div>
                 </div>
             </div>
 
+        </form>
     </div>
 
 </body>
