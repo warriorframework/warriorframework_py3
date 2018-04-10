@@ -8,8 +8,40 @@
 
 <body>
 
+<div class="tool-bar">
+    <div class="title">WappStore</div>
+    <div style="position: absolute; width: 250px; right: 100px;">
+        <input placeholder="Search" style="height: 34px;">
+    </div>
+    <button class="button"><i class="fa fa-search"></i></button>
+</div>
 
-<div style="padding: 5rem;">
+
+<div class="wappstore-sidebar">
+    <div class="wappstore-main-bar">
+        <i class="fa fa-puzzle-piece" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; Wapps
+        <span style="float: right; padding-top: 5px;" katana-click="wappstore.collapseSubSidebar"><i class="fa fa-chevron-circle-up"></i></span>
+    </div>
+    <div class="wappstore-sub">
+        <div class="wappstore-sub-bar">
+            Workflow Automation
+        </div>
+        <div class="wappstore-sub-bar">
+            Test Automation
+        </div>
+        <div class="wappstore-sub-bar">
+            Networking
+        </div>
+        <div class="wappstore-sub-bar">
+            OSS
+        </div>
+    </div>
+    <div class="wappstore-main-bar">
+        <i class="fa fa-user" aria-hidden="true"></i> &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp; Account
+    </div>
+</div>
+<div>
+<div style="padding: 5rem 5rem 5rem calc(250px + 5rem);">
     <div>
         <h3 class="text-muted">Most Popular
             <button class="btn btn-sm btn-info" style="float: right;">See More</button>
@@ -80,6 +112,7 @@
         </div>
     </div>
     <br><br>
+</div>
 </div>
 
 </body>
