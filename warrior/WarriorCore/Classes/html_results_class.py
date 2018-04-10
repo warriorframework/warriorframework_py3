@@ -34,8 +34,8 @@ class LineResult:
 
     def __init__(self):
         """Constructor for class LineResult"""
-        self.keys = ['type', 'name', 'info', 'description', 'timestamp', 'duration', 'status', 'impact', 'onerror', 'msc', 'static',
-                     'dynamic']
+        self.keys = ['type', 'name', 'info', 'description', 'timestamp', 'duration', 'status', 'impact', 'onerror', 
+                     'msc', 'static', 'dynamic']
 
     def get_info(self, line):
         """gets info for line"""
@@ -55,7 +55,8 @@ class LineResult:
         """sets attributes"""
         if 'Keyword' not in variant and 'step' not in variant:
             stepcount = ''
-        result_path = line.get("resultsfile") if line.get("resultsfile") else line.get("resultsdir") if line.get("resultsdir") else ''
+        result_path = line.get("resultsfile") if line.get("resultsfile") else line.get("resultsdir") if line.get(
+                      "resultsdir") else ''
         logs_path = line.get("console_logfile") if line.get("console_logfile") else ''
 #         defects_path = line.get("defects") if line.get("defects") else ''
         status_name = line.get("status") if line.get("status") else ''
@@ -73,15 +74,15 @@ class LineResult:
         # the link to logs should only be applied to a testcase and it will open the console logs of the testcase
         logs_span = "<span style='padding-left:10px; padding-right: 10px;'>"\
                     "<a  name='results-link' href='{0}' target='_blank' >"\
-                    "<i name='logs-icon' class='fa fa-book'  data-logPath='{0}' katana-click='execution.resultsViewer.openConsoleLogFile' > </i>"\
-                    "</a>"\
+                    "<i name='logs-icon' class='fa fa-book'  data-logPath='{0}'"\
+                    "katana-click='execution.resultsViewer.openConsoleLogFile' > </i></a>"\
                     "</span>".format(line.get("console_logfile")) if line.get("console_logfile") else ''
 
         # link to defects will only be applied to a keyword and it will open the defects json file in a popup
         defects_span = "<span style='padding-left:10px; padding-right: 10px;'>"\
                         "<a name='bug-link' href='{0}' target='_blank' >"\
-                        "<i name='bug-icon' class='fa fa-bug'  data-logPath='{0}' katana-click='execution.resultsViewer.openDefectsJson'> </i>"\
-                        "</a>"\
+                        "<i name='bug-icon' class='fa fa-bug'  data-logPath='{0}'"\
+                        "katana-click='execution.resultsViewer.openDefectsJson'> </i></a>"\
                         "</span>".format(line.get("defects"))  if line.get("defects") else ''
         span_html = ""
         if variant == "Testcase":
@@ -126,7 +127,8 @@ class LineResult:
                         for staticElem in self.data['static']:
                             top_level += '<td>' + (staticElem if staticElem else '') + '</td>'
                     elif elem == 'name':
-                        div_html = '<div data-path="{0}", data-type="{1}", katana-click="execution.resultsViewer.openXmlInApp">'.format(self.data['locn'], self.data['type'])
+                        div_html = '<div data-path="{0}", data-type="{1}", katana-click="execution.resultsViewer.openXmlInApp">'.format(
+                                    self.data['locn'], self.data['type'])
                         top_level += '<td rowspan="2">'+ div_html + (
                             self.data[elem] if self.data[elem] else '') + '</div></td>'
 
