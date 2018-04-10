@@ -127,7 +127,8 @@ class LineResult:
                         for staticElem in self.data['static']:
                             top_level += '<td>' + (staticElem if staticElem else '') + '</td>'
                     elif elem == 'name':
-                        div_html = '<div data-path="{0}", data-type="{1}", katana-click="execution.resultsViewer.openXmlInApp">'.format(
+                        div_html = '<div data-path="{0}", data-type="{1}", ' \
+                                   'katana-click="execution.resultsViewer.openXmlInApp">'.format(
                                     self.data['locn'], self.data['type'])
                         top_level += '<td rowspan="2">'+ div_html + (
                             self.data[elem] if self.data[elem] else '') + '</div></td>'
@@ -332,19 +333,19 @@ class WarriorHtmlResults:
 
         self.lineObjs = []
         # Check whether the result file has to be compressed 
-        resultPath = self.get_path()
+        resultpath = self.get_path()
         warrior_tools_dir = Tools.__path__[0]+os.sep+'w_settings.xml'
         element = ET.parse(warrior_tools_dir)
         setting_elem = element.find("Setting[@name='mail_to']")
         if setting_elem is not None:
             compress = setting_elem.get("compress")
-            print_info("Enable compression: ", compress)
+            print_info("Enable compression: {0}".format(compress))
             if "Yes" in compress:
-                zipfile = self.zip_html_result(resultPath)
-                resultPath = zipfile
+                zipfile = self.zip_html_result(resultpath)
+                resultpath = zipfile
         
         print_info("++++ Results Summary ++++")
         print_info("Open the Results summary file given below in a browser to "
                    "view results summary for this execution")
-        print_info("Results sumary file: {0}".format(resultPath))
+        print_info("Results summary file: {0}".format(resultpath))
         print_info("+++++++++++++++++++++++++")
