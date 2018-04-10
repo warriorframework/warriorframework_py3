@@ -20,5 +20,23 @@ var wappstore = {
             $subBar.show();
             $elem.find('i').removeClass('fa-chevron-circle-down').addClass('fa-chevron-circle-up');
         }
+    },
+
+    installTerminalApp: function() {
+        $.ajax({
+                type: 'GET',
+                url: 'wappstore/install_terminal_app/'
+            }).done(function(data){
+                if(data.status) {
+                    setTimeout(function () {
+                        katana.refreshLandingPage();
+                        katana.openAlert({"alert_type": "success", "heading": "Installation successful", "text": "App has been installed"})
+                    }, 2500);
+                } else {
+                    setTimeout(function () {
+                        katana.openAlert({"alert_type": "error", "heading": "A Problem Occurred", "text": data.message})
+                    }, 2500);
+                }
+        });
     }
 };
