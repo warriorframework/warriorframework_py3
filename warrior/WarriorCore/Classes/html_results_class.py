@@ -296,11 +296,22 @@ class WarriorHtmlResults:
         elem_file.close()
 
         self.lineObjs = []
+        # Check whether the result file has to be compressed 
+        resultpath = self.get_path()
+        warrior_tools_dir = Tools.__path__[0]+os.sep+'w_settings.xml'
+        element = ET.parse(warrior_tools_dir)
+        setting_elem = element.find("Setting[@name='mail_to']")
+        if setting_elem is not None:
+            compress = setting_elem.get("compress")
+            print_info("Enable compression: {0}".format(compress))
+            if "Yes" in compress:
+                zipfile = self.zip_html_result(resultpath)
+                resultpath = zipfile
         if is_final is True:
             print_info("++++ Results Summary ++++")
             print_info("Open the Results summary file given below in a browser to "
                        "view results summary for this execution")
-            print_info("Results sumary file: {0}".format(self.get_path()))
+            print_info("Results summary file: {0}".format(resultpath))
             print_info("+++++++++++++++++++++++++")
 
     def generate_html(self, junitObj, givenPath, is_final):
@@ -332,20 +343,9 @@ class WarriorHtmlResults:
             katana.end_comunication()
 
         self.lineObjs = []
-        # Check whether the result file has to be compressed 
-        resultpath = self.get_path()
-        warrior_tools_dir = Tools.__path__[0]+os.sep+'w_settings.xml'
-        element = ET.parse(warrior_tools_dir)
-        setting_elem = element.find("Setting[@name='mail_to']")
-        if setting_elem is not None:
-            compress = setting_elem.get("compress")
-            print_info("Enable compression: {0}".format(compress))
-            if "Yes" in compress:
-                zipfile = self.zip_html_result(resultpath)
-                resultpath = zipfile
         
         print_info("++++ Results Summary ++++")
         print_info("Open the Results summary file given below in a browser to "
                    "view results summary for this execution")
-        print_info("Results summary file: {0}".format(resultpath))
+        print_info("Results summary file: {0}".format(self.get_path()))
         print_info("+++++++++++++++++++++++++")
