@@ -305,8 +305,8 @@ class WarriorHtmlResults:
             compress = setting_elem.get("compress")
             print_info("Enable compression: {0}".format(compress))
             if "Yes" in compress:
-                zipfile = self.zip_html_result(resultpath)
-                resultpath = zipfile
+                zippedfile = self.zip_html_result(resultpath)
+                resultpath = zippedfile
         if is_final is True:
             print_info("++++ Results Summary ++++")
             print_info("Open the Results summary file given below in a browser to "
