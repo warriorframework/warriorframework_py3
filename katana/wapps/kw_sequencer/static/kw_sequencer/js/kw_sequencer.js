@@ -2,6 +2,8 @@
 
 var kwSequencer = {
 
+    action_file: "",
+
     init: function(){
         var $currentPage = katana.$activeTab;
         var $newBtn = $currentPage.find('[katana-click="kwSequencer.newKeyword"]');
@@ -10,6 +12,7 @@ var kwSequencer = {
         var $displayFilesDiv = $currentPage.find('#display-files');
         var $displayErrorMsgDiv = $currentPage.find('#display-error-message');
         var $createKwDiv = $currentPage.find('#create-keyword');
+        kwSequencer.action_file = "";
         $newBtn.hide();
         $closeBtn.hide();
         $saveBtn.hide();
@@ -50,35 +53,45 @@ var kwSequencer = {
                         }
                     });
                     $displayFilesDiv.jstree().hide_dots();
+                    $displayFilesDiv.on('changed.jstree', function (e, data) {
+                        kwSequencer.action_file = data.instance.get_path(data.node,'/');
+                    });
                 });
             }
         });
     },
 
     newKeyword: function(){
-        $.ajax({
-           type: 'GET',
-           url: 'kw_sequencer/create_new_kw/'
-       }).done(function(data){
-           var $currentPage = katana.$activeTab;
-           var $newBtn = $currentPage.find('[katana-click="kwSequencer.newKeyword"]');
-           var $closeBtn = $currentPage.find('[katana-click="kwSequencer.closeKeyword"]');
-           var $saveBtn = $currentPage.find('[katana-click="kwSequencer.saveKeyword"]');
-           var $displayFilesDiv = $currentPage.find('#display-files');
-           var $displayErrorMsgDiv = $currentPage.find('#display-error-message');
-           var $createKwDiv = $currentPage.find('#create-keyword');
-           var $toolBarDiv = $currentPage.find('.tool-bar');
-           $newBtn.hide();
-           $closeBtn.show();
-           $saveBtn.show();
-           $displayFilesDiv.hide();
-           $displayErrorMsgDiv.hide();
-           $createKwDiv.show();
-           $currentPage.find("#create-keyword").html(data);
-           $toolBarDiv.find('.title').html("Katana Wrapper Keyword Editor");
-       });
+        if (kwSequencer.action_file) {
+            $.ajax({
+               type: 'GET',
+               url: 'kw_sequencer/create_new_kw/'
+            }).done(function(data){
+                var $currentPage = katana.$activeTab;
+                var $newBtn = $currentPage.find('[katana-click="kwSequencer.newKeyword"]');
+                var $closeBtn = $currentPage.find('[katana-click="kwSequencer.closeKeyword"]');
+                var $saveBtn = $currentPage.find('[katana-click="kwSequencer.saveKeyword"]');
+                var $displayFilesDiv = $currentPage.find('#display-files');
+                var $displayErrorMsgDiv = $currentPage.find('#display-error-message');
+                var $createKwDiv = $currentPage.find('#create-keyword');
+                var $toolBarDiv = $currentPage.find('.tool-bar');
+                $newBtn.hide();
+                $closeBtn.show();
+                $saveBtn.show();
+                $displayFilesDiv.hide();
+                $displayErrorMsgDiv.hide();
+                $createKwDiv.show();
+                $currentPage.find("#create-keyword").html(data);
+                $toolBarDiv.find('.title').html("Katana Wrapper Keyword Editor");
+            });
+        } else {
+            katana.openAlert({"alert_type": "warning",
+                               "heading": "Action file required!",
+                               "text": "Please choose an action file and click 'New' to create a Keyword.",
+                               "accept_btn_text": "Ok", "show_cancel_btn": false})
+        }
 
-   },
+    },
 
     closeKeyword: function(){
         var $currentPage = katana.$activeTab;
@@ -97,6 +110,10 @@ var kwSequencer = {
                            "accept_btn_text": "Yes", "cancel_btn_text": "No"},
                            callbackOnAccept)
 
+    },
+
+    newSubKeyword: function(){
+        console.log("newSubKeyword")
     },
 
 };
