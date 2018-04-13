@@ -2,7 +2,7 @@
 
 var kwSequencer = {
 
-    action_file: "",
+    actionFilePath: "",
 
     init: function(){
         var $currentPage = katana.$activeTab;
@@ -12,7 +12,7 @@ var kwSequencer = {
         var $displayFilesDiv = $currentPage.find('#display-files');
         var $displayErrorMsgDiv = $currentPage.find('#display-error-message');
         var $createKwDiv = $currentPage.find('#create-keyword');
-        kwSequencer.action_file = "";
+        kwSequencer.actionFilePath = "";
         $newBtn.hide();
         $closeBtn.hide();
         $saveBtn.hide();
@@ -54,7 +54,7 @@ var kwSequencer = {
                     });
                     $displayFilesDiv.jstree().hide_dots();
                     $displayFilesDiv.on('changed.jstree', function (e, data) {
-                        kwSequencer.action_file = data.instance.get_path(data.node,'/');
+                        kwSequencer.actionFilePath = data.instance.get_path(data.node, '/');
                     });
                 });
             }
@@ -62,7 +62,16 @@ var kwSequencer = {
     },
 
     newKeyword: function(){
-        if (kwSequencer.action_file) {
+        var isActionFile = false;
+        if (kwSequencer.actionFilePath) {
+            var actionFileName = kwSequencer.actionFilePath.replace(/^.*[\\\/]/, '');
+            var actionFileExtn = actionFileName.split('.').pop();
+            if (actionFileName != '__init__.py' && actionFileExtn == 'py') {
+                isActionFile = true;
+            }
+        }
+
+        if (isActionFile) {
             $.ajax({
                type: 'GET',
                url: 'kw_sequencer/create_new_kw/'
@@ -87,7 +96,7 @@ var kwSequencer = {
         } else {
             katana.openAlert({"alert_type": "warning",
                                "heading": "Action file required!",
-                               "text": "Please choose an action file and click 'New' to create a Keyword.",
+                               "text": "Please choose a Warrior Action File and click 'New' to create a Keyword.",
                                "accept_btn_text": "Ok", "show_cancel_btn": false})
         }
 
