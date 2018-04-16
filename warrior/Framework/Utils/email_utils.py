@@ -1,4 +1,4 @@
-'''
+"""
 Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -9,10 +9,10 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-'''
+"""
 # Utility to send email using smtp
 # Import smtplib for the actual sending function
-
+import zipfile
 import smtplib
 import os
 from os.path import basename
@@ -22,13 +22,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from xml.etree import ElementTree as ET
 import Tools
-from Framework.Utils.print_Utils import print_debug
+from Framework.Utils.print_Utils import print_debug, print_info
 from Framework.Utils import file_Utils
 from Framework.Utils.testcase_Utils import pNote
 from WarriorCore.Classes.execution_summary_class import ExecutionSummary
 
 
-def set_params_send_email(addsubject, data_repository, files, mail_on):
+def set_params_send_email(addsubject, data_repository, result_path, mail_on):
     """ From data_repository array constructs body of email
         using testcase/testsuite name, logs directory, results directory
         fetches smtp host, sender, receiver from w_settings.xml
@@ -39,7 +39,7 @@ def set_params_send_email(addsubject, data_repository, files, mail_on):
             1. testcase/testsuite name
             2. logs directory
             3. results directory
-        3. files - list of file attachments
+        3. result_path - path of file to be attached
         4. mail_on(optional) - it is to specify when to send an email
            Supported options below:
                 (1) per_execution(default)
@@ -53,15 +53,31 @@ def set_params_send_email(addsubject, data_repository, files, mail_on):
     else:
         body = data_repository
 
-    params = get_email_params(mail_on)
+    params = get_email_params(result_path, mail_on)
     subject = str(params[3])+addsubject
+    # Temporary fix - HTML file can not be attached since it will be generated
+    # only after the completion of the warrior execution. Creating html result
+    # file at runtime will solve this.
+    # KH. 2017-07-27
+    if mail_on in ["per_execution", "first_failure", "every_failure"]:
+        files = {str(params[4])}
+    else:
+        files = {}
     send_email(params[0], params[1], params[2], subject, body, files)
 
+def convert_to_zip(htmlfile):
+    """ Compressing and zipping the html result file """
+    html_zipfile = htmlfile.split(".html")[0] + ".zip"
+    zippedfile = zipfile.ZipFile(html_zipfile, 'w', zipfile.ZIP_DEFLATED)
+    zippedfile.write(htmlfile)
+    zippedfile.close()
+    return html_zipfile
 
-def get_email_params(mail_on='per_execution'):
+def get_email_params(result_path, mail_on='per_execution'):
     """ Get the parameters from the w_settings.xml file.
     :Arguments:
-        1. mail_on(optional) - it is to specify when to send an email.
+        1.result_path - It specifies the path where html result is generated.
+        2.mail_on(optional) - it is to specify when to send an email.
            Supported options below:
                 (1) per_execution(default)
                 (2) first_failure
@@ -105,8 +121,12 @@ def get_email_params(mail_on='per_execution'):
             subject = subject_elem.text
             if subject is None:
                 subject = ""
-
-    return smtp_host, sender, receivers, subject
+        compress = setting_elem.get("compress")
+        if compress == "Yes":
+            print_info("Compressing the result: {0}".format(result_path))
+            zipfile = convert_to_zip(result_path)
+            result_path = zipfile
+    return smtp_host, sender, receivers, subject, result_path
 
 
 def construct_mail_body(exec_type, abs_filepath, logs_dir, results_dir):
@@ -165,35 +185,14 @@ def compose_send_email(exec_type, abs_filepath, logs_dir, results_dir, result,
                 (1) per_execution(default)
                 (2) first_failure
                 (3) every_failure
-        7. compress - specifies if the result has to be compressed and emailed.
-           Supported options: Yes/No(default)
     """
     resultconverted = {"True": "Pass", "False": "Fail", "ERROR": "Error",
                        "EXCEPTION": "Exception"}.get(str(result))
     subject = str(resultconverted)+": "+file_Utils.getFileName(abs_filepath)
     body = construct_mail_body(exec_type, abs_filepath, logs_dir, results_dir)
     report_attachment = results_dir + os.sep + \
-        file_Utils.getNameOnly(file_Utils.getFileName(abs_filepath))
-    warrior_tools_dir = Tools.__path__[0]+os.sep+'w_settings.xml'
-    element = ET.parse(warrior_tools_dir)
-    setting_elem = element.find("Setting[@name='mail_to']")
-    if setting_elem is not None:
-        compress = setting_elem.get("compress")
-        if "Yes" in compress:
-            report_attachment += ".zip"
-        else:
-            report_attachment += ".html"
-
-    # Temporary fix - HTML file can not be attached since it will be generated
-    # only after the completion of the warrior execution. Creating html result
-    # file at runtime will solve this.
-    # KH. 2017-07-27
-    if mail_on in ["per_execution", "first_failure", "every_failure"]:
-        files = {report_attachment}
-    else:
-        files = {}
-
-    set_params_send_email(subject, body, files, mail_on)
+        file_Utils.getNameOnly(file_Utils.getFileName(abs_filepath)) + ".html"
+    set_params_send_email(subject, body, report_attachment, mail_on)
 
 
 def send_email(smtp_host, sender, receivers, subject, body, files):

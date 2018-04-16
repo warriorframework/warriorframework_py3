@@ -12,12 +12,10 @@ limitations under the License.
 """
 
 import os
-import zipfile
 import json
 import getpass
 import multiprocessing
 import Tools
-from xml.etree import ElementTree as ET
 from Framework.Utils import xml_Utils, file_Utils, data_Utils
 from Framework.Utils.testcase_Utils import pNote
 from Framework.Utils.print_Utils import print_info
@@ -209,14 +207,6 @@ class WarriorHtmlResults:
         index = template_html.rfind('</table>')
         return template_html[:index] + dynamic_html + template_html[index:] + self.get_war_version()
 
-    def zip_html_result(self, htmlfile):
-        """ Compressing and zipping the html result file """
-        html_zipfile = htmlfile.split(".html")[0] + ".zip"
-        zippedfile = zipfile.ZipFile(html_zipfile, 'w', zipfile.ZIP_DEFLATED)
-        zippedfile.write(htmlfile)
-        zippedfile.close()
-        return html_zipfile
-
     def get_war_version(self):
         """ find the warrior version """
         path = self.get_path().split('warriorframework')[0] + 'warriorframework/version.txt'
@@ -296,22 +286,11 @@ class WarriorHtmlResults:
         elem_file.close()
 
         self.lineObjs = []
-        # Check whether the result file has to be compressed 
-        resultpath = self.get_path()
-        warrior_tools_dir = Tools.__path__[0]+os.sep+'w_settings.xml'
-        element = ET.parse(warrior_tools_dir)
-        setting_elem = element.find("Setting[@name='mail_to']")
-        if setting_elem is not None:
-            compress = setting_elem.get("compress")
-            print_info("Enable compression: {0}".format(compress))
-            if "Yes" in compress:
-                zippedfile = self.zip_html_result(resultpath)
-                resultpath = zippedfile
         if is_final is True:
             print_info("++++ Results Summary ++++")
             print_info("Open the Results summary file given below in a browser to "
                        "view results summary for this execution")
-            print_info("Results summary file: {0}".format(resultpath))
+            print_info("Results summary file: {0}".format(self.get_path()))
             print_info("+++++++++++++++++++++++++")
 
     def generate_html(self, junitObj, givenPath, is_final):
