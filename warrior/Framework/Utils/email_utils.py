@@ -184,9 +184,9 @@ def compose_send_email(exec_type, abs_filepath, logs_dir, results_dir, result,
     report_attachment = results_dir + os.sep + \
         file_Utils.getNameOnly(file_Utils.getFileName(abs_filepath)) + ".html"
     if mail_on in ["per_execution", "first_failure", "every_failure"]:
-         files = [report_attachment]
+        files = [report_attachment]
     else:
-         files = []
+        files = []
     set_params_send_email(subject, body, files, mail_on)
 
 
