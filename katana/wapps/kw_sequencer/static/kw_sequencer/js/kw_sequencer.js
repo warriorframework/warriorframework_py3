@@ -64,7 +64,7 @@ var kwSequencer = {
     newKeyword: function(){
         var isActionFile = false;
         if (kwSequencer.actionFilePath) {
-            var actionFileName = kwSequencer.actionFilePath.replace(/^.*[\\\/]/, '');
+            var actionFileName = kwSequencer.actionFilePath.split('\\').pop().split('/').pop();
             var actionFileExtn = actionFileName.split('.').pop();
             if (actionFileName != '__init__.py' && actionFileExtn == 'py') {
                 isActionFile = true;
@@ -91,6 +91,7 @@ var kwSequencer = {
                 $displayErrorMsgDiv.hide();
                 $createKwDiv.show();
                 $currentPage.find("#create-keyword").html(data);
+                $currentPage.find("#wrapperActionFile").val(actionFileName.split('.')[0]);
                 $toolBarDiv.find('.title').html("Katana Wrapper Keyword Editor");
             });
         } else {
