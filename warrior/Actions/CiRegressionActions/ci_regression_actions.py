@@ -378,8 +378,8 @@ class CIregressionActions(object):
             # this block checks if dict_value is dict type
             pNote(err_msg.format(dict_value, "dict", type(dict_value)), "error")
             status = False
-        if type(file_value) is not IOBase:
-            # this block checks if file_value is file type
+        if not isinstance(file_value, IOBase):
+            # this block checks if file_value is filetype
             pNote(err_msg.format(file_value, "file", type(file_value)), "error")
             status = False
         else:
