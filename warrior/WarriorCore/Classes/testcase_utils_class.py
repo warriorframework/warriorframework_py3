@@ -528,6 +528,8 @@ class TestcaseUtils(object):
             status = 'ERROR'
         elif 'ERROR' not in result and False in result:
             status = False
+        elif 'RAN' in result:
+            status = 'RAN'
         else:
             status = True
         return status
