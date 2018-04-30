@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from WarriorCore.Classes.war_print_class import print_main
 import sys
 import traceback
+from WarriorCore.Classes.war_print_class import print_main
 
 """
 Warrior Frameworks print library
