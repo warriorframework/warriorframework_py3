@@ -123,7 +123,14 @@ var kwSequencer = {
     },
 
     newSubKeyword: function(){
-        console.log("newSubKeyword")
+        var $currentPage = katana.$activeTab;
+        $currentPage.find('#new-sub-keyword-div').removeAttr('hidden');
     },
+
+    cancelSubKeyword: function(){
+        var $currentPage = katana.$activeTab;
+        $currentPage.find('#new-sub-keyword-div').attr('hidden', 'false');
+    },
+
 
 };

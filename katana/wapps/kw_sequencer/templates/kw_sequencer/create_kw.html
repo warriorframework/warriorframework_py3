@@ -25,13 +25,7 @@
         <div id="sub-keyword-div">
             <h4>SubKeyword Details</h4>
             <p>A Wrapper Keyword requires at least one Subkeyword definition.<br>Please use the 'New Subkeyword' button below to create a Subkeyword.</p>
-            <div class="row">
-                <div class="col-md-2">
-                    <button class="btn btn-primary" katana-click="kwSequencer.newSubKeyword">New Subkeyword</button>
-                </div>
-            </div>
-            <div id="new-sub-keyword-div">
-                <br>
+            <div hidden id="new-sub-keyword-div">
                 <div class="row">
                     <label for="stepDriver" class="col-md-2">Drivers</label>
                     <div class="col-md-4">
@@ -57,11 +51,17 @@
                 <div class="row">
                     <div class="col-md-4 ">
                         <button class="btn btn-primary">Save Subkeyword</button>
-                        <button class="btn btn-primary">Cancel</button>
+                        <button class="btn btn-primary" katana-click="kwSequencer.cancelSubKeyword">Cancel</button>
                     </div>
                 </div>
                 <br>
             </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <button class="btn btn-primary" katana-click="kwSequencer.newSubKeyword">New Subkeyword</button>
+                </div>
+            </div>
+            <br>
             <div class="row">
                 <div class="col-md-4 ">
                     <button class="btn btn-primary">Save Wrapper Keyword</button>
