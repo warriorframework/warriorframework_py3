@@ -59,6 +59,16 @@ def print_normal(message, *args):
     return message
 
 
+def print_without_logging(message, *args):
+    """Prints without writing to log file"""
+    print_type = ""
+    if len(args) > 0:
+        for arg in args:
+            message += arg + ", "
+    print_main(message, print_type, logging=False)
+    return message
+
+
 def print_info(message, *args):
     """Print an info message to the terminal """
     print_type = "-I-"
@@ -145,3 +155,4 @@ def print_sub(message, *args):
     message = message.format(*args)
     print_main(message, print_type)
     return message
+
