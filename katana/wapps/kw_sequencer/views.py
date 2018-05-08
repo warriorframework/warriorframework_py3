@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from django.views import View
 
@@ -20,4 +22,5 @@ def create_new_subkw(request):
     output = {}
     da_obj = GetDriversActions(navigator.get_warrior_dir()[:-1])
     output["drivers"] = da_obj.get_all_actions()
-    return render(request, 'kw_sequencer/create_subkw.html', output)
+    output["html_data"] = render_to_string('kw_sequencer/create_subkw.html', output)
+    return JsonResponse(output)

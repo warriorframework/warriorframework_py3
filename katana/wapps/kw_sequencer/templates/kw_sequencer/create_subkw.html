@@ -2,7 +2,7 @@
     <div class="row">
         <label for="stepDriver" class="col-md-2">Drivers</label>
         <div class="col-md-4">
-            <select type="text" id="stepDriver" katana-change="cases.getKeywords">
+            <select type="text" id="stepDriver" katana-change="kwSequencer.getDriverKeywords">
                 <option selected disabled hidden>Select Driver</option>
                 {% for driver in drivers %}
                 <option>{{ driver }}</option>
@@ -14,7 +14,6 @@
         <label for="stepKeyword" class="col-md-2">Keywords</label>
         <div class="col-md-4">
             <select type="text" id="stepKeyword">
-                <option selected disabled hidden>Select Keyword</option>
             </select>
         </div>
     </div>

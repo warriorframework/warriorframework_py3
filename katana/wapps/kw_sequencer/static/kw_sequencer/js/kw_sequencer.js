@@ -3,6 +3,7 @@
 var kwSequencer = {
 
     actionFilePath: "",
+    drivers: false,
 
     init: function(){
         var $currentPage = katana.$activeTab;
@@ -129,14 +130,33 @@ var kwSequencer = {
         }).done(function(data) {
             var $currentPage = katana.$activeTab;
             var $createSubKwDiv = $currentPage.find('#new-sub-keyword-div');
-            $createSubKwDiv.html(data);
+            $createSubKwDiv.html(data.html_data);
             $createSubKwDiv.removeAttr('hidden');
+            kwSequencer.drivers = data.drivers;
         });
     },
 
     cancelSubKeyword: function(){
         var $currentPage = katana.$activeTab;
         $currentPage.find('#new-sub-keyword-div').attr('hidden', 'false');
+    },
+
+    getDriverKeywords: function(){
+        $elem = $(this);
+        var driverName = $elem.val();
+        console.log(driverName)
+        var $kwRow = $elem.closest('.row').next();
+        $kwRow.find('#stepKeyword').html("<option selected disabled hidden>Select Keyword</option>");
+        console.log("kwSequencer.drivers: " + kwSequencer.drivers)
+
+        if (driverName in kwSequencer.drivers) {
+            for (var key in kwSequencer.drivers[driverName].actions){
+                if (kwSequencer.drivers[driverName].actions.hasOwnProperty(key)){
+                    $kwRow.find('#stepKeyword').append('<option>' + key + '</option>');
+                }
+            }
+        }
+
     },
 
 };
