@@ -90,7 +90,7 @@ var kwSequencer = {
                 $displayFilesDiv.hide();
                 $displayErrorMsgDiv.hide();
                 $createKwDiv.show();
-                $currentPage.find("#create-keyword").html(data);
+                $createKwDiv.html(data);
                 $currentPage.find("#wrapperActionFile").val(actionFileName.split('.')[0]);
                 $toolBarDiv.find('.title').html("Katana Wrapper Keyword Editor");
             });
@@ -123,14 +123,20 @@ var kwSequencer = {
     },
 
     newSubKeyword: function(){
-        var $currentPage = katana.$activeTab;
-        $currentPage.find('#new-sub-keyword-div').removeAttr('hidden');
+        $.ajax({
+            type: 'GET',
+            url: 'kw_sequencer/create_new_subkw/'
+        }).done(function(data) {
+            var $currentPage = katana.$activeTab;
+            var $createSubKwDiv = $currentPage.find('#new-sub-keyword-div');
+            $createSubKwDiv.html(data);
+            $createSubKwDiv.removeAttr('hidden');
+        });
     },
 
     cancelSubKeyword: function(){
         var $currentPage = katana.$activeTab;
         $currentPage.find('#new-sub-keyword-div').attr('hidden', 'false');
     },
-
 
 };

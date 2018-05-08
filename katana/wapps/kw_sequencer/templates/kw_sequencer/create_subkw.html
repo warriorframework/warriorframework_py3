@@ -1,0 +1,34 @@
+<div>
+    <div class="row">
+        <label for="stepDriver" class="col-md-2">Drivers</label>
+        <div class="col-md-4">
+            <select type="text" id="stepDriver" katana-change="cases.getKeywords">
+                <option selected disabled hidden>Select Driver</option>
+                {% for driver in drivers %}
+                <option>{{ driver }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <label for="stepKeyword" class="col-md-2">Keywords</label>
+        <div class="col-md-4">
+            <select type="text" id="stepKeyword">
+                <option selected disabled hidden>Select Keyword</option>
+            </select>
+        </div>
+    </div>
+    <div class="row">
+        <label for="stepArguments" class="col-md-2">Arguments</label>
+        <div class="col-md-4">
+            <input type="text" id="stepArguments" disabled placeholder="Arguments for the selected Keyword">
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 ">
+            <button class="btn btn-primary">Save Subkeyword</button>
+            <button class="btn btn-primary" katana-click="kwSequencer.cancelSubKeyword">Cancel</button>
+        </div>
+    </div>
+    <br>
+</div>
