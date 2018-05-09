@@ -131,32 +131,95 @@ var kwSequencer = {
             var $currentPage = katana.$activeTab;
             var $createSubKwDiv = $currentPage.find('#new-sub-keyword-div');
             $createSubKwDiv.html(data.html_data);
-            $createSubKwDiv.removeAttr('hidden');
+            $createSubKwDiv.show();
             kwSequencer.drivers = data.drivers;
         });
     },
 
     cancelSubKeyword: function(){
         var $currentPage = katana.$activeTab;
-        $currentPage.find('#new-sub-keyword-div').attr('hidden', 'false');
+        $currentPage.find('#new-sub-keyword-div').hide();
     },
 
     getDriverKeywords: function(){
         $elem = $(this);
         var driverName = $elem.val();
-        console.log(driverName)
         var $kwRow = $elem.closest('.row').next();
         $kwRow.find('#stepKeyword').html("<option selected disabled hidden>Select Keyword</option>");
-        console.log("kwSequencer.drivers: " + kwSequencer.drivers)
-
-        if (driverName in kwSequencer.drivers) {
+        if ((kwSequencer.drivers) && (driverName in kwSequencer.drivers)) {
             for (var key in kwSequencer.drivers[driverName].actions){
                 if (kwSequencer.drivers[driverName].actions.hasOwnProperty(key)){
                     $kwRow.find('#stepKeyword').append('<option>' + key + '</option>');
                 }
             }
         }
+    },
 
+    getArgumentsEtc: function(){
+        /* This function internally calls the _setSignature, _setArguments, _setWDescription, _setComments
+        functions for upadting those fields on kw name change */
+        $elem = $(this);
+        var kwName = $elem.val();
+        var driverName = $elem.closest('.row').prev().find('#stepDriver').val();
+        var data = false;
+
+        if ((kwSequencer.drivers) && (driverName in kwSequencer.drivers)) {
+            if (kwName in kwSequencer.drivers[driverName].actions) {
+                data = kwSequencer.drivers[driverName].actions[kwName]
+            }
+        }
+
+        kwSequencer._setSignature($elem.closest('.row').next(), data);
+        kwSequencer._setArguments($elem.closest('.row').next().next(), data);
+        kwSequencer._setWDescription($elem.closest('.row').next().next().next(), data);
+        kwSequencer._setComments($elem.closest('.row').next().next().next().next(), data);
+    },
+
+    _setSignature: function ($topLevelSignRow, data) {
+        /* This function hides/shows corresponding function signature */
+        $topLevelSignRow.hide();
+        if (data) {
+            $topLevelSignRow.find('textarea').html(data.signature);
+            $topLevelSignRow.show();
+        }
+    },
+
+    _setArguments: function ($topLevelArgRow, data) {
+        /* This function hides/shows corresponding arguments */
+        var $argRow = $topLevelArgRow.find('#arg-template').clone().show();
+        var $argContainer = $topLevelArgRow.find('.container-fluid');
+        $argContainer.children().slice(1).remove();
+        $topLevelArgRow.hide();
+        var temp = false;
+
+        if (data) {
+            for (var i=0; i<data.arguments.length; i++){
+                temp = $argRow.clone();
+                temp.find('.subkw-label').attr('for', data.arguments[i]);
+                temp.find('.subkw-label').html(data.arguments[i]);
+                temp.find('.subkw-text').find('input').attr('id', data.arguments[i]);
+                $argContainer.append(temp.clone());
+                $topLevelArgRow.show();
+            }
+        }
+    },
+
+    _setWDescription: function ($topLevelWDescRow, data) {
+        /* This function hides/shows corresponding description */
+        $topLevelWDescRow.hide();
+        if (data) {
+            $topLevelWDescRow.find('textarea').html(data.wdesc);
+            $topLevelWDescRow.show();
+        }
+    },
+
+    _setComments: function ($topLevelCommentsRow, data) {
+        /* This function hides/shows corresponding comments */
+        $topLevelCommentsRow.hide();
+        if (data) {
+            $topLevelCommentsRow.find('textarea').html(data.comments);
+            $topLevelCommentsRow.show();
+        }
     },
 
 };
