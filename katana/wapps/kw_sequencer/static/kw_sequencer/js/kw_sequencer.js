@@ -214,12 +214,14 @@ var kwSequencer = {
                 }
             }
         }
+        // To reset Siganture/Arguemnts/wDescription/Comments blocks
+        kwSequencer.getArgumentsEtc($kwRow.find('label'));
     },
 
-    getArgumentsEtc: function(){
+    getArgumentsEtc: function($elem){
         /* This function internally calls the _setSignature, _setArguments, _setWDescription, _setComments
         functions for upadting those fields on kw name change */
-        $elem = $(this);
+        $elem = $elem ? $elem : $(this);
         var kwName = $elem.val();
         var driverName = $elem.closest('.row').prev().find('#stepDriver').val();
         var data = false;
@@ -229,7 +231,6 @@ var kwSequencer = {
                 data = kwSequencer.drivers[driverName].actions[kwName]
             }
         }
-
         kwSequencer._setSignature($elem.closest('.row').next(), data);
         kwSequencer._setArguments($elem.closest('.row').next().next(), data);
         kwSequencer._setWDescription($elem.closest('.row').next().next().next(), data);
@@ -249,8 +250,8 @@ var kwSequencer = {
         /* This function hides/shows corresponding arguments */
         var $argRow = $topLevelArgRow.find('#arg-template').attr('key', 'Arguments.argument').clone().show();
         var $argContainer = $topLevelArgRow.find('.container-fluid');
-        $topLevelArgRow.find('#arg-template').remove();
-        //$argContainer.children().slice(1).remove();
+        //$topLevelArgRow.find('#arg-template').remove();
+        $argContainer.children().slice(1).remove();
         $topLevelArgRow.hide();
         var temp = false;
 
