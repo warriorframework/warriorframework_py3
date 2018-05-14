@@ -129,9 +129,9 @@ var kwSequencer = {
             url: 'kw_sequencer/create_new_subkw/'
         }).done(function(data) {
             var $currentPage = katana.$activeTab;
-            var $createSubKwDiv = $currentPage.find('#new-sub-keyword-div');
-            $createSubKwDiv.html(data.html_data);
-            $createSubKwDiv.show();
+            var $newSubKwDiv = $currentPage.find('#new-sub-keyword-div');
+            $newSubKwDiv.html(data.html_data);
+            $newSubKwDiv.show();
             kwSequencer.drivers = data.drivers;
         });
     },
@@ -139,6 +139,67 @@ var kwSequencer = {
     cancelSubKeyword: function(){
         var $currentPage = katana.$activeTab;
         $currentPage.find('#new-sub-keyword-div').hide();
+    },
+
+    saveSubKeyword: function(){
+        var $currentPage = katana.$activeTab;
+        var $newSubKwDiv = $currentPage.find('#new-sub-keyword-div');
+        if (katana.validationAPI.init($newSubKwDiv)){
+            var data = kwSequencer.generateSubKwJson($newSubKwDiv);
+        }
+    },
+
+    generateSubKwJson: function($container){
+        var finalJson = {SubKws: { subKw: []}};
+        var $allSubKws = $container.attr('key') === 'subKw'? [$container] : $container.find('[key="subKw"]');
+        var $allKeys = false;
+        var partialData = false;
+        for (var i=0; i <$allSubKws.length; i++) {
+            $allKeys = $($allSubKws[i]).find('[key]').not('[key*="Arguments"]');
+            partialData = {};
+            for (var j=0; j<$allKeys.length; j++) {
+                var key = $($allKeys[j]).attr("key").trim();
+                var value = $($allKeys[j]).val() ? $($allKeys[j]).val().trim() : $($allKeys[j]).html().trim();
+                $.extend(true, partialData, kwSequencer._updateJson(key, value));
+            }
+            $.extend(true, partialData, kwSequencer.generateArguments($($allSubKws[i]).find('[key="Arguments.argument"]')));
+            finalJson.SubKws.subKw.push(partialData);
+        }
+        return finalJson
+    },
+
+    generateArguments: function ($container){
+        /* This function creates arguments json out of an HTML block. Typically this function should
+        never be called independently. */
+        var finalJson = {Arguments: {argument: []}};
+        var partialData = false;
+        var $argBlock = false;
+        for (var i=0; i<$container.length; i++) {
+            $argBlock = $($container[i]).find('[key]');
+            partialData = {};
+            for (var j=0; j<$argBlock.length; j++) {
+                var key = $($argBlock[j]).attr("key").trim();
+                var val = $($argBlock[j]).val() ? $($argBlock[j]).val().trim() : $($argBlock[j]).attr('value');
+                var value = val ? val.trim() : $($argBlock[j]).html().trim();
+                $.extend(true, partialData, kwSequencer._updateJson(key, value));
+            }
+            finalJson.Arguments.argument.push(Object.assign({}, partialData.Arguments.argument));
+        }
+        return finalJson;
+    },
+
+    _updateJson: function (unrefined_key, value) {
+        /* This function iterates through a json recursively and inserts the value for the given key at the correct place.
+         * This function should never be called independently */
+        var data = {};
+        var key = unrefined_key.split(/\.(.+)/)[0];
+        var remaining_key = unrefined_key.split(/\.(.+)/)[1];
+        if (key !== undefined && remaining_key !== undefined) {
+            data[key] = kwSequencer._updateJson(remaining_key, value)
+        } else {
+            data[unrefined_key] = value;
+        }
+        return data;
     },
 
     getDriverKeywords: function(){
@@ -186,9 +247,10 @@ var kwSequencer = {
 
     _setArguments: function ($topLevelArgRow, data) {
         /* This function hides/shows corresponding arguments */
-        var $argRow = $topLevelArgRow.find('#arg-template').clone().show();
+        var $argRow = $topLevelArgRow.find('#arg-template').attr('key', 'Arguments.argument').clone().show();
         var $argContainer = $topLevelArgRow.find('.container-fluid');
-        $argContainer.children().slice(1).remove();
+        $topLevelArgRow.find('#arg-template').remove();
+        //$argContainer.children().slice(1).remove();
         $topLevelArgRow.hide();
         var temp = false;
 
