@@ -146,7 +146,45 @@ var kwSequencer = {
         var $newSubKwDiv = $currentPage.find('#new-sub-keyword-div');
         if (katana.validationAPI.init($newSubKwDiv)){
             var data = kwSequencer.generateSubKwJson($newSubKwDiv);
+            var filteredArgs = [];
+            // Remove arguments with empty values
+            for (var i=0; i<data.SubKws.subKw[0].Arguments.argument.length; i++) {
+                if (data.SubKws.subKw[0].Arguments.argument[i]["@value"] !== "") {
+                    filteredArgs.push(Object.assign({}, data.SubKws.subKw[0].Arguments.argument[i]));
+                }
+            }
+            data.SubKws.subKw[0].Arguments.argument = filteredArgs;
         }
+        console.log(data);
+        var displayContent = kwSequencer.generateStepsDisplayHtmlBlock(katana.$activeTab.find('#kw-row-template').clone().attr('id', ''), data);
+        //var index = parseInt($newSubKwDiv.attr('index'))
+        var $allTrs = katana.$activeTab.find('#kws-template').find('tbody').find('tr');
+        katana.$activeTab.find('#kws-template').find('tbody').append(displayContent);
+        $currentPage.find('#new-sub-keyword-div').hide();
+    },
+
+    generateStepsDisplayHtmlBlock: function($container, data){
+        $container = $($container.html());
+        var $allKeys = $container.find('[key]').not('[key*="Arguments"]');
+        for (var i=0; i<$allKeys.length; i++) {
+            $($allKeys[i]).html(kwSequencer.getValueFromJson(data.SubKws.subKw[0], $($allKeys[i]).attr('key')));
+        }
+        $container = kwSequencer.evaluateDisplayArguments($container, data);
+        return $container;
+    },
+
+    evaluateDisplayArguments: function ($container, data) {
+        /* This function hides/shows the argument block (main page).
+        This function should not be called independently */
+        var $templateArg = $container.find('[key="Arguments.argument"]').clone();
+        var $argBlock = $container.find('[key="Arguments"]').empty();
+        for (var i=0; i<data.SubKws.subKw[0].Arguments.argument.length; i++) {
+            var $currentArgBlock = $templateArg.clone();
+            $currentArgBlock.find('[key="Arguments.argument.@name"]').html(data.SubKws.subKw[0].Arguments.argument[i]["@name"]);
+            $currentArgBlock.find('[key="Arguments.argument.@value"]').html(data.SubKws.subKw[0].Arguments.argument[i]["@value"]);
+            $argBlock.append($currentArgBlock);
+        }
+        return $container;
     },
 
     generateSubKwJson: function($container){
@@ -165,7 +203,7 @@ var kwSequencer = {
             $.extend(true, partialData, kwSequencer.generateArguments($($allSubKws[i]).find('[key="Arguments.argument"]')));
             finalJson.SubKws.subKw.push(partialData);
         }
-        return finalJson
+        return finalJson;
     },
 
     generateArguments: function ($container){
@@ -200,6 +238,17 @@ var kwSequencer = {
             data[unrefined_key] = value;
         }
         return data;
+    },
+
+    getValueFromJson: function (data, unrefined_key) {
+        /* This function iterates through a json recursively and gets the value for the given key.
+        This function should never be called independently */
+        var key = unrefined_key.split(/\.(.+)/)[0];
+        var remaining_key = unrefined_key.split(/\.(.+)/)[1];
+        if (key !== undefined && remaining_key !== undefined) {
+            return cases.getValueFromJson(data[key], remaining_key)
+        }
+        return data[key];
     },
 
     getDriverKeywords: function(){
