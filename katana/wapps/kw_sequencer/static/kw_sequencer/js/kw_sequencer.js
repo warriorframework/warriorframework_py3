@@ -255,6 +255,7 @@ var kwSequencer = {
         $elem = $(this);
         var driverName = $elem.val();
         var $kwRow = $elem.closest('.row').next();
+        $kwRow.show();
         $kwRow.find('#stepKeyword').html("<option selected disabled hidden>Select Keyword</option>");
         if ((kwSequencer.drivers) && (driverName in kwSequencer.drivers)) {
             for (var key in kwSequencer.drivers[driverName].actions){
