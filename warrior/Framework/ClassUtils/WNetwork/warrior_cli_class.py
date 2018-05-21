@@ -1550,22 +1550,18 @@ class PexpectConnect(object):
                         if not cmd_timedout:
                             self.target_host.timeout = 1
                             pNote(tmsg1, "debug")
+                            pNote(tmsg2, "debug")
+                            pNote(tmsg3, "debug")
                             tstamp = Utils.datetime_utils.\
                                 get_current_timestamp()
                         cmd_timedout = True
-                        status = "ERROR"
-                        seconds = 60
-                        pNote(tmsg3, "debug")
-                        print_info(("Will wait {0} more seconds to get end prompt " + end_prompt)
-                                   .format(seconds))
-                        Utils.datetime_utils.wait_for_timeout(seconds)
-                        pNote(tmsg2, "debug")
+                        status = "ERROR"  
                         tdelta = Utils.datetime_utils.get_time_delta(tstamp)
+                        # the cursor value makes the wait time print like a count down
+                        cursor = '\033[1A\r' if (60-(int(tdelta))) > 0 else ''
                         print_without_logging("Remaining wait time: {0}s {1}"
-                                              .format(60-(int(tdelta)), '\033[1A\r'))
+                                              .format(60-int(tdelta), cursor))
                         if int(tdelta) >= 60:
-                            # clears the last line thats gets printed in terminal
-                            print_without_logging("\033[K\033[1A\r")
                             msg = "[{0}] Did not find end prompt '{1}' even " \
                                 "after 60 seconds post command time out". \
                                 format(Utils.datetime_utils.
