@@ -21,6 +21,12 @@ matrix:
       addons:
         firefox: "46.0"
         chrome: stable
+    - sudo: required
+      dist: trusty
+      env: INSTALL=yes TESTFILE=./wftests/warrior_tests/testcases/selenium_tests/tc_selenium_headless.xml SELENIUM=yes SELENIUM_3=yes
+      addons:
+        firefox: "60.0"
+        chrome: stable
     - sudo: false
       dist: trusty
       env: INSTALL=no TESTFILE=./wftests/warrior_tests/testcases/framework_tests/cond_var/pass.xml COPILOT=yes
@@ -44,7 +50,13 @@ install:
       chmod +x chromedriver;
       mv chromedriver ~/bin/chromedriver;
     fi
-
+  - if [[ ${SELENIUM_3} = "yes" ]] && [[ ! -z ${TRAVIS_PULL_REQUEST_BRANCH} ]]; then
+      pip install selenium==3.12 ;
+      wget https://github.com/mozilla/geckodriver/releases/download/v0.20.1/geckodriver-v0.20.1-linux64.tar.gz;
+      tar -xvzf geckodriver-v0.20.1-linux64.tar.gz;
+      chmod +x geckodriver;
+      sudo mv geckodriver ~/bin/geckodriver;
+    fi
 script:
   - if [[ -z ${TRAVIS_PULL_REQUEST_BRANCH} ]]; then
       python3 ./warrior/Warrior ./wftests/warrior_tests/testcases/framework_tests/cond_var/pass.xml ;

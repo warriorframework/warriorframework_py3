@@ -24,7 +24,7 @@ from Framework.Utils.testcase_Utils import pNote
 from Framework.Utils.print_Utils import print_error, print_info, print_debug, print_exception,\
     print_warning
 from Framework.Utils.data_Utils import get_object_from_datarepository
-
+from Framework.Utils.file_Utils import fileExists
 
 try:
     from selenium import webdriver
@@ -53,6 +53,8 @@ class BrowserManagement(object):
         """Open a browser session"""
 
         profile_dir = kwargs.get('profile_dir', None)
+        if 'profile_dir' in kwargs:
+            kwargs.pop('profile_dir')
 
         if webdriver_remote_url:
             print_debug("Opening browser '{0}' through remote server at '{1}'"\
@@ -515,6 +517,8 @@ class BrowserManagement(object):
         """Create an instance of firefox browser"""
         binary = kwargs.get("binary", None)
         gecko_path = kwargs.get("gecko_path", None)
+        # gecko_log is the absolute path to save geckodriver log
+        gecko_log = kwargs.get("gecko_log", None)
         proxy_ip = kwargs.get("proxy_ip", None)
         proxy_port = kwargs.get("proxy_port", None)
         ff_profile = None
@@ -523,7 +527,7 @@ class BrowserManagement(object):
             ff_profile = self.set_firefox_proxy(profile_dir, proxy_ip, proxy_port)
 
         log_dir = get_object_from_datarepository("wt_logsdir") if \
-                  kwargs.get("log_path") in [None, False] else kwargs.get("log_path")
+                  gecko_log in [None, False] else gecko_log
         log_dir = os.path.join(log_dir, "gecko_"+kwargs.get("browser_name", "default")+".log")
 
         browser = None
@@ -538,6 +542,11 @@ class BrowserManagement(object):
                 # This is for internal testing needs...some https cert is not secure
                 # And firefox will need to know how to handle it
                 ff_capabilities['acceptInsecureCerts'] = True
+
+                if not fileExists(str(binary)):
+                    print_warning("firefox binary '{}' does not exist, default "
+                                  "firefox will be used for execution.".format(binary))
+                    binary = None
 
                 # Force disable marionette, only needs in Selenium 3 with FF ver < 47
                 # Without these lines, selenium may encounter capability not found issue
