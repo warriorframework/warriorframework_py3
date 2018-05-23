@@ -195,7 +195,7 @@ class TestcaseUtils(object):
     def p_note_level(self, txt, print_type="info", level=None, ptc=True):
         """Create Note at the provided level"""
         write_locn = self.get_write_locn(str(level).upper())
-        print_util_types = ["-D-", "", "-I-", "-E-", "-W-",
+        print_util_types = ["-D-", "", "-I-", "-E-", "-W-","-N-",
                             "\033[1;31m-E-\033[0m"]
         p_type = {'INFO': print_info,
                   'DEBUG': print_debug,
@@ -204,15 +204,18 @@ class TestcaseUtils(object):
                   'ERROR': print_error,
                   'EXCEPTION': print_exception,
                   'SUB': print_sub,
-                  'NOTYPE': print_notype}.get(str(print_type).upper(),
-                                              print_info)
+                  'NOTYPE': print_notype,
+                  'NOLOG': print_without_logging}.get(str(print_type).upper(),
+                                                      print_info)
         txt = self.rem_nonprintable_ctrl_chars(str(txt))
         if write_locn is None:
             write_locn = self.current_pointer
         if ptc and print_type not in print_util_types:
             p_type(txt)
         # self.current_pointer may be None,which is not a intended behavior
-        if write_locn is not None:
+        # If print_type is nolog or -N-,the message will be logged in terminal
+        # but not in result file
+        if write_locn is not None and (print_type != '-N-' and print_type != 'nolog'):
             doc = ET.SubElement(write_locn, "Note")
             doc.text = txt
             self.print_output()
@@ -221,7 +224,7 @@ class TestcaseUtils(object):
         elif print_type == "notype":
             pass
 
-        elif print_type not in print_util_types:
+        elif print_type not in print_util_types and print_type != 'nolog':
             print_error("Unable to write to location in result file, the "
                         "message is logged in terminal but not in result file")
 
