@@ -122,9 +122,9 @@ class AppInstallConfig(View):
             else:
                 ET.SubElement(app, "repository").text = app_path
         fpath = join_path(WappManagementView.dot_data_directory, "{0}.xml".format(filename))
-        xml_str = ET.tostring(root, encoding='utf8', method='xml')
+        xml_str = ET.tostring(root, encoding='utf-8', method='xml')
         with open(fpath, "w") as f:
-            f.write(xml_str)
+            f.write(xml_str.decode('utf-8'))
 
         files = get_sub_files(WappManagementView.dot_data_directory)
         preferences = []
