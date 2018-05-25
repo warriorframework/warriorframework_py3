@@ -1,23 +1,42 @@
-<div id="kws-template">
+<div id="sub-keywords-template">
     <div class="">
-        <table class="table table-bordered">
-            <thead>
-            <tr>
-                <th scope="col" class="col-md-2">SubKw #</th>
-                <th scope="col" class="col-md-2">Driver</th>
-                <th scope="col" class="col-md-2">Keyword</th>
-                <th scope="col" class="col-md-6">Arguments</th>
-            </tr>
-            </thead>
+        <div class="">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col" class="col-md-2">SubKw #</th>
+                    <th scope="col" class="col-md-2">Driver</th>
+                    <th scope="col" class="col-md-2">Keyword</th>
+                    <th scope="col" class="col-md-6">Arguments</th>
+                </tr>
+                </thead>
 
-            <tbody>
-            </tbody>
+                <tbody>
+                </tbody>
 
-        </table>
+            </table>
+        </div>
+
+        <div class="sub-keywords-toolbar">
+            <div katana-click="kwSequencer.stepSection.toolbar.editStep" title="Select a keyword to edit it">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+            </div>
+            <div katana-click="kwSequencer.stepSection.toolbar.insertStep" title="Select a keyword to insert above it">
+                <i class="fa fa-reply" aria-hidden="true"></i>
+            </div>
+            <div katana-click="kwSequencer.stepSection.toolbar.deleteStep" title="Select a keyword or multiple keywords to delete it/them">
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </div>
+            <div katana-click="kwSequencer.stepSection.toolbar.multiselect" title="Toggle between selecting single and multiple keywords">
+                <i class="fa fa-th-list badged" aria-hidden="true" multiselect="on">
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                </i>
+            </div>
+        </div>
     </div>
 
     <script id="kw-row-template" type="text/html">
-        <tr katana-click="" key="subKw">
+        <tr katana-click="kwSequencer.stepSection.selectStep" key="subKw">
             <td class="col-md-2" key="@SubKwStep"></td>
             <td class="col-md-2" key="@Driver"></td>
             <td class="col-md-2" key="@Keyword"></td>

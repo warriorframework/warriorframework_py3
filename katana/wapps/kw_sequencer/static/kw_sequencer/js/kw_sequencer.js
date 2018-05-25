@@ -123,7 +123,7 @@ var kwSequencer = {
 
     },
 
-    newSubKeyword: function(){
+    newSubKeyword: function(insertAtIndex){
         $.ajax({
             type: 'GET',
             url: 'kw_sequencer/create_new_subkw/'
@@ -133,7 +133,11 @@ var kwSequencer = {
             $newSubKwDiv.html(data.html_data);
             $newSubKwDiv.show();
             kwSequencer.drivers = data.drivers;
-            $newSubKwDiv.attr('index', kwSequencer.getLastSubKwNum());
+            if (insertAtIndex !== undefined) {
+                $newSubKwDiv.attr('index', insertAtIndex);
+            } else {
+                $newSubKwDiv.attr('index', kwSequencer.getLastSubKwNum());
+            }
         });
     },
 
@@ -143,10 +147,10 @@ var kwSequencer = {
     },
 
     saveSubKeyword: function(){
+        var $currentPage = katana.$activeTab;
+        var $newSubKwDiv = $currentPage.find('#new-sub-keyword-div');
         if (katana.validationAPI.init($newSubKwDiv)){
-            var $currentPage = katana.$activeTab;
-            var $newSubKwDiv = $currentPage.find('#new-sub-keyword-div');
-            var data = kwSequencer.generateSubKwJson($newSubKwDiv);
+            var data = kwSequencer.generateSubKw($newSubKwDiv);
             var filteredArgs = [];
             // Remove arguments with empty values
             for (var i=0; i<data.SubKws.subKw[0].Arguments.argument.length; i++) {
@@ -155,21 +159,25 @@ var kwSequencer = {
                 }
             }
             data.SubKws.subKw[0].Arguments.argument = filteredArgs;
-            var displayContent = kwSequencer.generateStepsDisplayHtmlBlock(katana.$activeTab.find('#kw-row-template').clone().attr('id', ''), data);
+            var displayContent = kwSequencer.generateSubKeywordsDisplayHtmlBlock(katana.$activeTab.find('#kw-row-template').clone().attr('id', ''), data);
+            var stepType = $newSubKwDiv.attr('sub-keyword-type') === "edit";
             var index = parseInt($newSubKwDiv.attr('index'))
             displayContent.find('[key="@SubKwStep"]').html(index+1)
-            var $allTrs = katana.$activeTab.find('#kws-template').find('tbody').find('tr');
+            var $allTrs = katana.$activeTab.find('#sub-keywords-template').find('tbody').find('tr');
+            if (stepType && index < $allTrs.length) {
+                $allTrs[index].remove();
+            }
             if (index === 0 ) {
-                katana.$activeTab.find('#kws-template').find('tbody').prepend(displayContent);
+                katana.$activeTab.find('#sub-keywords-template').find('tbody').prepend(displayContent);
             } else {
                 displayContent.insertAfter($($allTrs[index-1]));
-                kwSequencer.redoStepNums();
             }
+            kwSequencer.redoStepNums();
             $currentPage.find('#new-sub-keyword-div').hide();
         }
     },
 
-    generateStepsDisplayHtmlBlock: function($container, data){
+    generateSubKeywordsDisplayHtmlBlock: function($container, data){
         $container = $($container.html());
         var $allKeys = $container.find('[key]').not('[key*="Arguments"]');
         for (var i=0; i<$allKeys.length; i++) {
@@ -193,7 +201,7 @@ var kwSequencer = {
         return $container;
     },
 
-    generateSubKwJson: function($container){
+    generateSubKw: function($container){
         var finalJson = {SubKws: { subKw: []}};
         var $allSubKws = $container.attr('key') === 'subKw'? [$container] : $container.find('[key="subKw"]');
         var $allKeys = false;
@@ -257,8 +265,9 @@ var kwSequencer = {
         return data[key];
     },
 
-    getDriverKeywords: function(){
-        $elem = $(this);
+    getDriverKeywords: function($elem, kwName){
+        $elem = $elem ? $elem : $(this);
+        kwName = kwName ? kwName : "";
         var driverName = $elem.val();
         var $kwRow = $elem.closest('.row').next();
         $kwRow.show();
@@ -266,12 +275,16 @@ var kwSequencer = {
         if ((kwSequencer.drivers) && (driverName in kwSequencer.drivers)) {
             for (var key in kwSequencer.drivers[driverName].actions){
                 if (kwSequencer.drivers[driverName].actions.hasOwnProperty(key)){
-                    $kwRow.find('#stepKeyword').append('<option>' + key + '</option>');
+                    if (key === kwName) {
+                        $kwRow.find('#stepKeyword').append('<option selected>' + key + '</option>');
+                    } else {
+                        $kwRow.find('#stepKeyword').append('<option>' + key + '</option>');
+                    }
                 }
             }
         }
         // To reset Siganture/Arguemnts/wDescription/Comments blocks
-        kwSequencer.getArgumentsEtc($kwRow.find('label'));
+        kwSequencer.getArgumentsEtc($kwRow.find('#stepKeyword'));
     },
 
     getArgumentsEtc: function($elem){
@@ -342,17 +355,162 @@ var kwSequencer = {
     },
 
     getLastSubKwNum: function () {
-        /* This function gets the last sub keyword number */
-        return katana.$activeTab.find('#kws-template').find('tbody').children('tr').length;
+        /* This function gets the last sub-keyword number */
+        return katana.$activeTab.find('#sub-keywords-template').find('tbody').children('tr').length;
     },
 
     redoStepNums: function(){
         var $tbodyElem = katana.$activeTab.find('#display-sub-keywords-div').find('table').find('tbody');
         var $allTrElems = $tbodyElem.children('tr');
-        console.log($allTrElems);
         for (var i=0; i<$allTrElems.length; i++){
             $($($allTrElems[i]).children('td')[0]).html(i+1);
         }
+    },
+
+    stepSection: {
+        selectStep: function () {
+            /* This function selects a sub-keyword */
+            var $elem = $(this);
+            var $allTrElems = $elem.parent().children('tr');
+            if ($elem.attr('marked') === 'true') {
+                $elem.attr('marked', 'false');
+                $elem.css('background-color', '');
+            } else {
+                var multiselect = katana.$activeTab.find('.sub-keywords-toolbar').find('.fa-th-list').attr('multiselect');
+                if (multiselect === 'off'){
+                    for (var i=0; i<$allTrElems.length; i++){
+                        $($allTrElems[i]).attr('marked', 'false');
+                        $($allTrElems[i]).css('background-color', '');
+                    }
+                }
+                $elem.attr('marked', 'true');
+                $elem.css('background-color', 'khaki');
+            }
+        },
+
+        toolbar: {
+            multiselect: function() {
+                /* This function de/activates the multiselect functionality for a sub-keyword */
+                var $elem = $(this);
+                var $iconElem = $elem.children('i');
+                if ($iconElem.attr('multiselect') === 'on'){
+                    $iconElem.attr('multiselect', 'off');
+                    $iconElem.removeClass('badged');
+                    $iconElem.children('i').hide();
+                    var $allTrElems = katana.$activeTab.find('#display-sub-keywords-div').find('tbody').children('tr');
+                    for (var i=0; i<$allTrElems.length; i++){
+                        $($allTrElems[i]).attr('marked', 'false');
+                        $($allTrElems[i]).css('background-color', 'white');
+                    }
+                } else {
+                    $iconElem.attr('multiselect', 'on');
+                    $iconElem.addClass('badged');
+                    $iconElem.children('i').show()
+                }
+            },
+
+            deleteStep: function () {
+                /* This function deletes a sub-keyword */
+                var $tbodyElem = katana.$activeTab.find('#display-sub-keywords-div').find('tbody');
+                var $allTrElems = $tbodyElem.children('tr[marked="true"]');
+                if ($allTrElems.length === 0) {
+                    katana.openAlert({"alert_type": "danger",
+                        "heading": "No keyword selected for deletion",
+                        "text": "Please select at least one keyword to delete",
+                        "show_cancel_btn": "false"})
+                } else {
+                    var stepNumbers = "";
+                    for (var i=0; i<$allTrElems.length; i++){
+                        stepNumbers += ($($allTrElems[i]).index() + 1).toString() + ", "
+                    }
+                    stepNumbers = stepNumbers.slice(0, -2);
+                    katana.openAlert({"alert_type": "warning",
+                        "heading": "This would delete keyword(s) " + stepNumbers,
+                        "text": "Are you sure you want to delete these keyword(s)?"},
+                        function () {
+                            for (var i=0; i<$allTrElems.length; i++){
+                                $($allTrElems[i]).remove();
+                            }
+                            kwSequencer.redoStepNums();
+                        })
+                }
+            },
+
+            insertStep: function () {
+                /* This function opens a new sub-keyword and inserts it into a speific spot when saved */
+                var $elem = $(this);
+                var $tbodyElem = katana.$activeTab.find('#display-sub-keywords-div').find('tbody');
+                var $allTrElems = $tbodyElem.children('tr[marked="true"]');
+                if ($allTrElems.length === 0) {
+                    var insertAtIndex = $tbodyElem.children('tr').length;
+                } else if ($allTrElems.length > 1) {
+                    katana.openAlert({
+                        "alert_type": "danger",
+                        "heading": "Multiple keywords selected",
+                        "text": "Only one keyword can be inserted at a time. Please select only one " +
+                        "keyword above which you want to insert another keyword.",
+                        "show_cancel_btn": false
+                    });
+                    return;
+                } else {
+                    insertAtIndex = $($allTrElems[0]).index();
+                }
+                kwSequencer.newSubKeyword(insertAtIndex);
+            },
+
+            editStep: function () {
+                /* This function opens the step in the step editor and replaces the existing step when saved */
+                var $elem = $(this);
+                var $tbodyElem = katana.$activeTab.find('#display-sub-keywords-div').find('tbody');
+                var $allTrElems = $tbodyElem.children('tr[marked="true"]');
+                if ($allTrElems.length === 0) {
+                    katana.openAlert({
+                        "alert_type": "danger",
+                        "heading": "No keyword selected",
+                        "text": "Please select a keyword to edit.",
+                        "show_cancel_btn": false
+                    });
+                } else if ($allTrElems.length > 1) {
+                    katana.openAlert({
+                        "alert_type": "danger",
+                        "heading": "Multiple keywords selected",
+                        "text": "Only one keyword can be edited at a time. Please select only one " +
+                        "keyword to edit.",
+                        "show_cancel_btn": false
+                    });
+                } else {
+                    var data = kwSequencer.generateSubKw($($allTrElems[0]));
+                    var $container = katana.$activeTab.find('#new-sub-keyword-div').show().attr('sub-keyword-type', 'edit').attr('index', $($allTrElems[0]).index());
+                    $container = kwSequencer.editSubKeywordHtmlBlock($container, data);
+                }
+            }
+        }
+    },
+
+    editSubKeywordHtmlBlock: function ($container, data) {
+        /* This function edits the sub keyword block based on json data */
+        var $driver = $container.find('[key="@Driver"]');
+        var driverName = kwSequencer.getValueFromJson(data.SubKws.subKw[0], "@Driver");
+        var kwName = kwSequencer.getValueFromJson(data.SubKws.subKw[0], "@Keyword");
+        var $allOptions = $($driver).children();
+        for (var i=0; i<$allOptions.length; i++) {
+            if ($($allOptions[i]).text() === driverName) {
+                $($allOptions[i]).prop('selected', true);
+                kwSequencer.getDriverKeywords($driver, kwName);
+                break;
+            }
+        }
+        var $allArgs = $container.find('[key="Arguments.argument"]');
+        for (var i=0 ; i<$allArgs.length; i++) {
+            var currentArg = $($allArgs[i]).find('label').text();
+            for (var j=0; j<data.SubKws.subKw[0].Arguments.argument.length; j++) {
+                if (data.SubKws.subKw[0].Arguments.argument[j]["@name"] === currentArg) {
+                    $($allArgs[i]).find('[key="Arguments.argument.@value"]').attr('value', data.SubKws.subKw[0].Arguments.argument[j]["@value"]);
+                    break;
+                }
+            }
+        }
+        return $container;
     },
 
 };
