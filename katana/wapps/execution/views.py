@@ -32,10 +32,14 @@ from utils import file_utils
 
 controls = Settings()
 
-templates_dir = os.path.join(os.path.dirname(__file__), 'templates')
-data_live_dir = os.path.join(os.path.dirname(__file__), '.data', 'live')
+# Define Navigator utils
+nav = Navigator()
 
-
+# use absolute path to avoid exception during docker deployment
+templates_dir = os.path.join(os.path.abspath(nav.get_katana_dir()), 'wapps', 'execution', 'templates')
+# relative path causes exception during docker deployment
+# use absolute path 
+data_live_dir = os.path.join(os.path.abspath(nav.get_katana_dir()), 'wapps', 'execution', '.data', 'live')
 
 class Execution(object):
     """
@@ -47,12 +51,13 @@ class Execution(object):
         """
         Constructor for execution app
         """
-        self.nav = Navigator()
-        self.katana_dir = os.path.dirname(native.__path__[0])
-        self.wf_dir = os.path.dirname(self.katana_dir)
-        self.warrior = os.path.join(self.wf_dir, 'warrior', 'Warrior')
+        self.katana_dir = nav.get_katana_dir()
+        self.wf_dir = os.path.dirname(os.path.abspath(self.katana_dir))
+        self.warrior = os.path.join(os.path.abspath(nav.get_warrior_dir()), 'Warrior')
         self.default_ws = os.path.join(self.wf_dir, 'warrior', 'Warriorspace')
-        self.templates_dir = os.path.join(templates_dir, 'execution')
+        # relative path causes exception during deployment with docker
+        # use absolute path instead
+        self.templates_dir = os.path.abspath(os.path.join(templates_dir, 'execution'))
         self.jira_settings_file = os.path.join(self.wf_dir, 'warrior', 'Tools', 'jira', 'jira_config.xml')        
         self.execution_settings_json = os.path.join(templates_dir, 'execution', 'execution_settings.json')
         self.config_json = os.path.join(self.katana_dir, 'config.json')
@@ -69,10 +74,9 @@ class Execution(object):
         start_dir = self.default_ws if execution_settings_dict['defaults']['start_dir'] == 'default' \
         else execution_settings_dict['defaults']['start_dir']
         execution_settings_dict['defaults']['start_dir'] = start_dir
-        index_template = os.path.join(self.templates_dir, 'execution.html')        
-        
-        
-        
+        # use absolute path
+        # relative path causes exception during docker deployment
+        index_template =  os.path.abspath(os.path.join(self.templates_dir, 'execution.html'))
         return render(request, index_template, execution_settings_dict)
     
     
@@ -162,14 +166,13 @@ class Execution(object):
             
         return HttpResponse(status)
         
-
     def get_ws(self, request):
         """
         return the dir tree json for warriorspace
         """
         data_dict = json.loads(request.GET.get('data'))
-        ws_dir = data_dict['start_dir']      
-        layout = self.nav.get_dir_tree_json(ws_dir)
+        ws_dir = data_dict['start_dir']
+        layout = nav.get_dir_tree_json(ws_dir)      
         return JsonResponse(layout)
     
     def execute_warrior(self, request):
@@ -265,19 +268,3 @@ def update_jira_proj_list(jira_settings_file, exec_settings_json):
         json.dump(execution_settings_dict, fp)
         
     return execution_settings_dict
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    
-    
-    
-    
-    
-
