@@ -2,27 +2,28 @@
     <div class="container-fluid">
         <div id="wrapper-keyword-div">
             <h4>Wrapper Keyword Details</h4>
-            <div class="row">
-                <label for="wrapperActionFile" class="col-md-2">Action File</label>
-                <div class="col-md-4">
-                    <input type="text" id="wrapperActionFile" disabled value="">
+            <div id="wrapper-keyword-details-div">
+                <div class="row">
+                    <label for="wrapperActionFile" class="col-md-2">Action File</label>
+                    <div class="col-md-4">
+                        <input type="text" id="wrapperActionFile" disabled value="">
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <label for="wrapperKwName" class="col-md-2">Wrapper Keyword Name</label>
-                <div class="col-md-4">
-                    <input type="text" id="wrapperKwName" placeholder="Name of the Wrapper Keyword">
+                <div class="row">
+                    <label for="wrapperKwName" class="col-md-2">Wrapper Keyword Name</label>
+                    <div class="col-md-4">
+                        <input type="text" id="wrapperKwName" placeholder="Name of the Wrapper Keyword">
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <label for="wDescription" class="col-md-2">W Description</label>
-                <div class="col-md-4">
-                    <input type="text" id="wDescription" placeholder="Wrapper Keyword Description">
+                <div class="row">
+                    <label for="wDescription" class="col-md-2">W Description</label>
+                    <div class="col-md-4">
+                        <input type="text" id="wDescription" placeholder="Wrapper Keyword Description">
+                    </div>
                 </div>
             </div>
             <br>
-
-            <div id="sub-keyword-div">
+            <div id="sub-keyword-details-div">
                 <h4>SubKeyword Details</h4>
                 <p>A Wrapper Keyword requires at least one Subkeyword definition.<br>Please use the 'New Subkeyword' button below to create a Subkeyword.</p>
                 <div id="new-sub-keyword-div" style="display: none;" key="subKw">
@@ -33,20 +34,14 @@
                     </div>
                 </div>
             </div>
-            <br>
-
             <div id="display-sub-keywords-div">
                 {% include 'kw_sequencer/display_subkws.html' %}
             </div>
             <br>
-
-            <div class="row">
-                <div class="col-md-4 ">
-                    <button class="btn btn-primary">Save Wrapper Keyword</button>
-                    <button class="btn btn-primary">Cancel</button>
-                </div>
+            <div>
+                <button class="btn btn-primary">Save Wrapper Keyword</button>
+                <button class="btn btn-primary">Cancel</button>
             </div>
-            <br>
         </div>
     </div>
 </body>
