@@ -11,11 +11,12 @@
             </select>
         </div>
     </div>
-    <div class="row" style="display: none;">
+    <div class="row">
         <label for="stepKeyword" class="col-md-2">Keywords</label>
         <div class="field col-md-4">
             <select type="text" id="stepKeyword" key="@Keyword" katana-change="kwSequencer.getArgumentsEtc"
                     validation-check="kwSequencer.validations.checkIfEmpty">
+                <option selected disabled hidden>Select Keyword</option>
             </select>
         </div>
     </div>
