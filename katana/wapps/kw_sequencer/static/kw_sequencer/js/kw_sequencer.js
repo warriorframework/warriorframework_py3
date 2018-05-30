@@ -513,4 +513,13 @@ var kwSequencer = {
         return $container;
     },
 
+    validations: {
+        checkIfEmpty: function() {
+            var $elem = $(this);
+            if ($elem.val() == null || $elem.val().trim() === "") {
+                katana.validationAPI.addFlag( $elem, 'Cannot be Empty');
+            }
+        },
+    },
+
 };
