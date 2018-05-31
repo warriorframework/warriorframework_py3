@@ -28,7 +28,7 @@
                 <p>A Wrapper Keyword requires at least one Subkeyword definition.<br>Please use the 'New Subkeyword' button below to create a Subkeyword.</p>
                 <div id="new-sub-keyword-div" style="display: none;" key="subKw">
                 </div>
-                <button class="btn btn-primary" katana-click="kwSequencer.newSubKeyword">New Subkeyword</button>
+                <button class="btn btn-primary" id="newSubKwButton" katana-click="kwSequencer.newSubKeyword">New Subkeyword</button>
             </div>
             <div id="display-sub-keywords-div">
                 {% include 'kw_sequencer/display_subkws.html' %}

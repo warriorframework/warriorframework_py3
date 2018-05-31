@@ -132,6 +132,8 @@ var kwSequencer = {
             var $newSubKwDiv = $currentPage.find('#new-sub-keyword-div');
             $newSubKwDiv.html(data.html_data);
             $newSubKwDiv.show();
+            var $newSubKwButton = $currentPage.find('#newSubKwButton');
+            $newSubKwButton.hide();
             kwSequencer.drivers = data.drivers;
             if (insertAtIndex !== undefined) {
                 $newSubKwDiv.attr('index', insertAtIndex);
@@ -144,6 +146,8 @@ var kwSequencer = {
     cancelSubKeyword: function(){
         var $currentPage = katana.$activeTab;
         $currentPage.find('#new-sub-keyword-div').hide();
+        var $newSubKwButton = $currentPage.find('#newSubKwButton');
+        $newSubKwButton.show();
     },
 
     saveSubKeyword: function(){
@@ -159,21 +163,23 @@ var kwSequencer = {
                 }
             }
             data.SubKws.subKw[0].Arguments.argument = filteredArgs;
-            var displayContent = kwSequencer.generateSubKeywordsDisplayHtmlBlock(katana.$activeTab.find('#kw-row-template').clone().attr('id', ''), data);
+            var displayContent = kwSequencer.generateSubKeywordsDisplayHtmlBlock($currentPage.find('#kw-row-template').clone().attr('id', ''), data);
             var stepType = $newSubKwDiv.attr('sub-keyword-type') === "edit";
             var index = parseInt($newSubKwDiv.attr('index'))
             displayContent.find('[key="@SubKwStep"]').html(index+1)
-            var $allTrs = katana.$activeTab.find('#sub-keywords-template').find('tbody').find('tr');
+            var $allTrs = $currentPage.find('#sub-keywords-template').find('tbody').find('tr');
             if (stepType && index < $allTrs.length) {
                 $allTrs[index].remove();
             }
             if (index === 0 ) {
-                katana.$activeTab.find('#sub-keywords-template').find('tbody').prepend(displayContent);
+                $currentPage.find('#sub-keywords-template').find('tbody').prepend(displayContent);
             } else {
                 displayContent.insertAfter($($allTrs[index-1]));
             }
             kwSequencer.redoStepNums();
             $currentPage.find('#new-sub-keyword-div').hide();
+            var $newSubKwButton = $currentPage.find('#newSubKwButton');
+            $newSubKwButton.show();
         }
     },
 
@@ -480,6 +486,8 @@ var kwSequencer = {
                     var data = kwSequencer.generateSubKw($($allTrElems[0]));
                     var $container = katana.$activeTab.find('#new-sub-keyword-div').show().attr('sub-keyword-type', 'edit').attr('index', $($allTrElems[0]).index());
                     $container = kwSequencer.editSubKeywordHtmlBlock($container, data);
+                    var $newSubKwButton = katana.$activeTab.find('#newSubKwButton');
+                    $newSubKwButton.hide();
                 }
             }
         }
