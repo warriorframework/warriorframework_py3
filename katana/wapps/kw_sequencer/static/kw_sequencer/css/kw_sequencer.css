@@ -104,3 +104,9 @@
 .kwsequencer-subkw-toolbar > div:hover > .badged {
     color: darkgrey;
 }
+
+.kwsequencer-intentional-space > .container-fluid > .row > .field {
+    padding: 0 15px;
+    max-width: none;
+    margin: 0;
+}
