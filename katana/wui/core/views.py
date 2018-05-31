@@ -27,7 +27,12 @@ from utils import user_utils
 from wui.core.apps import AppInformation
 
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates', 'core')
-from django_auth_ldap.backend import LDAPBackend
+try:
+    from django_auth_ldap.backend import LDAPBackend
+except Exception as err:
+    print("Please install django auth ldap to authenticate against ldap")
+    print("Error while importing django auth ldap: \n", err)
+    
 
 
 #===============================================================================
