@@ -374,7 +374,7 @@ var kwSequencer = {
                 $elem.attr('marked', 'false');
                 $elem.css('background-color', '');
             } else {
-                var multiselect = katana.$activeTab.find('.sub-keywords-toolbar').find('.fa-th-list').attr('multiselect');
+                var multiselect = katana.$activeTab.find('.kwsequencer-subkw-toolbar').find('.fa-th-list').attr('multiselect');
                 if (multiselect === 'off'){
                     for (var i=0; i<$allTrElems.length; i++){
                         $($allTrElems[i]).attr('marked', 'false');

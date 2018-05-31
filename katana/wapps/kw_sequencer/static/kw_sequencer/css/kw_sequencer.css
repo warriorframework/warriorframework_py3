@@ -6,36 +6,32 @@
     float: left;
 }
 
-.sub-keywords-intentional-space {
-    padding: 40px 20px;
-}
-
-.sub-keywords-intentional-space-x {
+.kwsequencer-intentional-space-x {
     padding: 40px 6% 40px 20px;
 }
 
-.sub-keywords-extra-left-padding {
+.kwsequencer-extra-left-padding {
     padding-right: calc(6% - 40px);
 }
 
-.sub-keywords-table-parent {
+.kwsequencer-subkw-table-parent {
     width: calc(100% - 40px);
     float: left;
 }
 
-.sub-keywords-internal-section {
+.kwsequencer-internal-section {
     width: 100%;
     height: auto;
     float: left;
 }
 
-.sub-keywords-intentional-space-x > div > table > tbody > tr > th {
+.kwsequencer-intentional-space-x > div > table > tbody > tr > th {
     background-color: lightgrey;
     max-width: 33%;
     text-align: left;
 }
 
-.sub-keywords-intentional-space-x > div > table > tbody > tr > td {
+.kwsequencer-intentional-space-x > div > table > tbody > tr > td {
     text-align: left;
     max-width: 67%;
     overflow: hidden;
@@ -43,30 +39,30 @@
     white-space: nowrap;
 }
 
-.sub-keywords-intentional-space-x > .sub-keywords-internal-section > div > table > tbody > tr > td {
+.kwsequencer-intentional-space-x > .kwsequencer-internal-section > div > table > tbody > tr > td {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     text-align: left;
 }
 
-.sub-keywords-intentional-space-x > .sub-keywords-internal-section > div > table > tbody > tr > td:nth-child(1) {
+.kwsequencer-intentional-space-x > .kwsequencer-internal-section > div > table > tbody > tr > td:nth-child(1) {
     text-align: center;
 }
 
-.sub-keywords-intentional-space-x > .sub-keywords-internal-section > div > table > tbody > tr:hover > td {
+.kwsequencer-intentional-space-x > .kwsequencer-internal-section > div > table > tbody > tr:hover > td {
     white-space: initial;
     word-break: break-all;
 }
 
-.sub-keywords-intentional-space-x > .sub-keywords-internal-section > div > table > tbody > tr:hover {
+.kwsequencer-intentional-space-x > .kwsequencer-internal-section > div > table > tbody > tr:hover {
     background-color: lightblue;
     height: auto;
     white-space: initial;
     transition: all 0.2s ease-in-out;
 }
 
-.sub-keywords-toolbar {
+.kwsequencer-subkw-toolbar {
     width: 40px;
     height: fit-content;
     float: left;
@@ -76,7 +72,7 @@
     top: 50px;
 }
 
-.sub-keywords-toolbar > div {
+.kwsequencer-subkw-toolbar > div {
     width: 100%;
     height: 40px;
     float: left;
@@ -85,7 +81,7 @@
     position: relative;
 }
 
-.sub-keywords-toolbar > div:hover {
+.kwsequencer-subkw-toolbar > div:hover {
     background-color: khaki;
     width: 112.5%;
     height: 45px;
@@ -93,7 +89,7 @@
     transition: all 0.2s ease-in-out;
 }
 
-.sub-keywords-toolbar > div > i > i {
+.kwsequencer-subkw-toolbar > div > i > i {
     font-size: 12px;
     position: absolute;
     top: 10px;
@@ -101,10 +97,10 @@
     color: white;
 }
 
-.sub-keywords-toolbar > div:hover > i > i {
+.kwsequencer-subkw-toolbar > div:hover > i > i {
     color: green;
 }
 
-.sub-keywords-toolbar > div:hover > .badged {
+.kwsequencer-subkw-toolbar > div:hover > .badged {
     color: darkgrey;
 }
