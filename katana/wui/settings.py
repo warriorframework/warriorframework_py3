@@ -93,18 +93,11 @@ DATABASES = {
 # authentication settings
 
 AUTHENTICATION_BACKENDS = (
-    'django_auth_ldap.backend.LDAPBackend', # uncomment this line to add ldap as the authentication backend
     'django.contrib.auth.backends.ModelBackend',
 )
 
-MULTI_USER_SUPPORT = True
-USER_HOME_DIR_TEMPLATE = "/data/{username}"
-
-AUTH_LDAP_SERVER_URI = "ldap://ldap.fnc.fujitsu.com:389"
-AUTH_LDAP_USER_DN_TEMPLATE = "%(user)s@fnc.net.local"
-AUTH_LDAP_SEARCH_BASE_DN = "DC=fnc,DC=net,DC=local"
-AUTH_LDAP_BIND_DN = "CN=warrior_application,OU=Resource Accounts,OU=Enterprise,DC=fnc,DC=net,DC=local"
-AUTH_LDAP_BIND_PASSWORD = "Automation1!"
+MULTI_USER_SUPPORT = False
+USER_HOME_DIR_TEMPLATE = None
 
 
 
