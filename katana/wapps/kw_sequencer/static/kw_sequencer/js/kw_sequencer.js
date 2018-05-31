@@ -123,6 +123,33 @@ var kwSequencer = {
 
     },
 
+    saveKeyword: function() {
+        var $currentPage = katana.$activeTab;
+        var $wrappeKwDetailsDiv = $currentPage.find('#wrapper-keyword-details-div');
+        if (katana.validationAPI.init($wrappeKwDetailsDiv)){
+            var $newSubKwDiv = $currentPage.find('#new-sub-keyword-div');
+            if ($newSubKwDiv.css('display') != 'none') {
+                katana.openAlert({
+                    "alert_type": "danger",
+                    "heading": "SubKeyword is not saved!",
+                    "text": "Either save or discard the Subkeyword before saving the Wrapper Keyword.",
+                    "show_cancel_btn": false
+                });
+                return;
+            }
+            var tableLength = $currentPage.find('#sub-keywords-table').find('tbody').children('tr').length
+            if (tableLength == 0) {
+                katana.openAlert({
+                    "alert_type": "danger",
+                    "heading": "No SubKeywords added!",
+                    "text": "Please add at least one SubKeyword before saving Wrapper Keyword.",
+                    "show_cancel_btn": false
+                });
+                return;
+            }
+        }
+    },
+
     newSubKeyword: function(insertAtIndex){
         $.ajax({
             type: 'GET',
@@ -167,12 +194,12 @@ var kwSequencer = {
             var stepType = $newSubKwDiv.attr('sub-keyword-type') === "edit";
             var index = parseInt($newSubKwDiv.attr('index'))
             displayContent.find('[key="@SubKwStep"]').html(index+1)
-            var $allTrs = $currentPage.find('#sub-keywords-template').find('tbody').find('tr');
+            var $allTrs = $currentPage.find('#sub-keywords-table').find('tbody').find('tr');
             if (stepType && index < $allTrs.length) {
                 $allTrs[index].remove();
             }
             if (index === 0 ) {
-                $currentPage.find('#sub-keywords-template').find('tbody').prepend(displayContent);
+                $currentPage.find('#sub-keywords-table').find('tbody').prepend(displayContent);
             } else {
                 displayContent.insertAfter($($allTrs[index-1]));
             }
@@ -360,7 +387,7 @@ var kwSequencer = {
 
     getLastSubKwNum: function () {
         /* This function gets the last sub-keyword number */
-        return katana.$activeTab.find('#sub-keywords-template').find('tbody').children('tr').length;
+        return katana.$activeTab.find('#sub-keywords-table').find('tbody').children('tr').length;
     },
 
     redoStepNums: function(){

@@ -1,6 +1,6 @@
 <body>
     <div class="container-fluid">
-        <div id="wrapper-keyword-div">
+        <div class="kwsequencer-intentional-space" id="wrapper-keyword-div">
             <h4>Wrapper Keyword Details</h4>
             <div class="container-fluid" id="wrapper-keyword-details-div">
                 <div class="row">
@@ -11,14 +11,16 @@
                 </div>
                 <div class="row">
                     <label for="wrapperKwName" class="col-md-2">Wrapper Keyword Name</label>
-                    <div class="col-md-4">
-                        <input type="text" id="wrapperKwName" placeholder="Name of the Wrapper Keyword">
+                    <div class="field col-md-4">
+                        <input type="text" id="wrapperKwName" placeholder="Name of the Wrapper Keyword"
+                               validation-check="kwSequencer.validations.checkIfEmpty">
                     </div>
                 </div>
                 <div class="row">
                     <label for="wDescription" class="col-md-2">W Description</label>
-                    <div class="col-md-4">
-                        <input type="text" id="wDescription" placeholder="Wrapper Keyword Description">
+                    <div class="field col-md-4">
+                        <input type="text" id="wDescription" placeholder="Wrapper Keyword Description"
+                               validation-check="kwSequencer.validations.checkIfEmpty">
                     </div>
                 </div>
             </div>
@@ -35,8 +37,8 @@
             </div>
             <br>
             <div>
-                <button class="btn btn-primary">Save Wrapper Keyword</button>
-                <button class="btn btn-primary">Cancel</button>
+                <button class="btn btn-primary" katana-click="kwSequencer.saveKeyword">Save Wrapper Keyword</button>
+                <button class="btn btn-primary" katana-click="kwSequencer.closeKeyword">Cancel</button>
             </div>
         </div>
     </div>
