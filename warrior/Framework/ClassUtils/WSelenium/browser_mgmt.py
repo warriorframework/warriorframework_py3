@@ -453,12 +453,12 @@ class BrowserManagement(object):
         if platform.system() in "Linux":
             if binary in [False, None]:
                 binary = "firefox"
-            raw_version = check_output([binary, "-v"])
+            raw_version = check_output([binary, "-v"]).decode("utf-8")
         elif platform.system() in "Windows":
             if binary in [False, None]:
                 binary = self.ff_binary_object._default_windows_location()
             command = "%s -v | more" % (binary)
-            raw_version = check_output(command)
+            raw_version = check_output(command).decode("utf-8")
         print_info("Platform: {0} Firefox binary path: {1}".format(platform.system(), binary))
         version = False
         try:
