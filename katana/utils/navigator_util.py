@@ -7,7 +7,7 @@ import subprocess
 class Navigator(object):
 
     def __init__(self):
-        self.git_url = "https://github.com/warriorframework/warriorframework.git"
+        self.git_url = "https://github.com/warriorframework/warriorframework_py3.git"
 
     def get_katana_dir(self):
         """will get katanas main directory"""
