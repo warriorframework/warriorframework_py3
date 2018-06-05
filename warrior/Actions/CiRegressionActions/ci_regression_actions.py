@@ -678,10 +678,7 @@ class CIregressionActions(object):
     def check_warrior_import_in_katana_utils(self):
         """
         This keyword will test whether a util in katana
-        can import warrior exe and a funciton in it.
-        This is to make sure that katana can import
-        warrior exe and execute warrior via function calls
-        rather than command line
+        can import warrior utils
         """
         status = True
         try:
@@ -689,7 +686,7 @@ class CIregressionActions(object):
             pNote(katana_ci_regression_utils.test_warrior_utils_import)
             katana_ci_regression_utils.test_warrior_utils_import()
         except ImportError as err:
-            pNote("Importing warrior in katana failed", "error")
+            pNote("Importing warrior utils in katana failed", "error")
             pNote(err, "error")
             status = False
         
