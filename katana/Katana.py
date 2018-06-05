@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -12,11 +14,30 @@ limitations under the License.
 """
 
 import sys
+import os
 import subprocess
 import signal
-from utils.directory_traversal_utils import get_parent_dir_path, join_path
+
+
+KATANA_DIR = os.path.dirname(os.path.abspath(__file__))
+WARRIORFRAMEWORK_DIR = os.path.dirname(KATANA_DIR)
+WARRIORFRAMEWORK_PARENT_DIR = os.path.dirname(WARRIORFRAMEWORK_DIR)
+WARRIOR_DIR = os.path.join(WARRIORFRAMEWORK_DIR, 'warrior')
+WARHORN_DIR = os.path.join(WARRIORFRAMEWORK_DIR, 'warhorn')
+
+COMPONENT_LIST = [WARRIORFRAMEWORK_PARENT_DIR, WARRIOR_DIR,
+                  KATANA_DIR, WARHORN_DIR, WARRIORFRAMEWORK_DIR]
+
+for component in COMPONENT_LIST:
+    if component not in sys.path:
+        sys.path.insert(0, component)
+    
+    
 from simple_server import main
-use_py_server = False
+use_py_server = False    
+from utils.directory_traversal_utils import get_parent_dir_path, join_path
+
+
 
 try:
     import django

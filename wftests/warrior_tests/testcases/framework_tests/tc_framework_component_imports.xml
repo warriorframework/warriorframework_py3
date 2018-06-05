@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<Testcase>
+	<Details>
+		<Name>tc_framework_component_imports</Name>
+		<Title>Check the imports between framework components like warrior, katana, warhorn</Title>
+		<Engineer>Sathyamoorthy Radhakrishnan</Engineer>
+		<Date>2017-04-05</Date>
+		<Time>12:51</Time>
+		<State/>
+		<InputDataFile>No_Data</InputDataFile>
+		<Datatype/>
+		<default_onError action="next"/>
+		<Logsdir/>
+		<Resultsdir/>
+		<ExpectedResults/>
+	</Details>
+	<Requirements>
+		<Requirement/>
+	</Requirements>
+	<Steps>
+		<step Driver="ci_regression_driver" Keyword="check_katana_import_in_warrior_actions" TS="1">
+			<Arguments>
+			</Arguments>
+			<onError action="next"/>
+			<Description>file write</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		
+		<step Driver="ci_regression_driver" Keyword="check_warrior_import_in_katana_utils" TS="1">
+			<Arguments>
+			</Arguments>
+			<onError action="next"/>
+			<Description>file write</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+
+	</Steps>
+</Testcase>

@@ -630,3 +630,78 @@ class CIregressionActions(object):
         if not status:
             pNote("Expected Value and Existing Value do not match", "error")
         return status
+    
+    
+    
+    
+    def check_katana_import_in_warrior_actions(self):
+        """
+        This keyword will import the following inside this keyword 
+        and if import was succesfull it will pass.
+        1. katana package
+        2. Katana executable
+        3. views from one of the native apps        
+        """
+        status = True
+        
+        try:
+            #import sys
+            #print(sys.path)
+            pNote("Importing katana package")
+            #import warriorframework_py3
+            #from warriorframework_py3 import katana as kat
+            import katana
+            pNote("Importing katana package succesful")
+            pNote("Importing katana module")
+            from warriorframework_py3.katana import Katana
+            pNote(Katana)
+            pNote("Importing katana module succesful")
+            pNote("Importing a native app's view")
+            from warriorframework_py3.katana.native.settings import views
+            pNote(views)
+            pNote("Importing a native app's views succesful")
+            pNote("import a utils from katana")
+            from  warriorframework_py3.katana.utils import dict_utils, file_utils, navigator_util
+            pNote(dict_utils.invert_dict)
+            pNote(file_utils.readlines_from_file)
+            pNote(navigator_util.Navigator)
+            
+        except ImportError as err:
+            pNote("Importing one or all katana related modules failed", 'error')
+            pNote(err, 'error')
+            status = False
+            
+        return status
+            
+        
+        
+    def check_warrior_import_in_katana_utils(self):
+        """
+        This keyword will test whether a util in katana
+        can import warrior exe and a funciton in it.
+        This is to make sure that katana can import
+        warrior exe and execute warrior via function calls
+        rather than command line
+        """
+        status = True
+        try:
+            from katana.utils import katana_ci_regression_utils
+            pNote(katana_ci_regression_utils.test_warrior_utils_import)
+            katana_ci_regression_utils.test_warrior_utils_import()
+        except ImportError as err:
+            pNote("Importing warrior in katana failed", "error")
+            pNote(err, "error")
+            status = False
+        
+        return status
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

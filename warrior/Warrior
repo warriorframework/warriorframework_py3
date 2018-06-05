@@ -12,6 +12,25 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 import sys
+import os
+
+WARRIOR_DIR = os.path.dirname(os.path.abspath(__file__))
+WARRIORFRAMEWORK_DIR = os.path.dirname(WARRIOR_DIR)
+WARRIORFRAMEWORK_PARENT_DIR = os.path.dirname(WARRIORFRAMEWORK_DIR)
+KATANA_DIR = os.path.join(WARRIORFRAMEWORK_DIR, 'katana')
+WARHORN_DIR = os.path.join(WARRIORFRAMEWORK_DIR, 'warhorn')
+
+COMPONENT_LIST = [WARRIORFRAMEWORK_PARENT_DIR, WARRIOR_DIR,
+                  KATANA_DIR, WARHORN_DIR, WARRIORFRAMEWORK_DIR]
+
+for component in COMPONENT_LIST:
+    if component not in sys.path:
+        sys.path.insert(0, component)
+
+
+from _ast import Pass
+
+    
 if sys.version_info < (3, 4):
     print("Warrior doesn't support Python version lower than 3.4, now exiting")
     sys.exit(0)
@@ -21,6 +40,8 @@ except:
     raise
 
 __description__ = """This is the Warrior executable"""
+
+
 
 if __name__ == '__main__':
     warrior_cli_driver.warrior_execute_entry()

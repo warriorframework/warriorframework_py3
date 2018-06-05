@@ -12,11 +12,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+import sys
 import os
 import shutil
 import subprocess
 import sys
 from distutils import dir_util
+
+
+WARHORN_DIR = os.path.dirname(os.path.abspath(__file__))
+WARRIORFRAMEWORK_DIR = os.path.dirname(WARHORN_DIR)
+WARRIORFRAMEWORK_PARENT_DIR = os.path.dirname(WARRIORFRAMEWORK_DIR)
+WARRIOR_DIR = os.path.join(WARRIORFRAMEWORK_DIR, 'warrior')
+KATANA_DIR = os.path.join(WARRIORFRAMEWORK_DIR, 'katana')
+
+COMPONENT_LIST = [WARRIORFRAMEWORK_PARENT_DIR, WARRIOR_DIR,
+                  KATANA_DIR, WARHORN_DIR, WARRIORFRAMEWORK_DIR]
+
+for component in COMPONENT_LIST:
+    if component not in sys.path:
+        sys.path.insert(0, component)
+
+
 from source.utils import (check_installed_python_version, print_info, verify_python_version,
                           check_packages, print_warning, print_error, get_subfiles, create_dir,
                           get_node, get_firstlevel_children, get_attribute_value,
