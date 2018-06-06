@@ -33,11 +33,9 @@ lxml<br/>
 xlrd<br/>
 cloudshell-automation-api<br/>
 
-##### WarriorFramework Version
+#### Clone warriorframework
 
 We strongly recommend getting the latest released version.
-
-#### Clone warriorframework
 
 ###### Get the Repository
 `git clone https://github.com/warriorframework/warriorframework_py3.git`
