@@ -23,7 +23,7 @@ Follow this [tutorial](http://thelazylog.com/install-python-as-local-user-on-lin
 
 ###### Other Optional Python Packages
 
-All the packages mentioned below are optional (i.e. their need depends on your usecase. If you are just trying out WarriorFramework, you may not need any of them). All these packages can be install via pip.
+All the packages mentioned below are optional (i.e. their need depends on your usecase. If you are just trying out WarriorFramework, you may not need any of them). All these packages can be installed via pip.
 
 pexpect<br/>
 requests<br/>
