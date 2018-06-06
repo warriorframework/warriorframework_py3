@@ -106,11 +106,17 @@ Once, you have WarriorFramework on your system, cd into the katana directory:
 
 Then, run the command to kickstart the server:
 
-`python manage.py runserver 0.0.0.0:5000`
+`python Katana.py runserver`
 
-Make sure that your aye using the correct Python
+Make sure that your are using the correct Python. The command above will start the server on port 8000 by default. If you want to start the server on a different port (say, 5000), you can modify the command above to this:
+
+`python Katana.py runserver 0.0.0.0:5000`
 
 Then, open up a browser and type in the following as a URL:
+
+`localhost:8000/katana/`
+
+If you are usng a different port (say, 5000), change the url above to use that port:
 
 `localhost:5000/katana/`
 
