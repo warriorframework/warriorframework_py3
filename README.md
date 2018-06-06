@@ -33,6 +33,10 @@ lxml<br/>
 xlrd<br/>
 cloudshell-automation-api<br/>
 
+##### WarriorFramework Version
+
+We strongly recommend getting the latest released version.
+
 #### Clone warriorframework
 
 ###### Get the Repository
