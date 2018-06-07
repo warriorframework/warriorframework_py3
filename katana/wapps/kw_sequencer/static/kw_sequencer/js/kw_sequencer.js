@@ -147,6 +147,9 @@ var kwSequencer = {
                 });
                 return;
             }
+
+            var wrapperKwDetails = kwSequencer.getWrapperKwDetails($currentPage.find('#wrapper-keyword-details-div'));
+            var subKeywordDetails = kwSequencer.getSubKeywordDetails($currentPage.find('#display-sub-keywords-div'));
         }
     },
 
@@ -303,6 +306,7 @@ var kwSequencer = {
         kwName = kwName ? kwName : "";
         var driverName = $elem.val();
         var $kwRow = $elem.closest('.row').next();
+        $kwRow.find('#stepKeyword').html("<option selected disabled hidden>Select Keyword</option>");
         if ((kwSequencer.drivers) && (driverName in kwSequencer.drivers)) {
             for (var key in kwSequencer.drivers[driverName].actions){
                 if (kwSequencer.drivers[driverName].actions.hasOwnProperty(key)){
@@ -553,6 +557,27 @@ var kwSequencer = {
                 katana.validationAPI.addFlag( $elem, 'Cannot be Empty');
             }
         },
+    },
+
+    getWrapperKwDetails: function($container) {
+        var $allValues = $container.find('[key]');
+        var result = {};
+        for (var i=0; i<$allValues.length; i++) {
+            var key = $($allValues[i]).attr("key").trim();
+            var value = $($allValues[i]).val() ? $($allValues[i]).val().trim() : $($allValues[i]).html().trim();
+            result[key] = value
+        }
+        return result;
+    },
+
+    getSubKeywordDetails: function($container) {
+        var $allTrElems = $container.find('tbody').children('tr');
+        var result = [];
+        for (var i=0; i<$allTrElems.length; i++) {
+            var data = kwSequencer.generateSubKw($($allTrElems[i]));
+            result.push(data.SubKws.subKw[0]);
+        }
+        return result;
     },
 
 };
