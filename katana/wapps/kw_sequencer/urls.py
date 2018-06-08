@@ -6,4 +6,5 @@ urlpatterns = [
     url(r'^$', views.KwSequencerIndex.as_view(), name='index'),
     url(r'^create_new_kw/$', views.KwSequencerCreate.as_view(), name='create_new_kw'),
     url(r'^create_new_subkw/$', views.create_new_subkw, name='create_new_subkw'),
+    url(r'^save_wrapper_kw/$', views.save_wrapper_kw, name='save_wrapper_kw'),
 ]

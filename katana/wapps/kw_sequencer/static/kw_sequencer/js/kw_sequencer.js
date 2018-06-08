@@ -147,9 +147,36 @@ var kwSequencer = {
                 });
                 return;
             }
-
             var wrapperKwDetails = kwSequencer.getWrapperKwDetails($currentPage.find('#wrapper-keyword-details-div'));
             var subKeywordDetails = kwSequencer.getSubKeywordDetails($currentPage.find('#display-sub-keywords-div'));
+            wrapperKwDetails['@subKeywords'] = JSON.stringify(subKeywordDetails)
+            wrapperKwDetails['@actionFile']= kwSequencer.actionFilePath
+
+            $.ajax({
+                headers: {
+                    'X-CSRFToken': $currentPage.find('input[name="csrfmiddlewaretoken"]').attr('value')
+                },
+                type: 'POST',
+                url: 'kw_sequencer/save_wrapper_kw/',
+                data: wrapperKwDetails
+            }).done(function(output) {
+                if (output.status) {
+                    katana.openAlert({
+                        "alert_type": "success",
+                        "heading": "Wrapper Keyword Saved",
+                        "text": wrapperKwDetails['@wrapperKwName'] + " has been created successfully",
+                        "show_cancel_btn": false
+                    });
+                    //cases.caseViewer.close();
+                } else {
+                    katana.openAlert({
+                        "alert_type": "danger",
+                        "heading": "Wrapper Keyword Not Saved",
+                        "text": "Some problem occurred while creating the Wrapper Keyword: " + wrapperKwDetails['@wrapperKwName'],
+                        "show_cancel_btn": false
+                    })
+                }
+            });
         }
     },
 
