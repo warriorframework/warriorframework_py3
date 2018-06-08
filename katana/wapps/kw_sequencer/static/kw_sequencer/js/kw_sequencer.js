@@ -490,6 +490,7 @@ var kwSequencer = {
                 } else {
                     insertAtIndex = $($allTrElems[0]).index();
                 }
+                katana.$activeTab.find('#new-sub-keyword-div').attr('sub-keyword-type', 'insert')
                 kwSequencer.newSubKeyword(insertAtIndex);
             },
 
