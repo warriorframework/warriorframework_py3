@@ -4,6 +4,7 @@ from django.template.loader import render_to_string
 from django.views.generic import TemplateView
 from django.views import View
 import os
+import json
 
 from utils.navigator_util import Navigator
 from wapps.kw_sequencer.kw_sequencer_utils.get_drivers import GetDriversActions
@@ -30,12 +31,14 @@ def create_new_subkw(request):
 def save_wrapper_kw(request):
     " Saves wrapper keyword in the respective Warrior Action file "
     output = {'status': True}
+    warrior_dir = navigator.get_warrior_dir()[:-1]
     action_file = os.path.join(navigator.get_warrior_dir()[:-1], request.POST.get("@actionFile"))
     wrapper_kw_name = request.POST.get("@wrapperKwName")
     w_desc = request.POST.get("@wDescription")
     sub_keywords = request.POST.get("@subKeywords")
+    sub_keywords = json.loads(sub_keywords)
 
-    cwk_obj = CreateWrappeKwActions(action_file, wrapper_kw_name, w_desc, sub_keywords)
+    cwk_obj = CreateWrappeKwActions(warrior_dir, action_file, wrapper_kw_name, w_desc, sub_keywords)
     cwk_obj.write_wrapper_kw()
 
     return JsonResponse(output)
