@@ -927,18 +927,17 @@ var katana = {
         var $elem = this;
         url = url ? url : $elem ? $elem.attr('url') : '';
         tabTitle = tabTitle ? tabTitle : 'Tab';
-        if ($elem != katana.templateAPI) {
-          var jsURL = jsURL ? jsURL.split(',') : $elem.attr('jsurls').split(',');
-          if (jsURL.length > 0) {
-            jsURL.pop();
-            katana.templateAPI.importJS(jsURL, function() {
-              katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
-            });
-          } else {
-            katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
-          }
-        } else
-          katana.templateAPI.tabRequst(katana.$activeTab, tabTitle, url, limitedStyles, callBack, options);
+        var jsURL = jsURL ? jsURL.split(',') : $elem.attr('jsurls').split(',');
+        src_elem = $elem != katana.templateAPI ? $elem : katana.$activeTab;
+
+        if (jsURL.length > 0) {
+          jsURL.pop();
+          katana.templateAPI.importJS(jsURL, function() {
+            katana.templateAPI.tabRequst(src_elem, tabTitle, url, limitedStyles, callBack, options);
+          });
+        } else {
+          katana.templateAPI.tabRequst(src_elem, tabTitle, url, limitedStyles, callBack, options);
+        }
       }
     },
 
