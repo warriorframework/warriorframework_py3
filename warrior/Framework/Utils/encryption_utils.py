@@ -60,9 +60,9 @@ def encrypt(message, encoded_key=False):
     msg = "Encrypted text could not be generated because the secret key in " \
           "the secret.key file seems to be incorrect."
     if IV is not None and CIPHER is not None:
-        msg = IV+CIPHER.encrypt(message)
-        msg = msg.encode("hex_codec")
-    return msg
+        msg = IV + CIPHER.encrypt(message.encode('utf-8'))
+        msg = codecs.encode(msg, "hex_codec")
+    return str(msg, 'utf-8')
 
 """This is decryption"""
 def decrypt(message, encoded_key=False):
@@ -70,8 +70,8 @@ def decrypt(message, encoded_key=False):
     iv, cipher = get_key(encoded_key)
     try:
         # in python2, can just use message.decode("hex")
-        # but in python3, str.decode is removed 
-        return cipher.decrypt(codecs.decode(message, "hex_codec"))[len(iv):]
+        # but in python3, str.decode is removed
+        return str(cipher.decrypt(codecs.decode(message, "hex_codec"))[len(iv):], 'utf-8')
     except binascii.Error as err:
         # This is dangerous...
         # using exception to handle if encrypted/not encrypted condition
@@ -90,7 +90,7 @@ def set_secret_key(plain_text_key):
         status = False
     else:
         # Gets base 64 encoding for the plain text secret key
-        encoded_key = base64.b64encode(plain_text_key)
+        encoded_key = base64.b64encode(plain_text_key.encode('utf-8'))
 
         # Gets path to Tools
         path = Tools.__path__[0]
@@ -102,7 +102,7 @@ def set_secret_key(plain_text_key):
         # encoded key to it.
         path = os.path.join(path, "secret.key")
         with open(path, 'w') as f:
-            f.write(encoded_key)
+            f.write(str(encoded_key, 'utf-8'))
 
         status = True
-    return status, encoded_key
+    return status, str(encoded_key, 'utf-8')
