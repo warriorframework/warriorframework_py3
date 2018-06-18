@@ -24,7 +24,7 @@ from Framework.Utils.print_Utils import print_exception, print_error, print_info
 import Tools
 
 try:
-    MOD = 'Pycrypto'
+    MOD = 'Pycryptodome'
     from Crypto.Cipher import AES
     from Crypto import Random
 except ImportError as err:
