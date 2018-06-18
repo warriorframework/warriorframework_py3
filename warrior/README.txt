@@ -176,7 +176,7 @@ Packages:
 	----------------
 	http://pysnmp.sourceforge.net/
 
-8. pycryptodome-2.6.1
+8. pycryptodome-3.6.1
 	Used for password encryption.
 	Method encrypt(message) to return encrypted data. decrypt(message) returns decrypted data. 
 	It uses the AES encryption algorithm from pycryptodome library.
