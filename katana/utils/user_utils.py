@@ -9,8 +9,6 @@ def get_user_home_dir(username):
     """
     user_home_dir = None
     user_home_dir_template = getattr(settings, 'USER_HOME_DIR_TEMPLATE', None)
-    print (user_home_dir_template)
     if user_home_dir_template:
         user_home_dir = user_home_dir_template.format(username=username)
-    #print(user_home_dir)
     return user_home_dir
