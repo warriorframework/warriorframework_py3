@@ -137,10 +137,7 @@ class UserAuthView(View):
         """
         Render the form for user authentication
         """
-        #print(request.user)
-        #print(request.user.is_authenticated)
         req_data = request.GET.get('data')
-        print('req_data:', req_data)
         data_dict = json.loads(req_data) if req_data else {}
         action = data_dict.get('action')     
         method = self.action_method_map.get(action, self.get_login_page)
@@ -160,13 +157,10 @@ class UserAuthView(View):
         data_dict = json.loads(request.POST.get('data'))
         self.username = data_dict.get('username', None)
         self.password = data_dict.get('password')
-        print(data_dict)
         # authenticate, login  the user
         self.userprofile = self.authenticate_user()    
         multi_user_support = getattr(settings, 'MULTI_USER_SUPPORT', False)
         home_dir_template = getattr(settings, 'USER_HOME_DIR_TEMPLATE', None)
-        print (multi_user_support)
-        print(home_dir_template)
         # if multi user support is False then just login user
         if not multi_user_support:    
             self.login_user(request)
@@ -205,16 +199,13 @@ class UserAuthView(View):
         
         try:
             if self.userprofile is not None:
-                print("try to login user")
                 self.op_dict['msg'] = "authentication for user={0} successful.".format(self.username)
                 home_dir = user_utils.get_user_home_dir(self.username)              
                 
                 login(request, self.userprofile)
                 request.session['home_dir'] = home_dir
-                print('printing home dir in views: ',home_dir)
                 self.op_dict['redirect_url'] = 'home/'                
                 self.op_dict['auth_status'] = 1
-                #print('path: ',request.get_full_path())                        
             
             else:
                 self.op_dict['msg'] = "authentication for user={0} failed.".format(self.username)
@@ -235,10 +226,6 @@ class UserAuthView(View):
     def get_login_page(self, request):
         """
         """
-        #print('in get login page')
-        #print(request)
-        #print(request.user)
-        #print(request.user.is_authenticated)
         user_data = self.get_user_data()
         return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
     
@@ -263,8 +250,6 @@ class UserAuthView(View):
         """
         logout(request)
         path = request.get_full_path()
-        #print('path: ',path)
-        #print('redirecting to login page');
         self.op_dict['redirect_url'] = '/'
         return JsonResponse(self.op_dict)
     
