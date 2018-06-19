@@ -33,12 +33,20 @@ except ImportError as err:
 
 from Framework.Utils.print_Utils import print_error
 
-"""
-Function that returns cipher created from 
-secret key, either passed to this or 
-read from secret.key file
-"""
+
 def get_key(encoded_key):
+    """
+    Function that returns enc instance using
+    secret key, passed to this
+    function or read from secret.key file
+
+    Args:
+        encoded_key - False or base64 secrety key for encryption
+
+    Return:
+        IV - Random seed used to enc
+        CIPHER - Enc instance used to for encryption
+    """
     IV = None
     CIPHER = None
     if encoded_key is False:
@@ -83,12 +91,21 @@ def decrypt(message, encoded_key=False):
     except Exception:
         print_error(traceback.format_exc())
 
-"""
-Function that saves base64 encoded 
-format of  secret key, passed to this 
-function and saved to secret.key file
-"""
+
 def set_secret_key(plain_text_key):
+    """
+    Function that saves base64 encoded
+    format of  secret key, passed to this
+    function and saved to secret.key file
+
+    Args:
+        plain_text_key - Plain text key, that is is used for encryption
+
+    Return:
+        status - True if key is base64 encoded and saved
+                 False if not saved
+        key - base64 endoced key
+    """
     encoded_key = False
     # Checks the length of the plain text secret key
     if not len(plain_text_key) == 16:
