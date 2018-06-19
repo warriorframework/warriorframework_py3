@@ -33,7 +33,11 @@ except ImportError as err:
 
 from Framework.Utils.print_Utils import print_error
 
-
+"""
+Function that returns cipher created from 
+secret key, either passed to this or 
+read from secret.key file
+"""
 def get_key(encoded_key):
     IV = None
     CIPHER = None
@@ -79,7 +83,11 @@ def decrypt(message, encoded_key=False):
     except Exception:
         print_error(traceback.format_exc())
 
-
+"""
+Function that saves base64 encoded 
+format of  secret key, passed to this 
+function and saved to secret.key file
+"""
 def set_secret_key(plain_text_key):
     encoded_key = False
     # Checks the length of the plain text secret key
