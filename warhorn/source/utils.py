@@ -551,7 +551,7 @@ def get_dict_with_versions():
     1. versions (dict) = Dictionary with name as Key and version as value
     """
     versions = {'jira': '1.0.11', 'lxml': '4.1.1', 'ncclient': '0.4.6',
-                'paramiko': '2.4.0', 'pexpect': '4.3.1', 'pysnmp': '4.3.2',
+                'paramiko': '2.4.0', 'pexpect': '4.3.1', 'pysnmp': '4.4.4',
                 'requests': '2.18.4', 'selenium': '3.8.1', 'xlrd': '1.1.0',
                 'cloudshell-automation-api':'7.1.0.34', 'pycryptodome': '3.6.1'}
     return versions
