@@ -55,14 +55,15 @@ class Navigator(object):
         """Returns a list of all available warrior versions"""
         tags_list = False
         output = self._get_versions()
-        temp_list = output.decode().strip().split("\n")
-        tags_list = set()
-        for el in temp_list:
-            temp = el.split()[1].strip().split('/')[2]
-            if temp.startswith("warrior"):
-                if "^" in temp:
-                    temp = temp.split('^')[0]
-                tags_list.add(temp)
+        if output:
+            temp_list = output.decode().strip().split("\n")
+            tags_list = set()
+            for el in temp_list:
+                temp = el.split()[1].strip().split('/')[2]
+                if temp.startswith("warrior"):
+                    if "^" in temp:
+                        temp = temp.split('^')[0]
+                    tags_list.add(temp)
         return tags_list
 
     def _get_versions(self):
@@ -85,7 +86,7 @@ class Navigator(object):
                 print("-- Output -- {0}".format(output.decode()))
                 print("-- Errors -- {0}".format(errors.decode()))
                 return False
-        return output
+        return output.decode()
 
     def search_folder_name(self, folder_name, given_dir):
         """searches for folder by name in all subdir until found or bottom level directory"""
