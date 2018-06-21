@@ -54,23 +54,38 @@ class Navigator(object):
     def get_all_wf_versions(self):
         """Returns a list of all available warrior versions"""
         tags_list = False
-        p = subprocess.Popen(["git", "ls-remote", "--tags", self.git_url], stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
-        output, errors = p.communicate()
-        if p.returncode != 0:
-            print("-- An Error Occurred -- WarriorFramework versions could not be retrieved")
+        output = self._get_versions()
+        temp_list = output.decode().strip().split("\n")
+        tags_list = set()
+        for el in temp_list:
+            temp = el.split()[1].strip().split('/')[2]
+            if temp.startswith("warrior"):
+                if "^" in temp:
+                    temp = temp.split('^')[0]
+                tags_list.add(temp)
+        return tags_list
+
+    def _get_versions(self):
+        """ Get warrior versions by running git commands. """
+        current_directory = os.getcwd()
+        os.chdir(get_parent_directory(self.get_katana_dir()))
+        p1 = subprocess.Popen(["git", "show-ref", "--tags", "-d"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        os.chdir(current_directory)
+        output, errors = p1.communicate()
+        if p1.returncode != 0:
+            print("-- An Error Occurred -- WarriorFramework versions could not be retrieved from "
+                  "local repository")
             print("-- Output -- {0}".format(output.decode()))
             print("-- Errors -- {0}".format(errors.decode()))
-        else:
-            temp_list = output.decode().strip().split("\n")
-            tags_list = set()
-            for el in temp_list:
-                temp = el.split()[1].strip().split('/')[2]
-                if temp.startswith("warrior"):
-                    if "^" in temp:
-                        temp = temp.split('^')[0]
-                    tags_list.add(temp)
-        return tags_list
+            p2 = subprocess.Popen(["git", "ls-remote", "--tags", self.git_url], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, errors = p2.communicate()
+            if p2.returncode != 0:
+                print("-- An Error Occurred -- WarriorFramework versions could not be retrieved "
+                      "from remote repository")
+                print("-- Output -- {0}".format(output.decode()))
+                print("-- Errors -- {0}".format(errors.decode()))
+                return False
+        return output
 
     def search_folder_name(self, folder_name, given_dir):
         """searches for folder by name in all subdir until found or bottom level directory"""
