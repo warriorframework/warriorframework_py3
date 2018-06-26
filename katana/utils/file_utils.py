@@ -76,7 +76,7 @@ def write_to_file(path, data):
 def get_new_filepath(filename, path, ext='.log'):
     """ append filename of log file with custom string """
 
-    fullpath = path + os.sep + filenlame + ext
+    fullpath = path + os.sep + filename + ext
 
 
     if os.path.isfile(fullpath):
@@ -94,7 +94,7 @@ def add_time_date(path):
 
 def download(filepath, content_type):
     """
-    Make a downloadloable
+    Make a file in downloadable HttpResponse
 
     Args:
         filepath: absolute path or relative path of the file from __file__ directory
