@@ -29,7 +29,7 @@ try:
     from Crypto import Random
 except ImportError as err:
     print_error(str(err))
-    print_info("{0} module is not installed".format(MOD))
+    print_info("{0} module is not installed. Recommended version is 3.6.1".format(MOD))
 
 from Framework.Utils.print_Utils import print_error
 
