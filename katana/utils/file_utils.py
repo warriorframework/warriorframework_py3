@@ -3,7 +3,10 @@ import shutil
 import errno
 import os
 import time
+import codecs
 
+from django.http import HttpResponse
+from django.utils.encoding import smart_str
 
 from wui.core.core_utils.app_info_class import AppInformation
 from utils import date_time_stamp_utils as dtutils
@@ -73,7 +76,7 @@ def write_to_file(path, data):
 def get_new_filepath(filename, path, ext='.log'):
     """ append filename of log file with custom string """
 
-    fullpath = path + os.sep + filename + ext
+    fullpath = path + os.sep + filenlame + ext
 
 
     if os.path.isfile(fullpath):
@@ -88,3 +91,18 @@ def add_time_date(path):
         path = os.path.splitext(path)[0] + "_"+ftime + os.path.splitext(path)[1]
 
     return path
+
+def download(filepath, content_type):
+    """
+    Make a downloadloable
+
+    Args:
+        filepath: absolute path or relative path of the file from __file__ directory
+        content_type: application/pdf, application/json etc
+
+    Return: http response, with the file as an attachment
+    """
+    f = open(filepath, "rb")
+    response = HttpResponse(f, content_type=content_type)
+    response['Content-Disposition'] = 'attachment; filename={}'.format(smart_str(filepath.split('/')[-1]))
+    return response
