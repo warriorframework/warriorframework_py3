@@ -35,9 +35,10 @@ install:
       pip3 install selenium==3.8.0 ;
       pip3 install lxml==3.3.3 ;
       pip3 install paramiko==1.16.0 ;
-      pip3 install pysnmp==4.3.2 ;
+      pip3 install pysnmp==4.4.4 ;
       pip3 install django;
       pip3 install xmltodict;
+      pip3 install pycryptodome==3.6.1;
     fi
   - if [[ ${SELENIUM} = "yes" ]] && [[ ! -z ${TRAVIS_PULL_REQUEST_BRANCH} ]]; then
       pip3 install pyvirtualdisplay==0.2.1 ;
