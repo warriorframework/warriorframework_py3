@@ -10,3 +10,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+
+import sys
+import os
+
+WARRIOR_DIR = os.path.dirname(os.path.abspath(__file__))
+WARRIORFRAMEWORK_DIR = os.path.dirname(WARRIOR_DIR)
+WARRIORFRAMEWORK_PARENT_DIR = os.path.dirname(WARRIORFRAMEWORK_DIR)
+KATANA_DIR = os.path.join(WARRIORFRAMEWORK_DIR, 'katana')
+WARHORN_DIR = os.path.join(WARRIORFRAMEWORK_DIR, 'warhorn')
+
+COMPONENT_LIST = [WARRIORFRAMEWORK_PARENT_DIR, WARRIOR_DIR,
+                  KATANA_DIR, WARHORN_DIR, WARRIORFRAMEWORK_DIR]
+
+for component in COMPONENT_LIST:
+    if component not in sys.path:
+        sys.path.insert(0, component)
