@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'wapps.projects',
     'wapps.suites',
     'wapps.cases',
+    'wapps.execution',
     'wapps.wdf_edit',
     'wapps.assembler',
     'wapps.cli_data',
