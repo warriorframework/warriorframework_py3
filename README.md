@@ -34,6 +34,7 @@ git checkout -b <new-branch-name>
 HEAD is now at 146313d... reduce command timeout, wait after timeout=60
 $
 5. Execute git branch command to verify the active version. <br/>
+
 $ git branch <br/>
 \* (HEAD detached at warrior-3.3.0) <br/>
 master <br/>
