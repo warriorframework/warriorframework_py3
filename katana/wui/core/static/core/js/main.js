@@ -1123,7 +1123,8 @@ var katana = {
         $tabContent = parent;
       }
       katana.templateAPI.post('get_file_explorer_data/', csrftoken, {
-          "start_dir": start_directory
+          "start_dir": start_directory,
+          "lazy_loading": true
         },
         function(data) {
           var explorer_modal_html = $($('#file-explorer-template').html());
@@ -1137,7 +1138,7 @@ var katana = {
               'data' : {
                 'url' : 'get_file_explorer_data/',
                 'data' : function (node) {
-                  return { 'id' : node.id, 'start_dir': node.data ? node.data.path : false};
+                  return { 'id' : node.id, 'start_dir': node.data ? node.data.path : false, lazy_loading: true};
                 }
               }
             },
@@ -1203,7 +1204,8 @@ var katana = {
         $tabContent = parent;
       }
       katana.templateAPI.post('get_file_explorer_data/', csrftoken, {
-          "path": currentPath
+          "path": currentPath,
+          "lazy_loading": true
         },
         function(data) {
 
@@ -1216,7 +1218,7 @@ var katana = {
               "data": {
                 'url' : 'get_file_explorer_data/',
                 'data' : function (node) {
-                  var cb_data = { 'id' : node.id, 'start_dir': node.data ? node.data.path : false};
+                  var cb_data = { 'id' : node.id, 'start_dir': node.data ? node.data.path : false, lazy_loading: true};
                   if (!cb_data.start_dir){
                     cb_data["path"] = data.data.path;
                   }
