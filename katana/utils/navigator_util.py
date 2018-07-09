@@ -121,30 +121,42 @@ class Navigator(object):
 
         """
         base_name = os.path.basename(start_dir_path)
-        layout = {'text': base_name}
-        layout['data'] = {'path': start_dir_path}
-        layout['li_attr'] = {'data-path': start_dir_path}
-        
+        layout = {'text': base_name, 'data': {'path': start_dir_path},
+                  'li_attr': {'data-path': start_dir_path}}
+
         if not fl:
-            layout["state"] = {"opened" : 'true' }
+            layout["state"] = {"opened": 'true'}
             fl = 'false'
         if os.path.isdir(start_dir_path):
             for x in os.listdir(start_dir_path):
                 try:
-                    layout['a_attr'] = dir_a_attr if dir_a_attr else {}
-                    children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl, file_a_attr=file_a_attr)
+                    if os.path.isdir(os.path.join(start_dir_path, x)):
+                        layout['a_attr'] = dir_a_attr if dir_a_attr else {}
+                        dir_layout = {'text': x, 'data': {'path': os.path.join(start_dir_path, x)},
+                                      'li_attr': {'data-path': os.path.join(start_dir_path, x)},
+                                      'icon': dir_icon, 'a_attr': dir_a_attr if dir_a_attr else {},
+                                      'children': True}
+                        if "children" not in layout:
+                            layout['children'] = [dict(dir_layout)]
+                        else:
+                            layout['children'].append(dict(dir_layout))
+                    else:
+                        file_layout = {'text': x, 'data': {'path': os.path.join(start_dir_path, x)},
+                                       'li_attr': {'data-path': os.path.join(start_dir_path, x)},
+                                       'icon': file_icon, 'a_attr': file_a_attr if file_a_attr else {}}
+                        if "children" not in layout:
+                            layout['children'] = [dict(file_layout)]
+                        else:
+                            layout['children'].append(dict(file_layout))
                 except IOError:
                     pass
                 except Exception as e:
                     print("-- An Error Occurred -- {0}".format(e))
                 else:
-                    if "children" in layout:
-                        layout['children'].append(children)
-                    else:
-                        layout['children'] = [children]
+                    pass
         else:
             layout['icon'] = file_icon
             layout['a_attr'] = file_a_attr if file_a_attr else {}
         #print(layout)
-            
+
         return layout

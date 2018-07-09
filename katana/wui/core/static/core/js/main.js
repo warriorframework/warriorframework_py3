@@ -1134,7 +1134,12 @@ var katana = {
           var $directoryData = $tabContent.find('#directory-data');
           $directoryData.jstree({
             "core": {
-              "data": [data]
+              'data' : {
+                'url' : 'get_file_explorer_data/',
+                'data' : function (node) {
+                  return { 'id' : node.id, 'start_dir': node.data ? node.data.path : false};
+                }
+              }
             },
             "plugins": ["search", "sort"],
             "sort": function(a, b) {
@@ -1208,7 +1213,16 @@ var katana = {
           var $directoryData = $currentPage.find('#directory-data');
           $directoryData.jstree({
             "core": {
-              "data": [data]
+              "data": {
+                'url' : 'get_file_explorer_data/',
+                'data' : function (node) {
+                  var cb_data = { 'id' : node.id, 'start_dir': node.data ? node.data.path : false};
+                  if (!cb_data.start_dir){
+                    cb_data["path"] = data.data.path;
+                  }
+                  return cb_data;
+                }
+              }
             },
             "plugins": ["search", "sort"],
             "sort": function(a, b) {

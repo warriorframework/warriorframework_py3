@@ -60,14 +60,29 @@ def refresh_landing_page(request):
 
 def get_file_explorer_data(request):
     nav_obj = Navigator()
-    if "data[start_dir]" in request.POST and request.POST["data[start_dir]"] != "false":
+    start_dir = "false"
+    get_children_only = False
+    if "data[start_dir]" in request.POST:
         start_dir = request.POST["data[start_dir]"]
-    elif "data[path]" in request.POST and request.POST["data[path]"] != "false":
-        start_dir = get_parent_directory(request.POST["data[path]"])
-    else:
+    elif "start_dir" in request.GET:
+        get_children_only = True
+        start_dir = request.GET["start_dir"]
+
+    if start_dir == "false":
+        get_children_only = False
         start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
+
+    if "data[path]" in request.POST and request.POST["data[path]"] != "false":
+        get_children_only = False
+        start_dir = get_parent_directory(request.POST["data[path]"])
+    if "path" in request.GET:
+        get_children_only = False
+        start_dir = request.GET["path"]
+
     output = nav_obj.get_dir_tree_json(start_dir_path=start_dir)
-    return JsonResponse(output)
+    if get_children_only:
+        output = output["children"]
+    return JsonResponse(output, safe=False)
 
 
 def read_config_file(request):
