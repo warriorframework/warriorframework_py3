@@ -61,6 +61,20 @@ def refresh_landing_page(request):
 class getFileExplorerData(View):
 
     def post(self, request):
+        """
+        This is a post request for getting the file explorer data. It internally calls the
+        get_dir_tree_json() in navigator_utils.py to get a list of directories.
+
+        params sent via the request:
+
+        start_dir: Absolute path to the start directory. If not given, defaulted to "Warriorspace".
+        path: Absolute path to the current directory. Send a path via this argument indicates that
+              information for current directory's parent needs to be obtained. If not False, it is
+              prioritized over start_dir
+        lazy_loading: Indicates that jsTree lazy_loading is being used and only direct
+                      sub-children's information needs to be obtained.
+
+        """
         nav_obj = Navigator()
         lazy_loading = True if "data[lazy_loading]" in request.POST and request.POST["data[lazy_loading]"].lower() == "true" else False
         start_dir = "false"
@@ -76,6 +90,21 @@ class getFileExplorerData(View):
         return JsonResponse(output)
 
     def get(self, request):
+        """
+        This is a get request for getting the file explorer data. It internally calls the
+        get_dir_tree_json() in navigator_utils.py to get a list of directories. THIS VIEW EXISTS
+        ONLY BECAUSE JSTREE DOES NOT HAVE SUPPORT FOR POST IN LAZY LOADING.
+
+        params sent via the request:
+
+        start_dir: Absolute path to the start directory. If not given, defaulted to "Warriorspace".
+        path: Absolute path to the current directory. Send a path via this argument indicates that
+              information for current directory's parent needs to be obtained. If not False, it is
+              prioritized over start_dir
+        lazy_loading: Indicates that jsTree lazy_loading is being used and only direct
+                      sub-children's information needs to be obtained.
+
+        """
         nav_obj = Navigator()
         start_dir = "false"
         lazy_loading = True if "lazy_loading" in request.GET and request.GET["lazy_loading"].lower() == "true" else False
@@ -91,7 +120,6 @@ class getFileExplorerData(View):
         if "path" in request.GET:
             get_children_only = False
             start_dir = request.GET["path"]
-        print(start_dir)
 
         output = nav_obj.get_dir_tree_json(start_dir_path=start_dir, lazy_loading=lazy_loading)
         if get_children_only:

@@ -1,3 +1,4 @@
+import copy
 import os
 from .directory_traversal_utils import get_parent_directory, join_path
 from utils.json_utils import read_json_data
@@ -118,6 +119,8 @@ class Navigator(object):
                         ]
         }
 
+        if lazy_loading is set to True, then only the first level children are read and updated
+        in the children list
 
         """
         base_name = os.path.basename(start_dir_path)
@@ -133,38 +136,27 @@ class Navigator(object):
                     if not lazy_loading:
                         layout['a_attr'] = dir_a_attr if dir_a_attr else {}
                         children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl, file_a_attr=file_a_attr, lazy_loading=lazy_loading)
+                    else:
+                        children = {'text': x, 'data': {'path': os.path.join(start_dir_path, x)},
+                                    'li_attr': {'data-path': os.path.join(start_dir_path, x)}}
+                        if os.path.isdir(os.path.join(start_dir_path, x)):
+                            layout['a_attr'] = dir_a_attr if dir_a_attr else {}
+                            children.update({'icon': dir_icon, 'children': True,
+                                             'a_attr': dir_a_attr if dir_a_attr else {}})
+                        else:
+                            children.update({'icon': file_icon,
+                                             'a_attr': file_a_attr if file_a_attr else {}})
                 except IOError:
                     pass
                 except Exception as e:
                     print("-- An Error Occurred -- {0}".format(e))
                 else:
-                    if lazy_loading:
-                        if os.path.isdir(os.path.join(start_dir_path, x)):
-                            layout['a_attr'] = dir_a_attr if dir_a_attr else {}
-                            dir_layout = {'text': x, 'data': {'path': os.path.join(start_dir_path, x)},
-                                          'li_attr': {'data-path': os.path.join(start_dir_path, x)},
-                                          'icon': dir_icon, 'a_attr': dir_a_attr if dir_a_attr else {},
-                                          'children': True}
-                            if "children" not in layout:
-                                layout['children'] = [dict(dir_layout)]
-                            else:
-                                layout['children'].append(dict(dir_layout))
-                        else:
-                            file_layout = {'text': x, 'data': {'path': os.path.join(start_dir_path, x)},
-                                           'li_attr': {'data-path': os.path.join(start_dir_path, x)},
-                                           'icon': file_icon, 'a_attr': file_a_attr if file_a_attr else {}}
-                            if "children" not in layout:
-                                layout['children'] = [dict(file_layout)]
-                            else:
-                                layout['children'].append(dict(file_layout))
+                    if "children" in layout:
+                        layout['children'].append(children)
                     else:
-                        if "children" in layout:
-                            layout['children'].append(children)
-                        else:
-                            layout['children'] = [children]
+                        layout['children'] = [children]
         else:
             layout['icon'] = file_icon
             layout['a_attr'] = file_a_attr if file_a_attr else {}
-        #print(layout)
 
         return layout
