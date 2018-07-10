@@ -91,6 +91,7 @@ class getFileExplorerData(View):
         if "path" in request.GET:
             get_children_only = False
             start_dir = request.GET["path"]
+        print(start_dir)
 
         output = nav_obj.get_dir_tree_json(start_dir_path=start_dir, lazy_loading=lazy_loading)
         if get_children_only:

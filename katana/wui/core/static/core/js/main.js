@@ -1069,13 +1069,51 @@ var katana = {
 
     jsTreeAPI: {
 
-      createJstree: function($treeElement, jsTreeData){
+      createJstree: function($treeElement, jsTreeData, plugins, plugin_intelligence, lazy_loading, custom_lazy_ajax_function, additional_lazy_params){
         /*
           API to create jstee in the specified element.
           $treeElement: Element where the jstree data should be displayed.
           jsTreeData: the contents of the jstree to be displayed.
         */
-        var data = { 'core' : { 'data' : jsTreeData }, "plugins" : [ "sort" , "search"], };
+        console.log(custom_lazy_ajax_function);
+        lazy_loading = !!lazy_loading;
+        additional_lazy_params = additional_lazy_params ? additional_lazy_params : {};
+        var default_plugins = [ "sort" , "search"];
+        var default_plugin_intelligence = {
+          "sort": function(a, b) {
+              var nodeA = this.get_node(a);
+              var nodeB = this.get_node(b);
+              var lengthA = nodeA.children.length;
+              var lengthB = nodeB.children.length;
+              if ((lengthA === 0 && lengthB === 0) || (lengthA > 0 && lengthB > 0))
+                return this.get_text(a).toLowerCase() > this.get_text(b).toLowerCase() ? 1 : -1;
+              else
+                return lengthA > lengthB ? -1 : 1;
+            }
+        };
+        plugins = Object.assign([], default_plugins, plugins);
+        plugin_intelligence = Object.assign({}, default_plugin_intelligence, plugin_intelligence);
+        var lazy_ajax_original_data = jsTreeData;
+        if (lazy_loading) {
+          lazy_ajax_original_data = function (node) {
+            return Object.assign({},
+                {id : node.id, start_dir: node.data ? node.data.path : false, lazy_loading: lazy_loading},
+                additional_lazy_params);
+          }
+        }
+        lazy_ajax_original_data = custom_lazy_ajax_function ? custom_lazy_ajax_function : lazy_ajax_original_data;
+        console.log(lazy_ajax_original_data);
+        var original_data = {
+          "core" :
+              {
+                'data' : {
+                  'url' : 'get_file_explorer_data/',
+                  'data' : lazy_ajax_original_data
+                }
+              },
+          "plugins" : plugins
+        };
+        var data = Object.assign({}, original_data, plugin_intelligence);
         $treeElement.jstree(data);
         $treeElement.jstree().hide_dots();
       },
@@ -1133,28 +1171,7 @@ var katana = {
 
           $(explorer_modal_html).prependTo($tabContent);
           var $directoryData = $tabContent.find('#directory-data');
-          $directoryData.jstree({
-            "core": {
-              'data' : {
-                'url' : 'get_file_explorer_data/',
-                'data' : function (node) {
-                  return { 'id' : node.id, 'start_dir': node.data ? node.data.path : false, lazy_loading: true};
-                }
-              }
-            },
-            "plugins": ["search", "sort"],
-            "sort": function(a, b) {
-              var nodeA = this.get_node(a);
-              var nodeB = this.get_node(b);
-              var lengthA = nodeA.children.length;
-              var lengthB = nodeB.children.length;
-              if ((lengthA === 0 && lengthB === 0) || (lengthA > 0 && lengthB > 0))
-                return this.get_text(a).toLowerCase() > this.get_text(b).toLowerCase() ? 1 : -1;
-              else
-                return lengthA > lengthB ? -1 : 1;
-            }
-          });
-          $directoryData.jstree().hide_dots();
+          katana.jsTreeAPI.createJstree($directoryData, data, false, false, true);
           $tabContent.find('#explorer-accept').on('click', function() {
             katana.fileExplorerAPI.acceptFileExplorer(callBack_on_accept, parent);
           });
@@ -1213,31 +1230,14 @@ var katana = {
           $directoryDataDiv.html("");
           $directoryDataDiv.append("<div id='directory-data' class='full-size'></div>");
           var $directoryData = $currentPage.find('#directory-data');
-          $directoryData.jstree({
-            "core": {
-              "data": {
-                'url' : 'get_file_explorer_data/',
-                'data' : function (node) {
+          katana.jsTreeAPI.createJstree($directoryData, data, false, false, true,
+              function (node) {
                   var cb_data = { 'id' : node.id, 'start_dir': node.data ? node.data.path : false, lazy_loading: true};
                   if (!cb_data.start_dir){
                     cb_data["path"] = data.data.path;
                   }
                   return cb_data;
-                }
-              }
-            },
-            "plugins": ["search", "sort"],
-            "sort": function(a, b) {
-              var nodeA = this.get_node(a);
-              var nodeB = this.get_node(b);
-              var lengthA = nodeA.children.length;
-              var lengthB = nodeB.children.length;
-              if ((lengthA === 0 && lengthB === 0) || (lengthA > 0 && lengthB > 0))
-                return this.get_text(a).toLowerCase() > this.get_text(b).toLowerCase() ? 1 : -1;
-              else
-                return lengthA > lengthB ? -1 : 1;
-            }
-          });
+                });
           $directoryData.jstree().hide_dots();
           $tabContent.find('#explorer-up').off('click');
           $tabContent.find('#explorer-up').on('click', function() {
