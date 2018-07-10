@@ -32,7 +32,7 @@ def save_wrapper_kw(request):
     " Saves wrapper keyword in the respective Warrior Action file "
     output = {'status': True}
     warrior_dir = navigator.get_warrior_dir()[:-1]
-    action_file = os.path.join(navigator.get_warrior_dir()[:-1], request.POST.get("@actionFile"))
+    action_file = request.POST.get("@actionFile")
     wrapper_kw_name = request.POST.get("@wrapperKwName")
     w_desc = request.POST.get("@wDescription")
     sub_keywords = request.POST.get("@subKeywords")

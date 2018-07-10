@@ -1,4 +1,3 @@
-import imp
 import sys
 import os
 import inspect
@@ -13,6 +12,7 @@ class CreateWrappeKwActions:
         """Constructor for WriteWrappeKwActions Class"""
         self.warrior_dir = warrior_dir
         self.action_file = action_file
+        self.action_file_abspath = os.path.join(warrior_dir, action_file)
         self.wrapper_kw_name = wrapper_kw_name
         self.w_desc = w_desc
         self.sub_keywords = sub_keywords
@@ -30,15 +30,14 @@ class CreateWrappeKwActions:
                                 "arguments\n        '{}'.\n        ")
         vars_to_replace['wrapper_kw'] = self.wrapper_kw_name
         vars_to_replace['wdesc'] = self.w_desc
-        action_file_basename = os.path.splitext(self.action_file)[0]
-        action_file_classpath = ".".join(action_file_basename.split(os.sep))
-        mod_desc = imp.find_module(action_file_basename)
-        action_module = imp.load_module(action_file_basename, *mod_desc)
+        action_file_classpath = ".".join(os.path.splitext(self.action_file)[0].split(os.sep))
+        action_module = importlib.import_module(action_file_classpath)
         action_class = inspect.getmembers(action_module, inspect.isclass)[0][1]
         action_methods = [item[0] for item in inspect.getmembers(action_class, inspect.isroutine)]
         if vars_to_replace['wrapper_kw'] in action_methods:
             print("Wrapper Keyword '{}' already exists in '{}'. Please create a Wrapper Keyword "
-                  "with different name.".format(vars_to_replace['wrapper_kw'], self.action_file))
+                  "with different name.".format(vars_to_replace['wrapper_kw'],
+                                                self.action_file_abspath))
             return False
         keyword_details = []
         for sub_keyword in self.sub_keywords:
@@ -84,16 +83,16 @@ class CreateWrappeKwActions:
 
         # appending the wrapper keyword code to the action class corresponding to wrapper keyword
         try:
-            with io.open(self.action_file, 'a') as actfile:
+            with io.open(self.action_file_abspath, 'a') as actfile:
                 actfile.write(kwdseqtempstr)
         except Exception as e:
             print("got exception '{}' while writing to action file".format(e))
             print("Error writing keyword '{}' to actionfile "
-                  "'{}'".format(vars_to_replace['wrapper_kw'], self.action_file))
+                  "'{}'".format(vars_to_replace['wrapper_kw'], self.action_file_abspath))
             return False
 
         print("wrapper keyword '{}' saved in the path "
-              "'{}'".format(vars_to_replace['wrapper_kw'], self.action_file))
+              "'{}'".format(vars_to_replace['wrapper_kw'], self.action_file_abspath))
         return True
 
     def get_action(self, driver, keyword):
