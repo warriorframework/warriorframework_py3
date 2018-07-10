@@ -16,6 +16,8 @@ class CreateWrappeKwActions:
         self.wrapper_kw_name = wrapper_kw_name
         self.w_desc = w_desc
         self.sub_keywords = sub_keywords
+        # This can be removed after merging WAR-1960 PR
+        sys.path.insert(0, self.warrior_dir)
 
     def write_wrapper_kw(self):
         """ Writes wrapper keyword in the corresponding action file """
@@ -23,12 +25,11 @@ class CreateWrappeKwActions:
         vars_to_replace = {'keyword_doc_list': ""}
         current_dir = os.path.dirname(os.path.realpath(__file__))
         rel_template_path = "../templates/kw_sequencer/kw_sequencer_template"
-        kw_sequencer_template_file = os.path.join(current_dir, rel_template_path)
+        kw_sequencer_template = os.path.join(current_dir, rel_template_path)
         keyword_doc_template = ("The keyword '{}' in Driver '{}' has defined "
                                 "arguments\n        '{}'.\n        ")
         vars_to_replace['wrapper_kw'] = self.wrapper_kw_name
         vars_to_replace['wdesc'] = self.w_desc
-        sys.path.insert(0, self.warrior_dir)
         action_file_basename = os.path.splitext(self.action_file)[0]
         action_file_classpath = ".".join(action_file_basename.split(os.sep))
         mod_desc = imp.find_module(action_file_basename)
@@ -61,21 +62,21 @@ class CreateWrappeKwActions:
             vars_to_replace['keyword_doc_list'] += keyword_doc_template.format(
                                                     sub_keyword['@Keyword'],
                                                     sub_keyword['@Driver'], arg_list_str)
-        else:
-            # generating the code to substitute keyword_details in template
-            # this would be a list of three-tuples where each three tuple
-            # corresponds to a subkeyword with details of (keyword name,
-            # action class corresponding to the keyword, dictionary of named arguments)
-            ws27 = ',\n'+' '*27
-            ws28 = ws27+' '
-            inner_to_print_list = ['('+ws28.join(["'{}', '{}'".format(a, b),
-                                                  str(c)])+')' for (a, b, c) in keyword_details]
-            outer_to_print = '['+ws27.join(inner_to_print_list)+']'
-            vars_to_replace['keyword_details'] = outer_to_print
+
+        # generating the code to substitute keyword_details in template
+        # this would be a list of three-tuples where each three tuple
+        # corresponds to a subkeyword with details of (keyword name,
+        # action class corresponding to the keyword, dictionary of named arguments)
+        ws27 = ',\n'+' '*27
+        ws28 = ws27+' '
+        inner_to_print_list = ['('+ws28.join(["'{}', '{}'".format(a, b),
+                                              str(c)])+')' for (a, b, c) in keyword_details]
+        outer_to_print = '['+ws27.join(inner_to_print_list)+']'
+        vars_to_replace['keyword_details'] = outer_to_print
 
         # vars_to_replace is used here to sustitute the patterns in keyword template
         # which would be appended as wrapper keyword in the corresponding action class
-        with io.open(kw_sequencer_template_file) as kwdseqtemp:
+        with io.open(kw_sequencer_template) as kwdseqtemp:
             kwdseqtempstr = kwdseqtemp.read()
         from string import Template
         kwdseqtemp = Template(kwdseqtempstr)
