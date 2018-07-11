@@ -31,10 +31,11 @@ class CreateWrappeKwActions:
         action_class = inspect.getmembers(action_module, inspect.isclass)[0][1]
         action_methods = [item[0] for item in inspect.getmembers(action_class, inspect.isroutine)]
         if vars_to_replace['wrapper_kw'] in action_methods:
-            print("Wrapper Keyword '{}' already exists in '{}'. Please create a Wrapper Keyword "
-                  "with different name.".format(vars_to_replace['wrapper_kw'],
-                                                action_file_abspath))
-            return False
+            message = ("Wrapper Keyword '{}' already exists in '{}'. "
+                       "Please create a Wrapper Keyword with a different "
+                       "name.".format(vars_to_replace['wrapper_kw'], action_file_abspath))
+            print(message)
+            return False, message
         keyword_details = []
         for sub_keyword in sub_keywords:
             sub_kw_action = self.get_action(sub_keyword['@Driver'], sub_keyword['@Keyword'])
@@ -81,14 +82,15 @@ class CreateWrappeKwActions:
             with open(action_file_abspath, 'a') as actfile:
                 actfile.write(kwseqtempstr)
         except Exception as e:
-            print("got exception '{}' while writing to action file".format(e))
-            print("Error writing keyword '{}' to actionfile "
-                  "'{}'".format(vars_to_replace['wrapper_kw'], action_file_abspath))
-            return False
+            message = ("Exception '{}' while writing keyword '{}' in actionfile "
+                       "'{}'".format(e, vars_to_replace['wrapper_kw'], action_file_abspath))
+            print(message)
+            return False, message
 
-        print("wrapper keyword '{}' saved in the path "
-              "'{}'".format(vars_to_replace['wrapper_kw'], action_file_abspath))
-        return True
+        message = ("Wrapper keyword '{}' has been created successfully in "
+                   "'{}'.".format(vars_to_replace['wrapper_kw'], action_file_abspath))
+        print(message)
+        return True, message
 
     def get_action(self, driver, keyword):
         """ Return the class name corresponding to the keyword in the driver """

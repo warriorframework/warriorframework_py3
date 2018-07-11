@@ -160,19 +160,27 @@ var kwSequencer = {
                 url: 'kw_sequencer/save_wrapper_kw/',
                 data: wrapperKwDetails
             }).done(function(output) {
+                var callbackOnSuccess = function(){
+                    $currentPage.find('[katana-click="kwSequencer.newKeyword"]').show();
+                    $currentPage.find('[katana-click="kwSequencer.closeKeyword"]').hide();
+                    $currentPage.find('[katana-click="kwSequencer.saveKeyword"]').hide();
+                    $currentPage.find('#create-keyword').hide();
+                    $currentPage.find('#display-files').show();
+                    var $toolBarDiv = $currentPage.find('.tool-bar');
+                    $toolBarDiv.find('.title').html("Create New Keyword");
+                }
                 if (output.status) {
                     katana.openAlert({
                         "alert_type": "success",
                         "heading": "Wrapper Keyword Saved",
-                        "text": wrapperKwDetails['@wrapperKwName'] + " has been created successfully",
+                        "text": output.message,
                         "show_cancel_btn": false
-                    });
-                    //cases.caseViewer.close();
+                    }, callbackOnSuccess);
                 } else {
                     katana.openAlert({
                         "alert_type": "danger",
                         "heading": "Wrapper Keyword Not Saved",
-                        "text": "Some problem occurred while creating the Wrapper Keyword: " + wrapperKwDetails['@wrapperKwName'],
+                        "text": output.message,
                         "show_cancel_btn": false
                     })
                 }

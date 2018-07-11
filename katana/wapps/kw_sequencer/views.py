@@ -38,5 +38,6 @@ def save_wrapper_kw(request):
     sub_keywords = request.POST.get("@subKeywords")
     sub_keywords = json.loads(sub_keywords)
     wka_obj = CreateWrappeKwActions(WARRIOR_DIR)
-    output['status'] = wka_obj.write_wrapper_kw(action_file, wrapper_kw_name, w_desc, sub_keywords)
+    output['status'], output['message'] = wka_obj.write_wrapper_kw(action_file, wrapper_kw_name,
+                                                                   w_desc, sub_keywords)
     return JsonResponse(output)
