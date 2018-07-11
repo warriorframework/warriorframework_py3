@@ -8,39 +8,35 @@ from string import Template
 
 class CreateWrappeKwActions:
 
-    def __init__(self, warrior_dir, action_file, wrapper_kw_name, w_desc, sub_keywords):
+    def __init__(self, warrior_dir):
         """Constructor for WriteWrappeKwActions Class"""
         self.warrior_dir = warrior_dir
-        self.action_file = action_file
-        self.action_file_abspath = os.path.join(warrior_dir, action_file)
-        self.wrapper_kw_name = wrapper_kw_name
-        self.w_desc = w_desc
-        self.sub_keywords = sub_keywords
         # This can be removed after merging WAR-1960 PR
         sys.path.insert(0, self.warrior_dir)
-
-    def write_wrapper_kw(self):
-        """ Writes wrapper keyword in the corresponding action file """
-
-        vars_to_replace = {'keyword_doc_list': ""}
         current_dir = os.path.dirname(os.path.realpath(__file__))
         rel_template_path = "../templates/kw_sequencer/kw_sequencer_template"
-        kw_sequencer_template = os.path.join(current_dir, rel_template_path)
+        self.kw_sequencer_template = os.path.join(current_dir, rel_template_path)
+
+    def write_wrapper_kw(self, action_file, wrapper_kw_name, w_desc, sub_keywords):
+        """ Writes wrapper keyword in the corresponding action file """
+
+        action_file_abspath = os.path.join(self.warrior_dir, action_file)
+        vars_to_replace = {'keyword_doc_list': ""}
         keyword_doc_template = ("The keyword '{}' in Driver '{}' has defined "
                                 "arguments\n        '{}'.\n        ")
-        vars_to_replace['wrapper_kw'] = self.wrapper_kw_name
-        vars_to_replace['wdesc'] = self.w_desc
-        action_file_classpath = ".".join(os.path.splitext(self.action_file)[0].split(os.sep))
+        vars_to_replace['wrapper_kw'] = wrapper_kw_name
+        vars_to_replace['wdesc'] = w_desc
+        action_file_classpath = ".".join(os.path.splitext(action_file)[0].split(os.sep))
         action_module = importlib.import_module(action_file_classpath)
         action_class = inspect.getmembers(action_module, inspect.isclass)[0][1]
         action_methods = [item[0] for item in inspect.getmembers(action_class, inspect.isroutine)]
         if vars_to_replace['wrapper_kw'] in action_methods:
             print("Wrapper Keyword '{}' already exists in '{}'. Please create a Wrapper Keyword "
                   "with different name.".format(vars_to_replace['wrapper_kw'],
-                                                self.action_file_abspath))
+                                                action_file_abspath))
             return False
         keyword_details = []
-        for sub_keyword in self.sub_keywords:
+        for sub_keyword in sub_keywords:
             sub_kw_action = self.get_action(sub_keyword['@Driver'], sub_keyword['@Keyword'])
             if action_file_classpath != sub_kw_action.__module__:
                 # the sub keyword action is different from the wrapper keyword
@@ -75,23 +71,23 @@ class CreateWrappeKwActions:
 
         # vars_to_replace is used here to sustitute the patterns in keyword template
         # which would be appended as wrapper keyword in the corresponding action class
-        with open(kw_sequencer_template) as kwseqtemp:
+        with open(self.kw_sequencer_template) as kwseqtemp:
             kwseqtempstr = kwseqtemp.read()
         kwseqtemp = Template(kwseqtempstr)
         kwseqtempstr = kwseqtemp.substitute(vars_to_replace)
 
         # appending the wrapper keyword code to the action class corresponding to wrapper keyword
         try:
-            with open(self.action_file_abspath, 'a') as actfile:
+            with open(action_file_abspath, 'a') as actfile:
                 actfile.write(kwseqtempstr)
         except Exception as e:
             print("got exception '{}' while writing to action file".format(e))
             print("Error writing keyword '{}' to actionfile "
-                  "'{}'".format(vars_to_replace['wrapper_kw'], self.action_file_abspath))
+                  "'{}'".format(vars_to_replace['wrapper_kw'], action_file_abspath))
             return False
 
         print("wrapper keyword '{}' saved in the path "
-              "'{}'".format(vars_to_replace['wrapper_kw'], self.action_file_abspath))
+              "'{}'".format(vars_to_replace['wrapper_kw'], action_file_abspath))
         return True
 
     def get_action(self, driver, keyword):

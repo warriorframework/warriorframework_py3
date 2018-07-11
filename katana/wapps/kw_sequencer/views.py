@@ -11,6 +11,7 @@ from wapps.kw_sequencer.kw_sequencer_utils.get_drivers import GetDriversActions
 from wapps.kw_sequencer.kw_sequencer_utils.write_wrapper_kw import CreateWrappeKwActions
 
 navigator = Navigator()
+WARRIOR_DIR = navigator.get_warrior_dir()[:-1]
 
 class KwSequencerIndex(TemplateView):
     template_name = 'kw_sequencer/kw_sequencer.html'
@@ -23,22 +24,19 @@ class KwSequencerCreate(View):
 def create_new_subkw(request):
     """ Creates new sub keyword """
     output = {}
-    da_obj = GetDriversActions(navigator.get_warrior_dir()[:-1])
+    da_obj = GetDriversActions(WARRIOR_DIR)
     output["drivers"] = da_obj.get_all_actions()
     output["html_data"] = render_to_string('kw_sequencer/create_subkw.html', output)
     return JsonResponse(output)
 
 def save_wrapper_kw(request):
     " Saves wrapper keyword in the respective Warrior Action file "
-    output = {'status': True}
-    warrior_dir = navigator.get_warrior_dir()[:-1]
+    output = {}
     action_file = request.POST.get("@actionFile")
     wrapper_kw_name = request.POST.get("@wrapperKwName")
     w_desc = request.POST.get("@wDescription")
     sub_keywords = request.POST.get("@subKeywords")
     sub_keywords = json.loads(sub_keywords)
-
-    cwk_obj = CreateWrappeKwActions(warrior_dir, action_file, wrapper_kw_name, w_desc, sub_keywords)
-    cwk_obj.write_wrapper_kw()
-
+    wka_obj = CreateWrappeKwActions(WARRIOR_DIR)
+    output['status'] = wka_obj.write_wrapper_kw(action_file, wrapper_kw_name, w_desc, sub_keywords)
     return JsonResponse(output)
