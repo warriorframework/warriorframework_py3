@@ -4,7 +4,7 @@ import inspect
 import importlib
 import re
 import pkgutil
-import io
+from string import Template
 
 class CreateWrappeKwActions:
 
@@ -41,11 +41,11 @@ class CreateWrappeKwActions:
             return False
         keyword_details = []
         for sub_keyword in self.sub_keywords:
-            action_code = self.get_action(sub_keyword['@Driver'], sub_keyword['@Keyword'])
-            if action_file_classpath != action_code.__module__:
+            sub_kw_action = self.get_action(sub_keyword['@Driver'], sub_keyword['@Keyword'])
+            if action_file_classpath != sub_kw_action.__module__:
                 # the sub keyword action is different from the wrapper keyword
                 # action, hence need to import
-                keyword_action_class = action_code.__module__+'.'+action_code.__name__
+                keyword_action_class = sub_kw_action.__module__+'.'+sub_kw_action.__name__
             else:
                 # the sub keyword action is same as wrapper keyword action,
                 # hence can be called directly with self
@@ -75,16 +75,15 @@ class CreateWrappeKwActions:
 
         # vars_to_replace is used here to sustitute the patterns in keyword template
         # which would be appended as wrapper keyword in the corresponding action class
-        with io.open(kw_sequencer_template) as kwdseqtemp:
-            kwdseqtempstr = kwdseqtemp.read()
-        from string import Template
-        kwdseqtemp = Template(kwdseqtempstr)
-        kwdseqtempstr = kwdseqtemp.substitute(vars_to_replace)
+        with open(kw_sequencer_template) as kwseqtemp:
+            kwseqtempstr = kwseqtemp.read()
+        kwseqtemp = Template(kwseqtempstr)
+        kwseqtempstr = kwseqtemp.substitute(vars_to_replace)
 
         # appending the wrapper keyword code to the action class corresponding to wrapper keyword
         try:
-            with io.open(self.action_file_abspath, 'a') as actfile:
-                actfile.write(kwdseqtempstr)
+            with open(self.action_file_abspath, 'a') as actfile:
+                actfile.write(kwseqtempstr)
         except Exception as e:
             print("got exception '{}' while writing to action file".format(e))
             print("Error writing keyword '{}' to actionfile "
