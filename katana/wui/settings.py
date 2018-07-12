@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'wapps.projects',
     'wapps.suites',
     'wapps.cases',
+    'wapps.execution',
     'wapps.wdf_edit',
     'wapps.assembler',
     'wapps.cli_data',
@@ -107,13 +108,12 @@ DATABASES = {
 # authentication settings
 
 AUTHENTICATION_BACKENDS = (
+    # 'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
 MULTI_USER_SUPPORT = False
 USER_HOME_DIR_TEMPLATE = None
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -164,3 +164,21 @@ DATA_UPLOAD_MAX_MEMORY_SIZE = 10242880
 settings_logging.BASE_DIR = BASE_DIR
 settings_logging.DEBUG = DEBUG
 LOGGING = settings_logging.get_log_config()
+# provide url of your ldap server
+AUTH_LDAP_SERVER_URI = None
+
+# provide the user dn template of your ldap server,
+# contact your ldap admin for value of your ldap server
+AUTH_LDAP_USER_DN_TEMPLATE = None
+
+# provide the base dn of your ldap server
+AUTH_LDAP_SEARCH_BASE_DN = None
+
+# to authenticate against an ldap server we need a user to bind with the server,
+# this is usually the user created specifically for the application or it will the admin user.
+# This user will be used to bind with the ldap server on successful bind any user in the ldap
+# server can be authenticated.
+
+AUTH_LDAP_BIND_DN = None
+AUTH_LDAP_BIND_PASSWORD = None
+

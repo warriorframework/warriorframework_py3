@@ -88,6 +88,10 @@
       "translateTo": "Email Adress"
     },
     {
+      "key": "homeDirectory",
+      "translateTo": "Home Directory"
+    },
+    {
       "key": "url",
       "toolTip": "URL of JIRA project to be used",
       "translateTo": "Project URL"

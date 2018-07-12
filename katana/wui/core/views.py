@@ -32,12 +32,11 @@ try:
 except Exception as err:
     print("Please install django auth ldap to authenticate against ldap")
     print("Error while importing django auth ldap: \n", err)
-    
 
-
-#===============================================================================
-# !!!!! This functinality has been moved to UserAuthView class (scroll down) commenting the code for now.
-# onlce backward compatibility has been safely verified after testing thoroughly 
+# ===============================================================================
+# !!!!! This functionality has been moved to UserAuthView class (scroll down)
+# commenting the code for now.
+# once backward compatibility has been safely verified after testing thoroughly
 # the commented code can be deleted !!!!
 #
 # class CoreView(View):
@@ -67,12 +66,14 @@ except Exception as err:
 #         """
 #         print('hi')
 #         template = 'core/index.html'
-#         return render(request, template, {"apps": AppInformation.information.apps, "userData": self.get_user_data()})
-#===============================================================================
+#         return render(request, template, {"apps": AppInformation.information.apps,
+#                                            "userData": self.get_user_data()})
+# ===============================================================================
 
 
 def refresh_landing_page(request):
-    return render(request, 'core/landing_page.html', {"apps": AppInformation.information.apps})
+    return render(request, 'core/landing_page.html',
+                  {"apps": AppInformation.information.apps})
 
 
 class getFileExplorerData(View):
@@ -165,42 +166,40 @@ def check_if_file_exists(request):
     return JsonResponse(output)
 
 
-
-
-
 class UserAuthView(View):
     """
     User authentication view
     """    
     
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
         constructor for the view
         """
+        super(UserAuthView).__init__(*kwargs)
         self.index_page = os.path.join(templates_dir, 'unified_index.html')
         self.home_page = os.path.join(templates_dir, 'home_page.html')
+        self.configured_ldap = False
+        if hasattr(settings, 'AUTH_LDAP_SERVER_URI') and settings.AUTH_LDAP_SERVER_URI:
+            self.configured_ldap = True
         self.userprofile  = None
         self.username = None
         self.password = None
         self.op_dict = {'auth_status': 0, 'redirect_url': None}     
         self.action_method_map = {
-                            'login': self.get_login_page,
-                            'logout': self.logout_user,
-                            'redirect_to_home_page': self.redirect_to_home_page
-                        }
-        
-    
+            'login': self.get_login_page,
+            'logout': self.logout_user,
+            'redirect_to_home_page': self.redirect_to_home_page
+        }
+
     def get(self, request):
         """
         Render the form for user authentication
         """
         req_data = request.GET.get('data')
         data_dict = json.loads(req_data) if req_data else {}
-        action = data_dict.get('action')     
+        action = data_dict.get('action')
         method = self.action_method_map.get(action, self.get_login_page)
         return method(request)
-        
-
     
     def post(self, request):
         """
@@ -219,7 +218,7 @@ class UserAuthView(View):
         multi_user_support = getattr(settings, 'MULTI_USER_SUPPORT', False)
         home_dir_template = getattr(settings, 'USER_HOME_DIR_TEMPLATE', None)
         # if multi user support is False then just login user
-        if not multi_user_support:    
+        if not multi_user_support:
             self.login_user(request)
         
         # if multi user supported then home_dir_template is mandatory
@@ -269,22 +268,19 @@ class UserAuthView(View):
         except Exception as err:
             self.op_dict['msg'] = str(err)
     
-        return
-    
-    
     def redirect_to_home_page(self, request):
         """
         on successful login build the homepage for the user
         """
         user_data = self.get_user_data()
-        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
+        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data, "configured_ldap": self.configured_ldap})
     
     
     def get_login_page(self, request):
         """
         """
         user_data = self.get_user_data()
-        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
+        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data, "configured_ldap": self.configured_ldap})
     
     
     
