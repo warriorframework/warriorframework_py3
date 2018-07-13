@@ -4,8 +4,8 @@ import errno
 import os
 import time
 
-
 from wui.core.core_utils.app_info_class import AppInformation
+
 from utils import date_time_stamp_utils as dtutils
 
 def readlines_from_file(path, start=None, end=None):
@@ -46,13 +46,41 @@ def readlines_from_file(path, start=None, end=None):
     return data
 
 
+"""
+File operations
+"""
+
+def list_dir(src):
+    return os.listdir(src)
+
+def copy_file(src, dst):
+    status = False
+    try:
+        shutil.copy(src, dst)
+        status = True
+    except Exception as e:
+        print('Failed with error: %s' % e)
+    return status
+
+
+def rm_dir(src):
+    status = True
+    try:
+        shutil.rmtree(src)
+    except OSError as e:
+        status = False
+        print("-- An Error Occurred -- {0}".format(e))
+    return status
+
+
 def copy_dir(src, dest):
     output = True
     try:
         shutil.copytree(src, dest)
     except OSError as e:
+        # if src is not a directory
         if e.errno == errno.ENOTDIR:
-            shutil.copy(src, dest)
+            copy_file(src, dest)
         else:
             output = False
             print("-- An Error Occurred -- {0}".format(e))
@@ -88,3 +116,4 @@ def add_time_date(path):
         path = os.path.splitext(path)[0] + "_"+ftime + os.path.splitext(path)[1]
 
     return path
+
