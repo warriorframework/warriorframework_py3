@@ -1069,13 +1069,23 @@ var katana = {
 
     jsTreeAPI: {
 
-      createJstree: function($treeElement, jsTreeData){
+      createJstree: function($treeElement, jsTreeData, checkbox = false){
         /*
           API to create jstee in the specified element.
           $treeElement: Element where the jstree data should be displayed.
           jsTreeData: the contents of the jstree to be displayed.
+          checkbox: flag to addd the checkbox plugin
         */
-        var data = { 'core' : { 'data' : jsTreeData }, "plugins" : [ "sort" , "search"], };
+        if (checkbox == true) {
+            var data = { 'core' : { 'data' : jsTreeData },
+                          "plugins" : [ "sort" , "search", "checkbox", "changed"],
+                           'checkbox': { cascade: "down", three_state: false },
+                           'expand_selected_onload': true
+
+            };
+        } else {
+            var data = { 'core' : { 'data' : jsTreeData }, "plugins" : [ "sort" , "search"], };
+        }
         $treeElement.jstree(data);
         $treeElement.jstree().hide_dots();
       },
