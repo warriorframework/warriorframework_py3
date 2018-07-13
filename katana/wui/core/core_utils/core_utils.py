@@ -1,7 +1,12 @@
 import os
+import re
 from collections import OrderedDict
-from utils.directory_traversal_utils import get_abs_path, join_path
+from utils.directory_traversal_utils import get_abs_path, join_path, get_dir_from_path
+from utils.file_utils import copy_dir, rm_dir
 
+WARRIORFRAMEWORK = 'warriorframework_py3'
+KATANA = 'katana'
+WAPPS = 'wapps'
 
 def get_app_path_from_name(app_name, config_file, base_directory):
     """
@@ -97,3 +102,42 @@ def validate_config_json(json_data, warrior_dir):
         ordered_json["pythonpath"] = json_data["pythonpath"]
 
     return ordered_json
+
+def iscontainer():
+    """
+    iscontainer: When inside a container, control groups will match the pattern /docker/<containerid>
+    :return: True if control group points to docker or False if not inside a container
+    """
+    with open("/proc/1/cgroup") as cgroups:
+        for line in cgroups:
+            line = re.findall(r'docker', line)
+            # return false if outside docker
+            if line.__len__() is 0:
+                return False
+            # else return true
+            else:
+                print('Warrior instance not deployed in contianer')
+                return True
+
+
+def katana_container_operations(_copy, katana_static, app_path):
+    if iscontainer():
+        return handle_wapp_static_container(
+            app_path, katana_static, _copy), app_path
+    return False, app_path
+
+
+def copy_katana_static(src, dst):
+    return True if copy_dir(src, dst) else False
+
+
+def delete_katana_static(src):
+    return True if rm_dir(src) else False
+
+
+def handle_wapp_static_container(app_path, katana_static, _copy):
+    filename = get_dir_from_path(app_path)
+    if _copy:
+        return copy_katana_static(join_path(app_path, WARRIORFRAMEWORK, KATANA, WAPPS, filename, 'static', filename), join_path(katana_static, filename))
+    else:
+        return delete_katana_static(join_path(katana_static, filename))

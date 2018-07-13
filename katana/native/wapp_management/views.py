@@ -11,14 +11,15 @@ limitations under the License.
 
 """
 
-
 import os
 import shutil
+import re
 import zipfile
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 import xml.etree.cElementTree as ET
+from wui.core.core_utils import core_utils
 from native.wapp_management.wapp_management_utils.app_validator import AppValidator
 from native.wapp_management.wapp_management_utils.installer import Installer
 from native.wapp_management.wapp_management_utils.uninstaller import Uninstaller
@@ -28,11 +29,17 @@ from utils.file_utils import copy_dir
 from utils.navigator_util import Navigator
 from utils.string_utils import get_repository_name
 from wui.core.core_utils.app_info_class import AppInformation
+
+from katana.native.wapp_management.wapp_management_utils import wapp_mgmt_utils
+
+#from katana.utils import file_utils
 nav_obj = Navigator()
 
+# path to katana/static
+# define as a global variable
+katana_static = join_path(nav_obj.get_katana_dir(), 'static')
 
 class WappManagementView(View):
-
     template = 'wapp_management/wapp_management.html'
     dot_data_directory = join_path(nav_obj.get_katana_dir(), "native", "wapp_management", ".data")
 
@@ -58,8 +65,17 @@ def update_installed_apps_section(request):
 def uninstall_an_app(request):
     app_path = request.POST.get("app_path", None)
     app_type = request.POST.get("app_type", None)
+    # check if inside container
+    # check if inside container
+    if core_utils.katana_container_operations(False, katana_static, app_path):
+        print('deleted static files from katana/static')
     uninstaller_obj = Uninstaller(get_parent_directory(nav_obj.get_katana_dir()), app_path, app_type)
-    uninstaller_obj.uninstall()
+    if not uninstaller_obj.uninstall():
+        # undo delete of files
+        print('Error during uninstall, doing a rollback...')
+        # check if inside container
+        if core_utils.katana_container_operations(True, katana_static, app_path):
+            print('Copied static files to katana/static')
     output = {"data": {"app": AppInformation.information.apps}}
     return render(request, 'wapp_management/installed_apps.html', output)
 
@@ -74,37 +90,13 @@ def install_an_app(request):
         shutil.rmtree(temp_dir_path)
     create_dir(temp_dir_path)
 
-    if app_path.endswith(".git"):
-        repo_name = get_repository_name(app_path)
-        os.system("git clone {0} {1}".format(app_path, join_path(temp_dir_path, repo_name)))
-        app_path = join_path(temp_dir_path, repo_name)
-    elif app_path.endswith(".zip"):
-        if os.path.exists(app_path):
-            temp = app_path.split(os.sep)
-            temp = temp[len(temp)-1]
-            shutil.copyfile(app_path, join_path(temp_dir_path, temp))
-            zip_ref = zipfile.ZipFile(join_path(temp_dir_path, temp), 'r')
-            zip_ref.extractall(temp_dir_path)
-            zip_ref.close()
-            app_path = join_path(temp_dir_path, temp[:-4])
-        else:
+    status, app_path = wapp_mgmt_utils.handle_wapp_sources(app_path, dot_data_dir, temp_dir_path, output_data)
+    if status:
+        installer_obj = Installer(get_parent_directory(nav_obj.get_katana_dir()), app_path)
+        installer_obj.install()
+        if installer_obj.message != "":
             output_data["status"] = False
-            output_data["message"] = "-- An Error Occurred -- {0} does not exist".format(app_path)
-            print(output_data["message"])
-    else:
-        if os.path.isdir(app_path):
-            filename = get_dir_from_path(app_path)
-            copy_dir(app_path, join_path(temp_dir_path, filename))
-            app_path = join_path(temp_dir_path, filename)
-        else:
-            output_data["status"] = False
-            output_data["message"] = "-- An Error Occurred -- {0} does not exist".format(app_path)
-            print(output_data["message"])
-    installer_obj = Installer(get_parent_directory(nav_obj.get_katana_dir()), app_path)
-    installer_obj.install()
-    if installer_obj.message != "":
-        output_data["status"] = False
-        output_data["message"] += "\n" + installer_obj.message
+            output_data["message"] += "\n" + installer_obj.message
     return JsonResponse(output_data)
 
 
@@ -214,7 +206,7 @@ def validate_app_path(request):
         elif detail_type == "zip":
             if os.path.exists(detail_info):
                 temp = detail_info.split(os.sep)
-                temp = temp[len(temp)-1]
+                temp = temp[len(temp) - 1]
                 shutil.copyfile(detail_info, join_path(temp_dir_path, temp))
                 zip_ref = zipfile.ZipFile(join_path(temp_dir_path, temp), 'r')
                 zip_ref.extractall(temp_dir_path)
@@ -241,4 +233,3 @@ def validate_app_path(request):
     else:
         print("-- An Error Occurred -- Could not create temporary directory.")
     return JsonResponse(output)
-
