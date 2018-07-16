@@ -245,6 +245,10 @@ var kwSequencer = {
             $currentPage.find('#new-sub-keyword-div').hide();
             var $newSubKwButton = $currentPage.find('#newSubKwButton');
             $newSubKwButton.show();
+            var tableLength = $currentPage.find('#sub-keywords-table').find('tbody').find('tr').length;
+            if (tableLength > 0) {
+                $currentPage.find('#display-sub-keywords-div').show();
+            }
         }
     },
 
@@ -502,8 +506,13 @@ var kwSequencer = {
                                 $($allTrElems[i]).remove();
                             }
                             kwSequencer.redoStepNums();
+                            var tableLength = katana.$activeTab.find('#sub-keywords-table').find('tbody').find('tr').length;
+                            if (tableLength == 0) {
+                                katana.$activeTab.find('#display-sub-keywords-div').hide();
+                            }
                         })
                 }
+
             },
 
             insertStep: function () {
