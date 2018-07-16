@@ -8,6 +8,7 @@ from wui.core.core_utils.app_info_class import AppInformation
 
 from utils import date_time_stamp_utils as dtutils
 
+
 def readlines_from_file(path, start=None, end=None):
     """
     This function uses the readlines() method to read a file.
@@ -50,8 +51,10 @@ def readlines_from_file(path, start=None, end=None):
 File operations
 """
 
+
 def list_dir(src):
     return os.listdir(src)
+
 
 def copy_file(src, dst):
     status = False
@@ -73,6 +76,35 @@ def rm_dir(src):
     return status
 
 
+def rm_dir1(src):
+    output = True
+    try:
+        if os.path.isdir(src):
+            rm_dir(src)
+        else:
+            os.remove(src)
+    except OSError as e:
+        output = False
+        print(e)
+    return output
+
+
+def copy_dir1(src, dest):
+    output = True
+    try:
+        src_files = list_dir(src)
+        for file in src_files:
+            full_file_name = os.path.join(src, file)
+            if (os.path.isfile(full_file_name)):
+                shutil.copy(full_file_name, dest)
+            elif os.path.isdir(full_file_name):
+                dest = os.path.join(dest, file)
+                copy_dir(full_file_name, dest)
+    except OSError as e:
+        print(e)
+    return output
+
+
 def copy_dir(src, dest):
     output = True
     try:
@@ -85,6 +117,22 @@ def copy_dir(src, dest):
             output = False
             print("-- An Error Occurred -- {0}".format(e))
     return output
+
+
+def get_wapp_static(ref):
+    src_files = list_dir(ref)
+    file_list = []
+    for file in src_files:
+        file_list.append(file)
+    return file_list
+
+
+def get_katana_static(src, ref_list):
+    katana_static_list = []
+    for file in ref_list:
+        new_file = os.path.join(src, file)
+        katana_static_list.append(new_file)
+    return katana_static_list
 
 
 def write_to_file(path, data):
@@ -103,17 +151,18 @@ def get_new_filepath(filename, path, ext='.log'):
 
     fullpath = path + os.sep + filename + ext
 
-
     if os.path.isfile(fullpath):
-        fullpath = add_time_date (fullpath)
+        fullpath = add_time_date(fullpath)
     return fullpath
+
 
 def add_time_date(path):
     """ add time and date to a path (file/dir)"""
     if os.path.isfile(path):
         time.sleep(1)
-        ftime = dtutils.get_current_datetime_stamp(time_format = "%y-%m-%d_%H-%M-%S-%f")
-        path = os.path.splitext(path)[0] + "_"+ftime + os.path.splitext(path)[1]
+        ftime = dtutils.get_current_datetime_stamp(
+            time_format="%y-%m-%d_%H-%M-%S-%f")
+        path = os.path.splitext(path)[0] + "_" + \
+            ftime + os.path.splitext(path)[1]
 
     return path
-
