@@ -510,6 +510,7 @@ var kwSequencer = {
                             if (tableLength == 0) {
                                 katana.$activeTab.find('#display-sub-keywords-div').hide();
                             }
+                            kwSequencer.cancelSubKeyword();
                         })
                 }
 
