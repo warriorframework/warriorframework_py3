@@ -1,12 +1,18 @@
 import os
 import re
 from collections import OrderedDict
-from utils.directory_traversal_utils import get_abs_path, join_path, get_dir_from_path
-from utils.file_utils import copy_dir, rm_dir
+from katana.utils.directory_traversal_utils import get_abs_path, join_path, get_dir_from_path
+from katana.utils.file_utils import copy_dir, rm_dir, get_katana_static, get_wapp_static
+
+from katana.utils.file_utils import list_dir, copy_dir1, rm_dir1
+from katana.utils.navigator_util import Navigator
 
 WARRIORFRAMEWORK = 'warriorframework_py3'
 KATANA = 'katana'
 WAPPS = 'wapps'
+
+nav = Navigator()
+
 
 def get_app_path_from_name(app_name, config_file, base_directory):
     """
@@ -29,7 +35,8 @@ def get_app_path_from_name(app_name, config_file, base_directory):
 
     app_config_file_rel_path += config_file
 
-    app_config_file_path = get_abs_path(app_config_file_rel_path, base_directory)
+    app_config_file_path = get_abs_path(
+        app_config_file_rel_path, base_directory)
 
     return app_config_file_path
 
@@ -92,7 +99,8 @@ def validate_config_json(json_data, warrior_dir):
                 ordered_json[key] = path
             else:
                 ordered_json[key] = ""
-                print("-- An Error Occurred -- Path to {0} directory could not be located".format(value))
+                print(
+                    "-- An Error Occurred -- Path to {0} directory could not be located".format(value))
         else:
             ordered_json[key] = json_data[key]
 
@@ -102,6 +110,7 @@ def validate_config_json(json_data, warrior_dir):
         ordered_json["pythonpath"] = json_data["pythonpath"]
 
     return ordered_json
+
 
 def iscontainer():
     """
@@ -128,16 +137,43 @@ def katana_container_operations(_copy, katana_static, app_path):
 
 
 def copy_katana_static(src, dst):
-    return True if copy_dir(src, dst) else False
+    return True if copy_dir1(src, dst) else False
 
 
-def delete_katana_static(src):
-    return True if rm_dir(src) else False
+def delete_katana_static(src, wapp_dir):
+    output = True
+    try:
+        # get wapp static files
+        wapp_static = get_wapp_static(wapp_dir)
+        # get katana static files
+        katana_static = get_katana_static(src, wapp_static)
+        for file in katana_static:
+            if not rm_dir1(file):
+                # if unsuccessful, return
+                output = False
+                return output
+        # if all is well, return True
+        return output
+    except Exception as e:
+        print(e)
+        output = False
+        return output
 
 
 def handle_wapp_static_container(app_path, katana_static, _copy):
     filename = get_dir_from_path(app_path)
     if _copy:
-        return copy_katana_static(join_path(app_path, WARRIORFRAMEWORK, KATANA, WAPPS, filename, 'static', filename), join_path(katana_static, filename))
+        print(
+            list_dir(
+                join_path(
+                    app_path,
+                    WARRIORFRAMEWORK,
+                    KATANA,
+                    WAPPS,
+                    filename,
+                    'static')))
+        return copy_katana_static(join_path(
+            app_path, WARRIORFRAMEWORK, KATANA, WAPPS, filename, 'static'), katana_static)
     else:
-        return delete_katana_static(join_path(katana_static, filename))
+        return delete_katana_static(join_path(katana_static), join_path(
+            nav.get_katana_dir(), WAPPS, filename, 'static'))
