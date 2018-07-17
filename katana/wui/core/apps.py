@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import json
+
+import os
 from django.apps import AppConfig
 from utils.directory_traversal_utils import get_abs_path, join_path
 from utils.json_utils import read_json_data
@@ -9,6 +11,8 @@ from wui.core.core_utils.app_info_class import AppInformation
 from wui.core.core_utils.apps_class import Apps
 from wui.core.core_utils.core_index_class_utils import CoreIndex
 from wui.core.core_utils.core_utils import validate_config_json
+from django.conf import settings
+from wui.core.core_utils.warrior_recon_creation_class import CreateWarriorRecon
 
 
 class CoreConfig(AppConfig):
@@ -42,5 +46,8 @@ class CoreConfig(AppConfig):
         ordered_json = validate_config_json(read_json_data(config_json_file), warrior_dir)
         with open(config_json_file, "w") as f:
             f.write(json.dumps(ordered_json, indent=4))
+
+        # parent_dir = getattr(settings, 'USER_HOME_DIR_TEMPLATE') if getattr(settings, 'USER_HOME_DIR_TEMPLATE', None) else os.path.expanduser("~")
+        # CreateWarriorRecon(parent_dir).create_warrior_recon_dir()
 
         # print "***************You are in Core Katana App Config Class***************"
