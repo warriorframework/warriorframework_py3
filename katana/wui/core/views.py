@@ -24,6 +24,7 @@ from utils.directory_traversal_utils import get_parent_directory, join_path, fil
 from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from utils import user_utils
+from utils.user_utils import get_user_home_dir
 from wui.core.apps import AppInformation
 
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates', 'core')
@@ -209,18 +210,17 @@ class UserAuthView(View):
                       2 means multi user supported but no home dir for user
         
         """
-
         data_dict = json.loads(request.POST.get('data'))
         self.username = data_dict.get('username', None)
         self.password = data_dict.get('password')
         # authenticate, login  the user
         self.userprofile = self.authenticate_user()    
         multi_user_support = getattr(settings, 'MULTI_USER_SUPPORT', False)
-        home_dir_template = getattr(settings, 'USER_HOME_DIR_TEMPLATE', None)
+        home_dir_template = get_user_home_dir(self.username)
         # if multi user support is False then just login user
         if not multi_user_support:
             self.login_user(request)
-        
+
         # if multi user supported then home_dir_template is mandatory
         if multi_user_support:
             if not home_dir_template:
@@ -228,13 +228,9 @@ class UserAuthView(View):
                 of multi user environment."
                 self.op_dict['auth_status'] = 2
             else:
-                self.login_user(request)               
-                           
-
+                self.login_user(request)
         return JsonResponse(self.op_dict)
-        
-        
-    
+
     def authenticate_user(self):
         """
         authenticate the user
@@ -251,8 +247,7 @@ class UserAuthView(View):
         """
         login an authenticated user
 
-        """     
-        
+        """
         try:
             if self.userprofile is not None:
                 self.op_dict['msg'] = "authentication for user={0} successful.".format(self.username)
