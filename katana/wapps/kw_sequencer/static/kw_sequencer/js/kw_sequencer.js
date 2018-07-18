@@ -39,6 +39,7 @@ var kwSequencer = {
                     data: {"data": {"start_dir": config_json_data["pythonsrcdir"]+'/Actions'}}
                 }).done(function(data) {
                     // TODO: Do not show __init__.py files
+                    data = kwSequencer.removeNonActionFiles([data])[0];
                     $displayFilesDiv.jstree({
                         "core": { "data": [data]},
                         "plugins": ["search", "sort"],
@@ -626,4 +627,26 @@ var kwSequencer = {
         return result;
     },
 
+    removeNonActionFiles: function(children) {
+        /* This function is to remove nonAction files from jsontree json
+        Input for this method : Output(s) of navigator_util.get_dir_tree_json method in array */
+        // Add new nonActions files to nonActionFiles array if required
+        var nonActionFiles = ["__init__.py", "__pycache__"];
+        var new_children = [];
+        for (var i = 0; i < children.length; i++) {
+            var child = children[i];
+            var new_child = {};
+            if (!(nonActionFiles.indexOf(child['text']) > -1)) {
+                for (var val in child) {
+                    if (val == "children") {
+                        new_child['children'] = kwSequencer.removeNonActionFiles(child['children']);
+                    } else {
+                        new_child[val] = child[val];
+                    }
+                }
+                new_children.push(new_child);
+            }
+        }
+        return new_children;
+    },
 };
