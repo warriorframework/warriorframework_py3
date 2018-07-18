@@ -1079,7 +1079,7 @@ var katana = {
         if (checkbox == true) {
             var data = { 'core' : { 'data' : jsTreeData },
                           "plugins" : [ "sort" , "search", "checkbox", "changed"],
-                           'checkbox': { cascade: "down", three_state: false },
+                           'checkbox': { cascade: "up+down", three_state: false },
                            'expand_selected_onload': true
 
             };
