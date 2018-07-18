@@ -1404,9 +1404,13 @@ var katana = {
 
     	}
     	
-    }
+    },
 
-  
+    userSetup: {
+      skipSetup: function() {
+        window.location.reload(true);
+      }
+    }
   
   
   

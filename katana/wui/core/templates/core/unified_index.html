@@ -1,19 +1,15 @@
 <html>
+    {% load staticfiles %}
+    <head>
+        {% include "core/html_head.html" %}
+    </head>
+    <body>
+        <div class="view activeView" id="warrior_index_view">
+            <div class="header">
+                {% include "core/page_header.html" with show_quick_user=1 %}
+            </div>
 
-	{% load staticfiles %}
-	
-	<head>
-		{% include "core/html_head.html" %}	
-	</head>
-		
-	
-	<body>
-		
-		<div class="view activeView" id="warrior_index_view" >
-		
-			<div class="header">
-					{% include "core/page_header.html" with show_quick_user=1 %}
-			</div>
+            {% if configured_ldap and not user.is_authenticated %}
 
 			{% if configured_ldap and not user.is_authenticated %}
 				<div class="login-form" id="warrior_login" post-url="authenticate_user/">
@@ -46,5 +42,29 @@
 	
 	</body>
 
+            {% elif configured_ldap and user.is_authenticated or not configured_ldap and home_directory %}
+            <div class="nav">
+                <div class="nav-inner">
+                    <div class="tab active" uid="launchpad" katana-click="katana.switchTab"><span>Launch Pad</span></div>
+                </div>
+            </div>
+            <div class="page" id="launchpad">
+                <div class="page-content rc-container">
+                    {% include 'core/landing_page.html' %}
+                </div>
+            </div>
+            <div id="wui-popups"></div>
+            <div id="wui-popup-nav"></div>
 
+            {% else %}
+
+            <div class="local-setup-form">
+                {% include "core/setup.html" %}
+            </div>
+
+            {% endif %}
+
+        </div>
+        {% include "core/index_scripts.html"%}
+    </body>
 </html>
