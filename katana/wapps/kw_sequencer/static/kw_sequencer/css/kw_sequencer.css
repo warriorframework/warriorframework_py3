@@ -110,3 +110,7 @@
     max-width: none;
     margin: 0;
 }
+
+.required > span {
+    color: red;
+}
