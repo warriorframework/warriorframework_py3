@@ -3178,3 +3178,46 @@ input[type="checkbox"]+label {
 
 /* login styles end */
 
+/* Local Setup Form Styles Start */
+
+.local-setup-form {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    position: relative;
+    top: 15%;
+    width: 30%;
+    height: 40%;
+	min-height: 500px;
+    border: 1px solid #dedede;
+	padding: 0 20px;
+}
+
+.local-setup-form > .title {
+    background: rgba(35, 131, 195, 0.95);
+    color: white;
+    padding: 0 20px !important;
+}
+
+.local-setup-form > .fields {
+    margin: 50px 0 20px 0;
+    /* padding: 0 35px; */
+}
+
+.local-setup-form > div > .button {
+    border-radius: 5px;
+    width: calc((100% - 14px)/2);
+    height: 32px;
+    background-color: rgba(35, 131, 195, 0.8);
+}
+
+
+.local-setup-form > div > .button:first-child {
+    margin: 0 5px 0 0;
+}
+
+.local-setup-form > div > .button:nth-child(2) {
+    margin: 0 0 0 5px;
+}
+
+/* Local Setup Form Styles End */

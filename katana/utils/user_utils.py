@@ -4,6 +4,8 @@ import json
 import os
 from django.conf import settings
 
+from utils.navigator_util import Navigator
+
 
 def get_user_home_dir(username):
     """
@@ -40,3 +42,20 @@ def get_password(request=None):
         data_dict = json.loads(request.POST.get('data'))
         password = data_dict.get('password', False)
     return password
+
+
+def get_user_data():
+    """
+    function is still used for backward compatibility,
+    can be deprecated once completely handled by client server model
+    """
+    userdata = {}
+    nav_obj = Navigator()
+    json_file = os.path.join(nav_obj.get_katana_dir() + "user_profile.json")
+    try:
+        with open(json_file, 'r') as f:
+            userdata = json.load(f)
+    except Exception as e:
+        print("-- An Error Occurred -- {0}".format(e))
+        print("User data could not be retrieved.")
+    return userdata

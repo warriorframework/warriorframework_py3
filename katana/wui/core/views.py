@@ -12,20 +12,19 @@ limitations under the License.
 """
 
 import os
-
-# -*- coding: utf-8 -*-
 from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views import View
 import json
 from utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
 from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from utils import user_utils
-from utils.user_utils import get_user_home_dir
+from utils.user_utils import get_user_home_dir, get_user_data
 from wui.core.apps import AppInformation
+from wui.core.core_utils.core_utils import get_local_home_directory, get_suggested_home_dir
 
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates', 'core')
 try:
@@ -33,43 +32,6 @@ try:
 except Exception as err:
     print("Please install django auth ldap to authenticate against ldap")
     print("Error while importing django auth ldap: \n", err)
-
-# ===============================================================================
-# !!!!! This functionality has been moved to UserAuthView class (scroll down)
-# commenting the code for now.
-# once backward compatibility has been safely verified after testing thoroughly
-# the commented code can be deleted !!!!
-#
-# class CoreView(View):
-#     
-#     def __init__(self):
-#         self.navigator = Navigator()
-# 
-#     def get_user_data(self):
-#         json_file = self.navigator.get_katana_dir() + '/user_profile.json'
-#         with open(json_file, 'r') as f:
-#             json_data = json.load(f)
-#         return json_data
-# 
-#     def get(self, request):
-#         """
-#         This get function get information about the installed apps
-# 
-#         Args:
-#             request: HttpRequest that contains metadata about the request
-# 
-#         Returns:
-#             HttpResponse: containing an HTML template and data
-#                 HTML template: core/index.html
-#                 Data: [{"url":"/url/of/app", "name": "app_name",
-#                         "icon": "icon_name", "color": "red"}]
-# 
-#         """
-#         print('hi')
-#         template = 'core/index.html'
-#         return render(request, template, {"apps": AppInformation.information.apps,
-#                                            "userData": self.get_user_data()})
-# ===============================================================================
 
 
 def refresh_landing_page(request):
@@ -210,31 +172,26 @@ class UserAuthView(View):
         """
         on successful login build the homepage for the user
         """
-        user_data = self.get_user_data()
-        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data, "configured_ldap": self.configured_ldap})
-    
-    
+        user_data = get_user_data()
+        home_dir = False if self.configured_ldap else get_local_home_directory()
+        suggested_home_dir = False if home_dir else get_suggested_home_dir()
+        data = {"apps": AppInformation.information.apps, "userData": user_data,
+                "configured_ldap": self.configured_ldap, "home_directory": home_dir,
+                "suggested_home_directory": suggested_home_dir}
+        return render(request, self.index_page, data)
+
     def get_login_page(self, request):
         """
+        Sends the index_page as response.
         """
-        user_data = self.get_user_data()
-        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data, "configured_ldap": self.configured_ldap})
-    
-    
-    
-    def get_user_data(self):
-        """
-        function is still used for backward compatibility,
-        can be deprecated once completely handled by client server model
-        """
-        userdata = {}
-        json_file = Navigator().get_katana_dir() + '/user_profile.json'
-        with open(json_file, 'r') as f:
-            userdata = json.load(f)
-        return userdata
-    
-   
-    
+        user_data = get_user_data()
+        home_dir = False if self.configured_ldap else get_local_home_directory()
+        suggested_home_dir = False if home_dir else get_suggested_home_dir()
+        data = {"apps": AppInformation.information.apps, "userData": user_data,
+                "configured_ldap": self.configured_ldap, "home_directory": home_dir,
+                "suggested_home_directory": suggested_home_dir}
+        return render(request, self.index_page, data)
+
     def logout_user(self, request):
         """
         logout the user
@@ -243,6 +200,43 @@ class UserAuthView(View):
         path = request.get_full_path()
         self.op_dict['redirect_url'] = '/'
         return JsonResponse(self.op_dict)
+
+    # ===============================================================================
+    # !!!!! This functionality has been moved to UserAuthView class (scroll down)
+    # commenting the code for now.
+    # once backward compatibility has been safely verified after testing thoroughly
+    # the commented code can be deleted !!!!
+    #
+    # class CoreView(View):
+    #
+    #     def __init__(self):
+    #         self.navigator = Navigator()
+    #
+    #     def get_user_data(self):
+    #         json_file = self.navigator.get_katana_dir() + '/user_profile.json'
+    #         with open(json_file, 'r') as f:
+    #             json_data = json.load(f)
+    #         return json_data
+    #
+    #     def get(self, request):
+    #         """
+    #         This get function get information about the installed apps
+    #
+    #         Args:
+    #             request: HttpRequest that contains metadata about the request
+    #
+    #         Returns:
+    #             HttpResponse: containing an HTML template and data
+    #                 HTML template: core/index.html
+    #                 Data: [{"url":"/url/of/app", "name": "app_name",
+    #                         "icon": "icon_name", "color": "red"}]
+    #
+    #         """
+    #         print('hi')
+    #         template = 'core/index.html'
+    #         return render(request, template, {"apps": AppInformation.information.apps,
+    #                                            "userData": self.get_user_data()})
+    # ===============================================================================
     
     
     #===========================================================================
