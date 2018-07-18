@@ -1,7 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from django.views.generic import TemplateView
 from django.views import View
 import os
 import json
@@ -13,8 +12,10 @@ from wapps.kw_sequencer.kw_sequencer_utils.write_wrapper_kw import CreateWrappeK
 navigator = Navigator()
 WARRIOR_DIR = navigator.get_warrior_dir()[:-1]
 
-class KwSequencerIndex(TemplateView):
-    template_name = 'kw_sequencer/kw_sequencer.html'
+class KwSequencerIndex(View):
+
+    def get(self, request):
+        return render(request, 'kw_sequencer/kw_sequencer.html')
 
 class KwSequencerCreate(View):
 
