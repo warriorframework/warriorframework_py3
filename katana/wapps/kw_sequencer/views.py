@@ -1,9 +1,9 @@
+import json
+
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.views import View
-import os
-import json
 
 from utils.navigator_util import Navigator
 from wapps.kw_sequencer.kw_sequencer_utils.get_drivers import GetDriversActions
@@ -15,11 +15,13 @@ WARRIOR_DIR = navigator.get_warrior_dir()[:-1]
 class KwSequencerIndex(View):
 
     def get(self, request):
+        """ Get Method """
         return render(request, 'kw_sequencer/kw_sequencer.html')
 
 class KwSequencerCreate(View):
 
     def get(self, request):
+        """ Get Method """
         return render(request, 'kw_sequencer/create_kw.html')
 
 def create_new_subkw(request):
@@ -31,7 +33,7 @@ def create_new_subkw(request):
     return JsonResponse(output)
 
 def save_wrapper_kw(request):
-    " Saves wrapper keyword in the respective Warrior Action file "
+    """ Saves wrapper keyword in the respective Warrior Action file """
     output = {}
     action_file = request.POST.get("@actionFile")
     wrapper_kw_name = request.POST.get("@wrapperKwName")
