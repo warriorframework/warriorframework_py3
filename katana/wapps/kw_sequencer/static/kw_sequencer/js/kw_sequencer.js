@@ -5,7 +5,9 @@ var kwSequencer = {
     actionFilePath: "",
     drivers: false,
 
-    init: function(){
+    init: function() {
+        /* This function get the warrior source dir from 'settings -> General settings' and
+        lists all the valid action files using jstree */
         var $currentPage = katana.$activeTab;
         var $newBtn = $currentPage.find('[katana-click="kwSequencer.newKeyword"]');
         var $closeBtn = $currentPage.find('[katana-click="kwSequencer.closeKeyword"]');
@@ -38,7 +40,6 @@ var kwSequencer = {
                     // TODO: Find a correct way to append '/Actions'
                     data: {"data": {"start_dir": config_json_data["pythonsrcdir"]+'/Actions'}}
                 }).done(function(data) {
-                    // TODO: Do not show __init__.py files
                     data = kwSequencer.removeNonActionFiles([data])[0];
                     $displayFilesDiv.jstree({
                         "core": { "data": [data]},
@@ -63,7 +64,8 @@ var kwSequencer = {
         });
     },
 
-    newKeyword: function(){
+    newKeyword: function() {
+        /* This function opens a new wrapper keyword */
         var isActionFile = false;
         if (kwSequencer.actionFilePath) {
             var actionFileName = kwSequencer.actionFilePath.split('\\').pop().split('/').pop();
@@ -105,7 +107,8 @@ var kwSequencer = {
 
     },
 
-    closeKeyword: function(){
+    closeKeyword: function() {
+        /* This function closes the wrapper keyword */
         var $currentPage = katana.$activeTab;
         var callbackOnAccept = function(){
             $currentPage.find('[katana-click="kwSequencer.newKeyword"]').show();
@@ -125,6 +128,7 @@ var kwSequencer = {
     },
 
     saveKeyword: function() {
+        /* This function saves the wrapper keyword in the corresponding warrior action file */
         var $currentPage = katana.$activeTab;
         var $wrappeKwDetailsDiv = $currentPage.find('#wrapper-keyword-details-div');
         if (katana.validationAPI.init($wrappeKwDetailsDiv)){
@@ -189,7 +193,8 @@ var kwSequencer = {
         }
     },
 
-    newSubKeyword: function(insertAtIndex){
+    newSubKeyword: function(insertAtIndex) {
+        /* This function opens new sub keyword */
         $.ajax({
             type: 'GET',
             url: 'kw_sequencer/create_new_subkw/'
@@ -209,14 +214,16 @@ var kwSequencer = {
         });
     },
 
-    cancelSubKeyword: function(){
+    cancelSubKeyword: function() {
+        /* This function closes already opened sub keyword block */
         var $currentPage = katana.$activeTab;
         $currentPage.find('#new-sub-keyword-div').hide();
         var $newSubKwButton = $currentPage.find('#newSubKwButton');
         $newSubKwButton.show();
     },
 
-    saveSubKeyword: function(){
+    saveSubKeyword: function() {
+        /* This function saves current subkeyword block to wrapper keyword */
         var $currentPage = katana.$activeTab;
         var $newSubKwDiv = $currentPage.find('#new-sub-keyword-div');
         if (katana.validationAPI.init($newSubKwDiv)){
@@ -253,7 +260,8 @@ var kwSequencer = {
         }
     },
 
-    generateSubKeywordsDisplayHtmlBlock: function($container, data){
+    generateSubKeywordsDisplayHtmlBlock: function($container, data) {
+        /* This function is to generate step data(for dispaly section) by cloning kw-row-template */
         $container = $($container.html());
         var $allKeys = $container.find('[key]').not('[key*="Arguments"]');
         for (var i=0; i<$allKeys.length; i++) {
@@ -277,7 +285,8 @@ var kwSequencer = {
         return $container;
     },
 
-    generateSubKw: function($container){
+    generateSubKw: function($container) {
+        /* This function generates json data from subkeyword block */
         var finalJson = {SubKws: { subKw: []}};
         var $allSubKws = $container.attr('key') === 'subKw'? [$container] : $container.find('[key="subKw"]');
         var $allKeys = false;
@@ -296,7 +305,7 @@ var kwSequencer = {
         return finalJson;
     },
 
-    generateArguments: function ($container){
+    generateArguments: function ($container) {
         /* This function creates arguments json out of an HTML block. Typically this function should
         never be called independently. */
         var finalJson = {Arguments: {argument: []}};
@@ -341,7 +350,9 @@ var kwSequencer = {
         return data[key];
     },
 
-    getDriverKeywords: function($elem, kwName){
+    getDriverKeywords: function($elem, kwName) {
+        /* This function is to update/add all available keywords to 'Keywords'
+        option of sub keyword block */
         $elem = $elem ? $elem : $(this);
         kwName = kwName ? kwName : "";
         var driverName = $elem.val();
@@ -362,7 +373,7 @@ var kwSequencer = {
         kwSequencer.getArgumentsEtc($kwRow.find('#stepKeyword'));
     },
 
-    getArgumentsEtc: function($elem){
+    getArgumentsEtc: function($elem) {
         /* This function internally calls the _setSignature, _setArguments, _setWDescription, _setComments
         functions for upadting those fields on kw name change */
         $elem = $elem ? $elem : $(this);
@@ -434,7 +445,8 @@ var kwSequencer = {
         return katana.$activeTab.find('#sub-keywords-table').find('tbody').children('tr').length;
     },
 
-    redoStepNums: function(){
+    redoStepNums: function() {
+        /* This fucntion is to redo step numbers after insert/edit/delete operations */
         var $tbodyElem = katana.$activeTab.find('#display-sub-keywords-div').find('table').find('tbody');
         var $allTrElems = $tbodyElem.children('tr');
         for (var i=0; i<$allTrElems.length; i++){
@@ -599,14 +611,16 @@ var kwSequencer = {
 
     validations: {
         checkIfEmpty: function() {
+            /* This fucntion to validate a field to check if it is empty */
             var $elem = $(this);
             if ($elem.val() == null || $elem.val().trim() === "") {
-                katana.validationAPI.addFlag( $elem, 'Cannot be Empty');
+                katana.validationAPI.addFlag( $elem, 'Required field');
             }
         },
     },
 
     getWrapperKwDetails: function($container) {
+        /* This fucntion is to get the Wrapper keyword details */
         var $allValues = $container.find('[key]');
         var result = {};
         for (var i=0; i<$allValues.length; i++) {
@@ -618,6 +632,7 @@ var kwSequencer = {
     },
 
     getSubKeywordDetails: function($container) {
+        /* This function is to get all subkeyword details from table */
         var $allTrElems = $container.find('tbody').children('tr');
         var result = [];
         for (var i=0; i<$allTrElems.length; i++) {
