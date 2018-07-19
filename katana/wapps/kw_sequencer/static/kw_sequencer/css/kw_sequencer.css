@@ -108,7 +108,7 @@
 .kwsequencer-intentional-space > .container-fluid > .row > .field {
     padding: 0 15px;
     max-width: none;
-    margin: 0;
+    margin: 2px;
 }
 
 .required > span {
