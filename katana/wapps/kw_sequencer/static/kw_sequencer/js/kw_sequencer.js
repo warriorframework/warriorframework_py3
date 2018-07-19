@@ -287,6 +287,7 @@ var kwSequencer = {
 
     generateSubKw: function($container) {
         /* This function generates json data from subkeyword block */
+        // TODO: See if partialData can be directly assigned to 'finalJson.SubKws.subKw' instead of pushing into an array
         var finalJson = {SubKws: { subKw: []}};
         var $allSubKws = $container.attr('key') === 'subKw'? [$container] : $container.find('[key="subKw"]');
         var $allKeys = false;
