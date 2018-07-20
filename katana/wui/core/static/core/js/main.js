@@ -1407,8 +1407,30 @@ var katana = {
     },
 
     userSetup: {
-      skipSetup: function() {
-        window.location.reload(true);
+
+      browse: function() {
+        var $elem = $(this);
+        var $input = $elem.closest('.row').find('input');
+        var start_dir = $input.val();
+        var $parent = $elem.closest('.local-setup-form');
+        var csrf = $parent.find('.csrf-container').find('input').val();
+        var callBackOnAccept = function (inputValue) {
+          $input.attr('value', inputValue)
+        };
+        katana.fileExplorerAPI.openFileExplorer(null, start_dir, csrf, $parent, callBackOnAccept);
+      },
+
+      select: function() {
+          var $elem = $(this);
+          var $allCheckBoxes = $elem.closest('.row').find('input');
+          for (var i=0; i<$allCheckBoxes.length; i++){
+            $($allCheckBoxes[i]).prop('checked', false);
+          }
+          $elem.prop('checked', true);
+      },
+
+      saveDataLocation: function() {
+
       }
     }
   
