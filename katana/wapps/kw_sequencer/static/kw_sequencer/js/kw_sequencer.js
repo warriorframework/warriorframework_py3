@@ -251,8 +251,7 @@ var kwSequencer = {
             }
             kwSequencer.redoStepNums();
             $currentPage.find('#new-sub-keyword-div').hide();
-            var $newSubKwButton = $currentPage.find('#newSubKwButton');
-            $newSubKwButton.show();
+            $currentPage.find('#newSubKwButton').show();
             var tableLength = $currentPage.find('#sub-keywords-table').find('tbody').find('tr').length;
             if (tableLength > 0) {
                 $currentPage.find('#display-sub-keywords-div').show();
@@ -317,7 +316,7 @@ var kwSequencer = {
             partialData = {};
             for (var j=0; j<$argBlock.length; j++) {
                 var key = $($argBlock[j]).attr("key").trim();
-                var val = $($argBlock[j]).val() ? $($argBlock[j]).val().trim() : $($argBlock[j]).attr('value');
+                var val = $($argBlock[j]).val().trim()
                 var value = val ? val.trim() : $($argBlock[j]).html().trim();
                 $.extend(true, partialData, kwSequencer._updateJson(key, value));
             }
