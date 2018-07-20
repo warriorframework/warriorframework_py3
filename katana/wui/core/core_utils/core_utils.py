@@ -114,4 +114,4 @@ def get_suggested_home_dir():
     This function assumes this is a local system. Call the function ONLY when the system is local.
     :return:
     """
-    return os.path.join(os.path.expanduser("~"), "warrior_recon")
+    return os.path.join(os.path.expanduser("~"))
