@@ -5,21 +5,21 @@
         <div class="container-fluid" id="wrapper-keyword-details-div">
             <div class="row">
                 <label for="wrapperActionFile" class="col-md-2 required">Action File <span>*</span></label>
-                <div class="col-md-4">
+                <div class="field col-md-4">
                     <input type="text" id="wrapperActionFile" key="@wrapperActionFile" disabled value="">
                 </div>
             </div>
             <div class="row">
                 <label for="wrapperKwName" class="col-md-2 required">Wrapper Keyword Name <span>*</span></label>
-                <div class="col-md-4">
+                <div class="field col-md-4">
                     <input type="text" id="wrapperKwName" key="@wrapperKwName"
                            placeholder="Name of the Wrapper Keyword"
-                           validation-check="kwSequencer.validations.checkIfEmpty">
+                           validation-check="kwSequencer.validations.checkWhiteSpaces">
                 </div>
             </div>
             <div class="row">
                 <label for="wDescription" class="col-md-2 required">W Description <span>*</span></label>
-                <div class="col-md-4">
+                <div class="field col-md-4">
                     <input type="text" id="wDescription" key="@wDescription"
                            placeholder="Wrapper Keyword Description"
                            validation-check="kwSequencer.validations.checkIfEmpty">

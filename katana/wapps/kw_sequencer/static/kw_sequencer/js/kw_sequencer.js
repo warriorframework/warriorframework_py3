@@ -611,12 +611,27 @@ var kwSequencer = {
 
     validations: {
         checkIfEmpty: function() {
-            /* This fucntion to validate a field to check if it is empty */
+            /* This fucntion is to validate a field to check if it is empty */
             var $elem = $(this);
             if ($elem.val() == null || $elem.val().trim() === "") {
                 katana.validationAPI.addFlag( $elem, 'Required field');
             }
         },
+
+        checkWhiteSpaces: function() {
+            /* This fucntion is to check if the filed value satisfies python function naming rules */
+            var $elem = $(this);
+            if ($elem.val() == null || $elem.val().trim() === "") {
+                katana.validationAPI.addFlag( $elem, 'Required field');
+            } else if ($elem.val().trim().indexOf(' ') >= 0) {
+                katana.validationAPI.addFlag( $elem, 'White spaces not allowed');
+            } else if (! /^[a-zA-Z0-9_]+$/.test($elem.val().trim())) {
+                katana.validationAPI.addFlag( $elem, 'Special characters not allowed');
+            } else if (/^\d/.test($elem.val().trim())) {
+                katana.validationAPI.addFlag( $elem, 'Starting with numbers not allowed');
+            }
+        },
+
     },
 
     getWrapperKwDetails: function($container) {
