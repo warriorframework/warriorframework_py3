@@ -2,7 +2,6 @@
 #display-sub-keywords-div {
     height: auto;
     width: 100%;
-    padding: 2rem;
     float: left;
 }
 
@@ -23,20 +22,6 @@
     width: 100%;
     height: auto;
     float: left;
-}
-
-.kwsequencer-intentional-space-x > div > table > tbody > tr > th {
-    background-color: lightgrey;
-    max-width: 33%;
-    text-align: left;
-}
-
-.kwsequencer-intentional-space-x > div > table > tbody > tr > td {
-    text-align: left;
-    max-width: 67%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 .kwsequencer-intentional-space-x > .kwsequencer-internal-section > div > table > tbody > tr > td {
@@ -67,7 +52,6 @@
     height: fit-content;
     float: left;
     background-color: lightblue;
-    position: -webkit-sticky;
     position: sticky;
     top: 50px;
 }
