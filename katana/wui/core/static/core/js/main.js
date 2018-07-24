@@ -1387,12 +1387,29 @@ var katana = {
       },
 
       saveDataLocation: function() {
-
+        var $elem = $(this);
+        var existing = $elem.parent().prev().find('input[name="existing"]').is(':checked');
+        var inputValue = $elem.parent().prev().prev().find('input').val();
+        console.log(inputValue);
+        $.ajax({
+          headers: {
+            'X-CSRFToken': $elem.closest('.local-setup-form').find('.csrf-container').find('input').val()
+          },
+          type: 'POST',
+          url: 'setup_data_location/',
+          data: {"path_to_data_directory": inputValue, "existing": existing}
+        }).done(function(data){
+          if (!data.status) {
+            katana.openAlert({
+                "alert_type": "danger",
+                "heading": "An Error Occurred while setting up the data storage",
+                "text": data.message,
+                "show_cancel_btn": false
+            });
+          } else {
+            window.location.reload();
+          }
+        })
       }
     }
-  
-  
-  
-  
-  
 };

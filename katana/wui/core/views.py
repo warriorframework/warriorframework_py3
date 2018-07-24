@@ -19,12 +19,14 @@ from django.shortcuts import render
 from django.views import View
 import json
 from utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
+from utils.file_utils import readlines_from_file, write_to_file
 from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from utils import user_utils
 from utils.user_utils import get_user_home_dir, get_user_data
 from wui.core.apps import AppInformation
 from wui.core.core_utils.core_utils import get_local_home_directory, get_suggested_home_dir
+from wui.core.core_utils.warrior_recon_creation_class import CreateWarriorRecon
 
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates', 'core')
 try:
@@ -200,6 +202,36 @@ class UserAuthView(View):
         path = request.get_full_path()
         self.op_dict['redirect_url'] = '/'
         return JsonResponse(self.op_dict)
+
+
+def setup_data_location(request):
+    data_directory = request.POST.get('path_to_data_directory')
+    existing = request.POST.get('existing') == 'true'
+    output = {"message": "Data storage successfully imported" if existing else "Data storage successfully created"}
+    if os.path.isdir(data_directory):
+        output["status"] = True
+        cwr_obj = CreateWarriorRecon(data_directory)
+        if existing:
+            output = cwr_obj.verify_existing_warrior_recon_dir()
+        else:
+            output = cwr_obj.create_warrior_recon_dir()
+    else:
+        print("-- An Error Occurred -- {0} does not exist or is not a directory".format(data_directory))
+        output["status"] = False
+        output["message"] = "{0} does not exist or is not a directory.".format(data_directory)
+
+    if output["status"]:
+        data = readlines_from_file(join_path(Navigator().get_katana_dir(), "wui", "settings.py"))
+
+        for i, line in enumerate(data):
+            if line.strip().startswith('USER_HOME_DIR_TEMPLATE'):
+                data[i] = "USER_HOME_DIR_TEMPLATE = \"{0}\"\n".format(output["data_directory"])
+                settings.USER_HOME_DIR_TEMPLATE = output["data_directory"]
+                break
+
+        write_to_file(join_path(Navigator().get_katana_dir(), "wui", "settings.py"), "".join(data))
+
+    return JsonResponse(output)
 
     # ===============================================================================
     # !!!!! This functionality has been moved to UserAuthView class (scroll down)
