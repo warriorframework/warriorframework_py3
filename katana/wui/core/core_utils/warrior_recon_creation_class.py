@@ -1,5 +1,5 @@
 import os
-from utils.directory_traversal_utils import create_dir
+from utils.directory_traversal_utils import create_dir, get_parent_directory
 from utils.user_utils import get_username
 from wui.core.core_utils.app_info_class import AppInformation
 
@@ -25,6 +25,7 @@ class CreateWarriorRecon:
                 }
             }
         }
+        self.output = {"status": True, "message": "", "data_directory": self.user_data_dir}
 
     def create_warrior_recon_dir(self):
         """
@@ -35,10 +36,22 @@ class CreateWarriorRecon:
         This function needs to be called explicitly.
         """
         if not create_dir(self.user_data_dir):
-            print("-- An Error Occurred -- Something went wrong while creating the "
-                  "warrior_recon directory")
+            self._record_output("Something went wrong while creating the warrior_recon directory")
         else:
             self.create_recon_sub_dirs(self.user_data_dir, self.dir_structure)
+        return self.output
+
+    def verify_existing_warrior_recon_dir(self):
+        """
+        Creates missing internal directories.
+
+        This function needs to be called explicitly.
+        """
+        self.user_data_dir = self.parent_dir
+        self.parent_dir = get_parent_directory(self.user_data_dir)
+        self.output.update({"data_directory": self.user_data_dir})
+        self.create_recon_sub_dirs(self.user_data_dir, self.dir_structure)
+        return self.output
 
     def create_recon_sub_dirs(self, parent, dir_structure):
         """
@@ -55,21 +68,21 @@ class CreateWarriorRecon:
                 if create_dir(current_dir):
                     self.create_recon_sub_dirs(current_dir, value)
                 else:
-                    print("-- An Error Occurred -- Something went wrong while creating the {0} "
-                          "directory".format(current_dir))
+                    self._record_output("Something went wrong while creating the {0} "
+                                        "directory".format(current_dir))
         elif type(dir_structure) is str:
             # If str, creates the directory (base case)
             current_dir = os.path.join(parent, dir_structure)
             if not create_dir(current_dir):
-                print("-- An Error Occurred -- Something went wrong while creating the {0} "
-                      "directory".format(current_dir))
+                self._record_output("Something went wrong while creating the {0} "
+                                    "directory".format(current_dir))
         elif type(dir_structure) is list:
             # iterates through list and calls self.create_recon_sub_dirs()
             for d in dir_structure:
                 self.create_recon_sub_dirs(parent, d)
         else:
             # Error handling (base case)
-            print("-- An Error Occurred -- {0} not recognized".format(dir_structure))
+            self._record_output("{0} not recognized".format(dir_structure))
 
     @staticmethod
     def get_wapps_dirs():
@@ -83,3 +96,8 @@ class CreateWarriorRecon:
         for app in AppInformation.information.apps:
             output[app.app_dir_name] = [".data", "wapp_logs"]
         return output
+
+    def _record_output(self, message):
+        self.output["status"] = False
+        self.output["message"] += message + "\n"
+        print("-- An Error Occurred -- {0}".format(message))

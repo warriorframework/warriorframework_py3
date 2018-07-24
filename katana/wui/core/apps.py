@@ -45,8 +45,4 @@ class CoreConfig(AppConfig):
         with open(config_json_file, "w") as f:
             f.write(json.dumps(ordered_json, indent=4))
 
-
-        # parent_dir =
-        # CreateWarriorRecon(parent_dir).create_warrior_recon_dir()
-
         # print "***************You are in Core Katana App Config Class***************"
