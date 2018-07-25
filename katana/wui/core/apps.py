@@ -10,8 +10,6 @@ from wui.core.core_utils.apps_class import Apps
 from wui.core.core_utils.core_index_class_utils import CoreIndex
 from wui.core.core_utils.core_utils import validate_config_json
 
-from wui.core.core_utils.warrior_recon_creation_class import CreateWarriorRecon
-
 
 class CoreConfig(AppConfig):
     name = 'wui.core'
