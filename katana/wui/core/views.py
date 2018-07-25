@@ -261,6 +261,12 @@ class UserAuthView(View):
 
 
 def setup_data_location(request):
+    """
+    This function sets up a local data directory
+    :param request: Contains path to data directory and whether or not it is an existing data
+           storage directory or not
+    :return:
+    """
     data_directory = request.POST.get('path_to_data_directory')
     existing = request.POST.get('existing') == 'true'
     output = {"message": "Data storage successfully imported" if existing else "Data storage successfully created"}
@@ -268,8 +274,10 @@ def setup_data_location(request):
         output["status"] = True
         cwr_obj = CreateWarriorRecon(data_directory)
         if existing:
+            # Verify existing data directory
             output = cwr_obj.verify_existing_warrior_recon_dir()
         else:
+            # Create new data directory (warrior_recon)
             output = cwr_obj.create_warrior_recon_dir()
     else:
         print("-- An Error Occurred -- {0} does not exist or is not a directory".format(data_directory))
@@ -277,6 +285,7 @@ def setup_data_location(request):
         output["message"] = "{0} does not exist or is not a directory.".format(data_directory)
 
     if output["status"]:
+        # Update settings.py file
         data = readlines_from_file(join_path(Navigator().get_katana_dir(), "wui", "settings.py"))
 
         for i, line in enumerate(data):
@@ -286,7 +295,6 @@ def setup_data_location(request):
                 break
 
         write_to_file(join_path(Navigator().get_katana_dir(), "wui", "settings.py"), "".join(data))
-
     return JsonResponse(output)
 
     # ===============================================================================
