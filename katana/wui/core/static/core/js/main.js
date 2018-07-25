@@ -1205,7 +1205,7 @@ var katana = {
           var $directoryDataDiv = $tabContent.find('.directory-data-div');
           $directoryDataDiv.html("");
           $directoryDataDiv.append("<div id='directory-data' class='full-size'></div>");
-          var $directoryData = $currentPage.find('#directory-data');
+          var $directoryData = $tabContent.find('#directory-data');
           $directoryData.jstree({
             "core": {
               "data": [data]

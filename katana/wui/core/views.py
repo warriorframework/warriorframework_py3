@@ -83,7 +83,6 @@ class UserAuthView(View):
         """
         constructor for the view
         """
-        super(UserAuthView).__init__(*kwargs)
         self.index_page = os.path.join(templates_dir, 'unified_index.html')
         self.home_page = os.path.join(templates_dir, 'home_page.html')
         self.configured_ldap = False
