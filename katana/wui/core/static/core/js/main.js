@@ -1265,6 +1265,7 @@ var katana = {
                   return cb_data;
                 }
               });
+
           $directoryData.jstree().hide_dots();
           $tabContent.find('#explorer-up').off('click');
           $tabContent.find('#explorer-up').on('click', function() {
