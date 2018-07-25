@@ -3220,4 +3220,25 @@ input[type="checkbox"]+label {
     margin: 0 0 0 5px;
 }
 
+.local-setup-form > .container-fluid:nth-child(3) {
+	padding-top: 60px;
+}
+
+.local-setup-form > .container-fluid:nth-child(5) {
+	padding-bottom: 20px;
+}
+
+.local-setup-form > .container-fluid {
+	padding: 10px 0 10px 0;
+}
+
+.local-setup-form > .container-fluid > .row > .col-sm-2 > button {
+	margin-top: 6px;
+	border-radius: 5px;
+	background-color: rgba(35, 131, 195, 0.8);
+	height: 32px;
+	min-width: 40px;
+	width: 100%;
+}
+
 /* Local Setup Form Styles End */

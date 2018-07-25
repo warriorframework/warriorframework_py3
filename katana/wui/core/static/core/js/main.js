@@ -1366,6 +1366,7 @@ var katana = {
     userSetup: {
 
       browse: function() {
+        /* This function opens the fileExplorer on the Setup Page */
         var $elem = $(this);
         var $input = $elem.closest('.row').find('input');
         var start_dir = $input.val();
@@ -1378,6 +1379,7 @@ var katana = {
       },
 
       select: function() {
+        /* This function manages the checkbox options on the setup page */
           var $elem = $(this);
           var $allCheckBoxes = $elem.closest('.row').find('input');
           for (var i=0; i<$allCheckBoxes.length; i++){
@@ -1387,6 +1389,7 @@ var katana = {
       },
 
       saveDataLocation: function() {
+        /* This function calls the unserlying view to seup the data directory */
         var $elem = $(this);
         var existing = $elem.parent().prev().find('input[name="existing"]').is(':checked');
         var inputValue = $elem.parent().prev().prev().find('input').val();
