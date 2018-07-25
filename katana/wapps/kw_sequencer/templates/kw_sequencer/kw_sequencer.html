@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>KW Sequencer</title>
-    {% load staticfiles %}
-    <link rel="stylesheet" href="{% static 'kw_sequencer/css/kw_sequencer.css' %}">
-</head>
-<body>
-    <div class="tool-bar">
-        <div class="title">Create New Keyword</div>
-        <button katana-click="kwSequencer.newKeyword" class="button">New</button>
-        <button katana-click="kwSequencer.closeKeyword" class="button">Close</button>
-        <button katana-click="kwSequencer.saveKeyword" class="button">Save</button>
-    </div>
-    <div class="csrf-container">{% csrf_token %}</div>
-    <div class="tab-template only">KW Sequencer</div>
-    <div id="content-div" auto-init="kwSequencer.init">
-        <div id="display-files"></div>
-        <div id="display-error-message" class="text-center" style="display: none; width: 100%; padding: 5rem;">
-            <h4>Please set up the configuration to use this App</h4>
+    <head>
+        <meta charset="UTF-8">
+        <title>KW Sequencer</title>
+        {% load staticfiles %}
+        <link rel="stylesheet" href="{% static 'kw_sequencer/css/kw_sequencer.css' %}">
+    </head>
+    <body>
+        <div class="tool-bar">
+            <div class="title">Create New Keyword</div>
+            <button katana-click="kwSequencer.newKeyword" class="button">New</button>
+            <button katana-click="kwSequencer.closeKeyword" class="button">Close</button>
+            <button katana-click="kwSequencer.saveKeyword" class="button">Save</button>
         </div>
-        <div id="create-keyword"></div>
-    </div>
-</body>
+        <div class="csrf-container">{% csrf_token %}</div>
+        <div class="tab-template only">KW Sequencer</div>
+        <div id="content-div" auto-init="kwSequencer.init">
+            <div id="display-files"></div>
+            <div id="display-error-message" class="text-center" style="display: none; width: 100%; padding: 5rem;">
+                <h4>Please set up the configuration to use this App</h4>
+            </div>
+            <div id="create-keyword"></div>
+        </div>
+    </body>
 </html>

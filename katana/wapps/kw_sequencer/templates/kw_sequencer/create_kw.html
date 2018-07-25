@@ -1,7 +1,6 @@
 <div class="container-fluid">
     <div class="kwsequencer-intentional-space" id="wrapper-keyword-div">
-        <br>
-        <h4>Wrapper Keyword Details</h4>
+        <h2>Wrapper Keyword Details</h2>
         <div class="container-fluid" id="wrapper-keyword-details-div">
             <div class="row">
                 <label for="wrapperActionFile" class="col-md-2 required">Action File<span>*</span></label>
@@ -26,16 +25,15 @@
                 </div>
             </div>
         </div>
-        <br>
-        <div id="sub-keyword-details-div">
-            <h4>SubKeyword Details</h4>
-            <p>A Wrapper Keyword requires at least one Subkeyword definition.<br>Please use the 'New Subkeyword' button below to create a Subkeyword.</p>
-            <div id="new-sub-keyword-div" style="display: none;" key="subKw">
-            </div>
-            <button class="btn btn-primary" id="newSubKwButton" katana-click="kwSequencer.newSubKeyword">New Subkeyword</button>
+    </div>
+    <div class="kwsequencer-intentional-space" id="sub-keyword-details-div">
+        <h3>SubKeyword Details</h3>
+        <p>A Wrapper Keyword requires at least one Subkeyword definition.<br>Please use the 'New Subkeyword' button below to create a Subkeyword.</p>
+        <div id="new-sub-keyword-div" style="display: none;" key="subKw">
         </div>
-        <div id="display-sub-keywords-div" style="display: none;">
-            {% include 'kw_sequencer/display_subkws.html' %}
-        </div>
+        <button class="btn btn-primary" id="newSubKwButton" katana-click="kwSequencer.newSubKeyword">New Subkeyword</button>
+    </div>
+    <div id="display-sub-keywords-div" style="display: none;">
+        {% include 'kw_sequencer/display_subkws.html' %}
     </div>
 </div>

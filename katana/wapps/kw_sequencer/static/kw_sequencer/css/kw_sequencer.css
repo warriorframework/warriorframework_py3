@@ -95,6 +95,24 @@
     margin: 2px;
 }
 
+.kwsequencer-intentional-space > div > .container-fluid > .row > .field {
+    padding: 0 15px;
+    max-width: none;
+    margin: 2px;
+}
+
 .required > span {
     color: red;
+}
+
+.kwsequencer-intentional-space {
+    padding: 0.5rem;
+}
+
+.kwsequencer-intentional-space > p {
+    font-size: 14px;
+}
+
+.kwsequencer-intentional-space > h2 {
+    padding-bottom: 10px;
 }
