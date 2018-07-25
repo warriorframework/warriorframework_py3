@@ -1,6 +1,6 @@
+import getpass
 import os
 from utils.directory_traversal_utils import create_dir, get_parent_directory
-from utils.user_utils import get_username
 from wui.core.core_utils.app_info_class import AppInformation
 
 
@@ -20,7 +20,7 @@ class CreateWarriorRecon:
         self.user_data_dir = os.path.join(self.parent_dir, "warrior_recon")
         self.dir_structure = {
             "user_data": {
-                get_username(): {
+                self.get_username(): {
                     "wapps_data": self.get_wapps_dirs()
                 }
             }
@@ -101,3 +101,10 @@ class CreateWarriorRecon:
         self.output["status"] = False
         self.output["message"] += message + "\n"
         print("-- An Error Occurred -- {0}".format(message))
+
+    @staticmethod
+    def get_username():
+        """
+        Returns the current username
+        """
+        return getpass.getuser()
