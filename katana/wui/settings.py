@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'native.settings',
     'wapps.projects',
     'wapps.suites',
+    'wapps.cases',
     'wapps.execution',
     'wapps.wdf_edit',
     'wapps.assembler',
