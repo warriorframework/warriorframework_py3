@@ -1,9 +1,7 @@
 import getpass
 import json
-
 import os
 from django.conf import settings
-
 from utils.navigator_util import Navigator
 
 
@@ -18,30 +16,6 @@ def get_user_home_dir(username):
     if user_home_dir_template:
         user_home_dir = user_home_dir_template.format(username=(username if username else ""))
     return user_home_dir
-
-
-def get_username(request=None):
-    """
-    Returns the current username
-    """
-    username = False
-    if request is not None and 'data' in request.POST:
-        data_dict = json.loads(request.POST.get('data'))
-        username = data_dict.get('username', False)
-    if not username:
-        username = getpass.getuser()
-    return username
-
-
-def get_password(request=None):
-    """
-    Returns the current username
-    """
-    password = False
-    if request is not None and 'data' in request.POST:
-        data_dict = json.loads(request.POST.get('data'))
-        password = data_dict.get('password', False)
-    return password
 
 
 def get_user_data():

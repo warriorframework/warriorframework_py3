@@ -104,14 +104,18 @@ def validate_config_json(json_data, warrior_dir):
 
 def get_local_home_directory():
     """
-    Gets location of the local home directory
+    This function only returns the directory path setup in settings.py.
+    This function should be called only to see if the home directory is setup in settings.py.
+    To calculate the home directory (for local and client-server) system please use
+    get_user_home_dir() in katana/utils/user_utils.py
     """
     return getattr(settings, 'USER_HOME_DIR_TEMPLATE') if getattr(settings, 'USER_HOME_DIR_TEMPLATE', None) else False
 
 
 def get_suggested_home_dir():
     """
+    This function returns a "suggested" home_directory
+
     This function assumes this is a local system. Call the function ONLY when the system is local.
-    :return:
     """
     return os.path.join(os.path.expanduser("~"))
