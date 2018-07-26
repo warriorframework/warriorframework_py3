@@ -72,7 +72,6 @@ def validate_config_json(json_data, warrior_dir):
 
     :param json_data: original unordered contents of config.json
     :param warrior_dir: path to warrior directory
-
     :return: Ordered Dictionary containing validated config.json data
     """
     ordered_json = OrderedDict()
@@ -122,11 +121,11 @@ def iscontainer():
             line = re.findall(r'docker', line)
             # return false if outside docker
             if line.__len__() is 0:
-                return False
+                return True
             # else return true
             else:
                 print('Warrior instance not deployed in container')
-                return True
+                return False
 
 
 def katana_container_operations(_copy, katana_static, app_path):

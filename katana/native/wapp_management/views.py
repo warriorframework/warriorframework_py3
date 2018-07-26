@@ -29,6 +29,9 @@ from utils.file_utils import copy_dir
 from utils.navigator_util import Navigator
 from utils.string_utils import get_repository_name
 from wui.core.core_utils.app_info_class import AppInformation
+from katana.utils.user_dir_utils import UserData
+
+from katana.native.wapp_management import apps
 
 from katana.native.wapp_management.wapp_management_utils import wapp_mgmt_utils
 
@@ -93,6 +96,11 @@ def install_an_app(request):
     if os.path.exists(temp_dir_path):
         shutil.rmtree(temp_dir_path)
     create_dir(temp_dir_path)
+
+    # test userdata
+    app_name = apps.WappManagementConfig.name
+    ud = UserData(app_name)
+    ud.get_dotdata_dir(request)
 
     status, app_path = wapp_mgmt_utils.handle_wapp_sources(app_path, dot_data_dir, temp_dir_path, output_data)
     if status:
