@@ -214,12 +214,14 @@ def get_testcase_list(testsuite_filepath):
                         copy_tc = copy.deepcopy(tc)
                         copy_tc.find("runmode").set("value", go_next)
                         copy_tc.find("runmode").set("attempt", i+1)
+                        copy_tc.find("runmode").set("runmode_value", value)
                         testcase_list.append(copy_tc)
                 # only one step in step list, append new step
                 else:
                     for i in range(0, value):
                         copy_tc = copy.deepcopy(tc)
                         copy_tc.find("runmode").set("attempt", i+1)
+                        copy_tc.find("runmode").set("runmode_value", value)
                         testcase_list.append(tc)
             if retry_type is not None and retry_value > 0:
                 if len(new_testcase_list) > 1:
@@ -469,7 +471,6 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         print_error("unexpected suite_type received...aborting execution")
         test_suite_status = False
 
-    print_info("\n")
     suite_end_time = Utils.datetime_utils.get_current_timestamp()
     print_info("[{0}] Testsuite execution completed".format(suite_end_time))
     suite_duration = Utils.datetime_utils.get_time_delta(suite_start_time)

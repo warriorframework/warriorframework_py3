@@ -160,6 +160,7 @@ def get_testsuite_list(project_filepath):
                     copy_ts = copy.deepcopy(ts)
                     copy_ts.find("runmode").set("value", go_next)
                     copy_ts.find("runmode").set("attempt", i+1)
+                    copy_ts.find("runmode").set("runmode_value", value)
                     testsuite_list.append(copy_ts)
             if retry_type is not None and retry_value > 0:
                 if len(new_testsuite_list) > 1:
@@ -261,7 +262,6 @@ def execute_project(project_filepath, auto_defects, jiraproj, res_startdir, logs
         print_error("unexpected project_type received...aborting execution")
         project_status = False
 
-    print_info("\n")
     project_end_time = Utils.datetime_utils.get_current_timestamp()
     print_info("[{0}] Project execution completed".format(project_end_time))
     project_duration = Utils.datetime_utils.get_time_delta(project_start_time)
