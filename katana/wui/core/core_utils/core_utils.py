@@ -125,15 +125,15 @@ def iscontainer():
                 return False
             # else return true
             else:
-                print('Warrior instance not deployed in contianer')
+                print('Warrior instance not deployed in container')
                 return True
 
 
 def katana_container_operations(_copy, katana_static, app_path):
     if iscontainer():
         return handle_wapp_static_container(
-            app_path, katana_static, _copy), app_path
-    return False, app_path
+            app_path, katana_static, _copy)
+    return False
 
 
 def copy_katana_static(src, dst):
@@ -161,19 +161,9 @@ def delete_katana_static(src, wapp_dir):
 
 
 def handle_wapp_static_container(app_path, katana_static, _copy):
-    filename = get_dir_from_path(app_path)
     if _copy:
-        print(
-            list_dir(
-                join_path(
-                    app_path,
-                    WARRIORFRAMEWORK,
-                    KATANA,
-                    WAPPS,
-                    filename,
-                    'static')))
         return copy_katana_static(join_path(
-            app_path, WARRIORFRAMEWORK, KATANA, WAPPS, filename, 'static'), katana_static)
+            app_path, 'static'), katana_static)
     else:
         return delete_katana_static(join_path(katana_static), join_path(
-            nav.get_katana_dir(), WAPPS, filename, 'static'))
+            app_path, 'static'))

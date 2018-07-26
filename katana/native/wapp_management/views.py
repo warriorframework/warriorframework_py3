@@ -65,11 +65,15 @@ def update_installed_apps_section(request):
 def uninstall_an_app(request):
     app_path = request.POST.get("app_path", None)
     app_type = request.POST.get("app_type", None)
-    # check if inside container
-    # check if inside container
-    if core_utils.katana_container_operations(False, katana_static, app_path):
-        print('deleted static files from katana/static')
     uninstaller_obj = Uninstaller(get_parent_directory(nav_obj.get_katana_dir()), app_path, app_type)
+    # check if inside container
+    # get path to wapp
+    # uninstaller_obj's field app_path contains path to a particular wapp
+    # where as installer_obj's field app_path contains path to the wapps directory.
+    path_to_wapp = join_path(uninstaller_obj.app_dir, uninstaller_obj.app_name)
+    # delete katana static files from katana static before uninstall
+    if core_utils.katana_container_operations(False, katana_static, path_to_wapp):
+        print('deleted static files from katana/static')
     if not uninstaller_obj.uninstall():
         # undo delete of files
         print('Error during uninstall, doing a rollback...')
@@ -93,8 +97,17 @@ def install_an_app(request):
     status, app_path = wapp_mgmt_utils.handle_wapp_sources(app_path, dot_data_dir, temp_dir_path, output_data)
     if status:
         installer_obj = Installer(get_parent_directory(nav_obj.get_katana_dir()), app_path)
-        installer_obj.install()
-        if installer_obj.message != "":
+        print('app_directory: ' + installer_obj.app_directory)
+        print('app_name: ' + installer_obj.app_name)
+        # check if inside container
+        # get the path to wapp
+        path_to_wapp = join_path(installer_obj.app_directory, installer_obj.app_name)
+        # copy wapp static files to katana static
+        if core_utils.katana_container_operlations(True, katana_static, path_to_wapp):
+            print('Copied static files to katana/static')
+        if installer_obj.install():
+            print('App installation complete')
+        elif installer_obj.message != "":
             output_data["status"] = False
             output_data["message"] += "\n" + installer_obj.message
     return JsonResponse(output_data)

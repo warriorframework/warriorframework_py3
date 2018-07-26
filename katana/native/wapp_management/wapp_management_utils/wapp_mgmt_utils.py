@@ -152,10 +152,6 @@ def handle_git_sources(app_path, temp_dir_path, output_data):
         os.system("git clone {0} {1}".format(
             app_path, join_path(temp_dir_path, repo_name)))
         app_path = join_path(temp_dir_path, repo_name)
-        filename = get_dir_from_path(app_path)
-        # check if inside container
-        if core_utils.katana_container_operations(True, katana_static, app_path):
-            print('Copied static files to katana/static')
         # return from the git_sources
         return True, app_path
     else:
@@ -179,10 +175,6 @@ def handle_zip_sources(app_path, temp_dir_path, output_data):
         shutil.copyfile(app_path, join_path(temp_dir_path, zip_name))
         if extract_zip(zip_name, temp_dir_path, output_data):
             app_path = join_path(temp_dir_path, zip_name[:-4])
-            filename = get_dir_from_path(app_path)
-            # check if inside container
-            if core_utils.katana_container_operations(True, katana_static, app_path):
-                print('Copied static files to katana/static')
             return True, app_path
         else:
             # Error if any, is already handled in extract_zip
@@ -206,9 +198,6 @@ def handle_directory_sources(app_path, temp_dir_path, output_data):
         # else do a normal copy_dir inside katana/wapps
         status = copy_dir(app_path, join_path(temp_dir_path, filename))
         app_path = join_path(temp_dir_path, filename)
-        # check if inside container
-        if core_utils.katana_container_operations(True, katana_static, app_path):
-            print('Copied static files to katana/static')
         return status, app_path
     else:
         handle_path_error(app_path, output_data)
