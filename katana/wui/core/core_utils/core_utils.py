@@ -121,11 +121,11 @@ def iscontainer():
             line = re.findall(r'docker', line)
             # return false if outside docker
             if line.__len__() is 0:
-                return True
+                return False
             # else return true
             else:
                 print('Warrior instance not deployed in container')
-                return False
+                return True
 
 
 def katana_container_operations(_copy, katana_static, app_path):
