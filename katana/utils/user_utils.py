@@ -1,4 +1,7 @@
-<<<<<<< HEAD
+import json
+import os
+from django.conf import settings
+from utils.navigator_util import Navigator
 from .directory_traversal_utils import join_path, file_or_dir_exists
 
 DOTDATA = '.data'
@@ -54,19 +57,6 @@ class UserData:
             return None
 
 
-# check if user is authenticated using the request object
-def user_authenticated(request):
-    if request.user.is_authenticated():
-        return request.user.username
-    else:
-        return None
-=======
-import json
-import os
-from django.conf import settings
-from utils.navigator_util import Navigator
-
-
 def get_user_home_dir(username=None):
     """
     Returns the home directory for the provided username
@@ -95,4 +85,11 @@ def get_user_data():
         print("-- An Error Occurred -- {0}".format(e))
         print("User data could not be retrieved.")
     return userdata
->>>>>>> WAR-1965
+
+
+# check if user is authenticated using the request object
+def user_authenticated(request):
+    if request.user.is_authenticated():
+        return request.user.username
+    else:
+        return None
