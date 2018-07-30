@@ -1074,7 +1074,7 @@ var katana = {
           API to create jstee in the specified element.
           $treeElement: Element where the jstree data should be displayed.
           jsTreeData: the contents of the jstree to be displayed.
-          checkbox: flag to addd the checkbox plugin
+          checkbox: flag to add the checkbox plugin
         */
         if (checkbox == true) {
             var data = { 'core' : { 'data' : jsTreeData },
