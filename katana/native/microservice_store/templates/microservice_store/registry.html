@@ -1,0 +1,40 @@
+<div section="registry" class="microservice section registry" style="display: block">
+
+        <!--<label for="registry_type">Registry Type</label>-->
+        <!--<input id="registry_type" list="register_types"/>-->
+        <!--<datalist id="register_types">-->
+            <!--<option value="docker"> Docker Hub/Registry </option>-->
+            <!--<option value="quay"> Quay </option>-->
+            <!--<option value="google"> Google Container Registry </option>-->
+            <!--<option value="aws"> AWS Google Container Registry </option>-->
+        <!--</datalist>-->
+
+        <!--<label>Address</label>-->
+        <!--<input key="address" placeholder="Enter Registry Address. Ex: address[:port]" value="fnc-docker-reg:3000"/>-->
+
+        <!--<label>Image</label>-->
+        <!--<input key="image" placeholder="Enter Registry Address. Ex: image[:tag]" value="opce-algo"/>-->
+
+        <table class="microservice registry_details">
+                <tr colspan="2">
+                        <td>
+                                Registry Details
+                        </td>
+                </tr>
+                <tr>
+                       <td>
+                                <div class="form-group">
+                                        <input class="form-control" key="address" value="fnc-docker-reg:3000" required/>
+                                        <label class="form-control-placeholder">Address</label>
+                                </div>
+                       </td>
+                        <td>
+                                <div class="form-group">
+                                        <input class="form-control" key="image" value="opce-algo" required/>
+                                        <label class="form-control-placeholder">Image</label>
+                                </div>
+                       </td>
+                </tr>
+        </table>
+
+</div>

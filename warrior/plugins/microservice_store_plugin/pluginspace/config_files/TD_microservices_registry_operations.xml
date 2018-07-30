@@ -1,0 +1,108 @@
+<data>
+
+    <global>
+        <command_params>
+        </command_params>
+        <verifications>
+        </verifications>
+    </global>
+
+    <!--
+        Docker Related TestData blocks
+    -->
+
+    <testdata execute="yes" title ="list_images" >
+        <command send="docker image ls"
+                 end="${host.args.end_prompt}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_stop_container" >
+        <command send="docker stop $(docker ps -a | grep '${registry.args.image}' | awk '{print $1}')"
+                 end="${host.args.end_prompt}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_remove_container" >
+        <command send="docker rm $(docker ps -a | grep '${registry.args.image}' | awk '{print $1}')"
+                 end="${host.args.end_prompt}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_remove_image" >
+        <command send="docker rmi $(docker images -a | grep '${registry.args.image}' | awk '{print $3}') -f"
+                 end="${host.args.end_prompt}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_pull" >
+        <command send="docker pull ${registry.args.address}/${registry.args.image}"
+                 end="${host.args.end_prompt}"
+                 timeout="300"/>
+    </testdata>
+
+    <testdata execute="yes" title ="is_image_downloaded" >
+        <command send="docker image ls"
+                 end="${host.args.end_prompt}" verify="v1"/>
+        <v1 found="yes" search="${registry.args.just_image}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_run" >
+        <command send="docker run -d ${host.args.docker_bind_interface_port} ${registry.args.address}/${registry.args.image}"
+                 end="${host.args.end_prompt}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="is_service_running" >
+        <command send="docker container ls"
+                 end="${host.args.end_prompt}" verify="v1"/>
+        <v1 found="yes" search="${registry.args.just_image}"/>
+    </testdata>
+
+    <!--
+        Kubernetes Related TestData blocks
+    -->
+
+    <testdata execute="yes" title ="kubernetes_delete_service" >
+        <command send="sudo kubectl delete service ${host.args.kube_pod_name}"
+                 end="${host.args.end_prompt}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_delete_deployment" >
+        <command send="sudo kubectl delete deployment ${host.args.kube_pod_name}"
+                 end="${host.args.end_prompt}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_run" >
+        <command send="sudo kubectl run ${host.args.kube_pod_name} --image=${registry.args.address}/${registry.args.image} ${host.args.kube_port_flag} ${host.args.kube_replicas_flag}"
+                 end="${host.args.end_prompt}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_is_pod_deployed" >
+        <command send="sudo kubectl get pods --all-namespaces"
+                 end="${host.args.end_prompt}"
+                 verify = "v1"/>
+        <v1 found="yes" search="${host.args.kube_pod_name}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_expose" >
+        <command send="sudo kubectl expose deployment ${host.args.kube_pod_name} --type=NodePort"
+                 end="${host.args.end_prompt}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_is_service_exposed" >
+        <command send="sudo kubectl get services --all-namespaces"
+                 end="${host.args.end_prompt}"
+                 verify = "v1"/>
+        <v1 found="yes" search="${host.args.kube_pod_name}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="become_root" >
+        <command end=".*(%|>|\$|#|:)" start=".*" send="sudo su -"/>
+    </testdata>
+
+    <testdata execute="yes" title ="send_password" >
+        <command end="${host.args.end_prompt}" start=".*" send="${host.args.password}"/>
+    </testdata>
+
+    <testdata execute="yes" title ="exit_root" >
+        <command end="${host.args.end_prompt}" start=".*" send="exit" verify="v1"/>
+        <v1 found="yes" search=".*logout.*"/>
+    </testdata>
+
+</data>
