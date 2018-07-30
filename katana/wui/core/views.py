@@ -12,19 +12,21 @@ limitations under the License.
 """
 
 import os
-
-# -*- coding: utf-8 -*-
 from django.contrib.auth import authenticate, login, logout
 from django.conf import settings
 from django.http import JsonResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.views import View
 import json
 from utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
+from utils.file_utils import readlines_from_file, write_to_file
 from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from utils import user_utils
+from utils.user_utils import get_user_home_dir, get_user_data
 from wui.core.apps import AppInformation
+from wui.core.core_utils.core_utils import get_local_home_directory, get_suggested_home_dir
+from wui.core.core_utils.warrior_recon_creation_class import CreateWarriorRecon
 
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates', 'core')
 try:
@@ -32,47 +34,11 @@ try:
 except Exception as err:
     print("Please install django auth ldap to authenticate against ldap")
     print("Error while importing django auth ldap: \n", err)
-    
-
-
-#===============================================================================
-# !!!!! This functinality has been moved to UserAuthView class (scroll down) commenting the code for now.
-# onlce backward compatibility has been safely verified after testing thoroughly 
-# the commented code can be deleted !!!!
-#
-# class CoreView(View):
-#     
-#     def __init__(self):
-#         self.navigator = Navigator()
-# 
-#     def get_user_data(self):
-#         json_file = self.navigator.get_katana_dir() + '/user_profile.json'
-#         with open(json_file, 'r') as f:
-#             json_data = json.load(f)
-#         return json_data
-# 
-#     def get(self, request):
-#         """
-#         This get function get information about the installed apps
-# 
-#         Args:
-#             request: HttpRequest that contains metadata about the request
-# 
-#         Returns:
-#             HttpResponse: containing an HTML template and data
-#                 HTML template: core/index.html
-#                 Data: [{"url":"/url/of/app", "name": "app_name",
-#                         "icon": "icon_name", "color": "red"}]
-# 
-#         """
-#         print('hi')
-#         template = 'core/index.html'
-#         return render(request, template, {"apps": AppInformation.information.apps, "userData": self.get_user_data()})
-#===============================================================================
 
 
 def refresh_landing_page(request):
-    return render(request, 'core/landing_page.html', {"apps": AppInformation.information.apps})
+    return render(request, 'core/landing_page.html',
+                  {"apps": AppInformation.information.apps})
 
 
 def get_file_explorer_data(request):
@@ -108,42 +74,39 @@ def check_if_file_exists(request):
     return JsonResponse(output)
 
 
-
-
-
 class UserAuthView(View):
     """
     User authentication view
     """    
     
-    def __init__(self):
+    def __init__(self, **kwargs):
         """
         constructor for the view
         """
         self.index_page = os.path.join(templates_dir, 'unified_index.html')
         self.home_page = os.path.join(templates_dir, 'home_page.html')
+        self.configured_ldap = False
+        if hasattr(settings, 'AUTH_LDAP_SERVER_URI') and settings.AUTH_LDAP_SERVER_URI:
+            self.configured_ldap = True
         self.userprofile  = None
         self.username = None
         self.password = None
         self.op_dict = {'auth_status': 0, 'redirect_url': None}     
         self.action_method_map = {
-                            'login': self.get_login_page,
-                            'logout': self.logout_user,
-                            'redirect_to_home_page': self.redirect_to_home_page
-                        }
-        
-    
+            'login': self.get_login_page,
+            'logout': self.logout_user,
+            'redirect_to_home_page': self.redirect_to_home_page
+        }
+
     def get(self, request):
         """
         Render the form for user authentication
         """
         req_data = request.GET.get('data')
         data_dict = json.loads(req_data) if req_data else {}
-        action = data_dict.get('action')     
+        action = data_dict.get('action')
         method = self.action_method_map.get(action, self.get_login_page)
         return method(request)
-        
-
     
     def post(self, request):
         """
@@ -153,18 +116,17 @@ class UserAuthView(View):
                       2 means multi user supported but no home dir for user
         
         """
-
         data_dict = json.loads(request.POST.get('data'))
         self.username = data_dict.get('username', None)
         self.password = data_dict.get('password')
         # authenticate, login  the user
         self.userprofile = self.authenticate_user()    
         multi_user_support = getattr(settings, 'MULTI_USER_SUPPORT', False)
-        home_dir_template = getattr(settings, 'USER_HOME_DIR_TEMPLATE', None)
+        home_dir_template = get_user_home_dir(self.username)
         # if multi user support is False then just login user
-        if not multi_user_support:    
+        if not multi_user_support:
             self.login_user(request)
-        
+
         # if multi user supported then home_dir_template is mandatory
         if multi_user_support:
             if not home_dir_template:
@@ -172,13 +134,9 @@ class UserAuthView(View):
                 of multi user environment."
                 self.op_dict['auth_status'] = 2
             else:
-                self.login_user(request)               
-                           
-
+                self.login_user(request)
         return JsonResponse(self.op_dict)
-        
-        
-    
+
     def authenticate_user(self):
         """
         authenticate the user
@@ -195,8 +153,7 @@ class UserAuthView(View):
         """
         login an authenticated user
 
-        """     
-        
+        """
         try:
             if self.userprofile is not None:
                 self.op_dict['msg'] = "authentication for user={0} successful.".format(self.username)
@@ -212,38 +169,30 @@ class UserAuthView(View):
         except Exception as err:
             self.op_dict['msg'] = str(err)
     
-        return
-    
-    
     def redirect_to_home_page(self, request):
         """
         on successful login build the homepage for the user
         """
-        user_data = self.get_user_data()
-        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
-    
-    
+        user_data = get_user_data()
+        home_dir = False if self.configured_ldap else get_local_home_directory()
+        suggested_home_dir = False if home_dir else get_suggested_home_dir()
+        data = {"apps": AppInformation.information.apps, "userData": user_data,
+                "configured_ldap": self.configured_ldap, "home_directory": home_dir,
+                "suggested_home_directory": suggested_home_dir}
+        return render(request, self.index_page, data)
+
     def get_login_page(self, request):
         """
+        Sends the index_page as response.
         """
-        user_data = self.get_user_data()
-        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
-    
-    
-    
-    def get_user_data(self):
-        """
-        function is still used for backward compatibility,
-        can be deprecated once completely handled by client server model
-        """
-        userdata = {}
-        json_file = Navigator().get_katana_dir() + '/user_profile.json'
-        with open(json_file, 'r') as f:
-            userdata = json.load(f)
-        return userdata
-    
-   
-    
+        user_data = get_user_data()
+        home_dir = False if self.configured_ldap else get_local_home_directory()
+        suggested_home_dir = False if home_dir else get_suggested_home_dir()
+        data = {"apps": AppInformation.information.apps, "userData": user_data,
+                "configured_ldap": self.configured_ldap, "home_directory": home_dir,
+                "suggested_home_directory": suggested_home_dir}
+        return render(request, self.index_page, data)
+
     def logout_user(self, request):
         """
         logout the user
@@ -252,6 +201,81 @@ class UserAuthView(View):
         path = request.get_full_path()
         self.op_dict['redirect_url'] = '/'
         return JsonResponse(self.op_dict)
+
+
+def setup_data_location(request):
+    """
+    This function sets up a local data directory
+    :param request: Contains path to data directory and whether or not it is an existing data
+           storage directory or not
+    :return:
+    """
+    data_directory = request.POST.get('path_to_data_directory')
+    existing = request.POST.get('existing') == 'true'
+    output = {"message": "Data storage successfully imported" if existing else "Data storage successfully created"}
+    if os.path.isdir(data_directory):
+        output["status"] = True
+        cwr_obj = CreateWarriorRecon(data_directory)
+        if existing:
+            # Verify existing data directory
+            output = cwr_obj.verify_existing_warrior_recon_dir()
+        else:
+            # Create new data directory (warrior_recon)
+            output = cwr_obj.create_warrior_recon_dir()
+    else:
+        print("-- An Error Occurred -- {0} does not exist or is not a directory".format(data_directory))
+        output["status"] = False
+        output["message"] = "{0} does not exist or is not a directory.".format(data_directory)
+
+    if output["status"]:
+        # Update settings.py file
+        data = readlines_from_file(join_path(Navigator().get_katana_dir(), "wui", "settings.py"))
+
+        for i, line in enumerate(data):
+            if line.strip().startswith('USER_HOME_DIR_TEMPLATE'):
+                data[i] = "USER_HOME_DIR_TEMPLATE = \"{0}\"\n".format(output["data_directory"])
+                settings.USER_HOME_DIR_TEMPLATE = output["data_directory"]
+                break
+
+        write_to_file(join_path(Navigator().get_katana_dir(), "wui", "settings.py"), "".join(data))
+    return JsonResponse(output)
+
+    # ===============================================================================
+    # !!!!! This functionality has been moved to UserAuthView class (scroll down)
+    # commenting the code for now.
+    # once backward compatibility has been safely verified after testing thoroughly
+    # the commented code can be deleted !!!!
+    #
+    # class CoreView(View):
+    #
+    #     def __init__(self):
+    #         self.navigator = Navigator()
+    #
+    #     def get_user_data(self):
+    #         json_file = self.navigator.get_katana_dir() + '/user_profile.json'
+    #         with open(json_file, 'r') as f:
+    #             json_data = json.load(f)
+    #         return json_data
+    #
+    #     def get(self, request):
+    #         """
+    #         This get function get information about the installed apps
+    #
+    #         Args:
+    #             request: HttpRequest that contains metadata about the request
+    #
+    #         Returns:
+    #             HttpResponse: containing an HTML template and data
+    #                 HTML template: core/index.html
+    #                 Data: [{"url":"/url/of/app", "name": "app_name",
+    #                         "icon": "icon_name", "color": "red"}]
+    #
+    #         """
+    #         print('hi')
+    #         template = 'core/index.html'
+    #         return render(request, template, {"apps": AppInformation.information.apps,
+    #                                            "userData": self.get_user_data()})
+    # ===============================================================================
     
     
     #===========================================================================
