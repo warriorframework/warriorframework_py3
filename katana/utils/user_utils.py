@@ -58,12 +58,6 @@ class UserData:
             return None
 
 
-# check if user is authenticated using the request object
-def user_authenticated(request):
-    if request.user.is_authenticated():
-        return request.user.username
-    else:
-        return None
 
 def get_user_home_dir(username=None):
     """
@@ -93,3 +87,11 @@ def get_user_data():
         print("-- An Error Occurred -- {0}".format(e))
         print("User data could not be retrieved.")
     return userdata
+
+
+# check if user is authenticated using the request object
+def user_authenticated(request):
+    if request.user.is_authenticated():
+        return request.user.username
+    else:
+        return None
