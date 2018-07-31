@@ -1110,13 +1110,13 @@ var katana = {
     },
 
     openFileExplorer: function(heading, start_directory, csrftoken, parent, callBack_on_accept, callBack_on_dismiss) {
-      if (!heading || heading === "" || heading === undefined) {
+      if (!heading) {
         heading = "Select a file"
       }
-      if (start_directory === undefined || start_directory === "") {
+      if (!start_directory) {
         start_directory = false;
       }
-      if (!parent || parent === "" || parent === undefined) {
+      if (!parent) {
         var $currentPage = katana.$activeTab;
         var $tabContent = $currentPage.find('.page-content-inner');
       } else {

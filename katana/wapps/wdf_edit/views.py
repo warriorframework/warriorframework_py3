@@ -10,7 +10,7 @@ from django.template.defaulttags import register
 from django.shortcuts import render
 from django.http import JsonResponse
 
-JSON_CONFIG = Navigator().get_katana_dir() + os.sep + "config.json"
+JSON_CONFIG = os.path.join(Navigator().get_katana_dir(),"native", "settings", ".data", "config.json")
 
 # Create your views here.
 def process_xml(data):

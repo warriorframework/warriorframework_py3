@@ -42,7 +42,7 @@ class Settings:
             return mainDict
 
     def general_setting_handler(self, request):
-        json_file = self.navigator.get_katana_dir() + os.sep + 'config.json'
+        json_file = os.path.join(self.navigator.get_katana_dir(), 'native', 'settings', '.data', 'config.json')
         w_settings = self.navigator.get_warrior_dir() + 'Tools' + os.sep + 'w_settings.xml'
         elem_file = xml_controler.parse(w_settings)
         elem_file = elem_file.getroot()
@@ -73,7 +73,7 @@ class Settings:
 
     def profile_setting_handler(self, request):
         json_file = self.navigator.get_katana_dir() + os.sep + 'user_profile.json'
-        config_json_file = self.navigator.get_katana_dir() + os.sep + 'config.json'
+        config_json_file = os.path.join(self.navigator.get_katana_dir(), 'native', 'settings', '.data', 'config.json')
         if request.method == 'POST':
             data = json.loads(request.POST.get('data'))
             with open(json_file,'w') as f:

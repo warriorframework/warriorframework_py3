@@ -55,7 +55,7 @@ class Execution(object):
         self.templates_dir = os.path.join(templates_dir, 'execution')
         self.jira_settings_file = os.path.join(self.wf_dir, 'warrior', 'Tools', 'jira', 'jira_config.xml')        
         self.execution_settings_json = os.path.join(templates_dir, 'execution', 'execution_settings.json')
-        self.config_json = os.path.join(self.katana_dir, 'config.json')
+        self.config_json = os.path.join(self.katana_dir, 'native', 'settings', '.data', 'config.json')
         
         
 

@@ -11,9 +11,6 @@ limitations under the License.
 
 """
 
-# -*- coding: utf-8 -*-
-
-
 import os
 from django.shortcuts import render
 from django.http import JsonResponse

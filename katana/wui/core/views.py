@@ -89,7 +89,7 @@ def get_file_explorer_data(request):
 
 def read_config_file(request):
     nav_obj = Navigator()
-    config_file_path = join_path(nav_obj.get_katana_dir(), "config.json")
+    config_file_path = join_path(nav_obj.get_katana_dir(), "native", "settings", ".data", "config.json")
     data = read_json_data(config_file_path)
     if data is None:
         data = False
