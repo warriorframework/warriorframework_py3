@@ -30,11 +30,6 @@ from WarriorCore import common_execution_utils, sequential_testsuite_driver, \
 Warrior testsuites """
 
 
-# !/usr/bin/python
-"""This the project driver that executes a collections of
-Warrior testsuites """
-
-
 def get_project_details(project_filepath, res_startdir, logs_startdir, data_repository):
     """Gets all details of the Project from its xml file"""
 
@@ -207,6 +202,12 @@ def execute_project(project_filepath, auto_defects, jiraproj, res_startdir, logs
                                              data_repository)
     project_repository['project_title'] = project_title
     testsuite_list = get_testsuite_list(project_filepath)
+    # Prints the path of result summary file at the beginning of execution
+    if data_repository['war_file_type'] == "Project":
+        filename = os.path.basename(project_filepath)
+        html_filepath = os.path.join(project_repository['project_execution_dir'],
+                                     Utils.file_Utils.getNameOnly(filename))+'.html'
+        print_info("HTML result file: {0}".format(html_filepath))
 
     # project_resultfile = project_repository['project_resultfile']
 
@@ -267,7 +268,7 @@ def execute_project(project_filepath, auto_defects, jiraproj, res_startdir, logs
     hms = Utils.datetime_utils.get_hms_for_seconds(project_duration)
     print_info("Project duration= {0}".format(hms))
 
-    project_status = report_project_result(project_status, project_repository)
+    report_project_result(project_status, project_repository)
     pj_junit_object.update_attr("status", str(project_status), "pj", project_start_time)
     pj_junit_object.update_attr("time", str(project_duration), "pj", project_start_time)
 
@@ -304,7 +305,7 @@ def report_project_result(project_status, project_repository):
     """
 
     project_status = {'TRUE': 'PASS', 'FALSE': 'FAIL',
-                      'ERROR': 'ERROR', 'EXCEPTION': 'ERROR'}.\
+                      'ERROR': 'ERROR', 'EXCEPTION': 'ERROR', 'RAN': 'RAN'}.\
         get(str(project_status).upper())
 
     print_info("Project:{0}  STATUS:{1}".format(project_repository['project_name'],

@@ -1010,22 +1010,13 @@ var katana = {
       });
     },
 
-    get: function({url, csrf, toSend, dataType, callBack, fallBack, callBackData, fallBackData}={}) {
+    get: function({url, toSend, dataType, callBack, fallBack, callBackData, fallBackData}={}) {
 
       // intialize values for url, csrf, dataType, toSend
       var $elem = this ? this : katana.$activeTab;
-      var toSend = toSend ? toSend : $elem.find('input:not([name="csrfmiddlewaretoken"])').serializeArray();
-      var url = url ? url : $elem.attr('get-url');
-      var csrf = csrf ? csrf : $elem.find('.csrf-container > input').val();
-      var dataType = dataType ? dataType : 'text'
-
-      // setup csrf token in xhr header
-      $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-          if (!this.crossDomain)
-            xhr.setRequestHeader("X-CSRFToken", csrf);
-        }
-      });
+      toSend = toSend ? toSend : $elem.find('input:not([name="csrfmiddlewaretoken"])').serializeArray();
+      url = url ? url : $elem.attr('get-url');
+      dataType = dataType ? dataType : 'text';
 
       // make an ajax get call using the intialized variables,
       // on sucess the data is sent to success cal back function if one was provided
@@ -1243,4 +1234,141 @@ var katana = {
 
   },
 
+    utils: {
+
+        getRelativeFilepath: function (basePath, path, basePathIsDir) {
+          /* This function gets relative path (out of a given path argument) from a basePath and path */
+          var basePathSeries = katana.utils._convertBackSlashes(basePath, basePathIsDir).split('/');
+          var pathSeries = katana.utils._convertBackSlashes(path).split('/');
+          var hold = 0;
+          for (var i=0; i<basePathSeries.length && i < pathSeries.length; i++) {
+            if (basePathSeries[i] !== pathSeries[i]){
+              hold = i;
+              break;
+            }
+          }
+          var output = "";
+          for (i=(basePathSeries.length-1); i > hold; i--) {
+              output += "../"
+          }
+          if (output !== "") {
+              output = output.slice(0, -1);
+          }
+          for (i=hold; i<pathSeries.length; i++) {
+              output += "/" + pathSeries[i]
+          }
+          if (output.startsWith("/")) {
+              output = output.slice(1, output.length);
+          }
+          return output
+        },
+
+        getAbsoluteFilepath: function (basePath, relativePath, basePathIsDir) {
+          /* This function gets absolute path (out of a given relativePath argument) from a basePath and path */
+          var basePathSeries = katana.utils._convertBackSlashes(basePath, basePathIsDir).split('/');
+          var relativePathSeries = katana.utils._convertBackSlashes(relativePath).split('/');
+          var i = 0;
+          var hold = 0;
+          while (relativePathSeries[i] === ".."){
+              hold += 1;
+              i += 1;
+          }
+          var output = "";
+          for (i=0; i<(basePathSeries.length - hold - 1); i++) {
+              output += basePathSeries[i] + "/"
+          }
+          for (i=hold; i<relativePathSeries.length; i++) {
+              output += relativePathSeries[i] + "/"
+          }
+          output = output.slice(0, -1);
+          return output
+        },
+
+        _convertBackSlashes: function (path, trailingForwardSlash) {
+          /* This function converts a file path to have only forward slashes.
+             A trailing forward slash is added at the end if trailingForwardSlash is set to true */
+          trailingForwardSlash = !!trailingForwardSlash;
+          if (path.indexOf('\\') > -1) {
+            path = path.replace('\\', '/');
+          }
+          if (trailingForwardSlash) {
+            if (!path.endsWith('/')) {
+              path = path + '/';
+            }
+          } else {
+            if (path.endsWith('/')) {
+              path = path.slice(0, -1);
+            }
+          }
+          return path;
+        }
+    },
+    
+    //USER AUTHENTICATION
+    userAuth: {
+    	
+    	login: function(){
+    		// login a user
+    		console.log('login a user');
+    		
+    		// make a http post and send the username, password to the server
+    		//post: function(url, csrf, toSend, callBack, fallBack, callBackData, fallBackData )
+    		
+    		var elem = $('#warrior_login');
+    		var username = $('#username').val();
+    		var password = $('#password').val();
+    		var data_to_send = JSON.stringify({'username': username, 'password': password, 'action': 'login'})
+    		katana.templateAPI.post.call(elem, null, null, data_to_send, katana.userAuth.loginCallBacks)
+    		
+    	},
+    	logout: function(){
+    		// login a user
+    		var logout = $('#warrior_logout')
+    		katana.templateAPI.get.call(logout, {
+    											'url': null, 
+    											'toSend': JSON.stringify({'action': 'logout'}), 
+    											'callBack': katana.userAuth.getLogoutPage
+    											}
+    									)  
+    		
+    	},
+    	loginCallBacks: function(data){
+    		// decide the pages/content to be displayed based on 
+    		// the result of call back
+    		//data = JSON.parse(data);
+    		//window.location = redirect_url;
+    		//katana.templateAPI.get.call(elem, {'url':redirect_url, 'toSend': JSON.stringify({'action': 'redirect_to_home_page'}) , 'callBack': katana.userAuth.getHomePage})
+    		// since since warrior is an spa we can handle login, home, logout screens using a single template and based on the user.is_authenticated value
+    		// client just needs to reload the page and the server will display the necessary values based on the state of user
+    		console.log(data);
+    		var elem = $('#warrior_login');
+    		var auth_status = data['auth_status'];
+    		var msg = data['msg'];
+    		if(auth_status === 1){ window.location.reload();}
+    		else{katana.openAlert({"alert_type": "warning", "heading": "Login failed", "text": msg})};    		
+    		
+    	},    	
+    	getHomePage: function(data){
+    		// on successful authenticaion build the home page for the user
+    		console.log(data);
+    		var warrior_index_view = $('#warrior_index_view');
+    		warrior_index_view.html(data);
+    		katana.setActiveTab();    		
+    	},    	
+    	getLogoutPage: function(data){
+    		// on successful authenticaion build the home page for the user
+    		//var warrior_index_view = $('#warrior_index_view');
+    		//warrior_index_view.html(data);
+    		window.location.reload(true);
+
+    	}
+    	
+    }
+
+  
+  
+  
+  
+  
+  
 };

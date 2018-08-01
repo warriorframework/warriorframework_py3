@@ -36,18 +36,19 @@ def func_check(node, kw=False):
         if child != node and isinstance(child, ast.FunctionDef):
             # check for private method in action file
             if kw and child.name.startswith("_"):
-                print node.name, child.name, "should move to utils"
+                print(node.name, child.name, "should move to utils")
                 status = False
             tmp_status = func_check(child, kw)
             status &= tmp_status
         elif child != node and isinstance(child, ast.ClassDef):
             tmp_status = class_check(child, kw)
             status &= tmp_status
-        elif 'war_print_class.py' not in sys.argv[1] and isinstance(child, ast.Print):
+        elif 'war_print_class.py' not in sys.argv[1] and hasattr(child, "value") and\
+            hasattr(child.value, "func") and hasattr(child.value.func, "id") and child.value.func.id == "print":
             # check for print statement
             status = False
-            print "Please use print_Utils instead of print in {}: {}".format(
-                                                    sys.argv[1], child.lineno)
+            print("Please use print_Utils instead of print in {}: {}".format(
+                sys.argv[1], child.lineno))
         elif isinstance(child, ast.Return):
             # check for return statement
             have_return = True
@@ -58,13 +59,13 @@ def func_check(node, kw=False):
             substep_count -= 1
 
     if ast.get_docstring(node) is None:
-        print node.name, "doesn't contain any docstring"
+        print(node.name, "doesn't contain any docstring")
         status = False
     if kw and not have_return and node.name != "__init__":
-        print node.name, "doesn't contain a return statement"
+        print(node.name, "doesn't contain a return statement")
         status = False
     if kw and substep_count:
-        print node.name, "have non-pair pSubStepreport_substep_status"
+        print(node.name, "have non-pair pSubStepreport_substep_status")
         status = False
     return status
 
@@ -82,7 +83,7 @@ def class_check(node, kw=False):
     for child in ast.iter_child_nodes(node):
         if isinstance(child, ast.FunctionDef):
             if kw and child.name.startswith("_") and child.name != "__init__":
-                print node.name, child.name, "should move to utils"
+                print(node.name, child.name, "should move to utils")
                 status = False
             tmp_status = func_check(child, kw)
             status &= tmp_status
@@ -92,7 +93,7 @@ def class_check(node, kw=False):
 
     if ast.get_docstring(node) is None:
         # check for docstring
-        print node.name, "doesn't contain any docstring"
+        print(node.name, "doesn't contain any docstring")
         status = False
     return status
 
@@ -108,9 +109,9 @@ def main(kw=False):
     try:
         f = open(sys.argv[1])
     except IOError:
-        print "Can't find {}".format(sys.argv[1])
+        print("Can't find {}".format(sys.argv[1]))
         exit(0)
-    print sys.argv[1]
+    print(sys.argv[1])
     if "Actions/" in sys.argv:
         kw = True
     root = ast.parse(f.read())
@@ -121,7 +122,7 @@ def main(kw=False):
             status &= func_check(child, kw)
         elif isinstance(child, ast.ClassDef):
             status &= class_check(child, kw)
-        elif isinstance(child, ast.Expr):
+        elif isinstance(child, ast.Expr) and hasattr(child.value, "s"):
             license_text = \
 '''
 Copyright 2017, Fujitsu Network Communications, Inc.
@@ -139,15 +140,15 @@ limitations under the License.
                 have_license = True
 
     if not have_license:
-        print "file doesn't have license text"
+        print("file doesn't have license text")
 
     status &= have_license
     return status
 
 if __name__ == "__main__":
     if main():
-        print "PASS"
+        print("PASS")
         exit(0)
     else:
-        print "FAIL"
+        print("FAIL")
         exit(1)
