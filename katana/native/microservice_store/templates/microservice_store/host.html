@@ -63,33 +63,63 @@
                                 </div>
                        </td>
                 </tr>
-                <tr>
-                        <td>
-                                <div class="form-group">
-                                        <input class="form-control" key="bind_host_interface" value="" required/>
-                                        <label class="form-control-placeholder">Bind Host Interface</label>
-                                </div>
-                        </td>
-                        <td>
-                                <div class="form-group">
-                                        <input class="form-control" key="bind_host_port" value="" required/>
-                                        <label class="form-control-placeholder">Bind Hosts Ports</label>
-                                </div>
-                        </td>
+                <!--<tr>-->
+                        <!--<td>-->
+                                <!--<div class="form-group">-->
+                                        <!--<input class="form-control" key="bind_host_interface" value="" required/>-->
+                                        <!--<label class="form-control-placeholder">Bind Host Interface</label>-->
+                                <!--</div>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                                <!--<div class="form-group">-->
+                                        <!--<input class="form-control" key="bind_host_port" value="" required/>-->
+                                        <!--<label class="form-control-placeholder">Bind Hosts Ports</label>-->
+                                <!--</div>-->
+                        <!--</td>-->
+                <!--</tr>-->
+                <!--<tr class="microservice kubernetes_deployment_details" style="display: none">-->
+                        <!--<td>-->
+                                <!--<div class="form-group">-->
+                                        <!--<input class="form-control" key="pod_name" value="" required/>-->
+                                        <!--<label class="form-control-placeholder">Pod</label>-->
+                                <!--</div>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                                <!--<div class="form-group">-->
+                                        <!--<input class="form-control" key="replicas" value="" required/>-->
+                                        <!--<label class="form-control-placeholder">Replicas</label>-->
+                                <!--</div>-->
+                        <!--</td>-->
+                <!--</tr>-->
+                <tr class="microservice docker_deployment_details" style="display: none">
+                        <!--<td>-->
+                                <!--<div class="form-group">-->
+                                        <!--<input class="form-control" key="bind_host_interface" value="" required/>-->
+                                        <!--<label class="form-control-placeholder">Bind Host Interface</label>-->
+                                <!--</div>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                                <!--<div class="form-group">-->
+                                        <!--<input class="form-control" key="bind_host_port" value="" required/>-->
+                                        <!--<label class="form-control-placeholder">Bind Hosts Ports</label>-->
+                                <!--</div>-->
+                        <!--</td>-->
+                        {% include 'microservice_store/docker.html' %}
                 </tr>
                 <tr class="microservice kubernetes_deployment_details" style="display: none">
-                        <td>
-                                <div class="form-group">
-                                        <input class="form-control" key="pod_name" value="" required/>
-                                        <label class="form-control-placeholder">Pod</label>
-                                </div>
-                        </td>
-                        <td>
-                                <div class="form-group">
-                                        <input class="form-control" key="replicas" value="" required/>
-                                        <label class="form-control-placeholder">Replicas</label>
-                                </div>
-                        </td>
+                        <!--<td>-->
+                                <!--<div class="form-group">-->
+                                        <!--<input class="form-control" key="pod_name" value="" required/>-->
+                                        <!--<label class="form-control-placeholder">Pod</label>-->
+                                <!--</div>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                                <!--<div class="form-group">-->
+                                        <!--<input class="form-control" key="replicas" value="" required/>-->
+                                        <!--<label class="form-control-placeholder">Replicas</label>-->
+                                <!--</div>-->
+                        <!--</td>-->
+                        {% include 'microservice_store/kubernetes.html' %}
                 </tr>
         </table>
 

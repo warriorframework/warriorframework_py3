@@ -3,9 +3,9 @@
 <configuration>
     <registry name="registry">
         <args name="args"
-              address=""
-              image=""
-              just_image=""
+              address="index.docker.io"
+              image="diginc/pi-hole"
+              just_image="diginc/pi-hole"
         />
     </registry>
     <host name="host">

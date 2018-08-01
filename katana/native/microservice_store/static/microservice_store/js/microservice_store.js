@@ -73,8 +73,10 @@ var microservice = {
     deployment_details: function(){
         if($(this).val() == "docker"){
             $(".microservice.kubernetes_deployment_details").hide();
+            $(".microservice.docker_deployment_details").show();
         }else if($(this).val() == "kubernetes"){
             $(".microservice.kubernetes_deployment_details").show();
+            $(".microservice.docker_deployment_details").hide();
         }
     },
 

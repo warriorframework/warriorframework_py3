@@ -40,9 +40,7 @@ def index(request):
     :param request:
     :return:
     """
-    context = {
-
-    }
+    context = {}
     template = "microservice_store/index.html"
     return render(request, template, context)
 
