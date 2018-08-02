@@ -146,6 +146,10 @@ var file_manager = {
                         katana.openAlert({'heading': 'File Transfer Result',
                                 'text': "Connection Closed. Transfer Aborted!"});
                    }
+                   else if (result.includes('Connection refused')){
+                        katana.openAlert({'heading': 'File Transfer Result',
+                                'text': "Connection Refused! FTP Server might not be up on the Destination"});
+                   }
                    else if (result.includes("Could Not Change to Destination Directory Successfully")) {
                         katana.openAlert({'heading': 'File Transfer Result',
                             'text': "Failed to change to Destination Directory. Such a directory might not exist"});
@@ -212,6 +216,10 @@ var file_manager = {
                         }
                         katana.openAlert({'heading': 'File Transfer Result',
                                 'text': result_error});
+                   }
+                   else if (result.includes('Connection refused')){
+                        katana.openAlert({'heading': 'File Transfer Result',
+                                'text': "Connection Refused! SSH might not be up and running on the Destination"});
                    }
                    else
                         katana.openAlert({'heading': 'File Transfer Result',
