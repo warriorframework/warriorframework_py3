@@ -15,6 +15,7 @@ limitations under the License.
 import os
 import re
 import ast
+import copy
 import operator as op
 from collections import OrderedDict
 from io import IOBase
@@ -421,13 +422,6 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
 
             td_iter_obj = TestDataIterations()
             details_dict, cmd_loc_list = td_iter_obj.resolve_iteration_patterns(details_dict)
-            iter_type = testdata.get('iter_type', None)
-            # Type-2 iteration - per_td_block
-            if iter_type == "per_td_block":
-                details_dict, cmd_loc_list = td_iter_obj.repeat_per_td_block(
-                                                details_dict, cmd_loc_list)
-                details_dict = td_iter_obj.arrange_per_td_block(details_dict,
-                                                                cmd_loc_list)
 
             # List substitution happens after iteration because
             # list sub cannot recognize the + sign in iteration
@@ -436,6 +430,25 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
                                                                 start_pat, end_pat)
             td_obj.list_substitution(details_dict, varconfigfile, cmd_list_substituted,
                                      verify_text_substituted, start_pat, end_pat)
+
+            # Update 'cmd_loc_list' based on list substitution, this is
+            # required for per_td_block iteration
+            ref_cmd_loc_list = copy.deepcopy(cmd_loc_list)
+            for i in range(len(cmd_loc_list)-1):
+                for j in range(ref_cmd_loc_list[i], ref_cmd_loc_list[i+1]):
+                    if cmd_list_substituted[j]:
+                        pos = i+1
+                        for _ in range(len(cmd_loc_list[i+1:])):
+                            cmd_loc_list[pos] = cmd_loc_list[pos] + cmd_list_substituted[j] - 1
+                            pos += 1
+
+            iter_type = testdata.get('iter_type', None)
+            # Type-2 iteration - per_td_block
+            if iter_type == "per_td_block":
+                details_dict, cmd_loc_list = td_iter_obj.repeat_per_td_block(
+                                                details_dict, cmd_loc_list)
+                details_dict = td_iter_obj.arrange_per_td_block(details_dict,
+                                                                cmd_loc_list)
 
             details_dict = td_obj.varsub_varconfig_substitutions(
                             details_dict, vc_file=varconfigfile, var_sub=None,
@@ -1050,7 +1063,7 @@ def verify_data(expected, key, data_type='str', comparison='eq'):
     return result, value
 
 
-def verify_arith_exp(expression, expected, comparison='eq'):
+def verify_arith_exp(expression, expected, comparison='eq', repo_key='exp_op'):
     """ Verify the output of the arithmetic expression matches the expected(float comparison)
         Note : Binary floating-point arithmetic holds many surprises.
         Please refer to link, https://docs.python.org/2/tutorial/floatingpoint.html
@@ -1070,10 +1083,22 @@ def verify_arith_exp(expression, expected, comparison='eq'):
                 ge - check if expression output is greater than or equal to expected
                 lt - check if expression output is lesser than expected
                 le - check if expression output is lesser than or equal to expected
+            4. repo_key: Name of the key to be used to save the expression_output
+               in the warrior data repository
+                Ex. If repo_key is 'exp_op' & expression_output is 10.0
+                    It will be stored in data_repo in the below format
+                    data_repo = {
+                                    ...
+                                    verify_arith_exp: {'exp_op': 10.0},
+                                    ...
+                                }
+                    This value can be retrieved from data_repo using
+                    key : 'verify_arith_exp.exp_op'.
         :Returns:
             1. status(boolean)
     """
     status = True
+    expression_ouput = None
 
     # Customize power(exponentiation) fun to not to support the values greater
     # than 1000 to avoid high CPU/Memory usage
@@ -1149,6 +1174,15 @@ def verify_arith_exp(expression, expected, comparison='eq'):
             status = False
             print_info("Expression output does not satisfy the given condition: "
                        "'{0} {1} {2}'".format(expression_ouput, comparison, expected))
+
+    output_dict = get_object_from_datarepository('verify_arith_exp') \
+        if get_object_from_datarepository('verify_arith_exp') else {}
+
+    output_dict[repo_key] = expression_ouput
+    print_info("Expression output: {0} is stored in a Key: {1} of Warrior "
+               "data_repository".format(expression_ouput, 'verify_arith_exp.'+repo_key))
+    update_datarepository({'verify_arith_exp': output_dict})
+
     return status
 
 

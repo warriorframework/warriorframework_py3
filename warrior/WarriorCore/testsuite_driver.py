@@ -98,7 +98,14 @@ def get_suite_details(testsuite_filepath, data_repository, from_project,
 
     efile_obj = execution_files_class.ExecFilesClass(testsuite_filepath, "ts",
                                                      res_startdir, logs_startdir)
-    data_file = efile_obj.get_data_files()[0]
+    # First priority is given for data files specified via CLI
+    # Default datafiles: Given in the test suite globally.
+    # If no datafiles are specified at CLI or global level, error is thrown.
+    # At Suite level execution, step-wise datafiles are not considered.
+    if 'ow_datafile' in data_repository:
+        data_file = data_repository['ow_datafile']
+    else:
+        data_file = efile_obj.get_data_files()[0]
     suite_resultfile = efile_obj.resultfile
     suite_execution_dir = os.path.dirname(suite_resultfile)
     junit_resultfile = (Utils.file_Utils.getNameOnly(suite_resultfile) +
@@ -360,6 +367,12 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         # del data_repository["jobid"]
 
     print_suite_details_to_console(suite_repository, testsuite_filepath, junit_resultfile)
+    # Prints the path of result summary file at the beginning of execution
+    if data_repository['war_file_type'] == "Suite":
+        filename = os.path.basename(testsuite_filepath)
+        html_filepath = os.path.join(suite_repository['suite_execution_dir'],
+                                     Utils.file_Utils.getNameOnly(filename))+'.html'
+        print_info("HTML result file: {0}".format(html_filepath))
 
     if not from_project:
         data_repository["war_parallel"] = False

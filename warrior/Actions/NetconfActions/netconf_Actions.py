@@ -26,6 +26,7 @@ class NetconfActions(object):
     related to actions performed on basic netconf interface """
 
     def __init__(self):
+        """ Constructor for NetconfActions class """
         self.resultfile = Utils.config_Utils.resultfile
         self.datafile = Utils.config_Utils.datafile
         self.logsdir = Utils.config_Utils.logsdir
@@ -149,14 +150,14 @@ class NetconfActions(object):
             7. timeout = use if you want to set timeout while connecting
             8. allow_agent = enables querying SSH agent, if not provided the \
                default value is to allow.
-            9. look_for_keys = enables looking in the usual locations for ssh keys,\
-	       if value is not provided the default value is to look for keys.
-           10. unknown_host_cb = This would be used when the server host key is not \
-	       recognized.
+            9. look_for_keys = enables looking in the usual locations for ssh keys,
+               if value is not provided the default value is to look for keys.
+           10. unknown_host_cb = This would be used when the server host key is not
+               recognized.
            11. key_filename = where the private key can be found.
            12. ssh_config = Enables parsing of OpenSSH configuration file.
-           13. device_params = netconf client device name, by default the name \
-	       "default" is used.
+           13. device_params = netconf client device name, by default the name
+               "default" is used.
 
         :Arguments:
             1. system_name(string) = Name of the system from the input datafile.
@@ -166,15 +167,11 @@ class NetconfActions(object):
             1. status(bool)= True / False
             2. session_id (dict element)= key, value
 
-
-        """
-
-        """
         :DESCRIPTION:
-	     This Keyword is used to connect to the netconf interface of the system.
-             The keyword upon executing saves the System_name and Session_id,\
-             which can be used by all subsequent keywords in the test
-	     to interact with the system through netconf interface.
+            This Keyword is used to connect to the netconf interface of the system.
+            The keyword upon executing saves the System_name and Session_id,
+            which can be used by all subsequent keywords in the test
+            to interact with the system through netconf interface.
         """
         wdesc = "Connect to the netconf port of the system and creates a session"
         pSubStep(wdesc)
@@ -188,18 +185,22 @@ class NetconfActions(object):
         pNote(system_name)
         pNote(Utils.file_Utils.getDateTime())
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
-        output_dict[session_id] = self.netconf_object
         status = self.netconf_object.open(session_credentials)
 
         time.sleep(1)
         if status:
-            output_dict["netconf_session_id"] = self.netconf_object.session_id
-            pNote("netconf session-id = %s" % self.netconf_object.session_id)
             temp = self.netconf_object.session_id
             if temp is None:
                 status = False
+            else:
+                output_dict["netconf_session_id"] = self.netconf_object.session_id
+                pNote("netconf session-id = %s" % self.netconf_object.session_id)
+                output_dict[session_id] = self.netconf_object
         report_substep_status(status)
-        return status, output_dict
+        if output_dict:
+            return status, output_dict
+        else:
+            return status
 
     def close_netconf(self, system_name, session_name=None):
         """
@@ -225,8 +226,7 @@ class NetconfActions(object):
         pNote("close session-id=%s" % netconf_session_id)
         reply = netconf_object.close()
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('close-session: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -268,8 +268,7 @@ class NetconfActions(object):
         reply = netconf_object.get_config(
             datastore, filter_string, filter_type)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('get-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -306,8 +305,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.copy_config(source, target)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('copy-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -340,8 +338,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.delete_config(datastore)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('delete-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -374,8 +371,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.discard_changes()
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('discard-changes: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -478,8 +474,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.commit(confirmed, timeout, persist, persist_id)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('commit: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -513,8 +508,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.lock(datastore)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('lock: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -548,8 +542,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.unlock(datastore)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('unlock: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -585,8 +578,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.get(filter_string, filter_type)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('get: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -620,8 +612,7 @@ class NetconfActions(object):
             netconf_session_id = "0"
         reply = netconf_object.kill_session(netconf_session_id)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('kill-session: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -653,8 +644,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.validate(datastore)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('validate: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -702,8 +692,7 @@ class NetconfActions(object):
         if netconf_object.isCOMPLD:
             status = True
             if reply:
-                reply = parseString(reply).toprettyxml(
-                    indent="  ", encoding="UTF-8")
+                reply = parseString(reply).toprettyxml(indent="  ")
             pNote('edit-config: Reply= {}'.format(reply))
         else:
             pNote('edit-config: Reply= {}'.format(reply))
@@ -750,8 +739,7 @@ class NetconfActions(object):
                                                    start_time,
                                                    stop_time)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('create-subscription: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -905,8 +893,7 @@ class NetconfActions(object):
             session_id)
         reply = netconf_object.cancel_commit(persist_id)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('cancel-commit: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
@@ -982,8 +969,7 @@ class NetconfActions(object):
         reply = netconf_object.get_schema(
             identifier, version_number, format_type)
         if reply:
-            reply = parseString(reply).toprettyxml(
-                indent="  ", encoding="UTF-8")
+            reply = parseString(reply).toprettyxml(indent="  ")
         pNote('get-schema: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True

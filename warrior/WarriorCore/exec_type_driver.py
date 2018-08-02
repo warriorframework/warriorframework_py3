@@ -134,6 +134,7 @@ def int_split(expression_str):
             expression_str: a string of expression ex. 1 & 2 & 3
         :return:
             list of rules and logical symbols/words
+            ex. [1, "&", 2, "&", 3]
     """
     elements = expression_str.split()
     for ind, ele in enumerate(elements):
@@ -212,10 +213,12 @@ def expression_split(src):
     """
         parse a string and return a list of pair with
         open and close parenthesis
+        The result is generated in the order that the inner-most and left-most
+        parenthesis will be at the start of the list, which logically should be processed first
         :param:
             src: input string
         :return:
-            list of pair
+            list of pair contains the index of ( and )
     """
     result = []
     open_index = []
@@ -242,13 +245,16 @@ def expression_parser(src, rules):
     closing = src.count(")")
     if opening != closing:
         raise Exception("expression: {} is invalid".format(src))
+    # Get indices of () in src
     exps = expression_split(src)
     status = None
+    # if no (), it's a simple expression
     if not exps:
         status = simple_exp_parser(src, rules)
     elif len(exps) == 1:
-        # handle expression outside of parenthesis
+        # First, calculate status inside the ()
         status = simple_exp_parser(src[exps[0][0]+1:exps[0][1]], rules)
+        # handle expression outside of parenthesis
         if exps[0][0] != 0:
             # Left side has expression
             status = special_exp_parser(" & "+src[:exps[0][0]-1], rules, True, status)
@@ -258,7 +264,7 @@ def expression_parser(src, rules):
     else:
         status = simple_exp_parser(src[exps[0][0]+1:exps[0][1]], rules)
         for x in range(len(exps) - 1):
-            # if next exp is in a same level paren
+            # if next exp is in a same level paren ()...()
             if exps[x+1][0] > exps[x][1]:
                 operator = src[exps[x][1]+1:exps[x+1][0]].strip()
                 if operator.lower() == "and" or operator == "&":
@@ -272,7 +278,7 @@ def expression_parser(src, rules):
                 else:
                     # invalid operator
                     raise Exception("invalid operator in expression string: {}".format(src))
-            # if next exp is a wrapper of the current paren
+            # if next exp is a wrapper of the current paren (...())
             else:
                 # Check the left side, should only have simple expression left
                 if src[exps[x+1][0]+1:exps[x][0]].strip() != "":
@@ -327,7 +333,7 @@ def decision_maker(exec_node):
 
     return status, action
 
-def main(step):
+def main(step, skip_invoked=True):
     """
         Entry function for execute nodes in a step
         Handle checking and call the logical decision functions
@@ -342,7 +348,6 @@ def main(step):
     if exec_node is None:
         return True, None
 
-    decision = True
     trigger_action = None
     exec_type = exec_node.get("ExecType", "")
     if exec_type.upper() == 'IF' or exec_type.upper() == 'IF NOT':
@@ -352,9 +357,12 @@ def main(step):
         trigger_action = "SKIP"
     elif exec_type.upper() == 'YES':
         decision = True
+    elif exec_type.upper() == "INVOKED":
+        decision = not skip_invoked
+        trigger_action = "SKIP_INVOKED"
     else:
         decision = False
-        supported_values = ['no', 'yes', 'if', 'if not']
+        supported_values = ['no', 'yes', 'if', 'if not', "invoked"]
         print_error("Unsupported value used for ExecType, supported values are:"
                     "{0} and case-insensitive".format(supported_values))
 

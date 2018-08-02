@@ -11,12 +11,12 @@ class Navigator(object):
 
     def get_katana_dir(self):
         """will get katanas main directory"""
-        katana_dir = get_parent_directory(__file__, 3) + os.sep + 'katana' + os.sep
+        katana_dir = get_parent_directory(os.path.abspath(__file__), 3) + os.sep + 'katana' + os.sep
         return katana_dir
 
     def get_warrior_dir(self):
         """will get warriors main directory"""
-        warrior_dir = get_parent_directory(__file__, 3) + os.sep + 'warrior' + os.sep
+        warrior_dir = get_parent_directory(os.path.abspath(__file__), 3) + os.sep + 'warrior' + os.sep
         return warrior_dir
 
     def get_engineer_name(self):
@@ -33,12 +33,12 @@ class Navigator(object):
       
     def get_warhorn_dir(self):
         """will get warriors main directory"""
-        warrior_dir = get_parent_directory(__file__, 3) + os.sep + 'warhorn' + os.sep
+        warrior_dir = get_parent_directory(os.path.abspath(__file__), 3) + os.sep + 'warhorn' + os.sep
         return warrior_dir
 
     def get_wf_version(self):
         """Gets the current warriorframework version"""
-        wf_dir = get_parent_directory(__file__, 3)
+        wf_dir = get_parent_directory(os.path.abspath(__file__), 3)
         version_file = join_path(wf_dir, "version.txt")
         with open(version_file, 'r') as f:
             data = f.readlines()
@@ -59,10 +59,10 @@ class Navigator(object):
         output, errors = p.communicate()
         if p.returncode != 0:
             print("-- An Error Occurred -- WarriorFramework versions could not be retrieved")
-            print("-- Output -- {0}".format(output))
-            print("-- Errors -- {0}".format(errors))
+            print("-- Output -- {0}".format(output.decode()))
+            print("-- Errors -- {0}".format(errors.decode()))
         else:
-            temp_list = output.strip().split("\n")
+            temp_list = output.decode().strip().split("\n")
             tags_list = set()
             for el in temp_list:
                 temp = el.split()[1].strip().split('/')[2]
@@ -80,7 +80,8 @@ class Navigator(object):
         """returns back the parent of given_dir and allows a user to run multipule times"""
         pass
 
-    def get_dir_tree_json(self, start_dir_path, dir_icon=None, file_icon='jstree-file', fl=False):
+    def get_dir_tree_json(self, start_dir_path, dir_icon=None, file_icon='jstree-file', fl=False,
+                          file_a_attr=None, dir_a_attr=None):
         """
         Takes an absolute path to a directory(start_dir_path)  as input and creates a
         json tree having the start_dir as the root.
@@ -121,14 +122,17 @@ class Navigator(object):
         """
         base_name = os.path.basename(start_dir_path)
         layout = {'text': base_name}
+        layout['data'] = {'path': start_dir_path}
         layout['li_attr'] = {'data-path': start_dir_path}
+        
         if not fl:
             layout["state"] = {"opened" : 'true' }
             fl = 'false'
         if os.path.isdir(start_dir_path):
             for x in os.listdir(start_dir_path):
                 try:
-                    children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl)
+                    layout['a_attr'] = dir_a_attr if dir_a_attr else {}
+                    children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl, file_a_attr=file_a_attr)
                 except IOError:
                     pass
                 except Exception as e:
@@ -140,4 +144,7 @@ class Navigator(object):
                         layout['children'] = [children]
         else:
             layout['icon'] = file_icon
+            layout['a_attr'] = file_a_attr if file_a_attr else {}
+        #print(layout)
+            
         return layout

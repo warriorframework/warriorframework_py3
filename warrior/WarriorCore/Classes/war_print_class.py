@@ -25,17 +25,21 @@ import sys
 import re
 
 
-def print_main(message, print_type, color_message=None, *kwargs):
+def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
     """
     if color_message is not None:
         print_string = print_type + " " + str(color_message)
     elif color_message is None:
         print_string = print_type + " " + str(message)
-    if len(kwargs) > 0:
-        print_string = (print_type + " " + str(message) + str(kwargs))
-    # print print_string
-    sys.stdout.write(print_string + '\n')
+    if args:
+        print_string = (print_type + " " + str(message) + str(args))
+    # set logging argument default to True, to write the message in the log file
+    if isinstance(sys.stdout, RedirectPrint):
+        sys.stdout.write((print_string + '\n'),
+                         logging=kwargs.get('logging', True))
+    else:
+        sys.stdout.write(print_string + '\n')
     sys.stdout.flush()
     from Framework.Utils.testcase_Utils import TCOBJ
     TCOBJ.p_note_level(message, print_type)
@@ -52,6 +56,7 @@ class RedirectPrint(object):
         self.stdout = sys.stdout
         self.console_full_log = None
         self.console_add = None
+        self.katana_obj = None
 
     def katana_console_log(self, katana_obj):
         """
@@ -59,6 +64,7 @@ class RedirectPrint(object):
         """
         self.console_full_log = katana_obj["console_full_log"]
         self.console_add = katana_obj["console_add"]
+        self.katana_obj = katana_obj
 
     def get_file(self, console_logfile):
         """If the console logfile is not None redirect sys.stdout to
@@ -68,20 +74,23 @@ class RedirectPrint(object):
         if self.file is not None:
             sys.stdout = self
 
-    def write(self, data):
+    def write(self, data, logging=True):
         """
         - Writes data to the sys.stdout
+        - Writes data to log file only if the logging is True
         - Removes the ansii escape chars before writing to file
         """
         self.stdout.write(data)
         ansi_escape = re.compile(r'\x1b[^m]*m')
         data = ansi_escape.sub('', data)
-        self.file.write(data)
-        self.file.flush()
-        if self.console_full_log is not None:
-            self.console_full_log += data
-        if self.console_add is not None:
-            self.console_add += data
+        # write to log file if logging is set to True
+        if logging is True:
+            self.file.write(data)
+            self.file.flush()
+        if self.katana_obj is not None and "console_full_log" in self.katana_obj\
+        and "console_add" in self.katana_obj:
+            self.katana_obj["console_full_log"] += data
+            self.katana_obj["console_add"] += data
 
     def isatty(self):
         """Check if sys.stdout is a tty """

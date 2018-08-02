@@ -1,0 +1,10 @@
+{% load staticfiles %}
+
+
+<div class="csrf-container">{% csrf_token %}</div>
+<div class="title">Login</div>
+<div class="fields">
+	<div class="field"><label>Username:</label><input key="username" type="text" placeholder="username" id="username"></div>
+	<div class="field"><label>Password:</label><input key="password" type="password" placeholder="Password" id="password"></div>
+</div>
+<div class="button" katana-click="katana.userAuth.login()">Login</div>	
