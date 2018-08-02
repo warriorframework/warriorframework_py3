@@ -7,6 +7,7 @@ import json
 import subprocess
 
 from utils.navigator_util import Navigator
+from utils.command_options_utils import DockerRunCommandOptions
 
 MOCK_DATA = {
     "host": {
@@ -40,7 +41,11 @@ def index(request):
     :param request:
     :return:
     """
-    context = {}
+    docker_options = DockerRunCommandOptions(cmd="docker run --help", start="Options:", end=None)
+    context = {
+        "docker_options": docker_options.get_options_json(),
+        "kubernetes_options": []
+    }
     template = "microservice_store/index.html"
     return render(request, template, context)
 

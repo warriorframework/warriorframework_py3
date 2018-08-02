@@ -1,12 +1,20 @@
-<!--<td>-->
-        <!--<div class="form-group">-->
-                <!--<input class="form-control" key="bind_host_interface" value="" required/>-->
-                <!--<label class="form-control-placeholder">Bind Host Interface</label>-->
-        <!--</div>-->
-<!--</td>-->
-<!--<td>-->
-        <!--<div class="form-group">-->
-                <!--<input class="form-control" key="bind_host_port" value="" required/>-->
-                <!--<label class="form-control-placeholder">Bind Hosts Ports</label>-->
-        <!--</div>-->
-<!--</td>-->
+
+<tr class="microservice docker_deployment_details options_head" style="display: none; font-weight: bold">
+        <td>
+                &nbsp;&nbsp;Flag
+        </td>
+        <td>
+                &nbsp;&nbsp;Description
+        </td>
+</tr>
+
+{% for option in docker_options %}
+<tr class="microservice docker_deployment_details options" style="display: none">
+        <td>
+                &nbsp;&nbsp;"{{ option.name }}"
+        </td>
+        <td>
+                &nbsp;&nbsp;"{{ option.description }}"
+        </td>
+</tr>
+{% endfor %}

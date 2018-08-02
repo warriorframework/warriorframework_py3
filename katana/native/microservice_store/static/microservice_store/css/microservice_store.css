@@ -286,8 +286,21 @@ table.microservice{
     margin-bottom: 30px;
 }
 
-table.microservice tr{
+table.microservice tr.options{
+    height: 50px;
+    line-height: 50px;
+    border-left: 1px solid #ececed;
+    border-right: 1px solid #ececed;
+}
 
+table.microservice tr.options_head{
+    height: 50px;
+    line-height: 50px;
+    border: 1px solid #ececed;
+}
+
+table.microservice tr.options:nth-child(even){
+    background: #ececed;
 }
 
 table.microservice tr:first-child{
