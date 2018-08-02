@@ -1347,5 +1347,66 @@ var katana = {
           }
           return path;
         }
-      }
+    },
+    
+    //USER AUTHENTICATION
+    userAuth: {
+    	
+    	login: function(){
+    		// login a user
+    		console.log('login a user');
+    		
+    		// make a http post and send the username, password to the server
+    		//post: function(url, csrf, toSend, callBack, fallBack, callBackData, fallBackData )
+    		
+    		var elem = $('#warrior_login');
+    		var username = $('#username').val();
+    		var password = $('#password').val();
+    		var data_to_send = JSON.stringify({'username': username, 'password': password, 'action': 'login'})
+    		katana.templateAPI.post.call(elem, null, null, data_to_send, katana.userAuth.loginCallBacks)
+    		
+    	},
+    	logout: function(){
+    		// login a user
+    		var logout = $('#warrior_logout')
+    		katana.templateAPI.get.call(logout, {
+    											'url': null, 
+    											'toSend': JSON.stringify({'action': 'logout'}), 
+    											'callBack': katana.userAuth.getLogoutPage
+    											}
+    									)  
+    		
+    	},
+    	loginCallBacks: function(data){
+    		// decide the pages/content to be displayed based on 
+    		// the result of call back
+    		//data = JSON.parse(data);
+    		//window.location = redirect_url;
+    		//katana.templateAPI.get.call(elem, {'url':redirect_url, 'toSend': JSON.stringify({'action': 'redirect_to_home_page'}) , 'callBack': katana.userAuth.getHomePage})
+    		// since since warrior is an spa we can handle login, home, logout screens using a single template and based on the user.is_authenticated value
+    		// client just needs to reload the page and the server will display the necessary values based on the state of user
+    		console.log(data);
+    		var elem = $('#warrior_login');
+    		var auth_status = data['auth_status'];
+    		var msg = data['msg'];
+    		if(auth_status === 1){ window.location.reload();}
+    		else{katana.openAlert({"alert_type": "warning", "heading": "Login failed", "text": msg})};    		
+    		
+    	},    	
+    	getHomePage: function(data){
+    		// on successful authenticaion build the home page for the user
+    		console.log(data);
+    		var warrior_index_view = $('#warrior_index_view');
+    		warrior_index_view.html(data);
+    		katana.setActiveTab();    		
+    	},    	
+    	getLogoutPage: function(data){
+    		// on successful authenticaion build the home page for the user
+    		//var warrior_index_view = $('#warrior_index_view');
+    		//warrior_index_view.html(data);
+    		window.location.reload(true);
+
+    	}
+    	
+    }
 };

@@ -17,11 +17,13 @@ import sys
 import time
 import subprocess
 import getpass
-import xml
+import xml.etree.ElementTree as ET
 import Tools
+import ast
+from distutils.version import LooseVersion
 from Framework import Utils
 from Framework.Utils.print_Utils import print_info, print_debug,\
- print_warning, print_exception, print_error
+ print_warning, print_exception, print_error, print_without_logging
 from Framework.Utils.testcase_Utils import pNote
 from Framework.ClassUtils import database_utils_class
 from Framework.ClassUtils.WNetwork.loging import ThreadedLog
@@ -347,7 +349,7 @@ class WarriorCli(object):
                 patterns = []
                 # error out if any of the key element can not be retrieved
                 for key, resp_key in itertools.zip_longest(keys, resp_keys):
-                    if isinstance(resp_key, xml.etree.ElementTree.Element):
+                    if isinstance(resp_key, ET.Element):
                         patterns.append(resp_key.get("resp_pattern_req"))
                     elif isinstance(resp_key, str):
                         print_error("There is no pattern element for key '{}' corresponding"
@@ -615,7 +617,7 @@ class WarriorCli(object):
         if sleeptime > 0:
             pNote("Sleep time of '{0} seconds' requested post command "
                   "execution".format(sleeptime))
-            time.sleep(sleeptime)
+            Utils.datetime_utils.wait_for_timeout(sleeptime)
 
         try:
             remote_resp_dict = self.get_response_dict(
@@ -855,15 +857,26 @@ class WarriorCli(object):
 
     @staticmethod
     def pexpect_spawn_with_env(pexpect_obj, command, timeout, escape=False,
-                               env=None):
+                               env=None, pty_dimensions=None):
+        """ spawn a pexpect object with environment & pty_dimensions variables """
 
-        """ spawn a pexpect object with environment variable """
         if env is None:
             env = {}
+
+        kwargs = {'timeout': int(timeout)}
+
         if str(escape).lower() == "yes" or str(escape).lower() == "true":
-            child = pexpect_obj.spawn(command, timeout=int(timeout), env=env)
-        else:
-            child = pexpect_obj.spawn(command, timeout=int(timeout))
+            kwargs['env'] = env
+
+        if pty_dimensions is not None:
+            if LooseVersion(pexpect_obj.__version__) < LooseVersion('4.0'):
+                print_warning("Setting pseudo-terminal dimensions is not supported in "
+                              "pexpect versions less than 4.0(installed pexpect "
+                              "version: {})".format(pexpect_obj.__version__))
+            else:
+                kwargs['dimensions'] = pty_dimensions
+
+        child = pexpect_obj.spawn(command, **kwargs)
         return child
 
     @staticmethod
@@ -1255,6 +1268,9 @@ class PexpectConnect(object):
                 10. escape(string) = true/false(to escape color codes by
                                      setting TERM as dump)
                 11. conn_type = session type(ssh/telnet)
+                12. pty_dimensions(tuple) = size of the pseudo-terminal
+                                            specified as a two-entry
+                                            tuple(rows, columns)
          """
 
         self.pexpect = None
@@ -1276,6 +1292,20 @@ class PexpectConnect(object):
         self.conn_options = credentials.get('conn_options', '')
         self.custom_keystroke = credentials.get('custom_keystroke', '')
         self.escape = credentials.get('escape', False)
+        self.pty_dimensions = credentials.get('pty_dimensions', None)
+        # convert pty_dimensions value from string to tuple
+        if self.pty_dimensions and isinstance(self.pty_dimensions, str):
+            err_msg = ("Invalid value '{}' given for pty_dimensions "
+                       "argument, it only accepts tuple value"
+                       "(It will be default to None).")
+            try:
+                self.pty_dimensions = ast.literal_eval(self.pty_dimensions)
+            except Exception:
+                print_warning(err_msg.format(self.pty_dimensions))
+            else:
+                if not isinstance(self.pty_dimensions, tuple):
+                    print_warning(err_msg.format(self.pty_dimensions))
+                    self.pty_dimensions = None
 
     def __import_pexpect(self):
         """Import the pexpect module """
@@ -1321,7 +1351,9 @@ class PexpectConnect(object):
         print_debug("connectSSH: cmd = %s" % command)
         child = WarriorCli.pexpect_spawn_with_env(self.pexpect, command,
                                                   self.timeout,
-                                                  env={"TERM": "dumb"})
+                                                  escape=self.escape,
+                                                  env={"TERM": "dumb"},
+                                                  pty_dimensions=self.pty_dimensions)
 
         child.logfile = sys.stdout
 
@@ -1380,8 +1412,11 @@ class PexpectConnect(object):
                     print_debug("SSH Host Key is changed - Remove it from "
                                 "known_hosts file : cmd = %s" % cmd)
                     subprocess.call(cmd, shell=True)
-                    child = self.pexpect.spawn(command,
-                                               timeout=int(self.timeout))
+                    child = WarriorCli.pexpect_spawn_with_env(self.pexpect, command,
+                                                              self.timeout,
+                                                              escape=self.escape,
+                                                              env={"TERM": "dumb"},
+                                                              pty_dimensions=self.pty_dimensions)
                     print_debug("ReconnectSSH: cmd = %s" % command)
         except Exception as exception:
             print_exception(exception)
@@ -1408,7 +1443,9 @@ class PexpectConnect(object):
 
         child = WarriorCli.pexpect_spawn_with_env(self.pexpect, command,
                                                   self.timeout,
-                                                  env={"TERM": "dumb"})
+                                                  env={"TERM": "dumb"},
+                                                  escape=self.escape,
+                                                  pty_dimensions=self.pty_dimensions)
 
         try:
             child.logfile = open(self.logfile, "ab")
@@ -1540,9 +1577,9 @@ class PexpectConnect(object):
                         status = "ERROR"
                         break
                     elif result == 2:
-                        tmsg1 = "[{0}] Command timed out, command will be " \
-                            "marked as error".format(end_time)
-                        tmsg2 = "Will wait 60 more seconds to get end " \
+                        tmsg1 = "[{0}] Command timed out with {1} seconds, command will be " \
+                            "marked as error".format(end_time, timeout)
+                        tmsg2 = "As a best effort, warrior will wait 60 more seconds to get end " \
                             "prompt '{0}'".format(end_prompt)
                         tmsg3 = "Irrespective of whether end prompt is " \
                             "received or not command will be marked as error" \
@@ -1555,7 +1592,7 @@ class PexpectConnect(object):
                             tstamp = Utils.datetime_utils.\
                                 get_current_timestamp()
                         cmd_timedout = True
-                        status = "ERROR"
+                        status = "ERROR"  
                         tdelta = Utils.datetime_utils.get_time_delta(tstamp)
                         if int(tdelta) >= 60:
                             msg = "[{0}] Did not find end prompt '{1}' even " \
