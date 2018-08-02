@@ -22,6 +22,7 @@ urlpatterns = [
     url(r'^katana/', include('wui.core.urls')),
     url(r'^$', RedirectView.as_view(url='/katana/')),
     url(r'^katana/settings/', include('native.settings.urls')),
+    url(r'^katana/file_manager/', include('native.file_manager.urls')),
     url(r'^katana/wapp_management/', include('native.wapp_management.urls')),
     url(r'^katana/wappstore/', include('native.wappstore.urls')),
     url(r'^katana/wdf/', include('wapps.wdf_edit.urls')),
