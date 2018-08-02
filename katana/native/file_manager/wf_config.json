@@ -1,0 +1,12 @@
+{
+  "icon": "folder",
+  "color": "light blue",
+  "developer": "Warrior Framework",
+  "description": "This is the Native File Manager App",
+  "app" : {"name" : "File Manager", "url" : "/katana/file_manager/", "include": "native.file_manager.urls"},
+  "warrior-compatibility": ":warrior-3.7.0",
+  "warrior-incompatibility": "",
+  "version": "1.0.0",
+  "permissions": "",
+  "availability": ""
+}

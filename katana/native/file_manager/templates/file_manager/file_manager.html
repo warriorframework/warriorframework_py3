@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>File Manager</title>
+
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'file_manager/css/file_manager.css' %}">
+
+</head>
+
+<body>
+
+<div class="tool-bar">
+    <div class="title"></div>
+     <button class="button" katana-click="file_manager.landing.rename"><i class="fa fa-pencil-square-o fa-lg"></i>&nbsp;Rename</button>
+    <button class="button" katana-click="file_manager.landing.delete_file"><i class="fa fa-trash fa-lg"></i>&nbsp;Delete</button>
+    <button class="button" katana-click="file_manager.landing.transfer"><i class="fa fa-clone fa-lg"></i>&nbsp;Transfer</button>
+    <button class="button" katana-click="file_manager.landing.refresh"><i class="fa fa-refresh fa-lg"></i>&nbsp;Refresh</button>
+</div>
+
+
+<div id="body-div" auto-init="file_manager.landing.init">
+
+
+    <div class="file-manager-input" id="input-div" style="display:none">
+
+        <div class="form-row file-manager-transfer-close">
+            <button class="button" katana-click="file_manager.transfer_files.close"><i class="fa fa-close"></i></button>
+            <button class="button" katana-click="file_manager.transfer_files.help"><i class="fa fa-info-circle"></i></button>
+             <button class="button" katana-click="file_manager.transfer_files.save"><i class="fa fa-user-plus"></i></button>
+
+        </div>
+        <div class="form-row file-manager-transfer-user-profile">
+            <div class="container">
+            <label for="user_profile">User Profile</label>
+            <select class="custom-select custom-select-sm" id="user_profile" katana-change="file_manager.transfer_files.input_show">
+                                <option selected>None</option>
+                                <!--<option value="FTP">FTP</option>-->
+            </select>
+        </div>
+        </div>
+
+        <div class="container">
+            <form>
+                <div class="form-group">
+                    <div class="form-row file-manager-transfer-row1">
+                        <div class="form-group col-md-6 mb-1 field">
+                            <label for="username">Username</label>
+                            <input validation-check="file_manager.validations.validateName" class="form-control form-control-sm" type="text" id="username" name="username"
+                                   placeholder="Enter Username" required>
+                        </div>
+                        <div class="form-group col-md-6 mb-2 field">
+                            <label for="password">Password</label>
+                            <input  validation-check="file_manager.validaitons.validateIfEmpty" class="form-control form-control-sm" type="password" id="password" name="password"
+                                   placeholder="Enter Password" required>
+                        </div>
+                    </div>
+                    <div class="form-row file-manager-transfer-row2">
+                        <div class="form-group col-md-6 mb-1 field">
+                            <label for="host">Host</label>
+                            <input validation-check="file_manager.validations.validateIP" class="form-control form-control-sm" type="text" id="host" name="host"
+                                   placeholder="Enter Host IP address" required>
+                        </div>
+                        <div class="form-group col-md-6 mb-2 field">
+                            <label for="port">Port</label>
+                            <input validation-check="file_manager.validations.validatePort" class="form-control form-control-sm" type="number" id="port" name="port"
+                                   placeholder="FTP=21 SCP=22" required>
+                        </div>
+                    </div>
+                    <div class="form-row file-manager-transfer-row3">
+                        <div class="form-group col-md-12 mb-1">
+                            <label for="destdir">Destination Directory</label>
+                            <input class="form-control form-control-sm" type="text" id="destdir" name="destdir"
+                                   placeholder="/Destination_Directory from Root_Directory">
+                        </div>
+                    </div>
+                    <div class="form-row file-manager-transfer-row4 field">
+                        <div validation-check="file_manager.validations.validationIfEmpty" class="form-group col-md-12 mb-1">
+                            <label for="dropdown">Transfer Protocol</label>
+                            <select class="custom-select custom-select-lg" id="dropdown" required>
+                                <option selected>FTP</option>
+                                <option value="SCP">SCP</option>
+                            </select>
+                        </div>
+                        <sub class="file-manager-scptext"> Partial Folder Transfer cannot be done with SCP </sub>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="file-manager-transfer-send">
+            <button class="button" id="send" katana-click="file_manager.transfer_files.send"><i
+                    class="fa fa-send">&nbsp;Send</i>
+            </button>
+        </div>
+
+
+    </div>
+
+    <div class="file-manger-tree-div" id="tree-div"></div>
+
+
+</div>
+
+</body>
+</html>
