@@ -93,31 +93,17 @@ class DockerRunCommandOptions(CommandOptions):
                 si = i
             if self.end is not None and re.match(self.end, l):
                 ei = i
-        i = 0
         t = self.response[si+1: ei]
-        # flags = [i for i, o in enumerate(t) if "--" in o]
-        res = "".join(t)
-        # while i < len(t)-2:
-        #     # o = t[i]
-        #     # while True:
-        #     #     i += 1
-        #     #     if "--" not in t[i]:
-        #     if "--" in t[i] and "--" not in t[i+1]:
-        #         self.options.append(t[i].replace('\n', ' ').replace('\r', ' ') + t[i+1].strip(" "))
-        #         i += 2
-        #     else:
-        #         self.options.append(t[i])
-        #         i += 1
-        # res = "".join(self.options)
-        res = res.replace('\n', '').replace('\t', '')
-        option1 = CommandOptions.Option("--add-host list",
-                                        "",
-                                        "Add a custom host-to-IP mapping (host:ip)")
-        option2 = CommandOptions.Option("--add-host list",
-                                        "",
-                                        "Add a custom host-to-IP mapping (host:ip)")
-        self.options.append(option1)
-        self.options.append(option2)
+        for i, o in enumerate(t):
+            if "--" in o:
+                o = re.sub(' {2,}', '@', o.strip())
+                o = o.split("@")
+                f = o[0]
+                if ',' in f:
+                    f = f.split(",")[1]
+                f = f.strip()
+                option = CommandOptions.Option(f.split(" ")[0], "", o[1])
+                self.options.append(option)
 
 if __name__ == "__main__":
     drco = DockerRunCommandOptions(cmd="docker run --help", start="Options:", end=None)

@@ -1,20 +1,30 @@
 
 <tr class="microservice docker_deployment_details options_head" style="display: none; font-weight: bold">
         <td>
-                &nbsp;&nbsp;Flag
+                &nbsp;&nbsp;&nbsp;&nbsp;Flag
         </td>
         <td>
-                &nbsp;&nbsp;Description
+                &nbsp;&nbsp;&nbsp;&nbsp;Description
         </td>
 </tr>
 
 {% for option in docker_options %}
 <tr class="microservice docker_deployment_details options" style="display: none">
         <td>
-                &nbsp;&nbsp;"{{ option.name }}"
+                <!--<div class="options-group">-->
+                        <!--<label class="options-placeholder">{{ option.name }}</label>-->
+                        <!--<input class="options-control" key="" value=""/>-->
+                <!--</div>-->
+                <!--<div class="options-group">-->
+                        <!--<input class="options-control" key="" value=""/>-->
+                        <!--<label class="options-control-placeholder">&nbsp;&nbsp;{{ option.name }}</label>-->
+                <!--</div>-->
+                <!--<input class="options-control" key="" value=""/>-->
+                <input class="options-control" key="" value="" placeholder="{{option.name}}"/>
+
         </td>
         <td>
-                &nbsp;&nbsp;"{{ option.description }}"
+                <span title="{{ option.description }}"><b>{{ option.name }}</b> : {{ option.description }}</span>
         </td>
 </tr>
 {% endfor %}
