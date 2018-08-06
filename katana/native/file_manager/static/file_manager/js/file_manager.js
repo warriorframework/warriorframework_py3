@@ -22,7 +22,7 @@ var file_manager = {
        },
 
        rename: function () {
-            var node_selected = katana.$activeTab.find("#tree-div").jstree('get_selected', true);
+            var node_selected = katana.$activeTab.find("#tree-div").jstree('get_top_selected', true);
             var temp;
             var paths_selected = [];
             var files_name = [];
@@ -58,20 +58,41 @@ var file_manager = {
        },
 
        delete_file: function() {
-            var node_selected = katana.$activeTab.find("#tree-div").jstree('get_selected', true);
+            var node_selected = katana.$activeTab.find("#tree-div").jstree('get_top_selected', true);
+            var all_node_selected = katana.$activeTab.find("#tree-div").jstree('get_selected', true);
             var temp;
             var path_selected = [];
+            var files_name = [];
+            var all_path_selected = [];
             for (temp = 0; temp < node_selected.length; temp++) {
                 path_selected.push(node_selected[temp]["li_attr"]["data-path"])
+                files_name.push(node_selected[temp]["text"])
+            }
+            for (temp = 0; temp < all_node_selected.length; temp++) {
+                all_path_selected.push(all_node_selected[temp]["li_attr"]["data-path"])
             }
             $.ajax({
                 type: 'GET',
                 url: 'file_manager/delete_files/',
-                data: {"path" : path_selected }
+                data: {"path" : path_selected,
+                        "name" : files_name,
+                       "all_path" : all_path_selected
+                }
             }).done(function(data){
+            try {
+            var result = data.result
+            if (result.includes('Partial Folder')){
+                        katana.openAlert({'heading': 'Delete Result',
+                                'text': "Partial Folder Cannot be deleted! No Action taken!"});
+                   }
+
+            } catch {
+                    katana.openAlert({'heading': 'Delete Result',
+                                'text': "Success!"});
                     katana.$activeTab.find("#tree-div").jstree("destroy")
                     katana.jsTreeAPI.createJstree(katana.$activeTab.find('#tree-div'), data.data, true);
                     katana.$activeTab.find("#tree-div").jstree("refresh");
+                    }
             })
        },
 
@@ -188,7 +209,7 @@ var file_manager = {
                         type: 'GET',
                         url: 'file_manager/scp_files/',
                         data: {"path" : paths_selected,
-//                            "all_path": all_paths_selected,
+                            "all_path": all_paths_selected,
                             "file_name" : files_name,
                             "username" : username,
                             "password" : pwd,
@@ -207,6 +228,11 @@ var file_manager = {
                    else if (result.includes('Error in Changing Destination')){
                         katana.openAlert({'heading': 'File Transfer Result',
                                 'text': "Could Not Create Destination Directory!"});
+                   }
+                   else if (result.includes('Partial Folder')){
+                    katana.openAlert({'heading': 'File Transfer Result',
+                                'text': 'Partial Folder Cannot be transferred! No Action taken!'});
+
                    }
                    else if (result.includes('Transfer Error')){
                         for (temp = 0; temp < result.length; temp++) {

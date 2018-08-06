@@ -76,6 +76,7 @@ def transfer_file(ftp, path, name):
     fp = open(path, 'rb')
     try:
         ext = os.path.splitext(name)[1]
+        # check if the extension needs to be sent in binary mode. Default is ASCII mode.
         if ext == '.docx' or ext == '.doc':
             ftp.storbinary('STOR ' + name, fp)
         else:

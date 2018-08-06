@@ -4,7 +4,7 @@ import paramiko
 import scp
 from scp import SCPClient
 
-def scpfile(host, port, username, passwd, destdir, files_path, files_name):
+def scpfile(host, port, username, passwd, destdir, files_path, all_files_path, files_name):
     """
         The main SCP function which takes in input details and SCPs the files.
         A underlying SSH session is created over which the files are SCPed.
@@ -19,7 +19,9 @@ def scpfile(host, port, username, passwd, destdir, files_path, files_name):
         :param all_files_path: List of All the files/directories selected (due to down cascading)
         :return: Error message or list of files FTPed with status.
         """
+
     result = []
+
     try:
         ssh = paramiko.SSHClient()
         ssh.load_system_host_keys()
@@ -33,13 +35,17 @@ def scpfile(host, port, username, passwd, destdir, files_path, files_name):
         if 'Error' in result_destdir:
             return 'Error in Changing Destination'
 
+    if not check_partial_folder(files_path, files_name, all_files_path):
+        return 'Partial Folder Copy'
 
     try:
         scp = SCPClient(ssh.get_transport())
         for temp, temp_name in zip(files_path, files_name):
+            # flag = True
             try:
                 if os.path.isdir(temp):
-                    # It's a directory
+                    # It's a directory. Check for partial directory
+
                     if destdir =='':
                         if ' ' in temp_name:
                             temp_name = str(temp_name)
@@ -94,3 +100,33 @@ def change_destination(ssh, destdir):
         return 'Success'
     except:
         return 'Error in creating Destination Directory'
+
+def check_partial_folder(files_path, files_name, all_files_path):
+    """
+    Checks if the top level directory contains partially selected files
+    :param files_path: top level selected files path
+    :param files_name: top level selected name
+    :param all_files_path: all files' path which are selected
+    :return: boolean
+    """
+    print(files_path)
+    for temp, temp_name in zip(files_path, files_name):
+        try:
+            list = os.listdir(temp)
+            for element in list:
+                element_path = os.path.join(temp, element)
+                # print(element_path)
+                # if element_path is a directory, check for partial selection
+                if os.path.isdir(element_path):
+                    list_path = []
+                    list_path.append(element_path)
+                    list_item = []
+                    list_item.append(element)
+                    flag = check_partial_folder(list_path, list_item, all_files_path)
+                    if flag == False:
+                        return False
+                elif element_path not in all_files_path:
+                    return False
+        except:
+            print('File selected')
+    return True
