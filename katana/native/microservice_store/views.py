@@ -18,8 +18,8 @@ MOCK_DATA = {
         "end_prompt": "[arch@arch microservice_store]$"
     },
     "registry": {
-        "address": "fnc-docker-reg:3000",
-        "image": "opce-algo"
+        "address": "i",
+        "image": ""
     }
 }
 
@@ -85,22 +85,22 @@ def deploy(request):
     host = data["host"]
 
     if host["deployment_environment"] == "docker":
-        f  = "TC_microservices_host_docker_operations.xml"
+        f = "TC_microservices_host_docker_operations.xml"
     elif host["deployment_environment"] == "kubernetes":
         f = "TC_microservices_host_kubernetes_operations.xml"
 
     generate_host_system_data(data["host"])
 
-    if host["deployment_environment"] == "docker":
-        if host["bind_host_interface"].strip() != "":
-            host["bind_host_interface_port"] = "-p " + host["bind_host_interface"]
-            if host["bind_host_port"].strip() != "":
-                host["bind_host_interface_port"] += ":" + host["bind_host_port"]
-    elif host["deployment_environment"] == "kubernetes":
-        if host["bind_host_port"].strip() != "":
-            host["port_flag"] = "--port={}".format(host["bind_host_port"])
-        if host["replicas"].strip() != "":
-            host["replicas_flag"] = "--replicas={}".format(host["replicas"])
+    # if host["deployment_environment"] == "docker":
+    #     if host["bind_host_interface"].strip() != "":
+    #         host["bind_host_interface_port"] = "-p " + host["bind_host_interface"]
+    #         if host["bind_host_port"].strip() != "":
+    #             host["bind_host_interface_port"] += ":" + host["bind_host_port"]
+    # elif host["deployment_environment"] == "kubernetes":
+    #     if host["bind_host_port"].strip() != "":
+    #         host["port_flag"] = "--port={}".format(host["bind_host_port"])
+    #     if host["replicas"].strip() != "":
+    #         host["replicas_flag"] = "--replicas={}".format(host["replicas"])
 
     data["registry"]["just_image"] = data["registry"]["image"].split(":")[0]
 

@@ -1,30 +1,23 @@
 
-<tr class="microservice docker_deployment_details options_head" style="display: none; font-weight: bold">
-        <td>
-                &nbsp;&nbsp;&nbsp;&nbsp;Flag
-        </td>
-        <td>
-                &nbsp;&nbsp;&nbsp;&nbsp;Description
-        </td>
-</tr>
+<table class="microservice deployment_details docker_flag_section" style="display: none;">
+        <tr class="microservice docker_deployment_details flag head" style="font-weight: bold">
+                <td>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Flag
+                </td>
+                <td>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Description
+                </td>
+        </tr>
 
-{% for option in docker_options %}
-<tr class="microservice docker_deployment_details options" style="display: none">
-        <td>
-                <!--<div class="options-group">-->
-                        <!--<label class="options-placeholder">{{ option.name }}</label>-->
-                        <!--<input class="options-control" key="" value=""/>-->
-                <!--</div>-->
-                <!--<div class="options-group">-->
-                        <!--<input class="options-control" key="" value=""/>-->
-                        <!--<label class="options-control-placeholder">&nbsp;&nbsp;{{ option.name }}</label>-->
-                <!--</div>-->
-                <!--<input class="options-control" key="" value=""/>-->
-                <input class="options-control" key="" value="" placeholder="{{option.name}}"/>
+        {% for option in docker_options %}
+        <tr class="microservice docker_deployment_details flag">
+                <td>
+                        <input class="options-control" key="{{option.name}}" value="" placeholder="{{option.name}}"/>
 
-        </td>
-        <td>
-                <span title="{{ option.description }}"><b>{{ option.name }}</b> : {{ option.description }}</span>
-        </td>
-</tr>
-{% endfor %}
+                </td>
+                <td>
+                        <span title="{{ option.description }}"><b>{{ option.name }}</b> : {{ option.description }}</span>
+                </td>
+        </tr>
+        {% endfor %}
+</table>

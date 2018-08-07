@@ -44,7 +44,7 @@
     </testdata>
 
     <testdata execute="yes" title ="docker_run" >
-        <command send="docker run -d ${host.args.docker_bind_interface_port} ${registry.args.address}/${registry.args.image}"
+        <command send="docker run -d ${host.args.flags} ${registry.args.address}/${registry.args.image}"
                  end="${host.args.end_prompt}"/>
     </testdata>
 

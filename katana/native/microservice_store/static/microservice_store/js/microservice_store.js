@@ -200,10 +200,7 @@ var microservice = {
                     }
                     data[s][k] = v;
                 }
-                if(k == "bind_host_interface"){
-                    data[s][k] = v;
-                }
-                if(k == "bind_host_port"){
+                if(k == "flags"){
                     data[s][k] = v;
                 }
                 if(k == "pod_name"){
@@ -222,6 +219,84 @@ var microservice = {
 
     isEmpty(v){
         return v.trim() == "";
+    },
+
+    put_flags: function(){
+        var flags = ""
+        $("tr.microservice.flag input").each(function(){
+            k = $(this).attr("key")
+            v = $(this).val()
+            if(v.trim() != ""){
+                flags = flags + " " + k + " " + v
+            }
+        })
+        $(".textarea.flag").val(flags)
+    },
+
+    get_flags: function(){
+        return $(".textarea.flag").val();
+    },
+
+    get_flag: function(flag){
+        var flags = $(".textarea.flag").val();
+        if(flags.indexOf(flag) != -1){
+            flags = flags.substring(flags.indexOf(flag) + flag.length)
+            var v = ""
+            for (var i = 0; i < flags.length; i++) {
+                v += flags.charAt(i);
+                if(flags.charAt(i+1) == "-" && flags.charAt(i+2) == "-") break
+            }
+            return v
+        }
+    },
+
+    show_options_box: function(){
+        var box = $("<div></div>")
+        var head = $("<div>Options</div>")
+        var close = $("<div class='fa fa-remove'></div>")
+        $(close).css({
+            "float": "right",
+            "right": "25px",
+            "cursor": "pointer"
+        })
+        $(head).css({
+            "height": "60px",
+            "border-bottom": "1px solid grey",
+            "color" : "#696969",
+            "padding-left": "15px",
+            "padding-right": "15px",
+            "padding-top": "10px",
+            "padding-bottom": "10px",
+            "font-weight": "bold",
+            "position": "sticky",
+            "top": "0px",
+            "background": "white",
+            "zIndex": "99"
+        })
+        $(box).css({
+            "zIndex": "99",
+            "margin": "100px auto",
+            "position": "relative",
+            "border-radius": "0px",
+            "width": "80%",
+            "height": "70%",
+            "overflow": "auto",
+            "background": "rgba(255, 255, 255, 0.9)",
+            "box-shadow": "10px 10px 50px 10px rgba(0, 0, 0, 0.2), -10px -10px 50px 10px rgba(0, 0, 0, 0.19), -10px 10px 50px 10px rgba(0, 0, 0, 0.19), 10px -10px 50px 10px rgba(0, 0, 0, 0.19)"
+
+        })
+        $(head).append(close)
+        $(box).append(head)
+        cl = $(".docker_flag_section").clone()
+        cl.show()
+        $(box).append("<center>" + cl[0].outerHTML + "</center>")
+        $(box).find("tr.microservice.flag input").each(function(){
+            v = microservice.get_flag($(this).attr("key"))
+            $(this).val(v)
+        })
+        $(close).on("click", function(){$(box).remove()})
+        $(document.body).append(box)
+        $("tr.microservice.flag input").keyup(function(){microservice.put_flags()})
     }
 
 }

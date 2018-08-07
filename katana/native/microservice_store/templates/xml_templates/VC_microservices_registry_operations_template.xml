@@ -10,12 +10,12 @@
     </registry>
     <host name="host">
         <args name="args"
-              docker_bind_interface_port="{{data.host.bind_host_interface_port}}"
               kube_pod_name = "{{data.host.pod_name}}"
               kube_port_flag = "{{data.host.port_flag}}"
               kube_replicas_flag = "{{data.host.replicas_flag}}"
               end_prompt="{{ data.host.end_prompt }}"
               password="{{ data.host.password }}"
+              flags="{{data.host.flags}}"
         />
     </host>
 </configuration>

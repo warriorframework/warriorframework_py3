@@ -10,12 +10,12 @@
     </registry>
     <host name="host">
         <args name="args"
-              docker_bind_interface_port=""
               kube_pod_name = ""
               kube_port_flag = ""
               kube_replicas_flag = ""
               end_prompt="arch"
               password="arch"
+              flags="--name pihole"
         />
     </host>
 </configuration>

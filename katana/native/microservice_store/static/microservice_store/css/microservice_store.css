@@ -320,11 +320,11 @@ table.microservice{
     width: 900px;
 }
 
-table.microservice tr.options:last-child{
+table.microservice tr.flag:last-child{
     border-bottom: 1px solid #ececed;
 }
 
-table.microservice tr.options{
+table.microservice tr.flag{
     height: 60px;
     line-height: 60px;
     border-left: 1px solid #ececed;
@@ -332,13 +332,13 @@ table.microservice tr.options{
     cursor: pointer;
 }
 
-table.microservice tr.options_head{
+table.microservice tr.flag.head{
     height: 50px;
     line-height: 50px;
     border: 1px solid #ececed;
 }
 
-table.microservice tr.options:nth-child(even){
+table.microservice tr.flag:nth-child(even){
     background: #ffffff;
 }
 
@@ -355,11 +355,16 @@ table.microservice td{
 
 .microservice.host_details input{
     width: 150px;
-    border-radius: 0px;
+    border-radius: 3px;
     border: none;
-    border-bottom: 1px solid #dcdcdc !important;
+    border: 1px solid #dcdcdc !important;
 }
 
 table.microservice td span{
     text-overflow: ellipsis;
+}
+
+.microservice.flag.textarea{
+    color: #696969;
+    font-size: 15px;
 }
