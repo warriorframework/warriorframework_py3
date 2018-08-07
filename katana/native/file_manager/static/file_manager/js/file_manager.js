@@ -221,7 +221,11 @@ var file_manager = {
                     console.log(data)
                     var result = data.result
                     var result_error;
-                    if (result.includes('Authentication failed')){
+                    if (result.includes('Paramiko Package')){
+                        katana.openAlert({'heading': 'File Transfer Result',
+                                'text': result});
+                   }
+                    else if (result.includes('Authentication failed')){
                         katana.openAlert({'heading': 'File Transfer Result',
                                 'text': "Login or password incorrect!"});
                    }

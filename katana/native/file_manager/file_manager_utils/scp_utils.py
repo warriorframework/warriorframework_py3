@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import os
-import paramiko
-import scp
+
 from scp import SCPClient
 
 def scpfile(host, port, username, passwd, destdir, files_path, all_files_path, files_name):
@@ -19,6 +18,10 @@ def scpfile(host, port, username, passwd, destdir, files_path, all_files_path, f
         :param all_files_path: List of All the files/directories selected (due to down cascading)
         :return: Error message or list of files FTPed with status.
         """
+    try:
+        import paramiko
+    except ImportError:
+        return 'Paramiko Package Missing! Contact System Administrator to install Paramiko 2.4.1 or up!'
 
     result = []
 
