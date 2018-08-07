@@ -82,6 +82,11 @@ def ssh_connection(host, port, username, passwd):
     :return: ssh object
     """
     try:
+        import paramiko
+    except ImportError:
+        return 'Paramiko Package Missing! Contact System Administrator to install Paramiko 2.4.1 or up!'
+
+    try:
         ssh = paramiko.SSHClient()
         ssh.load_system_host_keys()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy)
