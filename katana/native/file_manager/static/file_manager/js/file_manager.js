@@ -83,7 +83,7 @@ var file_manager = {
             var result = data.result
             if (result.includes('Partial Folder')){
                         katana.openAlert({'heading': 'Delete Result',
-                                'text': "Partial Folder Cannot be deleted! No Action taken!"});
+                                'text': "Partial Folder Cannot be deleted! Either delete the Files or the entire Folder!"});
                    }
 
             } catch {
@@ -165,19 +165,19 @@ var file_manager = {
                    }
                    else if (result.includes('426 Connection closed')){
                         katana.openAlert({'heading': 'File Transfer Result',
-                                'text': "Connection Closed. Transfer Aborted!"});
+                                'text': "Connection Closed. Transfer Aborted! Please Try Again!"});
                    }
                    else if (result.includes('Connection refused')){
                         katana.openAlert({'heading': 'File Transfer Result',
-                                'text': "Connection Refused! FTP Server might not be up on the Destination"});
+                                'text': "Connection Refused! FTP Server might not be up on the Destination!"});
                    }
                    else if (result.includes("Could Not Change to Destination Directory Successfully")) {
                         katana.openAlert({'heading': 'File Transfer Result',
-                            'text': "Failed to change to Destination Directory. Such a directory might not exist"});
+                            'text': "Failed to change to Destination Directory. Such a directory might not exist in the Destination Machine. Create the Destination Directory. "});
                    }
                    else if (result.includes("broken tree file")) {
                         katana.openAlert({'heading': 'File Transfer Result',
-                            'text': "Failed to transfer the Broken Tree Files"});
+                            'text': "Failed to transfer the Broken Tree Files. Avoid Broken Tree Files."});
                             if (result.includes('Success')){
                                 katana.openAlert({'heading': 'File Transfer Result',
                                 'text': "Transferred other files Successfully!"});
@@ -185,7 +185,7 @@ var file_manager = {
                     }
                    else if (result.includes('Such a Folder already exists')) {
                         katana.openAlert({'heading': 'File Transfer Result',
-                            'text': "Failed to create the directory in the target as a directory with the same name exists"});
+                            'text': "Failed to create the directory in the target as a directory with the same name exists."});
 
                             if (result.includes('Success')){
                                 katana.openAlert({'heading': 'File Transfer Result',
@@ -194,7 +194,7 @@ var file_manager = {
                    }
                    else if (result.includes('Could not transfer the file')) {
                         katana.openAlert({'heading': 'File Transfer Result',
-                            'text': "Failed to transfer some files"});
+                            'text': "Failed to transfer some files. Please check which files are not transferred and try again."});
                    }
                    else if (result.includes('Success')){
                         katana.openAlert({'heading': 'File Transfer Result',
@@ -231,7 +231,7 @@ var file_manager = {
                    }
                    else if (result.includes('Partial Folder')){
                     katana.openAlert({'heading': 'File Transfer Result',
-                                'text': 'Partial Folder Cannot be transferred! No Action taken!'});
+                                'text': 'Partial Folder Cannot be transferred! Please transfer the entire folder, else just the files required!'});
 
                    }
                    else if (result.includes('Transfer Error')){
@@ -245,7 +245,7 @@ var file_manager = {
                    }
                    else if (result.includes('Connection refused')){
                         katana.openAlert({'heading': 'File Transfer Result',
-                                'text': "Connection Refused! SSH might not be up and running on the Destination"});
+                                'text': "Connection Refused! SSH might not be up and running on the Destination!"});
                    }
                    else
                         katana.openAlert({'heading': 'File Transfer Result',
