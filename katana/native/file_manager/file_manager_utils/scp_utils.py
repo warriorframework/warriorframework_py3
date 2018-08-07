@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 import os
 
-from scp import SCPClient
+
 
 def scpfile(host, port, username, passwd, destdir, files_path, all_files_path, files_name):
     """
@@ -22,6 +22,11 @@ def scpfile(host, port, username, passwd, destdir, files_path, all_files_path, f
         import paramiko
     except ImportError:
         return 'Paramiko Package Missing! Contact System Administrator to install Paramiko 2.4.1 or up!'
+
+    try:
+        from scp import SCPClient
+    except ImportError:
+        return 'SCP Package Missing! Contact System Administrator to install SCP 0.11.0 or up!'
 
     result = []
 

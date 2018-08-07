@@ -137,7 +137,8 @@ var file_manager = {
                     "<p></p>Please have an SSH server installed and running in your machine as SCP uses underlying " +
                     "SSH connection<p></p>Partial Folder Selection: Can not send a folder with partially selected" +
                     " files. The whole folder gets transferred<p></p><p></p>Files with same name will get overwritten" +
-                    " the destination machine"
+                    " the destination machine<p></p><p></p>SCP uses external packages: Paramiko 2.4.1 or up and SCP 0.11.0 or up. Please contact" +
+                    " the system administrator to install them"
         katana.openAlert({'heading': 'Info',
                        'text': help_info});
        },
@@ -222,6 +223,10 @@ var file_manager = {
                     var result = data.result
                     var result_error;
                     if (result.includes('Paramiko Package')){
+                        katana.openAlert({'heading': 'File Transfer Result',
+                                'text': result});
+                   }
+                   else if (result.includes('SCP Package')){
                         katana.openAlert({'heading': 'File Transfer Result',
                                 'text': result});
                    }
