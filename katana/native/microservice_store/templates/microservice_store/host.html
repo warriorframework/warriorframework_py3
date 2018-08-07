@@ -49,7 +49,8 @@
                 <tr colspan="2">
                        <td>
                                <div class="form-group">
-                                        <input class="form-control" key="deployment_environment" list="envs_list" required/>
+                                        <input class="form-control" key="deployment_environment" list="envs_list"
+                                               katana-change="microservice.deployment_details" required/>
                                         <label class="form-control-placeholder">Environment</label>
                                         <datalist id="envs_list">
                                                <option value="docker"> Docker </option>
@@ -57,18 +58,6 @@
                                         </datalist>
                                 </div>
                        </td>
-                </tr>
-                <tr class="microservice docker_deployment_details">
-                        <td>
-                                Flags <span style="font-size: 13px;color:#247dba; cursor: pointer" class="fa fa-help"
-                                                katana-click="microservice.show_options_box">
-                                &nbsp;&nbsp;Help</span>
-                                <div style="font-size:13px">Click help to list all flags and use description
-                                to fill all the flgags</div>
-                        </td>
-                        <td>
-                                <textarea class="microservice flag textarea" key="flags" rows="10"></textarea>
-                        </td>
                 </tr>
                 <tr class="microservice kubernetes_deployment_details" style="display: none">
                         <td>
@@ -82,6 +71,29 @@
                                         <input class="form-control" key="replicas" value="" required/>
                                         <label class="form-control-placeholder">Replicas</label>
                                 </div>
+                        </td>
+                </tr>
+                <tr class="microservice deployment_details">
+                        <td>
+                                Flags <span style="font-size: 11px;color:#247dba; cursor: pointer" class="fa fa-help"
+                                                katana-click="microservice.show_options_box">
+                                &nbsp;&nbsp;Help</span>
+                                <div style="font-size:11px">Click help to list all flags and use description
+                                to fill all the flgags</div>
+                        </td>
+                        <td>
+                                <textarea class="microservice flag textarea" key="flags" rows="10"></textarea>
+                        </td>
+                </tr>
+                <tr class="microservice deployment_details">
+                        <td>
+                                Script <span style="font-size: 11px;color:#247dba; cursor: pointer" class="fa fa-help"
+                                                katana-click="microservice.show_options_box">
+                                &nbsp;&nbsp;Help</span>
+                                <div style="font-size:11px">Enter commands line by line</div>
+                        </td>
+                        <td>
+                                <textarea class="microservice scripts textarea" key="scripts" rows="10"></textarea>
                         </td>
                 </tr>
         </table>

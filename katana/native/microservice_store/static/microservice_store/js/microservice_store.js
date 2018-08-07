@@ -203,6 +203,9 @@ var microservice = {
                 if(k == "flags"){
                     data[s][k] = v;
                 }
+                if(k == "scripts"){
+                    data[s][k] = v;
+                }
                 if(k == "pod_name"){
                     data[s][k] = v;
                 }
@@ -226,8 +229,11 @@ var microservice = {
         $("tr.microservice.flag input").each(function(){
             k = $(this).attr("key")
             v = $(this).val()
-            if(v.trim() != ""){
-                flags = flags + " " + k + " " + v
+            ev = v.split(",")
+            for (var i = 0; i < ev.length; i++) {
+                if(ev[i].trim() != ""){
+                    flags = flags + " " + k + " " + ev[i]
+                }
             }
         })
         $(".textarea.flag").val(flags)
@@ -239,15 +245,22 @@ var microservice = {
 
     get_flag: function(flag){
         var flags = $(".textarea.flag").val();
-        if(flags.indexOf(flag) != -1){
+        vv = ""
+        while(flags.indexOf(flag) != -1){
             flags = flags.substring(flags.indexOf(flag) + flag.length)
             var v = ""
             for (var i = 0; i < flags.length; i++) {
                 v += flags.charAt(i);
                 if(flags.charAt(i+1) == "-" && flags.charAt(i+2) == "-") break
             }
-            return v
+            v = v.trim()
+            if(vv == ""){
+                vv = v
+            }else{
+                vv = vv + "," + v
+            }
         }
+        return vv
     },
 
     show_options_box: function(){

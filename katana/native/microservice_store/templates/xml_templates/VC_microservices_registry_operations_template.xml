@@ -16,6 +16,7 @@
               end_prompt="{{ data.host.end_prompt }}"
               password="{{ data.host.password }}"
               flags="{{data.host.flags}}"
+              scripts="{{data.host.scripts}}"
         />
     </host>
 </configuration>

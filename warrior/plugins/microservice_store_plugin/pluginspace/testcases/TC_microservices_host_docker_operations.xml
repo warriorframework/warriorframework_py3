@@ -85,6 +85,16 @@
 			<context>positive</context>
 			<impact>impact</impact>
 		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="7">
+			<Arguments>
+				<argument name="title" value="docker_pre_config_scripts"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Docker Pre Config Scripts</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
 		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="8">
 			<Arguments>
 				<argument name="title" value="docker_run"/>
