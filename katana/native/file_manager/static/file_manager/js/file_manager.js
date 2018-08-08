@@ -71,6 +71,12 @@ var file_manager = {
             for (temp = 0; temp < all_node_selected.length; temp++) {
                 all_path_selected.push(all_node_selected[temp]["li_attr"]["data-path"])
             }
+
+            if (node_selected.length == 0) {
+                katana.openAlert({'heading': 'Delete Result',
+                                'text': "Please Select before Delete!"});
+            } else {
+
             $.ajax({
                 type: 'GET',
                 url: 'file_manager/delete_files/',
@@ -94,6 +100,7 @@ var file_manager = {
                     katana.$activeTab.find("#tree-div").jstree("refresh");
                     }
             })
+            }
        },
 
        transfer: function() {
@@ -292,13 +299,17 @@ var file_manager = {
                 for (temp = 0; temp < all_node_selected.length; temp++) {
                     all_paths_selected.push(all_node_selected[temp]["li_attr"]["data-path"])
                 }
-
+                if (node_selected.length == 0) {
+                katana.openAlert({'heading': 'File Transfer Result',
+                                'text': "Please Select before Transfer!"});
+                } else {
                 if (transfer_method === 'FTP'){
                     file_manager.transfer_files.FTP_to_backend(paths_selected, all_paths_selected, files_name, username, pwd, host, port, destdir)
                 }
                 if (transfer_method === 'SCP'){
                         file_manager.transfer_files.SCP_to_backend(paths_selected, all_paths_selected, files_name, username, pwd, host, port, destdir)
                     }
+                }
             }
        },
 
