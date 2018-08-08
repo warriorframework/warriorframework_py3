@@ -1,7 +1,7 @@
 <div section="host" class="microservice section host">
 
         <table class="microservice host_details">
-                <tr colspan="2">
+                <tr colspan="5">
                         <td>
                                 Host Details
                         </td>
@@ -75,11 +75,22 @@
                 </tr>
                 <tr class="microservice deployment_details">
                         <td>
-                                Flags <span style="font-size: 11px;color:#247dba; cursor: pointer" class="fa fa-help"
-                                                katana-click="microservice.show_options_box">
-                                &nbsp;&nbsp;Help</span>
-                                <div style="font-size:11px">Click help to list all flags and use description
-                                to fill all the flgags</div>
+                                Flags
+                                <span style="font-size: 11px;color:#247dba; cursor: pointer"
+                                      katana-click="microservice.show_options_box">
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="fa fa-question-circle"></span></span>
+                                <div style="font-size:11px">
+                                <ul>
+                                        <li>Type a flag with its value or Click help to navigate through all flags</li>
+                                        <li>Example:</li>
+                                        <ol>
+
+                                            <li>--attach 1.1.1.1 in the Flag text area</li>
+                                            <li>1.1.1.1 in the text box of pop up</li>
+                                        </ol>
+                                        <li>List of values for same flag can be given with ',' seperated</li>
+                                        <li>Sample value: --name conainer_name --publish 80:80</li>
+                                </ul>
                         </td>
                         <td>
                                 <textarea class="microservice flag textarea" key="flags" rows="10"></textarea>
@@ -87,10 +98,19 @@
                 </tr>
                 <tr class="microservice deployment_details">
                         <td>
-                                Script <span style="font-size: 11px;color:#247dba; cursor: pointer" class="fa fa-help"
-                                                katana-click="microservice.show_options_box">
-                                &nbsp;&nbsp;Help</span>
-                                <div style="font-size:11px">Enter commands line by line</div>
+                                Pre-Deploy Commands
+                                <br/>
+                                <div style="font-size:11px">
+                                    <ul>
+                                        <li>Enter commands with an ';' at the end of each command</li>
+                                        <li>Example:</li>
+                                        <ol>
+                                            <li>WORKING_DIR="$(pwd)";</li>
+                                            <li>echo $WORKING_DIR;</li>
+                                            <li>USER="$(username)";PATH="/usr/bin";</li>
+                                        </ol>
+                                    </ul>
+                                </div>
                         </td>
                         <td>
                                 <textarea class="microservice scripts textarea" key="scripts" rows="10"></textarea>

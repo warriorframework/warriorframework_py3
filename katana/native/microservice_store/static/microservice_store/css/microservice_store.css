@@ -66,21 +66,13 @@
     width: 10px;
 }
 
-.microservice.right_panel::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 6px;
-}
-
 .microservice.right_panel::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
-    background: rgba(0, 0, 0, 0.3);
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+    background: rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2);
 }
 
 .microservice.right_panel::-webkit-scrollbar-thumb:window-inactive {
-	background: rgba(0, 0, 0, 0.3);
+	background: rgba(0, 0, 0, 0.2);
 }
 
 .microservice.left_panel{
@@ -229,7 +221,7 @@ input.options-control{
 }
 
 .options-control:focus{
-    border-bottom: 1px solid grey !important;
+    border-bottom: 1px solid #247dba !important;
 }
 
 .microservice label{
@@ -253,15 +245,7 @@ input.options-control{
     width: 10px;
 }
 
-.microservice-console::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
-    -webkit-border-radius: 10px;
-    border-radius: 6px;
-}
-
 .microservice-console::-webkit-scrollbar-thumb {
-    -webkit-border-radius: 6px;
-    border-radius: 6px;
     background: rgba(128,128,128,0.8);
     -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 }
@@ -364,7 +348,8 @@ table.microservice td span{
     text-overflow: ellipsis;
 }
 
-.microservice.flag.textarea{
+.microservice.flag.textarea,
+.microservice.scripts.textarea{
     color: #696969;
-    font-size: 15px;
+    font-size: 14px;
 }

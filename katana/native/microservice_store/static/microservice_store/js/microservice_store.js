@@ -204,7 +204,7 @@ var microservice = {
                     data[s][k] = v;
                 }
                 if(k == "scripts"){
-                    data[s][k] = v;
+                    data[s][k] = " "+ v;
                 }
                 if(k == "pod_name"){
                     data[s][k] = v;
@@ -273,7 +273,7 @@ var microservice = {
             "cursor": "pointer"
         })
         $(head).css({
-            "height": "60px",
+            "height": "40px",
             "border-bottom": "1px solid grey",
             "color" : "#696969",
             "padding-left": "15px",
