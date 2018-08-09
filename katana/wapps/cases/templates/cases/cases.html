@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cases</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'cases/css/cases.css' %}">
+</head>
+<body>
+<div class="tool-bar">
+    <div class="title"></div>
+    <button class="button" katana-click="cases.landing.openNewFile">New</button>
+    <button class="button" katana-click="cases.caseViewer.close" style="display: none">Close</button>
+    <button class="button" katana-click="cases.caseViewer.save" style="display: none">Save</button>
+</div>
+<div class="csrf-container">{% csrf_token %}</div>
+<div class="tab-template only">Cases</div>
+
+<div id="body-div" auto-init="cases.landing.init">
+    <div id="tree-div"></div>
+    <div id="main-div" style="display: none">
+
+    </div>
+</div>
+
+</body>
+</html>

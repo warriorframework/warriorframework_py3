@@ -30,6 +30,11 @@ from wui.core.core_utils.warrior_recon_creation_class import CreateWarriorRecon
 
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates', 'core')
 try:
+    import django_auth_ldap.backend
+except Exception as e:
+    print(e)
+
+try:
     from django_auth_ldap.backend import LDAPBackend
 except Exception as err:
     print("Please install django auth ldap to authenticate against ldap")

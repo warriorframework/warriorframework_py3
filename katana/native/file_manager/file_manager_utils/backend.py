@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 import os
 import shutil
+from katana.utils import user_utils
 
-
-def getpath():
+def getpath(request):
     """
     This function is to get the path of the User-data location.
     Whatever is pointed to by this path is displayed.
@@ -12,12 +12,9 @@ def getpath():
 
     :return: The path to user-data space
     """
-    fname = '/home/amamandu/filepath.txt'
-    fileobj = open(fname, "r")
-    path = fileobj.readline().rstrip('\n')
-    fileobj.close()
-    return path
-
+    Object = user_utils.UserData('File Manager')
+    print(Object.get_user_path(request))
+    return Object.get_user_path(request)
 
 def delete(path):
     """
@@ -58,7 +55,7 @@ def rename(file_path, old_name, new_name):
         return str(e)
     return 'success'
 
-def save(file_name, username, host, port, destdir, transfer_proto):
+def save(file_name, username, host, port, destdir, transfer_proto, request):
     """
     This function is to save the user-ftp-login details. Password is not stored.
     A file is created and the details are written into this file.
@@ -71,13 +68,13 @@ def save(file_name, username, host, port, destdir, transfer_proto):
     :param transfer_proto: User Input. Default is FTP
     :return: String error or list of cached files in .data directory
     """
-    parent_path = os.path.join(getpath(), "File Manager/.data")
+    parent_path = os.path.join(getpath(request), "File Manager/.data")
     file_path = os.path.join(parent_path, file_name)
     try:
         os.chdir(parent_path)
     except:
 
-        os.chdir(getpath())
+        os.chdir(getpath(request))
         try:
             os.mkdir("File Manager")
             os.chdir(os.path.join(os.getcwd(),"File Manager"))
@@ -97,14 +94,14 @@ def save(file_name, username, host, port, destdir, transfer_proto):
     except:
         return 'error'
 
-def read_cache(cache_name):
+def read_cache(cache_name, request):
     """
     To read the cached details in the file cache_name
 
     :param cache_name: File Name
     :return: Details of the file
     """
-    parent_path = os.path.join(getpath(),"File Manager/.data")
+    parent_path = os.path.join(getpath(request),"File Manager/.data")
     try:
         os.chdir(parent_path)
     except:

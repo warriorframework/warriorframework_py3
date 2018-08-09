@@ -1,0 +1,16 @@
+{
+  "details": {
+    "states": ["New", "Test-Assigned", "Released"],
+    "default_on_errors": ["Next", "Abort", "Abort As Error", "Go To"],
+    "execution_types": ["Sequential Cases", "Parallel Cases", "Iterative Sequential Cases", "Iterative Parallel Cases", "Run Until Fail", "Run Until Pass", "Run Multiple Times"]
+  },
+  "cases": {
+    "execute_types": ["Yes", "No", "If", "If Not"],
+    "execute_elses": ["Next", "Abort", "Abort As Error", "Go To"],
+    "run_modes": ["Standard", "Run Multiple Times", "Run Until Pass", "Run Until Failure"],
+    "contexts": ["Positive", "Negative"],
+    "impacts": ["Impact", "No Impact"],
+    "on_errors": ["Next", "Abort", "Abort As Error", "Go To"],
+    "run_types": ["Sequential Keywords", "Parallel Keywords"]
+  }
+}

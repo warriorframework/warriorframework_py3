@@ -145,6 +145,6 @@ class Navigator(object):
         else:
             layout['icon'] = file_icon
             layout['a_attr'] = file_a_attr if file_a_attr else {}
-        #print(layout)
+        print(layout)
             
         return layout

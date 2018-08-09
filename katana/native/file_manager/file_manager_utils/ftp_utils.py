@@ -4,7 +4,7 @@ import ftplib
 from ftplib import FTP
 from katana.native.file_manager.views import getpath
 
-def ftpfile(host, port, username, passwd, destdir, files_path, files_name, all_files_path):
+def ftpfile(host, port, username, passwd, destdir, files_path, files_name, all_files_path, request):
     """
     The main FTP function which takes in input details and FTPs the files.
     A FTP session is created.
@@ -20,7 +20,7 @@ def ftpfile(host, port, username, passwd, destdir, files_path, files_name, all_f
     :return: Error message or list of files FTPed with status.
     """
     result = []
-    os.chdir(getpath())
+    os.chdir(getpath(request))
     try:
         ftp = FTP('')
         ftp.connect(host, port)
