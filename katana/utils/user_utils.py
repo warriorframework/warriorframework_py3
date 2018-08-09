@@ -2,6 +2,7 @@ import json
 import os
 from django.conf import settings
 from utils.navigator_util import Navigator
+
 from .directory_traversal_utils import join_path, file_or_dir_exists
 
 DOTDATA = '.data'
@@ -107,11 +108,3 @@ def get_user_data():
         print("-- An Error Occurred -- {0}".format(e))
         print("User data could not be retrieved.")
     return userdata
-
-
-# check if user is authenticated using the request object
-def user_authenticated(request):
-    if request.user.is_authenticated():
-        return request.user.username
-    else:
-        return None
