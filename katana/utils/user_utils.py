@@ -71,7 +71,6 @@ class UserData:
             return None
 
 
-
 def get_user_home_dir(username=None):
     """
     Returns the home directory for the provided username
