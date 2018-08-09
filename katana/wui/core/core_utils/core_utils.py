@@ -1,6 +1,9 @@
+import json
 import os
 from collections import OrderedDict
 from utils.directory_traversal_utils import get_abs_path, join_path
+from utils.navigator_util import Navigator
+from django.conf import settings
 
 
 def get_app_path_from_name(app_name, config_file, base_directory):
@@ -97,3 +100,22 @@ def validate_config_json(json_data, warrior_dir):
         ordered_json["pythonpath"] = json_data["pythonpath"]
 
     return ordered_json
+
+
+def get_local_home_directory():
+    """
+    This function only returns the directory path setup in settings.py.
+    This function should be called only to see if the home directory is setup in settings.py.
+    To calculate the home directory (for local and client-server) system please use
+    get_user_home_dir() in katana/utils/user_utils.py
+    """
+    return getattr(settings, 'USER_HOME_DIR_TEMPLATE') if getattr(settings, 'USER_HOME_DIR_TEMPLATE', None) else False
+
+
+def get_suggested_home_dir():
+    """
+    This function returns a "suggested" home_directory
+
+    This function assumes this is a local system. Call the function ONLY when the system is local.
+    """
+    return os.path.join(os.path.expanduser("~"))

@@ -3178,3 +3178,67 @@ input[type="checkbox"]+label {
 
 /* login styles end */
 
+/* Local Setup Form Styles Start */
+
+.local-setup-form {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    position: relative;
+    top: 15%;
+    width: 30%;
+    height: fit-content;
+	min-height: 350px;
+    border: 1px solid #dedede;
+	padding: 0 20px 20px 20px;
+}
+
+.local-setup-form > .title {
+    background: rgba(35, 131, 195, 0.95);
+    color: white;
+    padding: 0 20px !important;
+}
+
+.local-setup-form > .fields {
+    margin: 50px 0 20px 0;
+    /* padding: 0 35px; */
+}
+
+.local-setup-form > div > .button {
+    border-radius: 5px;
+    width: 100%;
+    height: 32px;
+    background-color: rgba(35, 131, 195, 0.8);
+}
+
+
+.local-setup-form > div > .button:first-child {
+    margin: 0 5px 0 0;
+}
+
+.local-setup-form > div > .button:nth-child(2) {
+    margin: 0 0 0 5px;
+}
+
+.local-setup-form > .container-fluid:nth-child(3) {
+	padding-top: 60px;
+}
+
+.local-setup-form > .container-fluid:nth-child(5) {
+	padding-bottom: 20px;
+}
+
+.local-setup-form > .container-fluid {
+	padding: 10px 0 10px 0;
+}
+
+.local-setup-form > .container-fluid > .row > .col-sm-2 > button {
+	margin-top: 6px;
+	border-radius: 5px;
+	background-color: rgba(35, 131, 195, 0.8);
+	height: 32px;
+	min-width: 40px;
+	width: 100%;
+}
+
+/* Local Setup Form Styles End */

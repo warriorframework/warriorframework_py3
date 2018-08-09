@@ -1215,7 +1215,7 @@ var katana = {
           var $directoryDataDiv = $tabContent.find('.directory-data-div');
           $directoryDataDiv.html("");
           $directoryDataDiv.append("<div id='directory-data' class='full-size'></div>");
-          var $directoryData = $currentPage.find('#directory-data');
+          var $directoryData = $tabContent.find('#directory-data');
           $directoryData.jstree({
             "core": {
               "data": [data]
@@ -1371,12 +1371,58 @@ var katana = {
 
     	}
     	
-    }
+    },
 
-  
-  
-  
-  
-  
-  
+    userSetup: {
+
+      browse: function() {
+        /* This function opens the fileExplorer on the Setup Page */
+        var $elem = $(this);
+        var $input = $elem.closest('.row').find('input');
+        var start_dir = $input.val();
+        var $parent = $elem.closest('.local-setup-form');
+        var csrf = $parent.find('.csrf-container').find('input').val();
+        var callBackOnAccept = function (inputValue) {
+          $input.attr('value', inputValue)
+        };
+        katana.fileExplorerAPI.openFileExplorer(null, start_dir, csrf, $parent, callBackOnAccept);
+      },
+
+      select: function() {
+        /* This function manages the checkbox options on the setup page */
+          var $elem = $(this);
+          var $allCheckBoxes = $elem.closest('.row').find('input');
+          for (var i=0; i<$allCheckBoxes.length; i++){
+            $($allCheckBoxes[i]).prop('checked', false);
+          }
+          $elem.prop('checked', true);
+      },
+
+      saveDataLocation: function() {
+        /* This function calls the unserlying view to seup the data directory */
+        var $elem = $(this);
+        var existing = $elem.parent().prev().find('input[name="existing"]').is(':checked');
+        var inputValue = $elem.parent().prev().prev().find('input').val();
+        console.log(inputValue);
+        $.ajax({
+          headers: {
+            'X-CSRFToken': $elem.closest('.local-setup-form').find('.csrf-container').find('input').val()
+          },
+          type: 'POST',
+          url: 'setup_data_location/',
+          data: {"path_to_data_directory": inputValue, "existing": existing}
+        }).done(function(data){
+          if (!data.status) {
+            katana.openAlert({
+                "alert_type": "danger",
+                "heading": "An Error Occurred while setting up the data storage",
+                "text": data.message,
+                "show_cancel_btn": false
+            });
+          } else {
+            window.location.reload();
+          }
+        })
+      }
+    }
 };
