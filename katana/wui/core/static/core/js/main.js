@@ -927,17 +927,19 @@ var katana = {
         var $elem = this;
         url = url ? url : $elem ? $elem.attr('url') : '';
         tabTitle = tabTitle ? tabTitle : 'Tab';
-        var jsURL = jsURL ? jsURL.split(',') : $elem.attr('jsurls').split(',');
-        src_elem = $elem != katana.templateAPI ? $elem : katana.$activeTab;
-
-        if (jsURL.length > 0) {
-          jsURL.pop();
-          katana.templateAPI.importJS(jsURL, function() {
-            katana.templateAPI.tabRequst(src_elem, tabTitle, url, limitedStyles, callBack, options);
-          });
-        } else {
-          katana.templateAPI.tabRequst(src_elem, tabTitle, url, limitedStyles, callBack, options);
-        }
+        if ($elem !== katana.templateAPI) {
+          var jsURLString = jsURL ? jsURL.trim() : $elem.attr('jsurls').trim();
+          jsURL = jsURLString === "" ? [] : jsURLString.split(',');
+          if (jsURL.length > 0) {
+            jsURL.pop();
+            katana.templateAPI.importJS(jsURL, function() {
+              katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
+            });
+          } else {
+            katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
+          }
+        } else
+          katana.templateAPI.tabRequst(katana.$activeTab, tabTitle, url, limitedStyles, callBack, options);
       }
     },
 
