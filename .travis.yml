@@ -3,7 +3,7 @@ python: 3.4
 
 before_install:
   - sudo apt-get update
-  - sudo apt-get install build-essential
+  - sudo apt-get install build-essential libssl-dev libffi-dev python3-dev
 
 matrix:
   include:
