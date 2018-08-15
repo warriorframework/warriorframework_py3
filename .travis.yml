@@ -38,10 +38,10 @@ matrix:
 
 install:
   - if [[ ${COPILOT} = "yes" ]]; then
+      pip3 install --upgrade setuptools ;
       python3 setup.py install ;
     fi
   - if [[ ${INSTALL} = "yes" ]] && [[ ! -z ${TRAVIS_PULL_REQUEST_BRANCH} ]]; then
-      pip3 install --upgrade setuptools ;
       pip3 install pexpect==4.2 ;
       pip3 install requests==2.9.1 ;
       pip3 install selenium==3.8.0 ;
