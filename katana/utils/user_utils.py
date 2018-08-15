@@ -103,7 +103,7 @@ def get_user_data():
 
 # check if user is authenticated using the request object
 def user_authenticated(request):
-    if request.user.is_authenticated():
+    if request.user.is_authenticated:
         return request.user.username
     else:
         return None
