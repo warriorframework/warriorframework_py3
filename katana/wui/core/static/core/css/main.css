@@ -39,7 +39,7 @@ h1 {
 	padding: 0;
 	/* max-width: 1400px; */
 	margin: 0 auto;
-	overflow: auto;
+	overflow: hidden;
 	background-size: cover;
 	background-color: #404040;
     background-image: url(/static/core/images/image.jpg);
@@ -1183,7 +1183,10 @@ div#launchpad.page.hidden {
 
 div#launchpad.page.hidden .page-content {
 	top: 0;
-	height: 100%;
+	height: calc(100% - 40px);
+	width: calc(100% - 16px);
+	box-shadow: none;
+	direction: rtl;
 }
 
 div#launchpad.page.hidden .tab {
@@ -1211,6 +1214,7 @@ div#launchpad.page.hidden .tabs {
 	text-align: left;
 	padding-top: 13px;
 	width: 90%;
+	direction: ltr;
 }
 
 .fileSystem>.file:hover,
@@ -1365,7 +1369,7 @@ div#launchpad.page.hidden .tabs {
 	top: 40px;
 }
 
-.settings {
+.settings, .tab-container{
 	width: 100%;
 	height: 100%;
 	display: block;
@@ -3172,6 +3176,70 @@ input[type="checkbox"]+label {
 
 }
 
+/* Change added in WAR-1758 for hide away sidebar */
+.side-bar-toggle {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    height: 40px;
+    line-height: 27px;
+    border-left: 1px solid #b9b8b8;
+    display: none;
+    font-size: 25px;
+	border-top: 1px solid grey;
+	color: grey;
+}
+
+div#launchpad.hidden .side-bar-toggle{
+	display: block;
+}
+
+div#launchpad.hidden.side-bar-hidden {
+    width: 40px;
+}
+div#launchpad.hidden .side-bar-toggle:before {
+    font-size: 24px;
+    line-height: 40px;
+	padding-right: 8px;
+    right: 0;
+    text-align: right;
+    width: 100%;
+    position: absolute;
+}
+div#launchpad.hidden.side-bar-hidden .tabs {
+    display: none;
+}
+div#launchpad.hidden.side-bar-hidden .page-content {
+    display: none;
+}
+div#launchpad.hidden.side-bar-hidden .side-bar-toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    height: 100%;
+    top: 0;
+}
+
+div#launchpad.hidden.side-bar-hidden .side-bar-toggle:before {
+    position: absolute;
+	bottom: 0;
+    height: 40px;
+    font-size: 24px;
+    line-height: 40px;
+    right: 0;
+    text-align: center;
+    width: 40px;
+    content: "\f101";
+	padding-right: 0;
+	border-top: 1px solid grey;
+	color: grey;
+}
+
+div#launchpad.hidden.side-bar-hidden ~ .page .page-content {
+    width: calc(100% - 40px);
+}
+/* End of change added in WAR-1758 */
 
 /*login styles */
 .login-form {
@@ -3208,4 +3276,3 @@ input[type="checkbox"]+label {
 }
 
 /* login styles end */
-
