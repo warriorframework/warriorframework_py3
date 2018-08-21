@@ -39,7 +39,7 @@ h1 {
 	padding: 0;
 	/* max-width: 1400px; */
 	margin: 0 auto;
-	overflow: auto;
+	overflow: hidden;
 	background-size: cover;
 	background-color: #404040;
     background-image: url(/static/core/images/image.jpg);
@@ -218,15 +218,11 @@ span.close:before {
 }
 
 .header {
-	display: block;
-	background: rgba(35, 131, 195, 0.8);
-	display: block;
+	display: flex;
 	height: 50px;
 	line-height: 50px;
 	padding: 0 14px;
-	/* max-width: 1400px; */
-	/* border-bottom: solid 1px #dedede; */
-	/* margin: 0 auto; */
+	background: rgba(35, 131, 195, 0.8);
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -235,6 +231,37 @@ span.close:before {
 	-webkit-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.22);
 	-moz-box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.22);
 	box-shadow: 0px 0px 5px 0px rgba(0, 0, 0, 0.22);
+}
+
+/* header icons */
+
+.header-icon-container {
+    display: flex;
+    flex-direction: row;
+    color: white;
+    /* width: 100%; */
+    position: absolute;
+    right: 80px;
+    height: 100%;
+    text-align: center;
+    vertical-align: middle;
+    justify-content: flex-end;
+}
+.header-icon {
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+    margin: 0;
+    color: white;
+    padding: 0px 4px;
+    width: 32px;
+    height: 100%;
+    text-align: center;
+    vertical-align: middle;
+    justify-content: center;
+}
+.header-icon:hover {
+	color: black !important;
 }
 
 .panels {
@@ -369,8 +396,8 @@ span.close:before {
 .page-content .tab {
 	/* width: 40%; */
 	height: 0;
-	padding-bottom: 15.59999999%;
-	width: 15.59999999%;
+	padding-bottom: 12%;
+	width: 12%;
 	/* border: solid 1px white; */
 	display: inline-block;
 	vertical-align: top;
@@ -387,7 +414,7 @@ span.close:before {
 }
 
 .page-content .tab>i {
-	font-size: 5.5em;
+	font-size: 4.5em;
 	display: block;
 	text-align: center;
 	position: absolute;
@@ -1153,7 +1180,10 @@ div#launchpad.page.hidden {
 
 div#launchpad.page.hidden .page-content {
 	top: 0;
-	height: 100%;
+	height: calc(100% - 40px);
+	width: calc(100% - 16px);
+	box-shadow: none;
+	direction: rtl;
 }
 
 div#launchpad.page.hidden .tab {
@@ -1181,6 +1211,7 @@ div#launchpad.page.hidden .tabs {
 	text-align: left;
 	padding-top: 13px;
 	width: 90%;
+	direction: ltr;
 }
 
 .fileSystem>.file:hover,
@@ -1335,7 +1366,7 @@ div#launchpad.page.hidden .tabs {
 	top: 40px;
 }
 
-.settings {
+.settings, .tab-container{
 	width: 100%;
 	height: 100%;
 	display: block;
@@ -2478,17 +2509,17 @@ i.active {
 }
 
 .quick-user {
-	position: absolute;
-	right: 5px;
-	top: 5px;
-	background: rgba(171, 171, 171, 0);
-	height: 40px;
-	width: 104px;
-	font-size: 14px;
-	color: white;
-	/* -webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.20); */
-	-moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.20);
-	/* box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.20); */
+    position: absolute;
+    right: 5px;
+    /* top: 5px; */
+    background: rgba(171, 171, 171, 0);
+    height: 50px;
+    width: 75px;
+    font-size: 14px;
+    color: white;
+    /* -webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.20); */
+    -moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.20);
+    /* box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.20); */
 }
 
 .quick-user .username {
@@ -2521,9 +2552,9 @@ i.active {
 
 .hidden-menu {
 	position: absolute;
-	top: 5px;
-	width: 100%;
-	position: relative;
+	top: 50px;
+	right: 0px;
+	width: 250px;
 	-webkit-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.20);
 	-moz-box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.20);
 	box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, 0.20);
@@ -3113,3 +3144,104 @@ input[type="checkbox"]+label {
 	margin-left: -30px;
 
 }
+
+/* Change added in WAR-1758 for hide away sidebar */
+.side-bar-toggle {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    height: 40px;
+    line-height: 27px;
+    border-left: 1px solid #b9b8b8;
+    display: none;
+    font-size: 25px;
+	border-top: 1px solid grey;
+	color: grey;
+}
+
+div#launchpad.hidden .side-bar-toggle{
+	display: block;
+}
+
+div#launchpad.hidden.side-bar-hidden {
+    width: 40px;
+}
+div#launchpad.hidden .side-bar-toggle:before {
+    font-size: 24px;
+    line-height: 40px;
+	padding-right: 8px;
+    right: 0;
+    text-align: right;
+    width: 100%;
+    position: absolute;
+}
+div#launchpad.hidden.side-bar-hidden .tabs {
+    display: none;
+}
+div#launchpad.hidden.side-bar-hidden .page-content {
+    display: none;
+}
+div#launchpad.hidden.side-bar-hidden .side-bar-toggle {
+    width: 100%;
+    background: transparent;
+    border: none;
+    height: 100%;
+    top: 0;
+}
+
+div#launchpad.hidden.side-bar-hidden .side-bar-toggle:before {
+    position: absolute;
+	bottom: 0;
+    height: 40px;
+    font-size: 24px;
+    line-height: 40px;
+    right: 0;
+    text-align: center;
+    width: 40px;
+    content: "\f101";
+	padding-right: 0;
+	border-top: 1px solid grey;
+	color: grey;
+}
+
+div#launchpad.hidden.side-bar-hidden ~ .page .page-content {
+    width: calc(100% - 40px);
+}
+/* End of change added in WAR-1758 */
+
+/*login styles */
+.login-form {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    position: relative;
+    top: 15%;
+    width: 25%;
+    height: 30%;
+    border: 1px solid #dedede;
+}
+
+.login-form > .title {
+    background: rgba(35, 131, 195, 0.95);
+    color: white;
+    padding: 0 20px !important;
+}
+
+.login-form > .fields {
+    margin: 50px 20px 10px 20px;
+    /* padding: 0 35px; */
+    width: 90%;
+}
+
+.login-form > .button {
+    /* position: relative; */
+    margin: 0 20px;
+    text-align: center;
+    border-radius: 5px;
+    width: 90%;
+    height: 32px;
+    background-color: rgba(35, 131, 195, 0.8);
+}
+
+/* login styles end */

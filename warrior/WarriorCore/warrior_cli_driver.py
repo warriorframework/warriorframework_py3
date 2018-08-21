@@ -159,6 +159,7 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
 
     iter_count = 0 ## this iter is used for live html results
     for parameter in parameter_list:
+        default_repo = {}
         result = False
         # check if the input parameter is an xml file
         if Utils.file_Utils.get_extension_from_path(parameter) == '.xml':
@@ -168,9 +169,7 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
             print_info('Absolute path: {0}'.format(abs_filepath))
             if Utils.file_Utils.fileExists(abs_filepath):
                 if list(overwrite.items()):
-                    default_repo = overwrite
-                else:
-                    default_repo = {}
+                    default_repo.update(overwrite)
 
                 if db_obj is not False and db_obj.status is True:
                     default_repo.update({'db_obj': db_obj})
@@ -198,6 +197,7 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
         status = status and result
         iter_count += 1
     return status
+
 
 # def execution(parameter_list, a_defects, cse_execution, iron_claw,
 #          jiraproj, overwrite, jiraid, dbsystem, livehtmllocn):
@@ -443,6 +443,32 @@ def decide_action(w_cli_obj, namespace):
                            format(namespace.encrypt[0], message))
         else:
             print_error("Encrypted text could not be generated.")
+        exit(1)
+
+    elif namespace.decrypt:
+        status = True
+        encoded_key = False
+        if namespace.secretkey:
+            # Checks if User has given a string for creating a secret key
+            status, encoded_key = Encrypt.set_secret_key(namespace.secretkey)
+        else:
+            # If secret key has not been given, checks for the existence of the
+            # secret.key file
+            path = file_Utils.get_parent_dir(os.path.realpath(__file__),
+                                             "WarriorCore")
+            path = os.path.join(path, "Tools", "admin", "secret.key")
+            if not os.path.exists(path):
+                print_error("Could not find the secret.key file in Tools/Admin!"
+                            " Please use '-secretkey your_key_text' in the "
+                            "-encrypt command for creating the file!")
+                status = False
+        if status:
+            # sends secret key and encrypted text password for decryption
+            message = Encrypt.decrypt(namespace.decrypt[0], encoded_key)
+            print_info("The decrypted text for '{0}' is: {1}".
+                           format(namespace.decrypt[0], message))
+        else:
+            print_error("Decrypted text could not be generated.")
         exit(1)
 
     elif any(cli_args):

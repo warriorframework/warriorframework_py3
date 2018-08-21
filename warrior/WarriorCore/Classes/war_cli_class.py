@@ -339,6 +339,8 @@ class WarriorCliClass(object):
 
         parser.add_argument('-encrypt', action='store', nargs='*', dest="encrypt", help="encrypt data string")
 
+        parser.add_argument('-decrypt', action='store', nargs='*', dest="decrypt", help="decrypt data string")
+
         # Run Testcases/Suites/Projects in default locations
         parser.add_argument('-wt', action='store', nargs='*', dest="tc_name",
                             help="Runs testcases available in default path, "\
@@ -467,9 +469,13 @@ class CreateTestSuite(object):
                                           datetime.datetime.now().strftime("%m/%d/%Y")))
         detail.append(self.create_element("Time", {},
                                           datetime.datetime.now().strftime("%H:%M:%S")))
-        if tc_type == "Run_Until_Fail" or tc_type == "Run_Multiple":
+        if tc_type == "Run_Until_Fail":
             detail.append(self.create_element("type",
                                               {"Max_Attempts":str(val),
+                                               "exectype":tc_type}, ""))
+        elif tc_type == "Run_Multiple":
+            detail.append(self.create_element("type",
+                                              {"Number_Attempts":str(val),
                                                "exectype":tc_type}, ""))
         else:
             detail.append(self.create_element("type",

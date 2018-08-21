@@ -67,7 +67,7 @@ def execute_sequential_testsuites(testsuite_list, project_repository,
                                                                                     'onError',
                                                                                     'action')
         ts_onError_action = ts_onError_action if ts_onError_action else project_error_action
-        if Utils.file_Utils.fileExists(testsuite_path):
+        if Utils.file_Utils.fileExists(testsuite_path) or action is False:
             if not goto_testsuite and action is True:
 
                 testsuite_result = testsuite_driver.main(testsuite_path,
@@ -136,7 +136,8 @@ def execute_sequential_testsuites(testsuite_list, project_repository,
                                     data_repository['wt_ts_timestamp'])
         pj_junit_object.update_attr("onerror", onerror, "ts", data_repository['wt_ts_timestamp'])
 
-        string_status = {"TRUE": "PASS", "FALSE": "FAIL", "ERROR": "ERROR", "SKIP": "SKIP"}
+        string_status = {"TRUE": "PASS", "FALSE": "FAIL", "ERROR": "ERROR",
+                         "SKIP": "SKIP", "RAN": "RAN"}
 
         if str(testsuite_status).upper() in list(string_status.keys()):
             data_repository['testsuite_{}_result'.format(suite_cntr)] = \
