@@ -26,6 +26,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -43,7 +44,6 @@ INSTALLED_APPS = [
     'wapps.projects',
     'wapps.suites',
     'wapps.cases',
-    'wapps.execution',
     'wapps.wdf_edit',
     'wapps.assembler',
     'wapps.cli_data',
@@ -89,6 +89,17 @@ DATABASES = {
     }
 }
 
+# authentication settings
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+MULTI_USER_SUPPORT = False
+USER_HOME_DIR_TEMPLATE = None
+
+
+
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -106,6 +117,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+
+##
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

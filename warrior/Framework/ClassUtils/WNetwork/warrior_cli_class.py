@@ -860,26 +860,23 @@ class WarriorCli(object):
                                env=None, pty_dimensions=None):
         """ spawn a pexpect object with environment & pty_dimensions variables """
 
-        if not(str(escape).lower() == "yes" or str(escape).lower() == "true"):
+        if env is None:
             env = {}
 
-        sendPtydimensions = False
+        kwargs = {'timeout': int(timeout)}
+
+        if str(escape).lower() == "yes" or str(escape).lower() == "true":
+            kwargs['env'] = env
+
         if pty_dimensions is not None:
-            # 'dimensions' argument is supported in pexpect version 4.0 and above
-            if LooseVersion(pexpect_obj.__version__) >= LooseVersion('4.0'):
-                sendPtydimensions = True
-            else:
+            if LooseVersion(pexpect_obj.__version__) < LooseVersion('4.0'):
                 print_warning("Setting pseudo-terminal dimensions is not supported in "
                               "pexpect versions less than 4.0(installed pexpect "
-                              "version: {}), 'dimensions' value will be default "
-                              "to None".format(pexpect_obj.__version__))
+                              "version: {})".format(pexpect_obj.__version__))
+            else:
+                kwargs['dimensions'] = pty_dimensions
 
-        if sendPtydimensions is True:
-            child = pexpect_obj.spawn(command, timeout=int(timeout), env=env,
-                                      dimensions=pty_dimensions)
-        else:
-            child = pexpect_obj.spawn(command, timeout=int(timeout), env=env)
-
+        child = pexpect_obj.spawn(command, **kwargs)
         return child
 
     @staticmethod
@@ -1610,7 +1607,12 @@ class PexpectConnect(object):
                 print_exception(exception)
             else:
                 response = self.target_host.before.decode('utf-8')
-                response = response + self.target_host.after.decode('utf-8')
+                # When the command gets timed out, the pexpect.TIMEOUT exception
+                # will be raised and it is set to the after property of spawn object
+                if self.target_host.after == self.pexpect.TIMEOUT:
+                    pNote("EXCEPTION !! Command Timed Out", 'error')
+                else:
+                    response = response + self.target_host.after.decode('utf-8')
                 pNote("Response:\n{0}\n".format(response))
                 pNote(msg, "debug")
                 if status is True:
