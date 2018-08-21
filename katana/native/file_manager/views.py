@@ -7,6 +7,7 @@ from katana.native.file_manager.file_manager_utils.backend import getpath
 import katana.utils.navigator_util
 import os
 from katana.native.file_manager.file_manager_utils.scp_utils import check_partial_folder
+from katana.utils import user_utils
 
 def index(request):
     return render(request, "file_manager/file_manager.html", {})
@@ -60,7 +61,7 @@ def rename_files(request):
     file_path = request.GET.get('path')
     old_name = request.GET.get('file_name')
     new_name = request.GET.get('new_name')
-    rename_result = backend.rename(file_path, old_name, new_name)
+    (bool,rename_result) = backend.rename(file_path, old_name, new_name)
     path = getpath(request)
     return JsonResponse({"data": katana.utils.navigator_util.Navigator().get_dir_tree_json(start_dir_path = path), "result": rename_result})
 
@@ -77,7 +78,8 @@ def save(request):
 
 def cache_list(request):
     # This path will change to the cache directory
-    path = os.path.join(getpath(request),"File Manager/.data")
+    # path = os.path.join(getpath(request),"File Manager/.data")
+    path = user_utils.UserData("file_manager").get_dotdata_dir(request)
     try:
         return JsonResponse({"cache_list": os.listdir(path)})
     except:

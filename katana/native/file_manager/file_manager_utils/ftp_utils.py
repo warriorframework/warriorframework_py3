@@ -4,6 +4,7 @@ import ftplib
 from ftplib import FTP
 from katana.native.file_manager.views import getpath
 
+
 def ftpfile(host, port, username, passwd, destdir, files_path, files_name, all_files_path, request):
     """
     The main FTP function which takes in input details and FTPs the files.
@@ -26,18 +27,17 @@ def ftpfile(host, port, username, passwd, destdir, files_path, files_name, all_f
         ftp.connect(host, port)
         ftp.login(username, passwd)
         try:
-            if(change_destination(ftp, destdir)):
+            if (change_destination(ftp, destdir)):
                 for path, name in zip(files_path, files_name):
                     if os.path.isfile(path):
                         result.append(transfer_file(ftp, path, name))
                     elif os.path.isdir(path):
                         result.append(name + ': Is a directory')
-                        result.append(isDir(ftp, path, name, files_path, files_name, all_files_path))
+                        result.append(is_dir(ftp, path, name, files_path, files_name, all_files_path))
                     else:
                         result.append(name + ': Is not a file or directory')
             else:
                 result.append(destdir + " :Could Not Change to Destination Directory Successfully")
-                return result
         except ftplib.all_errors as e:
             result.append(str(e))
         ftp.quit()
@@ -55,13 +55,15 @@ def change_destination(ftp, destdir):
     :param destdir: Destination directory from the root directory where the files are to be FTPed.
     :return: Boolean.
     """
+    result = False
     try:
         if destdir != '':
             ftp.cwd(destdir)
-    except:
-        print('\nCould not change to destination directory')
-        return False
-    return True
+    except Exception as e:
+        print('\nCould not change to destination directory: ' + str(e))
+    else:
+        result = True
+    return result
 
 
 def transfer_file(ftp, path, name):
@@ -83,13 +85,15 @@ def transfer_file(ftp, path, name):
             ftp.storlines('STOR ' + name, fp)
         # storlines prints new line character at the end of each line in text file
         # but it does not transfer word files.
-    except:
+    except Exception as e:
+        print("Exception: " + str(e))
         return name + ': Could not transfer the file.'
-    fp.close()
-    return name + ' :Success'
+    else:
+        fp.close()
+        return name + ' :Success'
 
 
-def isDir(ftp, path, name, files_path, files_name, all_files_path):
+def is_dir(ftp, path, name, files_path, files_name, all_files_path):
     """
     If the selected item is a directory, then this is a recursive function that FTPs all the files selected within
     the directory. If the item selected is a directory, then this function is called on that directory.
@@ -109,45 +113,43 @@ def isDir(ftp, path, name, files_path, files_name, all_files_path):
     """
     result = []
     parent_dir = ftp.pwd()
-    if parent_dir == '/':
-        new_folder = parent_dir + name
-    else:
-        new_folder = parent_dir + '/' + name
+    new_folder = os.path.join(parent_dir, name)
+    files_list = os.listdir(path)
     try:
-        try:
-            ftp.mkd(new_folder)
-            ftp.cwd(new_folder)
-        except:
-            print('error in creating new directory in target machine')
-            result.append(new_folder + ': Such a Folder already exists')
-            return result
-        files_list = os.listdir(path)
+        ftp.mkd(new_folder)
+        ftp.cwd(new_folder)
+    except:
+        print('error in creating new directory in target machine')
+        result.append(new_folder + ': Such a Folder already exists')
+        # return result
+    else:
         try:
             for item in files_list:
                 # Need to check if the item is in the files_path
-                if path == '/':
-                    item_path = path + item
-                else:
-                    item_path = path + '/' + item
+                # if path == '/':
+                #     item_path = path + item
+                # else:
+                #     item_path = path + '/' + item
+                item_path = os.path.join(path, item)
                 if item_path in all_files_path:
                     try:
                         if os.path.isdir(item_path):
-                            result.append(isDir(ftp, item_path, item, files_path, files_name, all_files_path))
+                            result.append(is_dir(ftp, item_path, item, files_path, files_name, all_files_path))
                         elif os.path.isfile(item_path):
                             result.append(transfer_file(ftp, item_path, item))
-                    except:
-                        print('Error in recursive part')
+                    except Exception as e:
+                        print('Error in recursive part: ' + str(e))
                 # To check if there is any broken files selected
                 elif os.path.isdir(item_path):
                     broken_files = os.listdir(item_path)
                     for broken_item in broken_files:
-                        broken_item_path = item_path + '/' + broken_item
+                        # broken_item_path = item_path + '/' + broken_item
+                        broken_item_path = os.path.join(item_path, broken_item)
                         if broken_item_path in all_files_path:
                             print('broken tree file: ' + broken_item_path)
                             result.append(broken_item_path + ' :broken tree file')
             ftp.cwd(parent_dir)
-        except:
-            print('Error in for loop')
-    except:
-        print('error somewhere else')
+        except Exception as e:
+            print('Error in for loop: ' + str(e))
+
     return result

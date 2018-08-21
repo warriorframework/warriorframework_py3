@@ -12,8 +12,7 @@ def getpath(request):
 
     :return: The path to user-data space
     """
-    Object = user_utils.UserData('File Manager')
-    print(Object.get_user_path(request))
+    Object = user_utils.UserData('file_manager')
     return Object.get_user_path(request)
 
 def delete(path):
@@ -23,20 +22,22 @@ def delete(path):
     :param path: Full path to File or Directory which has to be deleted.
     :return: A string saying success or error
     """
+    result = False
     if (os.path.isdir(path)):
         try:
             shutil.rmtree(path)
-            return 'success'
+            result = True
+            # return 'success'
         except OSError:
-            print('Cannot delete Directory')
+            print(path + 'Cannot delete Directory')
+
     elif (os.path.isfile(path)):
         try:
             os.remove(path)
-            return 'success'
+            result = True
         except OSError:
-            print('Cannot delete File')
-
-
+            print(path + 'Cannot delete File')
+    return result
 
 def rename(file_path, old_name, new_name):
     """
@@ -52,8 +53,9 @@ def rename(file_path, old_name, new_name):
         os.rename(file_path, new_file_path)
     except os.error as e:
         print(str(e))
-        return str(e)
-    return 'success'
+        (bool,result) = False,str(e)
+    (bool, result) = True,'success'
+    return (bool,result)
 
 def save(file_name, username, host, port, destdir, transfer_proto, request):
     """
@@ -68,20 +70,9 @@ def save(file_name, username, host, port, destdir, transfer_proto, request):
     :param transfer_proto: User Input. Default is FTP
     :return: String error or list of cached files in .data directory
     """
-    parent_path = os.path.join(getpath(request), "File Manager/.data")
-    file_path = os.path.join(parent_path, file_name)
-    try:
-        os.chdir(parent_path)
-    except:
 
-        os.chdir(getpath(request))
-        try:
-            os.mkdir("File Manager")
-            os.chdir(os.path.join(os.getcwd(),"File Manager"))
-        except:
-            os.chdir(os.path.join(os.getcwd(), "File Manager"))
-        os.mkdir(".data")
-        os.chdir(parent_path)
+    Object = user_utils.UserData('file_manager')
+    parent_path = Object.get_dotdata_dir(request)
     try:
         result = []
         fp = open(file_name, 'w')
@@ -90,9 +81,9 @@ def save(file_name, username, host, port, destdir, transfer_proto, request):
         fp.writelines(write_lines)
         fp.close()
         result = os.listdir(parent_path)
-        return result
-    except:
-        return 'error'
+    except Exception as e:
+        result = 'error : ' + str(e)
+    return result
 
 def read_cache(cache_name, request):
     """
@@ -101,21 +92,22 @@ def read_cache(cache_name, request):
     :param cache_name: File Name
     :return: Details of the file
     """
-    parent_path = os.path.join(getpath(request),"File Manager/.data")
+    # parent_path = os.path.join(getpath(request),"File Manager/.data")
+    Object = user_utils.UserData('file_manager')
+    parent_path = Object.get_dotdata_dir(request)
     try:
         os.chdir(parent_path)
     except:
         return 'error'
+
     try:
         fp = open(cache_name, 'r')
         result_temp = fp.readlines()
         result = []
         for temp in result_temp:
             result.append(temp.strip('\n'))
-        print(fp.read())
         fp.close()
-        return result
     except:
-        return 'Could not read from file'
-
+        result = 'Could not read from file'
+    return result
 

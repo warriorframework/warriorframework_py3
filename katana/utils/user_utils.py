@@ -39,7 +39,7 @@ class UserData:
         if self.wapp_name is not None:
             wapp_name = self.wapp_name
             # get top level directory for user_data
-            user_path = self.get_user_path(self, request)
+            user_path = self.get_user_path(request)
             if user_path is not None:
                 dotdata_dir = join_path(user_path, WAPPSDATA, wapp_name, DOTDATA)
                 if file_or_dir_exists(dotdata_dir):
@@ -73,7 +73,7 @@ class UserData:
 
 # check if user is authenticated using the request object
 def user_authenticated(request):
-    if request.user.is_authenticated is True:
+    if request.user.is_authenticated:
         return request.user.username
     else:
         return None
