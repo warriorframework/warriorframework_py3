@@ -48,8 +48,63 @@ var microservice = {
             },
             error : function(xhr,errmsg,err) {
                 // provide a bit more info about the error to the console
-                console.log(xhr.status + ": " + xhr.responseText);
+                //console.log(xhr.status + ": " + xhr.responseText);
             }
+        });
+    },
+
+    load: function(){
+        var csrf = katana.$activeTab.find('.csrf-container input').val();
+        katana.templateAPI.post('microservice_store/get_dir_path', csrf, '', function( dirPath ){
+            katana.fileExplorerAPI.openFileExplorer("Select a settings file to import", dirPath.data, csrf, false, function(str){
+                katana.templateAPI.post('microservice_store/load', csrf, str, function(data){
+                    katana.$activeTab.find(".microservice.main").html(data);
+                }, function(data){
+                    katana.openAlert({
+                        "alert_type": "danger",
+                        "heading": "Failed to Load",
+                        "text": data.file,
+                        "show_cancel_btn": false,
+                    });
+                });
+            });
+        });
+    },
+
+    save: function(){
+        var csrf = katana.$activeTab.find('.csrf-container input').val();
+        data = microservice.are_fields_valid();
+        if(data == false){
+            return
+        }
+        katana.templateAPI.post('microservice_store/get_dir_path', csrf, '', function( dirPath ){
+            katana.openAlert({
+                "alert_type": "light",
+                "heading": "Filename",
+                "text": "",
+                "prompt": "true",
+                "prompt_default": "settings.dat"
+                }, function(inputValue){
+                    data.file = {'directory':dirPath.data, 'filename':inputValue};
+                    katana.templateAPI.post('microservice_store/save', csrf, JSON.stringify(data), function(response){
+                        if (response.status) {
+                            katana.openAlert({
+                                "alert_type": "success",
+                                "heading": "Saved",
+                                "text": response.file,
+                                "show_cancel_btn": false,
+                            });
+                        } else {
+                            katana.openAlert({
+                                "alert_type": "danger",
+                                "heading": "Failed to Save",
+                                "text": response.file,
+                                "show_cancel_btn": false,
+                            });
+                        }
+                    });
+                }
+            );
         });
     },
 
@@ -78,6 +133,20 @@ var microservice = {
             $(".microservice.kubernetes_deployment_details").show();
             $(".microservice.docker_deployment_details").hide();
         }
+    },
+
+    get_fields: function(){
+        data = {status: true}
+        $(".microservice [key]").each(function(){
+            s = $(this).closest("[section]").attr("section");
+            k = $(this).attr("key");
+            v = $(this).val();
+            if(data[s] == null){
+                data[s] = {}
+            }
+            data[s][k] = v;
+        });
+        return data
     },
 
     are_fields_valid: function(){

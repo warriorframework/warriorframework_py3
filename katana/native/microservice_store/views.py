@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.http import HttpResponse, JsonResponse
 from django.http import StreamingHttpResponse
 
 import os
@@ -9,16 +10,18 @@ import subprocess
 from utils.navigator_util import Navigator
 from utils.command_options_utils import DockerRunCommandOptions
 
-MOCK_DATA = {
+DEFAULT_DATA = {
+    "docker_options": {},
+    "kubernetes_options": [],
     "host": {
         "address": "localhost",
         "port": "22",
         "username": "arch",
         "password": "arch",
-        "end_prompt": "[arch@arch microservice_store]$"
+        "end_prompt": "[arch@arch]$"
     },
     "registry": {
-        "address": "i",
+        "address": "index.docker.io",
         "image": ""
     }
 }
@@ -41,13 +44,16 @@ def index(request):
     :param request:
     :return:
     """
-    docker_options = DockerRunCommandOptions(cmd="docker run --help", start="Options:", end=None)
-    context = {
-        "docker_options": docker_options.get_options_json(),
-        "kubernetes_options": []
-    }
+    try:
+        docker_options = DockerRunCommandOptions(cmd="docker run --help", start="Options:", end=None).get_options_json()
+    except Exception as ex:
+        print(ex)
+        docker_options = {}
+    context = DEFAULT_DATA.copy()
+    context["docker_options"] = docker_options
     template = "microservice_store/index.html"
     return render(request, template, context)
+
 
 def generate_host_system_data(host):
     """
@@ -60,6 +66,7 @@ def generate_host_system_data(host):
     open(os.path.join(PLUGINSPACE_WDF_DIR, "WDF_microservices_host_system_data.xml"), "w+").write(df)
     return
 
+
 def generate_registry_operations(data):
     """
     Takes host and registry information, and generates
@@ -71,13 +78,19 @@ def generate_registry_operations(data):
     open(os.path.join(PLUGINSPACE_TD_VC_DIR, "VC_microservices_registry_operations.xml"), "w+").write(df)
     return
 
+
+def get_dir_path(request):
+    directory = os.path.dirname(os.path.abspath(__file__)) + os.sep + '.data'
+    return JsonResponse({'data': directory}, safe=False)
+
+
 def deploy(request):
     """
     Takes request from the browser, makes call to generate
         1. Input Data File
         2. Variable Config File
     and return StreamHTTP back to client, invoking a stream
-    function as an yeild
+    function as an yield
     :param request:
     :return:
     """
@@ -90,23 +103,60 @@ def deploy(request):
         f = "TC_microservices_host_kubernetes_operations.xml"
 
     generate_host_system_data(data["host"])
-
-    # if host["deployment_environment"] == "docker":
-    #     if host["bind_host_interface"].strip() != "":
-    #         host["bind_host_interface_port"] = "-p " + host["bind_host_interface"]
-    #         if host["bind_host_port"].strip() != "":
-    #             host["bind_host_interface_port"] += ":" + host["bind_host_port"]
-    # elif host["deployment_environment"] == "kubernetes":
-    #     if host["bind_host_port"].strip() != "":
-    #         host["port_flag"] = "--port={}".format(host["bind_host_port"])
-    #     if host["replicas"].strip() != "":
-    #         host["replicas_flag"] = "--replicas={}".format(host["replicas"])
-
-    data["registry"]["just_image"] = data["registry"]["image"].split(":")[0]
-
+    data["registry"]["just_image"] = data["registry"]["image"].split(":")[0].strip()
     generate_registry_operations(data)
 
     return StreamingHttpResponse(stream(f))
+
+
+def save(request):
+    """
+    Takes request from the browser, saves settings to a file
+    :param request:
+    :return:
+    """
+    directory = ""
+    filename = "settings.dat"
+    data = request.POST.get("data")
+    data = json.loads(data)
+    if "file" in data:
+        directory = data["file"].get('directory', '')
+        filename = data["file"].get('filename', filename)
+    file = os.path.join(directory, filename)
+    response = {'status': True, 'file': file}
+    try:
+        with open(file, 'w') as fd:
+            json.dump(data, fd)
+    except Exception:
+        response['status'] = False
+    return JsonResponse(response)
+
+
+def load(request):
+    """
+    Takes request from the browser, loads settings from a file
+    :param request:
+    :return:
+    """
+    template = "microservice_store/index.html"
+    try:
+        docker_options = DockerRunCommandOptions(cmd="docker run --help", start="Options:", end=None)
+    except Exception as ex:
+        docker_options = {}
+    context = DEFAULT_DATA.copy()
+    context["docker_options"] = docker_options.get_options_json()
+    file = request.POST.get("data")
+
+    response = HttpResponse(status=400)
+    try:
+        with open(file) as fd:
+            data = json.load(fd)
+            context.update(data)
+            response = render(request, template, context)
+    except OSError:
+        pass
+    return response
+
 
 def stream(file_list):
     """

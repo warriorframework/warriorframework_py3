@@ -3,37 +3,37 @@
         <table class="microservice host_details">
                 <tr colspan="5">
                         <td>
-                                Host Details
+                                Host SSH Details
                         </td>
                 </tr>
                 <tr>
                        <td>
                                <div class="form-group">
-                                       <input class="form-control" key="address" value="" required/>
+                                       <input class="form-control" key="address" value={{ host.address }} required/>
                                        <label class="form-control-placeholder" >Address</label>
                                </div>
                        </td>
                         <td>
                                 <div class="form-group">
-                                        <input class="form-control" key="port" value="" required/>
+                                        <input class="form-control" key="port" value={{ host.port }} required/>
                                         <label class="form-control-placeholder">Port</label>
                                 </div>
                        </td>
                         <td>
                                 <div class="form-group">
-                                        <input class="form-control" key="username" value="" required/>
+                                        <input class="form-control" key="username" value={{ host.username }} required/>
                                         <label class="form-control-placeholder">Username</label>
                                 </div>
                         </td>
                         <td>
                                 <div class="form-group">
-                                        <input class="form-control" key="password" type="password" value="" required/>
+                                        <input class="form-control" key="password" type="password" value={{ host.password }} required/>
                                         <label class="form-control-placeholder">Password</label>
                                 </div>
                         </td>
                         <td>
                                 <div class="form-group">
-                                        <input class="form-control" key="end_prompt" value="" required/>
+                                        <input class="form-control" key="end_prompt" value={{ host.end_prompt }} required/>
                                         <label class="form-control-placeholder">CLI Prompt</label>
                                 </div>
                         </td>
@@ -49,13 +49,14 @@
                 <tr colspan="2">
                        <td>
                                <div class="form-group">
-                                        <input class="form-control" key="deployment_environment" list="envs_list"
-                                               katana-change="microservice.deployment_details" required/>
-                                        <label class="form-control-placeholder">Environment</label>
-                                        <datalist id="envs_list">
-                                               <option value="docker"> Docker </option>
-                                               <option value="kubernetes"> Kubernetes </option>
-                                        </datalist>
+                                        <label>Environment</label>
+                                        <select class="form-control" key="deployment_environment" list="envs_list"
+                                               katana-change="microservice.deployment_details" required>
+                                                <datalist id="envs_list">
+                                                       <option {% if host.deployment_environment == "docker" %}selected{% endif %} value="docker"> Docker </option>
+                                                       <option {% if host.deployment_environment != "docker" %}selected{% endif %} value="kubernetes"> Kubernetes </option>
+                                                </datalist>
+                                        </select>
                                 </div>
                        </td>
                 </tr>
@@ -93,7 +94,7 @@
                                 </ul>
                         </td>
                         <td>
-                                <textarea class="microservice flag textarea" key="flags" rows="10"></textarea>
+                                <textarea class="microservice flag textarea" key="flags" rows="10">{{host.flags|default:''}}</textarea>
                         </td>
                 </tr>
                 <tr class="microservice deployment_details">
@@ -113,7 +114,7 @@
                                 </div>
                         </td>
                         <td>
-                                <textarea class="microservice scripts textarea" key="scripts" rows="10"></textarea>
+                                <textarea class="microservice scripts textarea" key="scripts" rows="10">{{host.scripts|default:''}}</textarea>
                         </td>
                 </tr>
         </table>

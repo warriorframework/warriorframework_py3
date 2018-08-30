@@ -27,6 +27,26 @@
 		</step>
 		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="2">
 			<Arguments>
+				<argument name="title" value="become_root"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Become Root</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="3">
+			<Arguments>
+				<argument name="title" value="send_password"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Send Password</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="2">
+			<Arguments>
 				<argument name="title" value="list_images"/>
 			</Arguments>
 			<onError action="abort"/>
