@@ -3,25 +3,28 @@ var microservice = {
     IP_REGEX: "/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/",
     URL_REGEX: "/(?:(?:https?|http):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?/",
 
-    showSection: function(){
-        s = $(this).attr("section")
+    showSection: function(section){
+        s = $(this).attr("section");
+        if(typeof section !== "undefined") {
+            s = section;
+        }
         $(".microservice.section").each(function(){
             if($(this).attr("class").indexOf(s) > 0){
-                $(this).show()
+                $(this).show();
             }else{
-                $(this).hide()
+                $(this).hide();
             }
-        })
+        });
         $(".microservice.options div").each(function(){
-            $(this).removeClass("selected")
-        })
-        $(".microservice.options div[section='"+s+"']").addClass("selected")
+            $(this).removeClass("selected");
+        });
+        $(".microservice.options div[section='"+s+"']").addClass("selected");
     },
 
     deploy: function(){
-        data = microservice.are_fields_valid()
+        data = microservice.are_fields_valid();
         if(data == false){
-            return
+            return;
         }
         microservice.maximize();
         var csrf = katana.$activeTab.find('.csrf-container input').val();
@@ -75,7 +78,7 @@ var microservice = {
         var csrf = katana.$activeTab.find('.csrf-container input').val();
         data = microservice.are_fields_valid();
         if(data == false){
-            return
+            return;
         }
         katana.templateAPI.post('microservice_store/get_dir_path', csrf, '', function( dirPath ){
             katana.openAlert({
@@ -116,13 +119,13 @@ var microservice = {
     },
 
     minimize: function(){
-        $(".microservice-console").css({height: "0px"})
-        $(".microservice-operations").css({height: "calc(100% - 37px)"})
+        $(".microservice-console").css({height: "0px"});
+        $(".microservice-operations").css({height: "calc(100% - 37px)"});
     },
 
     maximize: function(){
-        $(".microservice-console").css({height: "calc(50% - 37px)"})
-        $(".microservice-operations").css({height: "50%"})
+        $(".microservice-console").css({height: "calc(50% - 37px)"});
+        $(".microservice-operations").css({height: "50%"});
     },
 
     deployment_details: function(){
@@ -136,17 +139,60 @@ var microservice = {
     },
 
     get_fields: function(){
-        data = {status: true}
+        data = {status: true};
         $(".microservice [key]").each(function(){
             s = $(this).closest("[section]").attr("section");
             k = $(this).attr("key");
             v = $(this).val();
             if(data[s] == null){
-                data[s] = {}
+                data[s] = {};
             }
             data[s][k] = v;
         });
-        return data
+        return data;
+    },
+
+  REQUIRED_FIELDS: {
+        "registry":{
+            "address":{
+                "heading":"Docker Registry Address",
+                 "if_missing_text": "Docker Registry Address Is Empty",
+            },
+            "image":{
+                "heading":"Docker Image",
+                 "if_missing_text": "Docker Image Is Empty",
+            },
+            "key":{
+                "heading":"Docker Registry Key",
+                 "if_missing_text": "Docker Registry Key Is Empty",
+            }
+        },
+        "host":{
+            "address":{
+                "heading":"Host Address",
+                 "if_missing_text": "Host Address Is Empty",
+            },
+            "port":{
+                "heading":"Host Port",
+                 "if_missing_text": "Host Port Is Empty",
+            },
+            "username":{
+                "heading":"Host Username",
+                 "if_missing_text": "Host Username Is Empty",
+            },
+            "password":{
+                "heading":"Host Password",
+                 "if_missing_text": "Host Password Is Empty",
+            },
+            "end_prompt":{
+                "heading":"Host End Prompt",
+                 "if_missing_text": "Host End Prompt Is Empty",
+            },
+            "deployment_environment":{
+                "heading":"Host Deployment Environment",
+                 "if_missing_text": "Host Deployment Environment Is Empty",
+            },
+        }
     },
 
     are_fields_valid: function(){
@@ -156,137 +202,28 @@ var microservice = {
             k = $(this).attr("key");
             v = $(this).val();
             if(data[s] == null){
-                data[s] = {}
+                data[s] = {};
             }
-            if(s == "registry"){
-                if(k == "address"){
-                    if(microservice.isEmpty(v)){
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": "Docker Registry Address",
-                            "text": "Docker Registry Address Is Empty",
-                            "show_cancel_btn": false
-                        })
-                        data = {status: false}
-                        return false
-                    }
-                    data[s][k] = v;
-                }
-                if(k == "image"){
-                    if(microservice.isEmpty(v)){
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": "Docker Image",
-                            "text": "Docker Image Is Empty",
-                            "show_cancel_btn": false
-                        })
-                        data = {status: false}
-                        return false
-                    }
-                    data[s][k] = v;
-                }
-                if(k == "key"){
-                    if(microservice.isEmpty(v)){
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": "Docker Registry Key",
-                            "text": "Registry Key Is Empty",
-                            "show_cancel_btn": false
-                        })
-                        data = {status: false}
-                        return false
-                    }
-                    data[s][k] = v;
+            data[s][k] = v;
+            if(s in microservice.REQUIRED_FIELDS && k in microservice.REQUIRED_FIELDS[s]) {
+                if(microservice.isEmpty(v)){
+                    katana.openAlert({"alert_type": "warning",
+                        "heading": microservice.REQUIRED_FIELDS[s][k].heading,
+                        "text": microservice.REQUIRED_FIELDS[s][k].if_missing_text,
+                        "show_cancel_btn": false
+                    }, function(data){
+                        microservice.showSection(s);
+                    }, function(data){
+                        microservice.showSection(s);
+                    })
+                    data = {status: false};
+                    return false;
                 }
             }
-            if(s == "host"){
-                if(k == "address"){
-                    if(microservice.isEmpty(v)){
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": "Host Address",
-                            "text": "Host Address Is Empty",
-                            "show_cancel_btn": false
-                        })
-                        data = {status: false}
-                        return false
-                    }
-                    data[s][k] = v;
-                }
-                if(k == "port"){
-                    if(microservice.isEmpty(v)){
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": "Host Port",
-                            "text": "Host Port Is Empty",
-                            "show_cancel_btn": false
-                        })
-                        data = {status: false}
-                        return false
-                    }
-                    data[s][k] = v;
-                }
-                if(k == "username"){
-                    if(microservice.isEmpty(v)){
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": "Host Username",
-                            "text": "Host Username Is Empty",
-                            "show_cancel_btn": false
-                        })
-                        data = {status: false}
-                        return false
-                    }
-                    data[s][k] = v;
-                }
-                if(k == "password"){
-                    if(microservice.isEmpty(v)){
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": "Host Password",
-                            "text": "Host Password Is Empty",
-                            "show_cancel_btn": false
-                        })
-                        data = {status: false}
-                        return false
-                    }
-                    data[s][k] = v;
-                }
-                if(k == "end_prompt"){
-                    if(microservice.isEmpty(v)){
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": "End Prompt",
-                            "text": "End Prompt Is Empty",
-                            "show_cancel_btn": false
-                        })
-                        data = {status: false}
-                        return false
-                    }
-                    data[s][k] = v;
-                }
-                if(k == "deployment_environment"){
-                    if(microservice.isEmpty(v)){
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": "Deployment Environment",
-                            "text": "Deployment Environment Is Empty",
-                            "show_cancel_btn": false
-                        })
-                        data = {status: false}
-                        return false
-                    }
-                    data[s][k] = v;
-                }
-                if(k == "flags"){
-                    data[s][k] = v;
-                }
-                if(k == "scripts"){
-                    data[s][k] = " "+ v;
-                }
-                if(k == "pod_name"){
-                    data[s][k] = v;
-                }
-                if(k == "replicas"){
-                    data[s][k] = v;
-                }
-            }
-
         });
-        if(data["status"] == false) return false
-        delete data["status"]
-        return data
+        if(data["status"] == false) return false;
+        delete data["status"];
+        return data;
     },
 
     isEmpty(v){
@@ -294,7 +231,7 @@ var microservice = {
     },
 
     put_flags: function(){
-        var flags = ""
+        var flags = "";
         $("tr.microservice.flag input").each(function(){
             k = $(this).attr("key")
             v = $(this).val()
@@ -316,26 +253,26 @@ var microservice = {
         var flags = $(".textarea.flag").val();
         vv = ""
         while(flags.indexOf(flag) != -1){
-            flags = flags.substring(flags.indexOf(flag) + flag.length)
-            var v = ""
+            flags = flags.substring(flags.indexOf(flag) + flag.length);
+            var v = "";
             for (var i = 0; i < flags.length; i++) {
                 v += flags.charAt(i);
-                if(flags.charAt(i+1) == "-" && flags.charAt(i+2) == "-") break
+                if(flags.charAt(i+1) == "-" && flags.charAt(i+2) == "-") break;
             }
-            v = v.trim()
+            v = v.trim();
             if(vv == ""){
-                vv = v
+                vv = v;
             }else{
-                vv = vv + "," + v
+                vv = vv + "," + v;
             }
         }
-        return vv
+        return vv;
     },
 
     show_options_box: function(){
-        var box = $("<div></div>")
-        var head = $("<div>Options</div>")
-        var close = $("<div class='fa fa-remove'></div>")
+        var box = $("<div></div>");
+        var head = $("<div>Options</div>");
+        var close = $("<div class='fa fa-remove'></div>");
         $(close).css({
             "float": "right",
             "right": "25px",
@@ -367,18 +304,18 @@ var microservice = {
             "box-shadow": "10px 10px 50px 10px rgba(0, 0, 0, 0.2), -10px -10px 50px 10px rgba(0, 0, 0, 0.19), -10px 10px 50px 10px rgba(0, 0, 0, 0.19), 10px -10px 50px 10px rgba(0, 0, 0, 0.19)"
 
         })
-        $(head).append(close)
-        $(box).append(head)
-        cl = $(".docker_flag_section").clone()
-        cl.show()
-        $(box).append("<center>" + cl[0].outerHTML + "</center>")
+        $(head).append(close);
+        $(box).append(head);
+        cl = $(".docker_flag_section").clone();
+        cl.show();
+        $(box).append("<center>" + cl[0].outerHTML + "</center>");
         $(box).find("tr.microservice.flag input").each(function(){
-            v = microservice.get_flag($(this).attr("key"))
-            $(this).val(v)
-        })
-        $(close).on("click", function(){$(box).remove()})
-        $(document.body).append(box)
-        $("tr.microservice.flag input").keyup(function(){microservice.put_flags()})
+            v = microservice.get_flag($(this).attr("key"));
+            $(this).val(v);
+        });
+        $(close).on("click", function(){$(box).remove()});
+        $(document.body).append(box);
+        $("tr.microservice.flag input").keyup(function(){microservice.put_flags()});
     }
 
 }

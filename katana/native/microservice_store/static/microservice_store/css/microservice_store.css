@@ -184,6 +184,15 @@
     #border-bottom: 1px solid #dcdcdc !important;
 }
 
+.microservice select{
+    border-radius: 5px;
+    display: block;
+    width: 300px;
+    #border: none !important;
+    background: transparent;
+    #border-bottom: 1px solid #dcdcdc !important;
+}
+
 table.microservice tr:nth-child(2) .form-group {
     margin-top: 2.4rem;
 }
