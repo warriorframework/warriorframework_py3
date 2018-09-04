@@ -75,16 +75,6 @@
 			<context>positive</context>
 			<impact>impact</impact>
 		</step>
-		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="5">
-			<Arguments>
-				<argument name="title" value="docker_remove_image"/>
-			</Arguments>
-			<onError action="abort"/>
-			<Description>Docker Remove Image</Description>
-			<Execute ExecType="Yes"/>
-			<context>positive</context>
-			<impact>impact</impact>
-		</step>
 		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="6">
 			<Arguments>
 				<argument name="title" value="docker_pull"/>

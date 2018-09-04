@@ -66,7 +66,7 @@ var microservice = {
                     katana.openAlert({
                         "alert_type": "danger",
                         "heading": "Failed to Load",
-                        "text": data.file,
+                        "text": str,
                         "show_cancel_btn": false,
                     });
                 });
