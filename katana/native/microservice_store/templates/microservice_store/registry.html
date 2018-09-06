@@ -24,16 +24,52 @@
                 <tr>
                        <td>
                                 <div class="form-group">
+                                        <label class="label">URL or IP Address</label>
                                         <input class="form-control" key="address" value="{{ registry.address }}" required/>
-                                        <label class="form-control-placeholder">Address</label>
                                 </div>
                        </td>
+                </tr>
+            <!--
+                <tr>
+                       <td>
+                                <div class="form-group">
+                                        <label class="label">Address</label>
+                                        <select class="form-control" list="addr_list" value="{{ registry.address }}" required>
+                                                <datalist id="envs_list">
+                                                       <option value="docker_hub"> Docker Hub </option>
+                                                       <option value="custom"> Other... </option>
+                                                </datalist>
+                                        </select>
+                                </div>
+                       </td>
+                       <td>
+                                <div class="form-group">
+                                        <label class="label">URL or IP Address</label>
+                                        <input class="form-control" key="address" value="{{ registry.address }}" required/>
+                                </div>
+                       </td>
+                </tr>
+                -->
+        </table>
+        <table class="microservice registry_details">
+                <tr colspan="2">
+                        <td>
+                                Image Details
+                        </td>
+                </tr>
+                <tr colspan="2">
                         <td>
                                 <div class="form-group">
-                                        <input class="form-control" key="image" value="{{ registry.image }}" required/>
-                                        <label class="form-control-placeholder">Image</label>
+                                        <label class="label">Image Name</label>
+                                        <input class="form-control" key="image_name" value="{{ registry.image_name }}" required/>
                                 </div>
-                       </td>
+                        </td>
+                        <td>
+                                <div class="form-group">
+                                        <label class="label">Image Tag</label>
+                                        <input class="form-control" key="image_tag" value="{{ registry.image_tag }}"/>
+                                </div>
+                        </td>
                 </tr>
         </table>
 

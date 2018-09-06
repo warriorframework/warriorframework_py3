@@ -158,9 +158,9 @@ var microservice = {
                 "heading":"Docker Registry Address",
                  "if_missing_text": "Docker Registry Address Is Empty",
             },
-            "image":{
-                "heading":"Docker Image",
-                 "if_missing_text": "Docker Image Is Empty",
+            "image_name":{
+                "heading":"Docker Image Name",
+                 "if_missing_text": "Docker Image Name Is Empty",
             },
             "key":{
                 "heading":"Docker Registry Key",

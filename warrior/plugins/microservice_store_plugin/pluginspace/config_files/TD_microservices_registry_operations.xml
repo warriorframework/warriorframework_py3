@@ -41,7 +41,7 @@
     <testdata execute="yes" title ="is_image_downloaded" >
         <command send="docker image ls"
                  end="xXxhost.args.end_promptoOo" verify="v1"/>
-        <v1 found="yes" search="xXxregistry.args.just_imageoOo"/>
+        <v1 found="yes" search="xXxregistry.args.imageoOo"/>
     </testdata>
 
     <testdata execute="yes" title ="docker_pre_config_scripts" >
@@ -57,7 +57,7 @@
     <testdata execute="yes" title ="is_service_running" >
         <command send="docker container ls"
                  end="xXxhost.args.end_promptoOo" verify="v1"/>
-        <v1 found="yes" search="xXxregistry.args.just_imageoOo"/>
+        <v1 found="yes" search="xXxregistry.args.image_nameoOo"/>
     </testdata>
 
     <!--
@@ -75,7 +75,7 @@
     </testdata>
 
     <testdata execute="yes" title ="kubernetes_run" >
-        <command send="sudo kubectl run xXxhost.args.kube_pod_nameoOo --image=xXxregistry.args.addressoOo/xXxregistry.args.imageoOo xXxhost.args.kube_port_flagoOo xXxhost.args.kube_replicas_flagoOo"
+        <command send="sudo kubectl run xXxhost.args.kube_pod_nameoOo --image=xXxregistry.args.addressoOo/xXxregistry.args.imageoOo xXxhost.args.run_flagsoOo"
                  end="xXxhost.args.end_promptoOo"/>
     </testdata>
 
@@ -87,7 +87,7 @@
     </testdata>
 
     <testdata execute="yes" title ="kubernetes_expose" >
-        <command send="sudo kubectl expose deployment xXxhost.args.kube_pod_nameoOo --type=NodePort"
+        <command send="sudo kubectl expose deployment xXxhost.args.kube_pod_nameoOo xXxhost.args.expose_flagsoOo"
                  end="xXxhost.args.end_promptoOo"/>
     </testdata>
 

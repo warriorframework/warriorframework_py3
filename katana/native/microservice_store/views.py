@@ -16,13 +16,16 @@ DEFAULT_DATA = {
     "host": {
         "address": "localhost",
         "port": "22",
-        "username": "arch",
-        "password": "arch",
-        "end_prompt": "[arch@arch]$"
+        "username": "",
+        "password": "",
+        "end_prompt": "$",
+        "deployment_environment":"docker",
     },
     "registry": {
         "address": "index.docker.io",
-        "image": ""
+        "image": "",
+        "image_name":"",
+        "image_tag":"",
     }
 }
 
@@ -103,7 +106,10 @@ def deploy(request):
         f = "TC_microservices_host_kubernetes_operations.xml"
 
     generate_host_system_data(data["host"])
-    data["registry"]["just_image"] = data["registry"]["image"].split(":")[0].strip()
+    image = data["registry"]["image_name"]
+    if data["registry"]["image_tag"]:
+        image = "{}:{}".format(image, data["registry"]["image_tag"])
+    data["registry"]["image"] = image
     generate_registry_operations(data)
 
     return StreamingHttpResponse(stream(f))

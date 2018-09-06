@@ -265,7 +265,6 @@ input.options-control{
 }
 
 .microservice label{
-    margin-top: 15px;
 }
 
 .microservice-console{
@@ -378,6 +377,13 @@ table.microservice td{
 }
 
 .microservice.host_details input{
+    width: 150px;
+    border-radius: 3px;
+    border: none;
+    border: 1px solid #dcdcdc !important;
+}
+
+.microservice.registry_details input{
     width: 150px;
     border-radius: 3px;
     border: none;
