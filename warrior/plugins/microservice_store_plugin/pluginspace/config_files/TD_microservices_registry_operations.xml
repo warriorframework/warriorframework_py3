@@ -41,7 +41,7 @@
     <testdata execute="yes" title ="is_image_downloaded" >
         <command send="docker image ls"
                  end="xXxhost.args.end_promptoOo" verify="v1"/>
-        <v1 found="yes" search="xXxregistry.args.imageoOo"/>
+        <v1 found="yes" search="xXxregistry.args.image_nameoOo"/>
     </testdata>
 
     <testdata execute="yes" title ="docker_pre_config_scripts" >
