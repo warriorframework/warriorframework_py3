@@ -124,7 +124,7 @@ class gnmi(object):
                                      timeout=5)
                 if index == 0:
                     child.sendline(value)
-                    testcase_Utils.pNote(child.match.group(0) + value)
+                    testcase_Utils.pNote(child.match.group(0) + value.encode('utf-8'))
                     execute = True
                     status = True
                 else:
@@ -135,7 +135,7 @@ class gnmi(object):
                                   and "stream" not in cmd_string.lower():
                 j_index = child.expect([prompt, pexpect.EOF, pexpect.TIMEOUT], timeout=50)
                 if j_index == 1 or j_index == 0:
-                    if "client had error while displaying results" not in child.before:
+                    if "client had error while displaying results" not in (child.before).decode('utf-8'):
                         if j_index == 1:
                             sleep(5)
                             result = child.before
@@ -176,7 +176,7 @@ class gnmi(object):
         else:
             json_str = json_object
         for search_pattern in [x.strip() for x in search_list.split(',')]:
-            if re.search(search_pattern, json_str, re.DOTALL):
+            if re.search(search_pattern.encode(), json_str, re.DOTALL):
                 status = status and True
                 testcase_Utils.pNote("{} is Present in Output JSON".format(search_pattern))
             else:
@@ -207,9 +207,9 @@ class gnmi(object):
             gnmi_obj.expect([pexpect.EOF, '.*(%|#|\$)'], timeout=2)
         except:
             testcase_Utils.pNote("Sending Ctrl+C")
-        if "client had error while displaying results" not in gnmi_obj.before:
+        if "client had error while displaying results" not in (gnmi_obj.before).decode('utf-8'):
             if system_name:
-                result = gnmi_obj.before.strip().strip("^C")
+                result = (gnmi_obj.before).decode('utf-8').strip().strip("^C")
                 testcase_Utils.pNote(result)
             else:
                 result = gnmi_obj.after.strip().strip("^C")
