@@ -175,8 +175,10 @@ class gnmi(object):
             json_str = json.dumps(json_object)
         else:
             json_str = json_object
+        if isinstance(json_str, bytes):
+            json_str = json_str.decode()
         for search_pattern in [x.strip() for x in search_list.split(',')]:
-            if re.search(search_pattern.encode(), json_str, re.DOTALL):
+            if re.search(search_pattern, json_str, re.DOTALL):
                 status = status and True
                 testcase_Utils.pNote("{} is Present in Output JSON".format(search_pattern))
             else:
