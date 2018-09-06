@@ -152,7 +152,7 @@ var microservice = {
         return data;
     },
 
-  REQUIRED_FIELDS: {
+    REQUIRED_FIELDS: {
         "registry":{
             "address":{
                 "heading":"Docker Registry Address",
@@ -316,6 +316,15 @@ var microservice = {
         $(close).on("click", function(){$(box).remove()});
         $(document.body).append(box);
         $("tr.microservice.flag input").keyup(function(){microservice.put_flags()});
-    }
+    },
 
+    registry_address_select: function() {
+        var addr = $(".microservice [section='registry']").find("[key='address']");
+        addr.val($(".microservice [key='address_select']").val());
+        if ($(this).val()) {
+            $(".microservice.registry_address_advanced").hide();
+        } else {
+            $(".microservice.registry_address_advanced").show();
+        }
+    },
 }

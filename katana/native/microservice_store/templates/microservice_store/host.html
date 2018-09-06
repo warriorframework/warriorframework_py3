@@ -119,7 +119,7 @@
                                 </ul>
                         </td>
                         <td>
-                                <textarea class="microservice flag textarea" key="run_flags" rows="10">{{host.flags|default:''}}</textarea>
+                                <textarea class="microservice flag textarea" key="run_flags" rows="10">{{host.run_flags|default:''}}</textarea>
                         </td>
                 </tr>
                 <tr class="microservice kubernetes_deployment_details" {% if host.deployment_environment == "docker" %} style="display: none" {% endif %}>
@@ -132,7 +132,7 @@
                                 </ul>
                         </td>
                         <td>
-                                <textarea class="microservice flag textarea" key="expose_flags" rows="10">{{host.flags|default:''}}</textarea>
+                                <textarea class="microservice flag textarea" key="expose_flags" rows="10">{{host.expose_flags|default:''}}</textarea>
                         </td>
                 </tr>
         </table>

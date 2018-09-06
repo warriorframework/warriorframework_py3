@@ -24,32 +24,32 @@
                 <tr>
                        <td>
                                 <div class="form-group">
-                                        <label class="label">URL or IP Address</label>
-                                        <input class="form-control" key="address" value="{{ registry.address }}" required/>
-                                </div>
-                       </td>
-                </tr>
-            <!--
-                <tr>
-                       <td>
-                                <div class="form-group">
-                                        <label class="label">Address</label>
-                                        <select class="form-control" list="addr_list" value="{{ registry.address }}" required>
-                                                <datalist id="envs_list">
-                                                       <option value="docker_hub"> Docker Hub </option>
-                                                       <option value="custom"> Other... </option>
+                                        <label class="label">Image Registry</label>
+                                        <select class="form-control" key="address_select" list="registry_list" katana-change="microservice.registry_address_select" required>
+                                                <datalist id="registry_list">
+                                                        {% for addr, name in registry_options.items %}
+                                                        <option value="{{ addr }}" {% if registry.address == addr %}selected{% endif %}>{{ name }} ({{ addr }})</option>
+                                                        {% endfor %}
+                                                        <option value="" {% if registry.address not in registry_options.keys %}selected{% endif %}>Other...</option>
                                                 </datalist>
                                         </select>
                                 </div>
                        </td>
+                </tr>
+                <tr class="microservice registry_address_advanced" {% if registry.address in registry_options.keys %} style="display: none" {% endif %}>
                        <td>
                                 <div class="form-group">
                                         <label class="label">URL or IP Address</label>
-                                        <input class="form-control" key="address" value="{{ registry.address }}" required/>
+                                        <input class="form-control" key="address" value="{{ registry.address }}" required>
+                                </div>
+                       </td>
+                       <td>
+                                <div class="form-group">
+                                        <label class="label">Port</label>
+                                        <input class="form-control" value="{{ registry.port }}" key="port">
                                 </div>
                        </td>
                 </tr>
-                -->
         </table>
         <table class="microservice registry_details">
                 <tr colspan="2">

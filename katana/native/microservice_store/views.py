@@ -13,6 +13,10 @@ from utils.command_options_utils import DockerRunCommandOptions
 DEFAULT_DATA = {
     "docker_options": {},
     "kubernetes_options": [],
+    "registry_options": {
+        "index.docker.io": "Docker Hub",
+        "k8s.gcr.io": "Google Container Registry",
+    },
     "host": {
         "address": "localhost",
         "port": "22",
@@ -39,13 +43,13 @@ PLUGINSPACE_TD_VC_DIR = os.path.join(PLUGINSPACE_DIR, "config_files")
 WARRIOR_EXE = os.path.join(WARRIOR_DIR, 'Warrior')
 
 
-
-# Create your views here.
-def index(request):
+# Helper functions
+def _get_context(data):
     """
-    Renders landing page of the App
-    :param request:
-    :return:
+    Creates a context by applying data to DEFAULT_DATA.
+    Applies any translations necessary, such as address to address_select
+    :param data:
+    :return: DEFAULT_DATA with data
     """
     try:
         docker_options = DockerRunCommandOptions(cmd="docker run --help", start="Options:", end=None).get_options_json()
@@ -54,6 +58,21 @@ def index(request):
         docker_options = {}
     context = DEFAULT_DATA.copy()
     context["docker_options"] = docker_options
+    context.update(data)
+    context["registry"]["address_select"] = ""
+    if context["registry"]["address"] in context["registry_options"].keys():
+        context["registry"]["address_select"] = context["registry"]["address"]
+    return context
+
+
+# Create your views here.
+def index(request):
+    """
+    Renders landing page of the App
+    :param request:
+    :return:
+    """
+    context = _get_context({})
     template = "microservice_store/index.html"
     return render(request, template, context)
 
@@ -110,6 +129,8 @@ def deploy(request):
     if data["registry"]["image_tag"]:
         image = "{}:{}".format(image, data["registry"]["image_tag"])
     data["registry"]["image"] = image
+    if data["registry"]["port"]:
+        data["registry"]["address"] = "{}:{}".format(data["registry"]["address"], data["registry"]["port"])
     generate_registry_operations(data)
 
     return StreamingHttpResponse(stream(f))
@@ -145,19 +166,13 @@ def load(request):
     :return:
     """
     template = "microservice_store/index.html"
-    try:
-        docker_options = DockerRunCommandOptions(cmd="docker run --help", start="Options:", end=None)
-    except Exception as ex:
-        docker_options = {}
-    context = DEFAULT_DATA.copy()
-    context["docker_options"] = docker_options.get_options_json()
     file = request.POST.get("data")
 
     response = HttpResponse(status=400)
     try:
         with open(file) as fd:
             data = json.load(fd)
-            context.update(data)
+            context = _get_context(data)
             response = render(request, template, context)
     except OSError:
         pass
