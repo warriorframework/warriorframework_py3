@@ -192,35 +192,44 @@ var microservice = {
                 "heading":"Host Deployment Environment",
                  "if_missing_text": "Host Deployment Environment Is Empty",
             },
+            "pod_name":{
+                "heading":"Pod Name",
+                "if_missing_text":"Pod Name Is Empty",
+                "optional_if":{"deployment_environment":"docker"}
+            }
         }
     },
 
     are_fields_valid: function(){
-        data = {status: true}
-        $(".microservice [key]").each(function(){
-            s = $(this).closest("[section]").attr("section");
-            k = $(this).attr("key");
-            v = $(this).val();
-            if(data[s] == null){
-                data[s] = {};
-            }
-            data[s][k] = v;
-            if(s in microservice.REQUIRED_FIELDS && k in microservice.REQUIRED_FIELDS[s]) {
-                if(microservice.isEmpty(v)){
-                    katana.openAlert({"alert_type": "warning",
-                        "heading": microservice.REQUIRED_FIELDS[s][k].heading,
-                        "text": microservice.REQUIRED_FIELDS[s][k].if_missing_text,
-                        "show_cancel_btn": false
-                    }, function(data){
-                        microservice.showSection(s);
-                    }, function(data){
-                        microservice.showSection(s);
-                    })
-                    data = {status: false};
-                    return false;
+        data = microservice.get_fields();
+        for (var s in data) {
+            for (var k in data[s]) {
+                if (s in microservice.REQUIRED_FIELDS && k in microservice.REQUIRED_FIELDS[s]) {
+                    var curr = data[s][k];
+                    var optional_if = microservice.REQUIRED_FIELDS[s][k].optional_if;
+                    var optional = false;
+                    for (var o in optional_if) {
+                        if (data[s][o] == optional_if[o]) {
+                            optional = true;
+                            break;
+                        }
+                    }
+                    if (!optional && microservice.isEmpty(data[s][k])) {
+                        katana.openAlert({"alert_type": "warning",
+                            "heading": microservice.REQUIRED_FIELDS[s][k].heading,
+                            "text": microservice.REQUIRED_FIELDS[s][k].if_missing_text,
+                            "show_cancel_btn": false
+                        }, function(data){
+                            microservice.showSection(s);
+                        }, function(data){
+                            microservice.showSection(s);
+                        });
+                        data = {status: false};
+                        return false;
+                    }
                 }
             }
-        });
+        }
         if(data["status"] == false) return false;
         delete data["status"];
         return data;
