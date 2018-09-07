@@ -1,7 +1,11 @@
 var microservice = {
-
-    IP_REGEX: "/^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/",
-    URL_REGEX: "/(?:(?:https?|http):\/\/)?(?:(?!(?:10|127)(?:\.\d{1,3}){3})(?!(?:169\.254|192\.168)(?:\.\d{1,3}){2})(?!172\.(?:1[6-9]|2\d|3[0-1])(?:\.\d{1,3}){2})(?:[1-9]\d?|1\d\d|2[01]\d|22[0-3])(?:\.(?:1?\d{1,2}|2[0-4]\d|25[0-5])){2}(?:\.(?:[1-9]\d?|1\d\d|2[0-4]\d|25[0-4]))|(?:(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)(?:\.(?:[a-z\u00a1-\uffff0-9]-*)*[a-z\u00a1-\uffff0-9]+)*(?:\.(?:[a-z\u00a1-\uffff]{2,})))(?::\d{2,5})?(?:\/\S*)?/",
+    MATCH_ANY_REGEX: /.*/,
+    IP_REGEX: /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/,
+    URL_REGEX: /^\S*$/,
+    PORT_REGEX: /^\d*$/,
+    POD_NAME_REGEX: /^[^:\s]*$/,
+    IMAGE_NAME_REGEX: /^[^:\s]*$/,
+    IGNORE_KEY_REGEX: /^--/,
 
     showSection: function(section){
         s = $(this).attr("section");
@@ -143,90 +147,136 @@ var microservice = {
         $(".microservice [key]").each(function(){
             s = $(this).closest("[section]").attr("section");
             k = $(this).attr("key");
-            v = $(this).val();
+            v = $.trim($(this).val());
             if(data[s] == null){
                 data[s] = {};
             }
-            data[s][k] = v;
+            if (!k.match(microservice.IGNORE_KEY_REGEX)) {
+                data[s][k] = v;
+            }
         });
         return data;
     },
 
-    REQUIRED_FIELDS: {
+    FIELD_VALIDATION: {
         "registry":{
             "address":{
-                "heading":"Docker Registry Address",
-                 "if_missing_text": "Docker Registry Address Is Empty",
+                "required": true,
+                "heading":"Registry Address",
+                "if_missing_text": "Registry Address is empty",
+                "form": ["URL_REGEX", "IP_REGEX"],
+                "if_invalid_form_text": "Registry Address is not a valid URL or IP address",
             },
             "image_name":{
-                "heading":"Docker Image Name",
-                 "if_missing_text": "Docker Image Name Is Empty",
+                "required": true,
+                "heading": "Image Name",
+                "if_missing_text": "Image Name Is empty",
+                "form": ["IMAGE_NAME_REGEX"],
+                "if_invalid_form_text": "Image Name is not a valid image name",
             },
-            "key":{
-                "heading":"Docker Registry Key",
-                 "if_missing_text": "Docker Registry Key Is Empty",
-            }
+            "port":{
+                "required": false,
+                "heading": "Registry Port",
+                "form": ["PORT_REGEX"],
+                "if_invalid_form_text": "Registry Port is not a valid port number",
+            },
         },
         "host":{
             "address":{
+                "required": true,
                 "heading":"Host Address",
-                 "if_missing_text": "Host Address Is Empty",
+                 "if_missing_text": "Host Address Is empty",
+                "form": ["URL_REGEX", "IP_REGEX"],
+                "if_invalid_form_text": "Host Address is not a valid URL or IP address",
             },
             "port":{
+                "required": true,
                 "heading":"Host Port",
-                 "if_missing_text": "Host Port Is Empty",
+                "if_missing_text": "Host Port Is Empty",
+                "form": ["PORT_REGEX"],
+                "if_invalid_form_text": "Host Port is not a valid port number",
             },
             "username":{
+                "required": true,
                 "heading":"Host Username",
-                 "if_missing_text": "Host Username Is Empty",
+                "if_missing_text": "Host Username Is Empty",
             },
             "password":{
+                "required": true,
                 "heading":"Host Password",
-                 "if_missing_text": "Host Password Is Empty",
+                "if_missing_text": "Host Password Is Empty",
             },
             "end_prompt":{
+                "required": true,
                 "heading":"Host End Prompt",
-                 "if_missing_text": "Host End Prompt Is Empty",
+                "if_missing_text": "Host End Prompt Is Empty",
             },
             "deployment_environment":{
+                "required": true,
                 "heading":"Host Deployment Environment",
-                 "if_missing_text": "Host Deployment Environment Is Empty",
+                "if_missing_text": "Host Deployment Environment Is Empty",
             },
             "pod_name":{
+                "required": true,
+                "optional_if":{"deployment_environment":"docker"},
                 "heading":"Pod Name",
                 "if_missing_text":"Pod Name Is Empty",
-                "optional_if":{"deployment_environment":"docker"}
+                "form": ["POD_NAME_REGEX"],
+                "if_invalid_form_text": "Pod Name is not a valid name",
             }
         }
     },
 
     are_fields_valid: function(){
         data = microservice.get_fields();
-        for (var s in data) {
-            for (var k in data[s]) {
-                if (s in microservice.REQUIRED_FIELDS && k in microservice.REQUIRED_FIELDS[s]) {
-                    var curr = data[s][k];
-                    var optional_if = microservice.REQUIRED_FIELDS[s][k].optional_if;
-                    var optional = false;
-                    for (var o in optional_if) {
-                        if (data[s][o] == optional_if[o]) {
-                            optional = true;
+        for (var s in microservice.FIELD_VALIDATION) {
+            for (var k in microservice.FIELD_VALIDATION[s]) {
+                var required = microservice.FIELD_VALIDATION[s][k].required;
+                var optional_if = microservice.FIELD_VALIDATION[s][k].optional_if;
+                for (var o in optional_if) {
+                    if (data[s][o] == optional_if[o]) {
+                        required = false;
+                        break;
+                    }
+                }
+                var valid = false;
+                var form = microservice.FIELD_VALIDATION[s][k].form;
+                if ($.isEmptyObject(form)) {
+                    valid = true;
+                } else {
+                    for (var f in form) {
+                        if (data[s][k].match(microservice[form[f]])) {
+                            valid = true;
                             break;
+                        } else {
                         }
                     }
-                    if (!optional && microservice.isEmpty(data[s][k])) {
-                        katana.openAlert({"alert_type": "warning",
-                            "heading": microservice.REQUIRED_FIELDS[s][k].heading,
-                            "text": microservice.REQUIRED_FIELDS[s][k].if_missing_text,
-                            "show_cancel_btn": false
-                        }, function(data){
-                            microservice.showSection(s);
-                        }, function(data){
-                            microservice.showSection(s);
-                        });
-                        data = {status: false};
-                        return false;
-                    }
+                }
+                if (required && microservice.isEmpty(data[s][k])) {
+                    katana.openAlert({"alert_type": "warning",
+                        "heading": microservice.FIELD_VALIDATION[s][k].heading,
+                        "text": microservice.FIELD_VALIDATION[s][k].if_missing_text,
+                        "show_cancel_btn": false
+                    }, function(data){
+                        microservice.showSection(s);
+                    }, function(data){
+                        microservice.showSection(s);
+                    });
+                    data = {status: false};
+                    return false;
+                }
+                if (!microservice.isEmpty(data[s][k]) && !valid) {
+                    katana.openAlert({"alert_type": "warning",
+                        "heading": microservice.FIELD_VALIDATION[s][k].heading,
+                        "text": microservice.FIELD_VALIDATION[s][k].if_invalid_form_text,
+                        "show_cancel_btn": false
+                    }, function(data){
+                        microservice.showSection(s);
+                    }, function(data){
+                        microservice.showSection(s);
+                    });
+                    data = {status: false};
+                    return false;
                 }
             }
         }

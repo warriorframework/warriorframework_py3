@@ -123,8 +123,11 @@ def deploy(request):
         f = "TC_microservices_host_docker_operations.xml"
     elif host["deployment_environment"] == "kubernetes":
         f = "TC_microservices_host_kubernetes_operations.xml"
+    if not data["host"]["scripts"]:
+        data["host"]["scripts"] = ";"
 
     generate_host_system_data(data["host"])
+
     image = data["registry"]["image_name"]
     if data["registry"]["image_tag"]:
         image = "{}:{}".format(image, data["registry"]["image_tag"])
