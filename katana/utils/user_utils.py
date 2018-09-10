@@ -2,8 +2,9 @@ import json
 import os
 from django.conf import settings
 
-from katana.utils.navigator_util import Navigator
-from .directory_traversal_utils import get_parent_dir_path, join_path, file_or_dir_exists
+from utils.navigator_util import Navigator
+from .directory_traversal_utils import join_path, file_or_dir_exists
+from katana.wui.core.core_utils.warrior_recon_creation_class import CreateWarriorRecon
 
 DOTDATA = '.data'
 WAPPLOGS = 'wapp_logs'
@@ -11,64 +12,80 @@ WAPPSDATA = 'wapps_data'
 USERDATA = 'user_data'
 
 
-class UserData:
+class UserData():
     # constructor for class User_data
-    def __init__(self, wapp_name, username=None):
-        self.username = username
+    def __init__(self, wapp_name):
         self.wapp_name = wapp_name
 
     def get_user_path(self, request):
         username = user_authenticated(request)
         if username is not None:
-            self.username = username
             top_dir = get_user_home_dir(username)
-            if top_dir is not "":
+            if top_dir:
                 user_dir = join_path(top_dir, USERDATA, username)
                 return user_dir
             else:
-                print('fetching of top level directory resulted in a empty string')
+                print('-- An Error Occurred -- fetching of top level directory resulted in a empty string')
                 return None
         else:
-            print('user not authenticated')
+            print('-- An Error Occurred -- user not authenticated')
             return None
 
-    # define method, get .data directory
-    # given request object
     def get_dotdata_dir(self, request):
+        """
+        get .data directory, given request object
+        :param request:
+        :return:
+        """
+        dotdata_dir = None
         # get location to .data
-        if self.wapp_name is not None:
-            wapp_name = self.wapp_name
-            # get top level directory for user_data
-            user_path = self.get_user_path(self, request)
-            if user_path is not None:
-                dotdata_dir = join_path(user_path, WAPPSDATA, wapp_name, DOTDATA)
-                if file_or_dir_exists(dotdata_dir):
-                    return dotdata_dir
-            else:
-                print('user_path not found')
-                return None
+        wapp_name = self.wapp_name
+        # get top level directory for user_data
+        user_path = self.get_user_path(self, request)
+        if user_path and wapp_name:
+            dotdata_dir = join_path(user_path, WAPPSDATA, wapp_name, DOTDATA)
+            if not file_or_dir_exists(dotdata_dir):
+                print('-- An Error Occurred -- file_or_dir_exists not found. Creating directory...')
+                # create the directory
+                warrior_recon = CreateWarriorRecon()
+                warrior_recon.create_user_dir(dotdata_dir)
         else:
-            print('wapp_name not available')
-            return None
+            print('-- An Error Occurred -- user_path or wapp_name not found')
+        return dotdata_dir
 
-    # define method, get wapp_logs
-    # given request object
     def get_wapplogs_dir(self, request):
+        """
+        get wapp_logs, given request object
+        :param request: Request object
+        :return:
+        """
+        wapplogs_dir = None
         # get location to wapp_logs
-        if self.wapp_name is not None:
-            wapp_name = self.wapp_name
-            # get top level directory for user_data
-            user_path = self.get_user_path(self, request)
-            if user_path is not None:
-                wapplogs_dir = join_path(user_path, WAPPSDATA, wapp_name, WAPPLOGS)
-                if file_or_dir_exists(wapplogs_dir):
-                    return wapplogs_dir
-            else:
-                print('user_path not found')
-                return None
+        wapp_name = self.wapp_name
+        # get top level directory for user_data
+        user_path = self.get_user_path(self, request)
+        if user_path and wapp_name:
+            wapplogs_dir = join_path(user_path, WAPPSDATA, wapp_name, WAPPLOGS)
+            if not file_or_dir_exists(wapplogs_dir):
+                print('-- An Error Occurred -- file_or_dir_exists not found. Creating directory...')
+                # create the directory
+                warrior_recon = CreateWarriorRecon()
+                warrior_recon.create_user_dir(wapplogs_dir)
         else:
-            print('wapp_name not available')
-            return None
+            print('-- An Error Occurred -- user_path or wapp_name not found')
+        return wapplogs_dir
+
+
+def user_authenticated(request):
+    """
+    check if user is authenticated using the request object
+    :param request: Request object
+    :return:
+    """
+    user_name = None
+    if request.user.is_authenticated:
+        user_name = request.user.username
+    return user_name
 
 
 def get_user_home_dir(username=None):
@@ -100,10 +117,3 @@ def get_user_data():
         print("User data could not be retrieved.")
     return userdata
 
-
-# check if user is authenticated using the request object
-def user_authenticated(request):
-    if request.user.is_authenticated:
-        return request.user.username
-    else:
-        return None

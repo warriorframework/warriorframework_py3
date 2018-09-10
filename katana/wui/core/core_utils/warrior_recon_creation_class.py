@@ -108,3 +108,17 @@ class CreateWarriorRecon:
         Returns the current username
         """
         return getpass.getuser()
+
+    # TODO: Check if it is required for this method to be part of class or as an independent function.
+    def create_user_dir(self, path):
+        """
+        Creates user directory should it not already exist.
+        :param path: Path to create directories.
+        """
+        if path and isinstance(path, str):
+            try:
+                os.makedirs(path)
+            except OSError as file_exception:
+                print("-- An Error Occurred -- {}".format(file_exception))
+        else:
+            print("-- An Error Occurred -- Incorrect args provided. Please verify the arguments.")
