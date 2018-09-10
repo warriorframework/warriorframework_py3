@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-from WarriorCore.Classes.war_print_class import print_main
 import sys
 import traceback
+from WarriorCore.Classes.war_print_class import print_main
 
 """
 Warrior Frameworks print library
@@ -56,6 +56,16 @@ def print_normal(message, *args):
         for arg in args:
             message += arg + ", "
     print_main(message, print_type)
+    return message
+
+
+def print_without_logging(message, *args):
+    """Prints without writing to log file"""
+    print_type = "-N-"
+    if len(args) > 0:
+        for arg in args:
+            message += arg + ", "
+    print_main(message, print_type, logging=False)
     return message
 
 
@@ -145,3 +155,4 @@ def print_sub(message, *args):
     message = message.format(*args)
     print_main(message, print_type)
     return message
+
