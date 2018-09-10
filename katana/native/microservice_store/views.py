@@ -1,12 +1,23 @@
-from django.shortcuts import render
-from django.template.loader import render_to_string
-from django.http import HttpResponse, JsonResponse
-from django.http import StreamingHttpResponse
+"""
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+
+"""
 
 import os
 import json
 import subprocess
-
+from django.shortcuts import render
+from django.template.loader import render_to_string
+from django.http import HttpResponse, JsonResponse
+from django.http import StreamingHttpResponse
 from utils.navigator_util import Navigator
 from utils.command_options_utils import DockerRunCommandOptions
 
@@ -42,6 +53,10 @@ PLUGINSPACE_TD_VC_DIR = os.path.join(PLUGINSPACE_DIR, "config_files")
 
 WARRIOR_EXE = os.path.join(WARRIOR_DIR, 'Warrior')
 
+TEMPLATE_WDF = "xml_templates/WDF_microservices_host_system_data_template.xml"
+TEMPLATE_VC = "xml_templates/VC_microservices_registry_operations_template.xml"
+FILENAME_WDF = "WDF_microservices_host_system_data.xml"
+FILENAME_VC = "VC_microservices_registry_operations.xml"
 
 # Helper functions
 def _get_context(data):
@@ -52,7 +67,9 @@ def _get_context(data):
     :return: DEFAULT_DATA with data
     """
     try:
-        docker_options = DockerRunCommandOptions(cmd="docker run --help", start="Options:", end=None).get_options_json()
+        docker_options = DockerRunCommandOptions(cmd="docker run --help",
+                                                 start="Options:",
+                                                 end=None).get_options_json()
     except Exception as ex:
         print(ex)
         docker_options = {}
@@ -84,8 +101,8 @@ def generate_host_system_data(host):
     :param host:
     :return:
     """
-    df = render_to_string("xml_templates/WDF_microservices_host_system_data_template.xml", {"host": host})
-    open(os.path.join(PLUGINSPACE_WDF_DIR, "WDF_microservices_host_system_data.xml"), "w+").write(df)
+    data = render_to_string(TEMPLATE_WDF, {"host": host})
+    open(os.path.join(PLUGINSPACE_WDF_DIR, FILENAME_WDF), "w+").write(data)
     return
 
 
@@ -96,12 +113,17 @@ def generate_registry_operations(data):
     :param data:
     :return:
     """
-    df = render_to_string("xml_templates/VC_microservices_registry_operations_template.xml", {"data": data})
-    open(os.path.join(PLUGINSPACE_TD_VC_DIR, "VC_microservices_registry_operations.xml"), "w+").write(df)
+    data = render_to_string(TEMPLATE_VC, {"data": data})
+    open(os.path.join(PLUGINSPACE_TD_VC_DIR, FILENAME_VC), "w+").write(data)
     return
 
 
 def get_dir_path(request):
+    """
+    Retrieve directory path for saving settings.
+    :param request:
+    :return: JSONResponse {"data":<directory path>}
+    """
     directory = os.path.dirname(os.path.abspath(__file__)) + os.sep + '.data'
     return JsonResponse({'data': directory}, safe=False)
 
@@ -120,9 +142,9 @@ def deploy(request):
     host = data["host"]
 
     if host["deployment_environment"] == "docker":
-        f = "TC_microservices_host_docker_operations.xml"
+        tc_file = "TC_microservices_host_docker_operations.xml"
     elif host["deployment_environment"] == "kubernetes":
-        f = "TC_microservices_host_kubernetes_operations.xml"
+        tc_file = "TC_microservices_host_kubernetes_operations.xml"
     if not data["host"]["scripts"]:
         data["host"]["scripts"] = ";"
 
@@ -133,10 +155,11 @@ def deploy(request):
         image = "{}:{}".format(image, data["registry"]["image_tag"])
     data["registry"]["image"] = image
     if data["registry"]["port"]:
-        data["registry"]["address"] = "{}:{}".format(data["registry"]["address"], data["registry"]["port"])
+        data["registry"]["address"] = "{}:{}".format(data["registry"]["address"],
+                                                     data["registry"]["port"])
     generate_registry_operations(data)
 
-    return StreamingHttpResponse(stream(f))
+    return StreamingHttpResponse(stream(tc_file))
 
 
 def save(request):
@@ -155,8 +178,8 @@ def save(request):
     file = os.path.join(directory, filename)
     response = {'status': True, 'file': file}
     try:
-        with open(file, 'w') as fd:
-            json.dump(data, fd)
+        with open(file, 'w') as handle:
+            json.dump(data, handle)
     except Exception:
         response['status'] = False
     return JsonResponse(response)
@@ -173,8 +196,8 @@ def load(request):
 
     response = HttpResponse(status=400)
     try:
-        with open(file) as fd:
-            data = json.load(fd)
+        with open(file) as handle:
+            data = json.load(handle)
             context = _get_context(data)
             response = render(request, template, context)
     except OSError:
@@ -189,12 +212,15 @@ def stream(file_list):
     :param file_list:
     :return:
     """
-    f = os.path.join(PLUGINSPACE_TC_DIR, file_list)
-    warrior_cmd = '{0} {1} {2}'.format("python3", WARRIOR_EXE, f)
-    output = subprocess.Popen(str(warrior_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                               universal_newlines=True)
+    tc_file = os.path.join(PLUGINSPACE_TC_DIR, file_list)
+    warrior_cmd = '{0} {1} {2}'.format("python3", WARRIOR_EXE, tc_file)
+    output = subprocess.Popen(str(warrior_cmd),
+                              shell=True,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT,
+                              universal_newlines=True)
 
-    print_cmd = '{0} {1} {2}'.format("python3", WARRIOR_EXE, f)
+    print_cmd = '{0} {1} {2}'.format("python3", WARRIOR_EXE, tc_file)
 
     first_poll = True
 
