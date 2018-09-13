@@ -30,7 +30,10 @@
                     {% endif %}
                 </span>
             </h6>
-            <button class="btn" style="position: absolute; right: 23px; bottom: 58px;" app-name="{{wapp.fields.real_name}}" katana-click="wappstore.installTerminalApp">
+            <button class="btn"
+                    style="position: absolute; right: 23px; bottom: 58px;"
+                    app-name="{{wapp.fields.real_name}}"
+                    katana-click="wappstore.installApp">
                 {% if wapp.fields.name == "Cases" %}
                     Installed
                 {% else %}

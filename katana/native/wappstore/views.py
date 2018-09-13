@@ -14,7 +14,7 @@ from utils.directory_traversal_utils import get_parent_directory
 from utils.navigator_util import Navigator
 
 nav_obj = Navigator()
-app_path = os.path.join(nav_obj.get_katana_dir(), "native", "wappstore", ".data", "terminal")
+app_path = os.path.join(nav_obj.get_katana_dir(), "native", "wappstore", ".data")
 address_port = "http://localhost:5000"
 
 
@@ -41,11 +41,17 @@ def expand_wapp(request):
     return render(request, 'wappstore/expand_wapp.html', response)
 
 
-def install_terminal_app(request):
+def install_app(request):
+    app_name = request.GET.get("app-name")
     output_data = {"status": True, "message": ""}
-    installer_obj = Installer(get_parent_directory(nav_obj.get_katana_dir()), app_path)
-    installer_obj.install()
-    if installer_obj.message != "":
+    print(os.path.join(app_path, app_name))
+    if os.path.exists(os.path.join(app_path, app_name) and os.path.isdir(os.path.join(app_path, app_name))):
+        installer_obj = Installer(get_parent_directory(nav_obj.get_katana_dir()), os.path.join(app_path, app_name))
+        installer_obj.install()
+        if installer_obj.message != "":
+            output_data["status"] = False
+            output_data["message"] += "\n" + installer_obj.message
+    else:
         output_data["status"] = False
-        output_data["message"] += "\n" + installer_obj.message
+        output_data["message"] += "App not available for installation"
     return JsonResponse(output_data)

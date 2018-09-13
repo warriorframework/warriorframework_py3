@@ -22,11 +22,12 @@ var wappstore = {
         }
     },
 
-    installTerminalApp: function() {
+    installApp: function() {
         var $elem = $(this);
         $.ajax({
                 type: 'GET',
-                url: 'wappstore/install_terminal_app/'
+                url: 'wappstore/install_app/',
+                data: {"app-name": $elem.attr('app-name')}
             }).done(function(data){
                 if(data.status) {
                     setTimeout(function () {
