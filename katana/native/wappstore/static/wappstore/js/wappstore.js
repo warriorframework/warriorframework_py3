@@ -41,5 +41,14 @@ var wappstore = {
                     }, 2500);
                 }
         });
+    },
+
+    navigate : {
+        scrollRight: function(){
+            console.log("HERE");
+            /*$(this).animate({scrollRight: '+=50'}, 500);*/
+        },
+
+        scrollLeft: function(){}
     }
 };

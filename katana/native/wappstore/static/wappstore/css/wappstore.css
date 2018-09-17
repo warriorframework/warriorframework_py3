@@ -80,3 +80,84 @@
     background-color: white !important;
     color: #4ea4e0 !important;
 }
+
+.tool-bar > .wappstore-search-bar {
+    position: absolute;
+    width: 250px;
+    right: 100px;
+}
+
+.wappstore-search-bar > input {
+    height: 34px;
+}
+
+.wappstore-inner-page {
+    width: 100%;
+    height: calc(100vh - 90px);
+}
+
+.wappstore-main-bar > span {
+    float: right;
+    padding-top: 5px;
+}
+
+.wappstore-display {
+    float:left;
+    height: 100%;
+    width: calc(100% - 250px);
+    overflow: auto;
+}
+
+.wappstore-display-padding {
+    padding: 5rem;
+}
+
+.wappstore-display > div > div > .text-muted > button {
+    float: right;
+}
+
+.wappstore-display > div > div > .container-fluid {
+    overflow: hidden;
+}
+
+.wappstore-display > div > div > .container-fluid > .row {
+    flex-wrap: nowrap;
+    position: relative;
+}
+
+.wappstore-display > div > div > .container-fluid > .row > .wappstore-display-navbar-left {
+    height: 21.25rem;
+    padding: 0 0.4rem;
+    z-index: 20;
+    position: absolute;
+    display: none;
+}
+
+.wappstore-display > div > div > .container-fluid > .row > .wappstore-display-navbar-right {
+    height: 21.25rem;
+    padding: 0 0.4rem;
+    z-index: 20;
+    position: absolute;
+    display: none;
+    right: 0
+}
+
+.wappstore-display > div > div > .container-fluid:hover > .row > .wappstore-display-navbar-left {
+    display: block;
+    background-color: rgba(249, 249, 249, 0.75);
+}
+
+.wappstore-display > div > div > .container-fluid:hover > .row > .wappstore-display-navbar-right {
+    display: block;
+    background-color: rgba(249, 249, 249, 0.75);
+}
+
+.wappstore-display-navbar-left > i {
+    line-height: 21.25rem;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.wappstore-display-navbar-right > i {
+    line-height: 21.25rem;
+    color: rgba(0, 0, 0, 0.5);
+}

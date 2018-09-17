@@ -28,10 +28,6 @@ class WappStoreView(View):
         """
         content = requests.get('{0}/wapps/get_all_wapps_data/'.format(address_port)).content
         response = json.loads(content.decode("utf-8"))
-        for key, value in response["data"].items():
-            print(key)
-            for el in value:
-                print(el["fields"]["real_name"])
         return render(request, WappStoreView.template, response)
 
 
