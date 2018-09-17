@@ -1,0 +1,23 @@
+
+<table class="microservice deployment_details docker_flag_section" style="display: none;">
+        <tr class="microservice docker_deployment_details flag head" style="font-weight: bold">
+                <td>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Flag
+                </td>
+                <td>
+                        &nbsp;&nbsp;&nbsp;&nbsp;Description
+                </td>
+        </tr>
+
+        {% for option in docker_options %}
+        <tr class="microservice docker_deployment_details flag">
+                <td>
+                        <input class="options-control" key="{{option.name}}" value="" placeholder="{{option.name}}"/>
+
+                </td>
+                <td>
+                        <span title="{{ option.description }}"><b>{{ option.name }}</b> : {{ option.description }}</span>
+                </td>
+        </tr>
+        {% endfor %}
+</table>

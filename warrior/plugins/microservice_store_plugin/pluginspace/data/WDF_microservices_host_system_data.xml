@@ -1,0 +1,15 @@
+
+<credentials>
+
+	<system name="MicroService_Host">
+		<ip>localhost</ip>
+		<conn_type>ssh</conn_type>
+		<ssh_port>22</ssh_port>
+		<username>arch</username>
+		<password>arch</password>
+		<prompt>\$</prompt>
+		<testdata>../config_files/TD_microservices_registry_operations.xml</testdata>
+		<variable_config>../config_files/VC_microservices_registry_operations.xml</variable_config>
+	</system>
+
+</credentials>

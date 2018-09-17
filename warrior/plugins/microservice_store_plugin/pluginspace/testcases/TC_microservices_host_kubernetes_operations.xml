@@ -1,0 +1,126 @@
+<?xml version="1.0" ?>
+<Testcase>
+	<Details>
+        <Name>TC_microservices_host_kubernetes_operations</Name>
+		<Title>Microservices_Host_Kubernetes_Operations_Testcase</Title>
+		<Engineer>satya</Engineer>
+		<Date>2018-6-29</Date>
+		<Time>10:28</Time>
+		<InputDataFile>../data/WDF_microservices_host_system_data.xml</InputDataFile>
+		<Datatype>iterative</Datatype>
+		<default_onError action="next"/>
+		<Logsdir/>
+		<Resultsdir/>
+		<ExpectedResults/>
+		<Category>custom</Category>
+	</Details>
+	<Requirements>
+        <Requirement/>
+	</Requirements>
+	<Steps>
+		<step Driver="cli_driver" Keyword="connect" TS="1">
+			<onError action="abort"/>
+			<Description>connect</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="2">
+			<Arguments>
+				<argument name="title" value="become_root"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Become Root</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="3">
+			<Arguments>
+				<argument name="title" value="send_password"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Send Password</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="4">
+			<Arguments>
+				<argument name="title" value="kubernetes_delete_service"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Remove Service</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="5">
+			<Arguments>
+				<argument name="title" value="kubernetes_delete_deployment"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Remove Deployment</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="6">
+			<Arguments>
+				<argument name="title" value="kubernetes_run"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Deploy Image on Kube</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="7">
+			<Arguments>
+				<argument name="title" value="kubernetes_is_pod_deployed"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Is Pod Running on Kube</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="8">
+			<Arguments>
+				<argument name="title" value="kubernetes_expose"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Expose Service on Kube</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="9">
+			<Arguments>
+				<argument name="title" value="kubernetes_is_service_exposed"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Is Service exposed on Kube</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="10">
+			<Arguments>
+				<argument name="title" value="exit_root"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Exit Root</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="disconnect" TS="11">
+            <onError action="next"/>
+            <Description>disconnect</Description>
+            <Execute ExecType="Yes"/>
+            <context>positive</context>
+            <impact>impact</impact>
+        </step>
+	</Steps>
+</Testcase>
