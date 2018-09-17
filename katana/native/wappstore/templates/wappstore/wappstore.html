@@ -16,103 +16,104 @@
     <button class="button"><i class="fa fa-search"></i></button>
 </div>
 
-
-<div class="wappstore-sidebar">
-    <div class="wappstore-main-bar">
-        <i class="fa fa-puzzle-piece" aria-hidden="true"></i>&nbsp; Wapps
-        <span style="float: right; padding-top: 5px;" katana-click="wappstore.collapseSubSidebar"><i class="fa fa-chevron-circle-up"></i></span>
-    </div>
-    <div class="wappstore-sub">
-        <div class="wappstore-sub-bar">
-            Workflow Automation
+<div style="width: 100%; height: calc(100vh - 90px)">
+    <div class="wappstore-sidebar">
+        <div class="wappstore-main-bar">
+            <i class="fa fa-puzzle-piece" aria-hidden="true"></i>&nbsp; Wapps
+            <span style="float: right; padding-top: 5px;" katana-click="wappstore.collapseSubSidebar"><i class="fa fa-chevron-circle-up"></i></span>
         </div>
-        <div class="wappstore-sub-bar">
-            Test Automation
-        </div>
-        <div class="wappstore-sub-bar">
-            Networking
-        </div>
-        <div class="wappstore-sub-bar">
-            OSS
-        </div>
-    </div>
-    <div class="wappstore-main-bar">
-        <i class="fa fa-user" aria-hidden="true"></i> &nbsp;  Account
-    </div>
-</div>
-<div>
-<div style="padding: 5rem calc((100% - 250px - 60rem - 5rem)/2) 5rem calc(((100% - 250px - 60rem - 5rem)/2) + 250px);">
-    <div>
-        <h3 class="text-muted">Most Popular
-            <button class="btn btn-sm btn-info" style="float: right;">See More</button>
-        </h3>
-        <hr>
-        <div class="container-fluid">
-            <div class="row">
-                {% for wapp in data.pop %}
-                {% include 'wappstore/display_wapps.html' %}
-                {% endfor %}
+        <div class="wappstore-sub">
+            <div class="wappstore-sub-bar">
+                Workflow Automation
+            </div>
+            <div class="wappstore-sub-bar">
+                Test Automation
+            </div>
+            <div class="wappstore-sub-bar">
+                Networking
+            </div>
+            <div class="wappstore-sub-bar">
+                OSS
             </div>
         </div>
-    </div>
-    <br><br>
-    <div>
-        <h3 class="text-muted">Workflow Automation Wapps
-            <button class="btn btn-sm btn-info" style="float: right;">See More</button>
-        </h3>
-        <hr>
-        <div class="container-fluid">
-            <div class="row">
-                {% for wapp in data.wa %}
-                {% include 'wappstore/display_wapps.html' %}
-                {% endfor %}
-            </div>
+        <div class="wappstore-main-bar">
+            <i class="fa fa-user" aria-hidden="true"></i> &nbsp;  Account
         </div>
     </div>
-    <br><br>
-    <div>
-        <h3 class="text-muted">Test Automation Wapps
-            <button class="btn btn-sm btn-info" style="float: right;">See More</button>
-        </h3>
-        <hr>
-        <div class="container-fluid">
-            <div class="row">
-                {% for wapp in data.ta %}
-                {% include 'wappstore/display_wapps.html' %}
-                {% endfor %}
+    <div style="float:left; height: 100%; width: calc(100% - 250px); overflow: auto;">
+    <div style="padding: 5rem;">
+        <div>
+            <h3 class="text-muted">Most Popular
+                <button class="btn btn-sm btn-info" style="float: right;">See More</button>
+            </h3>
+            <hr>
+            <div class="container-fluid">
+                <div class="row">
+                    {% for wapp in data.pop %}
+                    {% include 'wappstore/display_wapps.html' %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
-    <br><br>
-    <div>
-        <h3 class="text-muted">Networking Wapps
-            <button class="btn btn-sm btn-info" style="float: right;">See More</button>
-        </h3>
-        <hr>
-        <div class="container-fluid">
-            <div class="row">
-                {% for wapp in data.nw %}
-                {% include 'wappstore/display_wapps.html' %}
-                {% endfor %}
+        <br><br>
+        <div>
+            <h3 class="text-muted">Workflow Automation Wapps
+                <button class="btn btn-sm btn-info" style="float: right;">See More</button>
+            </h3>
+            <hr>
+            <div class="container-fluid">
+                <div class="row">
+                    {% for wapp in data.wa %}
+                    {% include 'wappstore/display_wapps.html' %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
-    </div>
-    <br><br>
-    <div>
-        <h3 class="text-muted">OSS Wapps
-            <button class="btn btn-sm btn-info" style="float: right;">See More</button>
-        </h3>
-        <hr>
-        <div class="container-fluid">
-            <div class="row">
-                {% for wapp in data.oss %}
-                {% include 'wappstore/display_wapps.html' %}
-                {% endfor %}
+        <br><br>
+        <div>
+            <h3 class="text-muted">Test Automation Wapps
+                <button class="btn btn-sm btn-info" style="float: right;">See More</button>
+            </h3>
+            <hr>
+            <div class="container-fluid">
+                <div class="row">
+                    {% for wapp in data.ta %}
+                    {% include 'wappstore/display_wapps.html' %}
+                    {% endfor %}
+                </div>
             </div>
         </div>
+        <br><br>
+        <div>
+            <h3 class="text-muted">Networking Wapps
+                <button class="btn btn-sm btn-info" style="float: right;">See More</button>
+            </h3>
+            <hr>
+            <div class="container-fluid">
+                <div class="row">
+                    {% for wapp in data.nw %}
+                    {% include 'wappstore/display_wapps.html' %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <br><br>
+        <div>
+            <h3 class="text-muted">OSS Wapps
+                <button class="btn btn-sm btn-info" style="float: right;">See More</button>
+            </h3>
+            <hr>
+            <div class="container-fluid">
+                <div class="row">
+                    {% for wapp in data.oss %}
+                    {% include 'wappstore/display_wapps.html' %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <br><br>
     </div>
-    <br><br>
-</div>
+    </div>
 </div>
 
 </body>

@@ -46,14 +46,14 @@
 }
 
 .wappstore-sidebar {
-    position: fixed;
     left: 250px;
     top: 90px;
     width: 250px;
-    height: calc(100vh - 95px);
+    height: 100%;
     background-color: #4ea4e0;
     color: white;
     padding: 0 5px;
+    float: left;
 }
 
 .wappstore-sidebar > .wappstore-main-bar {
