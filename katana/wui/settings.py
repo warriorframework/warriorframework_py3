@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'native.wapp_management',
     'native.wappstore',
     'native.settings',
+    'native.microservice_store',
     'wapps.projects',
     'wapps.suites',
     'wapps.cases',

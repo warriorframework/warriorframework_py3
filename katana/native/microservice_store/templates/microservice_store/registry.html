@@ -1,0 +1,76 @@
+<div section="registry" class="microservice section registry" style="display: block">
+
+        <!--<label for="registry_type">Registry Type</label>-->
+        <!--<input id="registry_type" list="register_types"/>-->
+        <!--<datalist id="register_types">-->
+            <!--<option value="docker"> Docker Hub/Registry </option>-->
+            <!--<option value="quay"> Quay </option>-->
+            <!--<option value="google"> Google Container Registry </option>-->
+            <!--<option value="aws"> AWS Google Container Registry </option>-->
+        <!--</datalist>-->
+
+        <!--<label>Address</label>-->
+        <!--<input key="address" placeholder="Enter Registry Address. Ex: address[:port]" value="fnc-docker-reg:3000"/>-->
+
+        <!--<label>Image</label>-->
+        <!--<input key="image" placeholder="Enter Registry Address. Ex: image[:tag]" value="opce-algo"/>-->
+
+        <table class="microservice registry_details">
+                <tr colspan="2">
+                        <td>
+                                Registry Details
+                        </td>
+                </tr>
+                <tr>
+                       <td>
+                                <div class="form-group">
+                                        <label class="label">Image Registry</label>
+                                        <select class="form-control" key="address_select" list="registry_list" katana-change="microservice.registry_address_select" required>
+                                                <datalist id="registry_list">
+                                                        {% for addr, name in registry_options.items %}
+                                                        <option value="{{ addr }}" {% if registry.address == addr %}selected{% endif %}>{{ name }} ({{ addr }})</option>
+                                                        {% endfor %}
+                                                        <option value="" {% if registry.address not in registry_options.keys %}selected{% endif %}>Other...</option>
+                                                </datalist>
+                                        </select>
+                                </div>
+                       </td>
+                </tr>
+                <tr class="microservice registry_address_advanced" {% if registry.address in registry_options.keys %} style="display: none" {% endif %}>
+                       <td>
+                                <div class="form-group">
+                                        <label class="label">URL or IP Address</label>
+                                        <input class="form-control" key="address" value="{{ registry.address }}" required>
+                                </div>
+                       </td>
+                       <td>
+                                <div class="form-group">
+                                        <label class="label">Port</label>
+                                        <input class="form-control" value="{{ registry.port }}" type="number" step="1" min="1" max="65535" key="port">
+                                </div>
+                       </td>
+                </tr>
+        </table>
+        <table class="microservice registry_details">
+                <tr colspan="2">
+                        <td>
+                                Image Details
+                        </td>
+                </tr>
+                <tr colspan="2">
+                        <td>
+                                <div class="form-group">
+                                        <label class="label">Image Name</label>
+                                        <input class="form-control" key="image_name" value="{{ registry.image_name }}" required/>
+                                </div>
+                        </td>
+                        <td>
+                                <div class="form-group">
+                                        <label class="label">Image Tag</label>
+                                        <input class="form-control" key="image_tag" value="{{ registry.image_tag }}"/>
+                                </div>
+                        </td>
+                </tr>
+        </table>
+
+</div>

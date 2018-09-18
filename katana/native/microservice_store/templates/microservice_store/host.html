@@ -1,0 +1,147 @@
+<div section="host" class="microservice section host">
+
+        <table class="microservice host_details">
+                <tr colspan="5">
+                        <td>
+                                Host SSH Details
+                        </td>
+                </tr>
+                <tr>
+                       <td>
+                               <div class="form-group">
+                                       <label class="label" >Address</label>
+                                       <input class="form-control" key="address" value="{{ host.address }}" required/>
+                               </div>
+                       </td>
+                        <td>
+                                <div class="form-group">
+                                        <label class="label">Port</label>
+                                        <input class="form-control" key="port" value="{{ host.port }}" type="number" step="1" min="1" max="65535" required/>
+                                </div>
+                       </td>
+                        <td>
+                                <div class="form-group">
+                                        <label class="label">Username</label>
+                                        <input class="form-control" key="username" value="{{ host.username }}" required/>
+                                </div>
+                        </td>
+                        <td>
+                                <div class="form-group">
+                                        <label class="label">Password</label>
+                                        <input class="form-control" key="password" type="password" value="{{ host.password }}" required/>
+                                </div>
+                        </td>
+                        <td>
+                                <div class="form-group">
+                                        <label class="label">CLI Prompt</label>
+                                        <input class="form-control" key="end_prompt" value="{{ host.end_prompt }}" required/>
+                                        <label class="tooltip">Terminal prompt </label>
+                                </div>
+                        </td>
+                </tr>
+        </table>
+
+        <table class="microservice deployment_details">
+                <tr colspan="2">
+                        <td>
+                                Deployment Details
+                        </td>
+                </tr>
+                <tr colspan="2">
+                       <td>
+                               <div class="form-group">
+                                        <label class="label">Environment</label>
+                                        <select class="form-control" key="deployment_environment" list="envs_list"
+                                               katana-change="microservice.deployment_details" required>
+                                                <datalist id="envs_list">
+                                                       <option {% if host.deployment_environment == "docker" %}selected{% endif %} value="docker"> Docker </option>
+                                                       <option {% if host.deployment_environment != "docker" %}selected{% endif %} value="kubernetes"> Kubernetes </option>
+                                                </datalist>
+                                        </select>
+                                </div>
+                       </td>
+                        <td class="microservice kubernetes_deployment_details" {% if host.deployment_environment == "docker" %} style="display: none" {% endif %}>
+                                <div class="form-group">
+                                        <label class="label">Pod Name</label>
+                                        <input class="form-control" key="pod_name" value="{{ host.pod_name }}" required/>
+                                </div>
+                        </td>
+                </tr>
+                <tr class="microservice deployment_details">
+                        <td>
+                                Pre-Deploy Commands
+                                <br/>
+                                <div style="font-size:11px">
+                                    <ul>
+                                        <li>Enter commands with an ';' at the end of each command</li>
+                                        <li>Example:</li>
+                                        <ol>
+                                            <li>WORKING_DIR="$(pwd)";</li>
+                                            <li>echo $WORKING_DIR;</li>
+                                            <li>USER="$(username)";PATH="/usr/bin";</li>
+                                        </ol>
+                                    </ul>
+                                </div>
+                        </td>
+                        <td>
+                                <textarea class="microservice scripts textarea" key="scripts" rows="10">{{host.scripts|default:''}}</textarea>
+                        </td>
+                </tr>
+                <tr class="microservice docker_deployment_details" {% if host.deployment_environment != "docker" %} style="display: none" {% endif %}>
+                        <td>
+                                Flags
+                                <span style="font-size: 11px;color:#247dba; cursor: pointer"
+                                      katana-click="microservice.show_options_box">
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="fa fa-question-circle"></span></span>
+                                <div style="font-size:11px">
+                                <ul>
+                                        <li>Type a flag with its value or Click help to navigate through all flags</li>
+                                        <li>Example:</li>
+                                        <ol>
+
+                                            <li>--attach 1.1.1.1 in the Flag text area</li>
+                                            <li>1.1.1.1 in the text box of pop up</li>
+                                        </ol>
+                                        <li>List of values for same flag can be given with ',' seperated</li>
+                                        <li>Sample value: --name conainer_name --publish 80:80</li>
+                                        <li>
+                                            <a href="https://docs.docker.com/engine/reference/commandline/run/" target="_blank">Learn More</a>
+                                        </li>
+                                </ul>
+                        </td>
+                        <td>
+                                <textarea class="microservice flag textarea" key="flags" rows="10">{{host.flags|default:''}}</textarea>
+                        </td>
+                </tr>
+                <tr class="microservice kubernetes_deployment_details" {% if host.deployment_environment == "docker" %} style="display: none" {% endif %}>
+                        <td>
+                                Run Flags
+                                <div style="font-size:11px">
+                                <ul>
+                                        <li>Type flags to pass to the kubectl run command</li>
+                                        <li>Sample value: --port 8080 </li>
+                                </ul>
+                        </td>
+                        <td>
+                                <textarea class="microservice run_flag textarea" key="run_flags" rows="10">{{host.run_flags|default:''}}</textarea>
+                        </td>
+                </tr>
+                <tr class="microservice kubernetes_deployment_details" {% if host.deployment_environment == "docker" %} style="display: none" {% endif %}>
+                        <td>
+                                Expose Flags
+                                <div style="font-size:11px">
+                                <ul>
+                                        <li>Type flags to pass to the kubectl expose command</li>
+                                        <li>Sample value: --type=NodePort</li>
+                                </ul>
+                        </td>
+                        <td>
+                                <textarea class="microservice expose_flag textarea" key="expose_flags" rows="10">{{host.expose_flags|default:''}}</textarea>
+                        </td>
+                </tr>
+        </table>
+
+        {% include 'microservice_store/docker.html' %}
+        {% include 'microservice_store/kubernetes.html' %}
+
+</div>

@@ -1,0 +1,136 @@
+<?xml version="1.0" ?>
+<Testcase>
+	<Details>
+        <Name>TC_microservices_host_docker_operations</Name>
+		<Title>Microservices_Host_Docker_Operations_Testcase</Title>
+		<Engineer>satya</Engineer>
+		<Date>2018-6-29</Date>
+		<Time>10:28</Time>
+		<InputDataFile>../data/WDF_microservices_host_system_data.xml</InputDataFile>
+		<Datatype>iterative</Datatype>
+		<default_onError action="next"/>
+		<Logsdir/>
+		<Resultsdir/>
+		<ExpectedResults/>
+		<Category>custom</Category>
+	</Details>
+	<Requirements>
+        <Requirement/>
+	</Requirements>
+	<Steps>
+		<step Driver="cli_driver" Keyword="connect" TS="1">
+			<onError action="abort"/>
+			<Description>connect</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="2">
+			<Arguments>
+				<argument name="title" value="become_root"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Become Root</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="3">
+			<Arguments>
+				<argument name="title" value="send_password"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Send Password</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="2">
+			<Arguments>
+				<argument name="title" value="list_images"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>List Images</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="3">
+			<Arguments>
+				<argument name="title" value="docker_stop_container"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Docker Stop Container</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="4">
+			<Arguments>
+				<argument name="title" value="docker_remove_container"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Docker Remove Container</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="6">
+			<Arguments>
+				<argument name="title" value="docker_pull"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>send_commands_by_testdata_title</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="7">
+			<Arguments>
+				<argument name="title" value="is_image_downloaded"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Is Image Downloaded</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="7">
+			<Arguments>
+				<argument name="title" value="docker_pre_config_scripts"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Docker Pre Config Scripts</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="8">
+			<Arguments>
+				<argument name="title" value="docker_run"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Docker Run</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="9">
+			<Arguments>
+				<argument name="title" value="is_service_running"/>
+			</Arguments>
+			<onError action="abort"/>
+			<Description>Is Service Up</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="cli_driver" Keyword="disconnect" TS="10">
+            <onError action="next"/>
+            <Description>disconnect</Description>
+            <Execute ExecType="Yes"/>
+            <context>positive</context>
+            <impact>impact</impact>
+        </step>
+	</Steps>
+</Testcase>
