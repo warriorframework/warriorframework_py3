@@ -1,12 +1,13 @@
 var wappstore = {
 
     expandWapp: function() {
+        var $elem = $(this);
         $.ajax({
                 type: 'GET',
                 url: 'wappstore/expand_wapp/',
                 data: {"name": $(this).attr("name")}
             }).done(function(data){
-
+                $elem.closest('.wappstore-display-padding').html(data);
         });
     },
 

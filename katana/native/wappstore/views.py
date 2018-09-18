@@ -32,7 +32,7 @@ class WappStoreView(View):
 
 
 def expand_wapp(request):
-    content = requests.get('{0}/wapps/get_wapp_info/'.format(address_port)).content
+    content = requests.get(url='{0}/wapps/expand_wapp/?wapp_name={1}'.format(address_port, request.GET.get("name"))).content
     response = json.loads(content.decode("utf-8"))
     return render(request, 'wappstore/expand_wapp.html', response)
 

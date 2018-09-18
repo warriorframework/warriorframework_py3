@@ -48,7 +48,7 @@
         <div class="wappstore-display-padding">
             {% for wapp_type, content in data.items %}
             <div>
-                <h3 class="text-muted">Most Popular<button class="btn btn-sm btn-info">See More</button></h3><hr>
+                <h3 class="text-muted">{{ content.title }} Wapps<button class="btn btn-sm btn-info">See More</button></h3><hr>
                 <div class="container-fluid">
                     <div class="row">
                         <div class="wappstore-display-navbar-left" katana-click="wappstore.navigate._scrollLeft">
@@ -56,7 +56,7 @@
                         </div>
                         <div class="container-fluid">
                             <div class="row">
-                            {% for wapp in content %}
+                            {% for wapp in content.wapps %}
                             {% include 'wappstore/display_wapps.html' %}
                             {% endfor %}
                             </div>
