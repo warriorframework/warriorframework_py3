@@ -44,11 +44,12 @@ var wappstore = {
     },
 
     navigate : {
-        scrollRight: function(){
-            console.log("HERE");
-            /*$(this).animate({scrollRight: '+=50'}, 500);*/
+        _scrollRight: function(){
+            $(this).prev().scrollLeft($(this).prev().scrollLeft() + 200);
         },
 
-        scrollLeft: function(){}
+        _scrollLeft: function(){
+            $(this).next().scrollLeft($(this).prev().scrollLeft() - 200);
+        }
     }
 };

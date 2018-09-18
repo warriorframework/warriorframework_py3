@@ -117,12 +117,22 @@
 }
 
 .wappstore-display > div > div > .container-fluid {
-    overflow: hidden;
+    overflow: auto;
 }
 
 .wappstore-display > div > div > .container-fluid > .row {
     flex-wrap: nowrap;
     position: relative;
+}
+
+.wappstore-display > div > div > .container-fluid > .row > .container-fluid {
+    overflow: hidden;
+    padding: 0
+}
+
+.wappstore-display > div > div > .container-fluid > .row > .container-fluid > .row {
+    padding: 0 0 0 0.5rem;
+    flex-wrap: nowrap
 }
 
 .wappstore-display > div > div > .container-fluid > .row > .wappstore-display-navbar-left {
