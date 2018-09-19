@@ -1,11 +1,15 @@
 <div style="width: 100%; height: 100%;">
-    <div style="width: calc(100% - 25rem); height: 100%; float: left; text-align: center">
+    <div style="width: calc(100% - 25rem); height: 65rem; float: left; text-align: center">
         <div style="width: 48rem; height: 100%; background-color: white; display: inline-block; border: 1px solid #e3e3e3; border-radius: 5px; padding: 5px; ">
 
             {{ data }}
         </div>
     </div>
-    <div style="width: 25rem; height: 100%; float: left;">
+    <div style="width: 25rem; height: 100%; float: left; padding: 0 1.7rem 1rem 1.7rem;">
+        <div style="width: 100%; height: 3rem; border-bottom: 1px solid #e3e3e3; padding: 0.1rem 0.3rem; margin-bottom: 0.5rem;">
+            <h4>Similar Wapps
+            <button class="btn btn-success pull-right">See More</button></h4>
+        </div>
         {% for wapp in data.similar %}
         {% include 'wappstore/display_wapps.html' %}
         {% endfor %}
