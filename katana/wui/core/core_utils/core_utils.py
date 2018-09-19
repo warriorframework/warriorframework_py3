@@ -111,27 +111,28 @@ def validate_config_json(json_data, warrior_dir):
     return ordered_json
 
 
-def iscontainer():
+def is_container():
     """
     iscontainer: When inside a container, control groups will match the pattern /docker/<containerid>
     :return: True if control group points to docker or False if not inside a container
     """
     with open("/proc/1/cgroup") as cgroups:
+        status = True
         for line in cgroups:
             line = re.findall(r'docker', line)
             # return false if outside docker
-            if line.__len__() is 0:
-                return False
-            # else return true
+            if len(line):
+                status = False
+                break
             else:
-                print('Warrior instance not deployed in container')
-                return True
+                status = True
+        return status
 
 
-def katana_container_operations(_copy, katana_static, app_path):
-    if iscontainer():
+def katana_container_operations(copy_flag, katana_static, app_path):
+    if is_container():
         return handle_wapp_static_container(
-            app_path, katana_static, _copy)
+            app_path, katana_static, copy_flag)
     return False
 
 
@@ -140,29 +141,25 @@ def copy_katana_static(src, dst):
 
 
 def delete_katana_static(src, wapp_dir):
+    """
+    Delete all katana static files from katana/static directory.
+    :param src: katana/static directory
+    :param wapp_dir:
+    :return:
+    """
     output = True
-    try:
-        # get wapp static files
-        wapp_static = get_wapp_static(wapp_dir)
-        # get katana static files
-        katana_static = get_katana_static(src, wapp_static)
-        for file in katana_static:
-            if not rm_dir1(file):
-                # if unsuccessful, return
-                output = False
-                return output
-        # if all is well, return True
-        return output
-    except Exception as e:
-        print(e)
-        output = False
-        return output
+    wapp_static = get_wapp_static(wapp_dir)
+    katana_static = get_katana_static(src, wapp_static)
+    for wapp_file in katana_static:
+        if not rm_dir1(wapp_file):
+            output = False
+    return output
 
 
-def handle_wapp_static_container(app_path, katana_static, _copy):
-    if _copy:
+def handle_wapp_static_container(app_path, katana_static, copy_flag):
+    if copy_flag:
         return copy_katana_static(join_path(
             app_path, 'static'), katana_static)
     else:
-        return delete_katana_static(join_path(katana_static), join_path(
+        return delete_katana_static(katana_static, join_path(
             app_path, 'static'))

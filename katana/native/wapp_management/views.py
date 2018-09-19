@@ -29,7 +29,7 @@ from utils.file_utils import copy_dir
 from utils.navigator_util import Navigator
 from utils.string_utils import get_repository_name
 from wui.core.core_utils.app_info_class import AppInformation
-from katana.utils.user_dir_utils import UserData
+from katana.utils.user_utils import UserData
 
 from katana.native.wapp_management import apps
 

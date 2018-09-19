@@ -45,7 +45,11 @@ INSTALLED_APPS = [
     'native.settings',
     'native.microservice_store',
     'wapps.cases',
+    'wapps.projects',
     'wapps.suites',
+    'wapps.execution',
+    'wapps.wdf_edit',
+    'wapps.assembler',
     'wapps.cli_data',
     'wapps.assembler',
     'wapps.wdf_edit',
@@ -106,12 +110,19 @@ DATABASES = {
 # authentication settings
 
 AUTHENTICATION_BACKENDS = (
+    'django_auth_ldap.backend.LDAPBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
+
+AUTH_LDAP_SERVER_URI = "ldap://ldap.fnc.fujitsu.com:3268"
+
+AUTH_LDAP_USER_DN_TEMPLATE = "%(user)s@fnc.net.local"
 
 MULTI_USER_SUPPORT = False
 USER_HOME_DIR_TEMPLATE = None
 
+AUTH_LDAP_BIND_DN = "CN=warrior_application,OU=Resource Accounts,OU=Enterprise,DC=fnc,DC=net,DC=local"
+AUTH_LDAP_BIND_PASSWORD = "Automation1!"
 
 
 # Password validation
