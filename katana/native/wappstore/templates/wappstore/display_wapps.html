@@ -1,40 +1,40 @@
-<div class="wappstore-wapp-wrapper" katana-click="wappstore.expandWapp" name="{{ wapp.fields.name }}">
+<div class="wappstore-wapp-wrapper" katana-click="wappstore.expandWapp" name="{{ wapp.name }}">
     <div class="card" style="width: 20rem;">
         <div class="card-body" style="position: relative">
-            <h5 class="card-title">{{ wapp.fields.name }}</h5>
-            <h6 class="card-subtitle mb-2 text-muted">{{ wapp.fields.developer }}</h6>
+            <h5 class="card-title">{{ wapp.name }}</h5>
+            <h6 class="card-subtitle mb-2 text-muted">{{ wapp.developer }}</h6>
             <hr>
             <div class="wappstore-wapp-icon-wrapper">
                 <div class="wappstore-wapp-icon-container">
-                    {% if wapp.fields.icon == "pencil-alt" %}
-                    <i class="fa fa-4x fa-pencil {{ wapp.fields.color }} wappstore-wapp-icon"></i>
+                    {% if wapp.icon == "pencil-alt" %}
+                    <i class="fa fa-4x fa-pencil {{ wapp.color }} wappstore-wapp-icon"></i>
                     {% else %}
-                    <i class="fa fa-4x fa-{{ wapp.fields.icon }} {{ wapp.fields.color }} wappstore-wapp-icon"></i>
+                    <i class="fa fa-4x fa-{{ wapp.icon }} {{ wapp.color }} wappstore-wapp-icon"></i>
                     {% endif %}
                 </div>
                 <div class="wappstore-wapp-desc-container">
-                    <p>{{ wapp.fields.short_desc }}</p>
+                    <p>{{ wapp.short_desc }}</p>
                 </div>
             </div>
             <hr>
             <h6 class="card-subtitle mb-2 text-muted">
                 <span style="float: left !important;">
-                    {{ wapp.fields.average_stars }} <i class="fa fa-star"></i> &nbsp;
-                    {{ wapp.fields.number_of_reviews }} <i class="fa fa-users"></i>
+                    {{ wapp.average_stars }} <i class="fa fa-star"></i> &nbsp;
+                    {{ wapp.number_of_reviews }} <i class="fa fa-users"></i>
                 </span>
                 <span style="float: right !important;">
-                    {% if wapp.fields.pricing == 0.0 %}
+                    {% if wapp.pricing == 0.0 %}
                         FREE
                     {% else %}
-                        ${{ wapp.fields.pricing }}
+                        ${{ wapp.pricing }}
                     {% endif %}
                 </span>
             </h6>
             <button class="btn"
                     style="position: absolute; right: 23px; bottom: 58px;"
-                    app-name="{{wapp.fields.real_name}}"
+                    app-name="{{wapp.real_name}}"
                     katana-click="wappstore.installApp">
-                {% if wapp.fields.name == "Cases" %}
+                {% if wapp.name == "Cases" %}
                     Installed
                 {% else %}
                     Install
