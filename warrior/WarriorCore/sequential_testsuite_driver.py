@@ -75,7 +75,7 @@ def execute_sequential_testsuites(testsuite_list, project_repository,
                                " -----------------\n")
                 print_info("RUNMODE ATTEMPT: {0}"
                            .format(testsuite.find("runmode").get("attempt")))
-        if Utils.file_Utils.fileExists(testsuite_path):
+        if Utils.file_Utils.fileExists(testsuite_path) or action is False:
             if not goto_testsuite and action is True:
 
                 testsuite_result = testsuite_driver.main(testsuite_path,

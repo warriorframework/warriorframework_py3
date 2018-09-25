@@ -1,0 +1,79 @@
+<head>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="{% static 'microservice_store/css/microservice_store.css' %}">
+</head>
+
+<body>
+
+    <div class="microservice main">
+
+        <div class="microservice head">
+
+            <div class="fa fa-cubes microservice title_text">
+                &nbsp;&nbsp; MicroServices Deployer
+            </div>
+
+            <div class="microservice deploy fa fa-play-circle" katana-click="microservice.deploy">
+                &nbsp;Deploy
+            </div>
+
+            <div class="microservice save fa" katana-click="microservice.save">
+                &nbsp;Save
+            </div>
+
+            <div class="microservice load fa" katana-click="microservice.load">
+                &nbsp;Load
+            </div>
+        </div>
+
+        <div class="microservice body">
+
+            <div class="microservice-operations">
+
+                <div class="microservice left_panel">
+
+                    <div class="microservice options">
+                        <div class="fa fa-cube">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;MicroService</div>
+                        <div class="fa fa-cloud selected" katana-click="microservice.showSection" section="registry">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Registry</div>
+                        <div class="fa fa-desktop" katana-click="microservice.showSection" section="host">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Host</div>
+                    </div>
+
+                </div>
+                <div class="microservice right_panel">
+                    {% include 'microservice_store/registry.html' %}
+                    {% include 'microservice_store/host.html' %}
+                </div>
+            </div>
+
+            <div class="microservice-tools">
+
+                        <div class="microservice-tools console-title fa fa-list-alt">
+                            &nbsp;&nbsp;Console
+                        </div>
+
+                        <button class="fa fa-window-minimize" katana-click="microservice.minimize">
+
+                        </button>
+                        <button class="fa fa-window-restore" katana-click="microservice.maximize">
+
+                        </button>
+                        <!--<button class="fa fa-play-circle" katana-click="microservice.deploy">-->
+
+                        <!--</button>-->
+            </div>
+
+            <div class="microservice-console">
+
+
+            </div>
+        </div>
+
+    </div>
+
+</body>
+
+<div class="csrf-container">{% csrf_token %}</div>
+<script>
+    microservice.resizable();
+    microservice.minimize();
+</script>

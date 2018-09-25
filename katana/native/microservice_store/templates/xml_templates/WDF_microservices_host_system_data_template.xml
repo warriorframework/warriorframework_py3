@@ -1,0 +1,15 @@
+
+<credentials>
+
+	<system name="MicroService_Host">
+		<ip>{{ host.address }}</ip>
+		<conn_type>ssh</conn_type>
+		<ssh_port>{{ host.port }}</ssh_port>
+		<username>{{ host.username }}</username>
+		<password>{{ host.password }}</password>
+		<prompt>{{ host.end_prompt }}</prompt>
+		<testdata>../config_files/TD_microservices_registry_operations.xml</testdata>
+		<variable_config>../config_files/VC_microservices_registry_operations.xml</variable_config>
+	</system>
+
+</credentials>
