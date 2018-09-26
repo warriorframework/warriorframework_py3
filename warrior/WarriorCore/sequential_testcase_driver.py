@@ -69,6 +69,7 @@ def execute_sequential_testcases(testcase_list, suite_repository,
     suite_error_action = suite_repository['def_on_error_action']
     suite_error_value = suite_repository['def_on_error_value']
     testsuite_dir = os.path.dirname(testsuite_filepath)
+    data_repository['wt_tc_timestamp'] = None
 
     errors = 0
     skipped = 0
