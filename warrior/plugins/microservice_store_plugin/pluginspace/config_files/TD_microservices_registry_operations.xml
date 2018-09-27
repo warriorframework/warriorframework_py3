@@ -1,0 +1,114 @@
+<data>
+
+    <global>
+        <variable_pattern start_pattern="xXx" end_pattern="oOo"/>
+        <command_params>
+        </command_params>
+        <verifications>
+        </verifications>
+    </global>
+
+    <!--
+        Docker Related TestData blocks
+    -->
+
+    <testdata execute="yes" title ="list_images" >
+        <command send="docker image ls"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_stop_container" >
+        <command send="docker stop $(docker ps -a | grep 'xXxregistry.args.imageoOo' | awk '{print $1}')"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_remove_container" >
+        <command send="docker rm $(docker ps -a | grep 'xXxregistry.args.imageoOo' | awk '{print $1}')"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_remove_image" >
+        <command send="docker rmi $(docker images -a | grep 'xXxregistry.args.imageoOo' | awk '{print $3}') -f"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_pull" >
+        <command send="docker pull xXxregistry.args.addressoOo/xXxregistry.args.imageoOo"
+                 end="xXxhost.args.end_promptoOo"
+                 timeout="300"/>
+    </testdata>
+
+    <testdata execute="yes" title ="is_image_downloaded" >
+        <command send="docker image ls"
+                 end="xXxhost.args.end_promptoOo" verify="v1"/>
+        <v1 found="yes" search="xXxregistry.args.image_nameoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_pre_config_scripts" >
+        <command send="xXxhost.args.scriptsoOo"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="docker_run" >
+        <command send="docker run -d xXxhost.args.flagsoOo xXxregistry.args.addressoOo/xXxregistry.args.imageoOo"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="is_service_running" >
+        <command send="docker container ls"
+                 end="xXxhost.args.end_promptoOo" verify="v1"/>
+        <v1 found="yes" search="xXxregistry.args.image_nameoOo"/>
+    </testdata>
+
+    <!--
+        Kubernetes Related TestData blocks
+    -->
+
+    <testdata execute="yes" title ="kubernetes_delete_service" >
+        <command send="sudo kubectl delete service xXxhost.args.kube_pod_nameoOo"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_delete_deployment" >
+        <command send="sudo kubectl delete deployment xXxhost.args.kube_pod_nameoOo"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_run" >
+        <command send="sudo kubectl run xXxhost.args.kube_pod_nameoOo --image=xXxregistry.args.addressoOo/xXxregistry.args.imageoOo xXxhost.args.run_flagsoOo"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_is_pod_deployed" >
+        <command send="sudo kubectl get pods --all-namespaces"
+                 end="xXxhost.args.end_promptoOo"
+                 verify = "v1"/>
+        <v1 found="yes" search="xXxhost.args.kube_pod_nameoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_expose" >
+        <command send="sudo kubectl expose deployment xXxhost.args.kube_pod_nameoOo xXxhost.args.expose_flagsoOo"
+                 end="xXxhost.args.end_promptoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="kubernetes_is_service_exposed" >
+        <command send="sudo kubectl get services --all-namespaces"
+                 end="xXxhost.args.end_promptoOo"
+                 verify = "v1"/>
+        <v1 found="yes" search="xXxhost.args.kube_pod_nameoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="become_root" >
+        <command end=".*(%|>|\$|#|:)" start=".*" send="sudo su -"/>
+    </testdata>
+
+    <testdata execute="yes" title ="send_password" >
+        <command end="xXxhost.args.end_promptoOo" start=".*" send="xXxhost.args.passwordoOo"/>
+    </testdata>
+
+    <testdata execute="yes" title ="exit_root" >
+        <command end="xXxhost.args.end_promptoOo" start=".*" send="exit" verify="v1"/>
+        <v1 found="yes" search=".*logout.*"/>
+    </testdata>
+
+</data>
