@@ -52,5 +52,19 @@ var wappstore = {
         _scrollLeft: function(){
             $(this).next().scrollLeft($(this).prev().scrollLeft() - 200);
         }
+    },
+
+    account: {
+        goToAccount: function(){
+            var $elem = $(this);
+            $.ajax({
+                type: 'GET',
+                url: 'wappstore/go_to_account/'
+            }).done(function(data){
+                console.log(data);
+                $elem.closest('.wappstore-inner-page').find('.wappstore-display').html(data)
+
+            });
+        }
     }
 };

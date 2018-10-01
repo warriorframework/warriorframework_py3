@@ -51,3 +51,8 @@ def install_app(request):
         output_data["status"] = False
         output_data["message"] += "App not available for installation"
     return JsonResponse(output_data)
+
+
+def go_to_account(request):
+    return render(request, 'wappstore/account_login.html')
+

@@ -1,0 +1,12 @@
+{
+  "icon": "envelope-open",
+  "color": "skyblue",
+  "developer": "Warrior Framework",
+  "description": "This is the Official Warrior Request-An-App",
+  "app" : {"name" : "Request-An-App", "url" : "/katana/request_an_app/", "include": "native.request_an_app.urls"},
+  "warrior-compatibility": ":warrior-4.0.0-beta",
+  "warrior-incompatibility": "",
+  "version": "1.0.0",
+  "permissions": "",
+  "availability": ""
+}
