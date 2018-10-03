@@ -66,5 +66,17 @@ var wappstore = {
 
             });
         }
+    },
+
+    openDescription: function () {
+        var $elem = $(this);
+        var text = $($elem.closest('.container-fluid').prev().find('p')[1]).html();
+        katana.openAlert({
+            alert_type: "light",
+            heading: "Description",
+            text: text,
+            show_cancel_btn: false,
+            accept_btn_text: "Ok"
+        })
     }
 };
