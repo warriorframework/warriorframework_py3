@@ -275,7 +275,6 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         html_filepath = os.path.join(suite_repository['suite_execution_dir'],
                                      Utils.file_Utils.getNameOnly(filename))+'.html'
         print_info("HTML result file: {0}".format(html_filepath))
-
     if not from_project:
         data_repository["war_parallel"] = False
 
@@ -342,11 +341,12 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                                                                     data_repository, from_project,
                                                                     auto_defects=auto_defects)
                 testsuite_status_list.append(test_suite_status)
-                # The below runmode part is not modified/removed to preserve backward compatibility
-    elif execution_type.upper() == 'RUN_UNTIL_FAIL':
+    # The below runmode part is not modified/removed to preserve backward compatibility
+    elif execution_type.upper() == 'RUN_UNTIL_FAIL' and runmode is None:
         execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
                                                                        'Details',
                                                                        'type', 'Max_Attempts')
+        execution_value = 1 if execution_value == "" else execution_value
         print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
         i = 0
         while i < int(execution_value):
@@ -361,10 +361,11 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                str(test_suite_status).upper() == "ERROR":
                 break
 
-    elif execution_type.upper() == 'RUN_UNTIL_PASS':
+    elif execution_type.upper() == 'RUN_UNTIL_PASS' and runmode is None:
         execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
                                                                        'Details',
                                                                        'type', 'Max_Attempts')
+        execution_value = 1 if execution_value == "" else execution_value
         print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
         i = 0
         while i < int(execution_value):
@@ -378,11 +379,12 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
             if str(test_suite_status).upper() == "TRUE":
                 break
 
-    elif execution_type.upper() == 'RUN_MULTIPLE':
+    elif execution_type.upper() == 'RUN_MULTIPLE' and runmode is None:
         execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
                                                                         'Details', 'type',
                                                                         'Number_Attempts')
-        print_info("Execution type: {0}, Max Attempts: {1}".format(execution_type, execution_value))
+        execution_value = 1 if execution_value == "" else execution_value
+        print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
 
         i = 0
         while i < int(execution_value):

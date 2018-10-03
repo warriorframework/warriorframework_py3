@@ -167,7 +167,6 @@ def get_runmode_from_xmlfile(element):
                               "and these values can not be combined with other"
                               " values".format(rt_type))
                 return (None, 1, None)
-
             try:
                 rt_value = int(rt_value)
 
@@ -184,6 +183,7 @@ def get_runmode_from_xmlfile(element):
                 rt_value = 1
 
     return (rt_type, rt_value, runmode_timer)
+
 
 def get_retry_from_xmlfile(element):
     """Get 'retry' tag and its values from the testcase step.
@@ -214,14 +214,14 @@ def get_retry_from_xmlfile(element):
         retry_value = str(retry_value)
         if retry_interval.isdigit() is False:
             retry_interval = 5
-            print_warning("The value provided for "\
-                          "retry:retry_interval is not valid, "\
+            print_warning("The value provided for "
+                          "retry:retry_interval is not valid, "
                           "using default value 5 for execution")
         retry_interval = int(retry_interval)
         if retry_value.isdigit() is False:
             retry_value = 5
-            print_warning("The value provided for "\
-                          "retry:retry_value is not valid, "\
+            print_warning("The value provided for "
+                          "retry:retry_value is not valid, "
                           "using default value 5 for execution")
         retry_value = int(retry_value)
     return (retry_type, retry_cond, retry_cond_value, retry_value, retry_interval)
