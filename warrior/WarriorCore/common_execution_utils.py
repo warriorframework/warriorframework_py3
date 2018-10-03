@@ -167,7 +167,6 @@ def get_runmode_from_xmlfile(element):
                               "and these values can not be combined with other"
                               " values".format(rt_type))
                 return (None, 1, None)
-
             try:
                 rt_value = int(rt_value)
 
@@ -203,8 +202,8 @@ def get_retry_from_xmlfile(element):
         retry_value = retry_tag.get('count')
         retry_interval = retry_tag.get('interval')
         if not retry_type in ['if', 'if not']:
-            print_warning("Unsupported value '{0}' provided for 'retry:"\
-                          "type' tag. Supported values : 'if, if not' "\
+            print_warning("Unsupported value '{0}' provided for 'retry:"
+                          "type' tag. Supported values : 'if, if not' "
                           .format(retry_type))
             return (None, None, None, 5, 5)
         if (retry_cond is None) or (retry_cond_value is None):
@@ -215,14 +214,14 @@ def get_retry_from_xmlfile(element):
         retry_value = str(retry_value)
         if retry_interval.isdigit() is False:
             retry_interval = 5
-            print_warning("The value provided for "\
-                          "retry:retry_interval is not valid, "\
+            print_warning("The value provided for "
+                          "retry:retry_interval is not valid, "
                           "using default value 5 for execution")
         retry_interval = int(retry_interval)
         if retry_value.isdigit() is False:
             retry_value = 5
-            print_warning("The value provided for "\
-                          "retry:retry_value is not valid, "\
+            print_warning("The value provided for "
+                          "retry:retry_value is not valid, "
                           "using default value 5 for execution")
         retry_value = int(retry_value)
     return (retry_type, retry_cond, retry_cond_value, retry_value, retry_interval)

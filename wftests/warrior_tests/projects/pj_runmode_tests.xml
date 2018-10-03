@@ -27,7 +27,6 @@
             <onError action="next" value=""/>
             <impact>impact</impact>
         </Testsuite> 
-
         <!-- verify runmode at suite locallevel -->
         <Testsuite>
             <path>../suites/framework_tests/runmode_tests/ts_runmode_verify_at_ts_local_level.xml</path>
@@ -59,8 +58,7 @@
             <impact>impact</impact>
         </Testsuite>  
 
-
-<!-- runmode at case local level  -->
+  <!-- runmode at case local level  -->
         <Testsuite>
             <path>../suites/framework_tests/runmode_tests/ts_runmode_at_tc_local_level.xml</path>
             <onError action="next" value=""/>
@@ -69,5 +67,3 @@
 
    </Testsuites>
 </Project>
-
-

@@ -274,9 +274,12 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         html_filepath = os.path.join(suite_repository['suite_execution_dir'],
                                      Utils.file_Utils.getNameOnly(filename))+'.html'
         print_info("HTML result file: {0}".format(html_filepath))
-
     if not from_project:
         data_repository["war_parallel"] = False
+
+    root = Utils.xml_Utils.getRoot(testsuite_filepath)
+    suite_global_xml = root.find('Details')
+    runmode, value, _ = common_execution_utils.get_runmode_from_xmlfile(suite_global_xml)
 
     if execution_type.upper() == 'PARALLEL_TESTCASES':
         ts_junit_object.remove_html_obj()
@@ -289,15 +292,58 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                                                           auto_defects=auto_defects)
 
     elif execution_type.upper() == 'SEQUENTIAL_TESTCASES':
-        print_info("Executing testccases sequentially")
-        test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
-                                                            data_repository, from_project,
-                                                            auto_defects=auto_defects)
+        if runmode is None:
+            print_info("Executing testcases sequentially")
+            test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
+                                                                data_repository, from_project,
+                                                                auto_defects=auto_defects)
 
-    elif execution_type.upper() == 'RUN_UNTIL_FAIL':
+        elif runmode.upper() == "RUF":
+            print_info("Execution type: {0}, Attempts: {1}".format(runmode, value))
+            i = 0
+            while i < int(value):
+                i += 1
+                print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
+                test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
+                                                                    data_repository, from_project,
+                                                                    auto_defects=auto_defects)
+                test_count = i * len(testcase_list)
+                testsuite_utils.pSuite_update_suite_tests(str(test_count))
+                if str(test_suite_status).upper() == "FALSE" or\
+                   str(test_suite_status).upper() == "ERROR":
+                    break
+
+        elif runmode.upper() == "RUP":
+            print_info("Execution type: {0}, Attempts: {1}".format(runmode, value))
+            i = 0
+            while i < int(value):
+                i += 1
+                print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
+                test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
+                                                                    data_repository, from_project,
+                                                                    auto_defects=auto_defects)
+                test_count = i * len(testcase_list)
+                testsuite_utils.pSuite_update_suite_tests(str(test_count))
+                if str(test_suite_status).upper() == "TRUE":
+                    break
+
+        elif runmode.upper() == "RMT":
+            print_info("Execution type: {0}, Attempts: {1}".format(runmode, value))
+            i = 0
+            while i < int(value):
+                i += 1
+                print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
+                # We aren't actually summing each test result here...
+                test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
+                                                                    data_repository, from_project,
+                                                                    auto_defects=auto_defects)
+
+    # The below runmode part is not modified/removed to preserve backward compatibility
+    elif execution_type.upper() == 'RUN_UNTIL_FAIL' and runmode is None:
         execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
                                                                        'Details',
                                                                        'type', 'Max_Attempts')
+        execution_value = 1 if execution_value == "" else execution_value
         print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
         i = 0
         while i < int(execution_value):
@@ -312,10 +358,11 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                str(test_suite_status).upper() == "ERROR":
                 break
 
-    elif execution_type.upper() == 'RUN_UNTIL_PASS':
+    elif execution_type.upper() == 'RUN_UNTIL_PASS' and runmode is None:
         execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
                                                                        'Details',
                                                                        'type', 'Max_Attempts')
+        execution_value = 1 if execution_value == "" else execution_value
         print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
         i = 0
         while i < int(execution_value):
@@ -329,11 +376,12 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
             if str(test_suite_status).upper() == "TRUE":
                 break
 
-    elif execution_type.upper() == 'RUN_MULTIPLE':
+    elif execution_type.upper() == 'RUN_MULTIPLE' and runmode is None:
         execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
                                                                         'Details', 'type',
                                                                         'Number_Attempts')
-        print_info("Execution type: {0}, Max Attempts: {1}".format(execution_type, execution_value))
+        execution_value = 1 if execution_value == "" else execution_value
+        print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
 
         i = 0
         while i < int(execution_value):
