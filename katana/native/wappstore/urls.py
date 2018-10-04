@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^install_app', views.install_app, name='install_app'),
     url(r'^go_to_account', views.go_to_account, name='go_to_account'),
     url(r'^go_to_home_page/', views.go_to_home_page, name='go_to_home_page'),
+    url(r'^see_more_wapps/', views.see_more_wapps, name='see_more_wapps'),
 ]

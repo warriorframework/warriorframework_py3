@@ -62,3 +62,12 @@ def go_to_home_page(request):
     response = json.loads(content.decode("utf-8"))
     return render(request, 'wappstore/home_page_content.html', response)
 
+
+def see_more_wapps(request):
+    wapp_type = request.GET.get('wapp_type', 'pop')
+    content = requests.get('{0}/wapps/see_more_wapps_data/{1}'.format(address_port, wapp_type)).content
+    response = json.loads(content.decode("utf-8"))
+    for wapp in response["data"]["gen"]:
+        print(wapp["name"])
+    return render(request, 'wappstore/individual_section.html', response)
+

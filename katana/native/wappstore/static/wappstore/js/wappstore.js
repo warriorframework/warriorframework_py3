@@ -88,5 +88,16 @@ var wappstore = {
             }).done(function(data){
                 $elem.closest('.wappstore-inner-page').find('.wappstore-display').replaceWith(data);
         });
+    },
+
+    seeMoreWapps: function () {
+        var $elem = $(this);
+        $.ajax({
+                type: 'GET',
+                url: 'wappstore/see_more_wapps/',
+                data: {'wapp_type': $elem.attr('wapp_type')}
+            }).done(function(data){
+                $elem.closest('.wappstore-inner-page').find('.wappstore-display').replaceWith(data);
+        });
     }
 };

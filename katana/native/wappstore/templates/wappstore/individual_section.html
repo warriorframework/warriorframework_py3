@@ -1,0 +1,20 @@
+<div class="wappstore-display">
+    <div class="wappstore-display-padding">
+        <div>
+            <h3 class="text-muted">{{ data.title }} MicroApps</h3>
+            <hr>
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="container-fluid">
+                        <div class="row" style="flex-wrap: wrap;">
+                            {% for wapp in data.gen %}
+                            {% include 'wappstore/display_wapps.html' %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br><br>
+    </div>
+</div>
