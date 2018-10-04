@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import collections
 import json
 
 import os
@@ -27,7 +28,7 @@ class WappStoreView(View):
         Get Request Method
         """
         content = requests.get('{0}/wapps/get_all_wapps_data/'.format(address_port)).content
-        response = json.loads(content.decode("utf-8"))
+        response = order_wapp_content(json.loads(content.decode("utf-8")))
         return render(request, WappStoreView.template, response)
 
 
@@ -59,7 +60,7 @@ def go_to_account(request):
 
 def go_to_home_page(request):
     content = requests.get('{0}/wapps/get_all_wapps_data/'.format(address_port)).content
-    response = json.loads(content.decode("utf-8"))
+    response = order_wapp_content(json.loads(content.decode("utf-8")))
     return render(request, 'wappstore/home_page_content.html', response)
 
 
@@ -67,7 +68,13 @@ def see_more_wapps(request):
     wapp_type = request.GET.get('wapp_type', 'pop')
     content = requests.get('{0}/wapps/see_more_wapps_data/{1}'.format(address_port, wapp_type)).content
     response = json.loads(content.decode("utf-8"))
-    for wapp in response["data"]["gen"]:
-        print(wapp["name"])
     return render(request, 'wappstore/individual_section.html', response)
+
+
+def order_wapp_content(input_data):
+    order = ["pop", "wa", "ta", "nw", "oss"]
+    data = {"data": collections.OrderedDict()}
+    for o in order:
+        data["data"][o] = input_data["data"][o]
+    return data
 

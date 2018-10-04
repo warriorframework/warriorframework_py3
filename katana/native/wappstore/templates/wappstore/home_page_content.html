@@ -3,7 +3,7 @@
         {% for wapp_type, content in data.items %}
         <div>
             <h3 class="text-muted">{{ content.title }} MicroApps
-                <button class="btn btn-sm btn-info" katana-click="wappstore.seeMoreWapps" wapp_type="{{wapp_type}}">See More</button>
+                <button class="btn btn-sm btn-info" katana-click="wappstore.seeMoreWapps" wapp_type="{{wapp_type}}">See {% if wapp_type == "pop" %} All {% else %} More {% endif %}</button>
             </h3>
             <hr>
             <div class="container-fluid">
