@@ -9,7 +9,7 @@
 <body>
 
 <div class="tool-bar">
-    <div class="title">WappStore</div>
+    <div class="title">MicroAppStore</div>
     <div class="wappstore-search-bar">
         <input placeholder="Search">
     </div>
@@ -21,7 +21,7 @@
 <div class="wappstore-inner-page">
     <div class="wappstore-sidebar">
         <div class="wappstore-main-bar">
-            <i class="fa fa-puzzle-piece" aria-hidden="true"></i>&nbsp; Wapps
+            <i class="fa fa-puzzle-piece" aria-hidden="true"></i>&nbsp; MicroApps
             <span katana-click="wappstore.collapseSubSidebar">
                 <i class="fa fa-chevron-circle-up"></i>
             </span>
@@ -44,33 +44,7 @@
             <i class="fa fa-user" aria-hidden="true"></i> &nbsp;  Account
         </div>
     </div>
-    <div class="wappstore-display">
-        <div class="wappstore-display-padding">
-            {% for wapp_type, content in data.items %}
-            <div>
-                <h3 class="text-muted">{{ content.title }} Wapps<button class="btn btn-sm btn-info">See More</button></h3><hr>
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="wappstore-display-navbar-left" katana-click="wappstore.navigate._scrollLeft">
-                            <i class="fa fa-chevron-left fa-2x"></i>
-                        </div>
-                        <div class="container-fluid">
-                            <div class="row">
-                            {% for wapp in content.wapps %}
-                            {% include 'wappstore/display_wapps.html' %}
-                            {% endfor %}
-                            </div>
-                        </div>
-                        <div class="wappstore-display-navbar-right" katana-click="wappstore.navigate._scrollRight">
-                            <i class="fa fa-chevron-right fa-2x"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <br><br>
-            {% endfor %}
-        </div>
-    </div>
+    {% include 'wappstore/home_page_content.html' %}
 </div>
 
 </body>

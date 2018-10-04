@@ -78,5 +78,14 @@ var wappstore = {
             show_cancel_btn: false,
             accept_btn_text: "Ok"
         })
+    },
+
+    goToHomePage: function() {
+        $.ajax({
+                type: 'GET',
+                url: 'wappstore/go_to_home_page/'
+            }).done(function(data){
+                console.log(data);
+        });
     }
 };

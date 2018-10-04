@@ -56,3 +56,9 @@ def install_app(request):
 def go_to_account(request):
     return render(request, 'wappstore/account_login.html')
 
+
+def go_to_home_page(request):
+    content = requests.get('{0}/wapps/get_all_wapps_data/'.format(address_port)).content
+    response = json.loads(content.decode("utf-8"))
+    return render(request, 'wappstore/home_page_content.html', response)
+
