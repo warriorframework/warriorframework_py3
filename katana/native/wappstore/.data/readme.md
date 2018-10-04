@@ -1,0 +1,1 @@
+Add directories of the apps you want to install
