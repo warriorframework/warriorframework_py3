@@ -27,9 +27,15 @@
                     {% endif %}
                 </span>
             </h6>
+            {% if wapp.name in installed_apps %}
+            <button class="btn" style="position: absolute; right: 23px; bottom: 58px;" app-name="{{wapp.real_name}}">
+                Installed
+            </button>
+            {% else %}
             <button class="btn" style="position: absolute; right: 23px; bottom: 58px;" app-name="{{wapp.real_name}}" katana-click="wappstore.installApp">
                 Install
             </button>
+            {% endif %}
         </div>
     </div>
 </div>

@@ -13,6 +13,7 @@ import requests
 from native.wapp_management.wapp_management_utils.installer import Installer
 from utils.directory_traversal_utils import get_parent_directory
 from utils.navigator_util import Navigator
+from wui.core.core_utils.app_info_class import AppInformation
 
 nav_obj = Navigator()
 app_path = os.path.join(nav_obj.get_katana_dir(), "native", "wappstore", ".data")
@@ -29,6 +30,7 @@ class WappStoreView(View):
         """
         content = requests.get('{0}/wapps/get_all_wapps_data/'.format(address_port)).content
         response = order_wapp_content(json.loads(content.decode("utf-8")))
+        response.update({"installed_apps": get_installed_wapp_names()})
         return render(request, WappStoreView.template, response)
 
 
@@ -61,6 +63,7 @@ def go_to_account(request):
 def go_to_home_page(request):
     content = requests.get('{0}/wapps/get_all_wapps_data/'.format(address_port)).content
     response = order_wapp_content(json.loads(content.decode("utf-8")))
+    response.update({"installed_apps": get_installed_wapp_names()})
     return render(request, 'wappstore/home_page_content.html', response)
 
 
@@ -68,6 +71,7 @@ def see_more_wapps(request):
     wapp_type = request.GET.get('wapp_type', 'pop')
     content = requests.get('{0}/wapps/see_more_wapps_data/{1}'.format(address_port, wapp_type)).content
     response = json.loads(content.decode("utf-8"))
+    response.update({"installed_apps": get_installed_wapp_names()})
     return render(request, 'wappstore/individual_section.html', response)
 
 
@@ -78,3 +82,9 @@ def order_wapp_content(input_data):
         data["data"][o] = input_data["data"][o]
     return data
 
+
+def get_installed_wapp_names():
+    apps = set()
+    for app in AppInformation.information.apps:
+        apps.add(app.data["app"]["name"])
+    return apps
