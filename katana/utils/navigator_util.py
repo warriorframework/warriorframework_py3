@@ -70,6 +70,7 @@ class Navigator(object):
                     if "^" in temp:
                         temp = temp.split('^')[0]
                     tags_list.add(temp)
+        tags_list.add(self.get_wf_version())
         return tags_list
 
     def search_folder_name(self, folder_name, given_dir):
