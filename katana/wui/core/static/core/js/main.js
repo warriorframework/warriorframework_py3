@@ -989,27 +989,31 @@ var katana = {
 
     post: function(url, csrf, toSend, callBack, fallBack, callBackData, fallBackData ) {
       var $elem = this && this != katana.templateAPI ? this : katana.$activeTab;
-      var toSend = toSend ? toSend : $elem.find('input:not([name="csrfmiddlewaretoken"])').serializeArray();
-      var url = url ? url : $elem.attr('post-url');
-      var csrf = csrf ? csrf : $elem.find('.csrf-container > input').val();
+      toSend = toSend ? toSend : $elem.find('input:not([name="csrfmiddlewaretoken"])').serializeArray();
+      url = url ? url : $elem.attr('post-url');
+      csrf = csrf ? csrf : $elem.find('.csrf-container > input').val();
 
-      $.ajaxSetup({
-        beforeSend: function(xhr, settings) {
-          if (!this.crossDomain)
-            xhr.setRequestHeader("X-CSRFToken", csrf);
-        }
-      });
-      $.ajax({
-        url: url,
-        type: "POST",
-        data: {
-          data: toSend
-        }
-      }).done(function(data) {
-        callBack && callBack(data, callBackData);
-      }).fail(function(data) {
-        fallBack && fallBack(data, fallBackData);
-      });
+      if(url === undefined || url === ""){
+        console.log("Error in post(): No URL found. POST request could not be completed.");
+      } else {
+        $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+            if (!this.crossDomain)
+              xhr.setRequestHeader("X-CSRFToken", csrf);
+          }
+        });
+        $.ajax({
+          url: url,
+          type: "POST",
+          data: {
+            data: toSend
+          }
+        }).done(function(data) {
+          callBack && callBack(data, callBackData);
+        }).fail(function(data) {
+          fallBack && fallBack(data, fallBackData);
+        });
+      }
     },
 
     get: function({url, toSend, dataType, callBack, fallBack, callBackData, fallBackData}={}) {
@@ -1020,20 +1024,24 @@ var katana = {
       url = url ? url : $elem.attr('get-url');
       dataType = dataType ? dataType : 'text';
 
-      // make an ajax get call using the intialized variables,
-      // on sucess the data is sent to success cal back function if one was provided
-      $.ajax({
-        url: url,
-        type: "GET",
-        dataType: dataType,
-        data: {
-          data: toSend
-        },
-      }).done(function(data) {
-        callBack && callBack(data, callBackData);
-      }).fail(function(data) {
-        fallBack && fallBack(data, fallBackData);
-      });
+      if(url === undefined || url === ""){
+        console.log("Error in get(): No URL found. GET request could not be completed.");
+      } else {
+        // make an ajax get call using the intialized variables,
+        // on sucess the data is sent to success cal back function if one was provided
+        $.ajax({
+          url: url,
+          type: "GET",
+          dataType: dataType,
+          data: {
+            data: toSend
+          },
+        }).done(function(data) {
+          callBack && callBack(data, callBackData);
+        }).fail(function(data) {
+          fallBack && fallBack(data, fallBackData);
+        });
+      }
     },
 
     trigger: function(url, callBack) {
