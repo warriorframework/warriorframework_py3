@@ -1,3 +1,4 @@
+import copy
 import os
 from .directory_traversal_utils import get_parent_directory, join_path
 from utils.json_utils import read_json_data
@@ -81,7 +82,7 @@ class Navigator(object):
         pass
 
     def get_dir_tree_json(self, start_dir_path, dir_icon=None, file_icon='jstree-file', fl=False,
-                          file_a_attr=None, dir_a_attr=None):
+                          file_a_attr=None, dir_a_attr=None, lazy_loading=False):
         """
         Takes an absolute path to a directory(start_dir_path)  as input and creates a
         json tree having the start_dir as the root.
@@ -118,21 +119,33 @@ class Navigator(object):
                         ]
         }
 
+        if lazy_loading is set to True, then only the first level children are read and updated
+        in the children list
 
         """
         base_name = os.path.basename(start_dir_path)
-        layout = {'text': base_name}
-        layout['data'] = {'path': start_dir_path}
-        layout['li_attr'] = {'data-path': start_dir_path}
-        
+        layout = {'text': base_name, 'data': {'path': start_dir_path},
+                  'li_attr': {'data-path': start_dir_path}}
+
         if not fl:
-            layout["state"] = {"opened" : 'true' }
+            layout["state"] = {"opened": 'true'}
             fl = 'false'
         if os.path.isdir(start_dir_path):
             for x in os.listdir(start_dir_path):
                 try:
-                    layout['a_attr'] = dir_a_attr if dir_a_attr else {}
-                    children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl, file_a_attr=file_a_attr)
+                    if not lazy_loading:
+                        layout['a_attr'] = dir_a_attr if dir_a_attr else {}
+                        children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl, file_a_attr=file_a_attr, lazy_loading=lazy_loading)
+                    else:
+                        children = {'text': x, 'data': {'path': os.path.join(start_dir_path, x)},
+                                    'li_attr': {'data-path': os.path.join(start_dir_path, x)}}
+                        if os.path.isdir(os.path.join(start_dir_path, x)):
+                            layout['a_attr'] = dir_a_attr if dir_a_attr else {}
+                            children.update({'icon': dir_icon, 'children': True,
+                                             'a_attr': dir_a_attr if dir_a_attr else {}})
+                        else:
+                            children.update({'icon': file_icon,
+                                             'a_attr': file_a_attr if file_a_attr else {}})
                 except IOError:
                     pass
                 except Exception as e:
@@ -145,6 +158,5 @@ class Navigator(object):
         else:
             layout['icon'] = file_icon
             layout['a_attr'] = file_a_attr if file_a_attr else {}
-        #print(layout)
-            
+
         return layout

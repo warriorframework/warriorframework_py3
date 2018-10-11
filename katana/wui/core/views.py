@@ -75,16 +75,73 @@ def refresh_landing_page(request):
     return render(request, 'core/landing_page.html', {"apps": AppInformation.information.apps})
 
 
-def get_file_explorer_data(request):
-    nav_obj = Navigator()
-    if "data[start_dir]" in request.POST and request.POST["data[start_dir]"] != "false":
-        start_dir = request.POST["data[start_dir]"]
-    elif "data[path]" in request.POST and request.POST["data[path]"] != "false":
-        start_dir = get_parent_directory(request.POST["data[path]"])
-    else:
-        start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
-    output = nav_obj.get_dir_tree_json(start_dir_path=start_dir)
-    return JsonResponse(output)
+class getFileExplorerData(View):
+
+    def post(self, request):
+        """
+        This is a post request for getting the file explorer data. It internally calls the
+        get_dir_tree_json() in navigator_utils.py to get a list of directories.
+
+        params sent via the request:
+
+        start_dir: Absolute path to the start directory. If not given, defaulted to "Warriorspace".
+        path: Absolute path to the current directory. Send a path via this argument indicates that
+              information for current directory's parent needs to be obtained. If not False, it is
+              prioritized over start_dir
+        lazy_loading: Indicates that jsTree lazy_loading is being used and only direct
+                      sub-children's information needs to be obtained.
+
+        """
+        nav_obj = Navigator()
+        lazy_loading = True if "data[lazy_loading]" in request.POST and request.POST["data[lazy_loading]"].lower() == "true" else False
+        start_dir = "false"
+        if "data[start_dir]" in request.POST:
+            start_dir = request.POST["data[start_dir]"]
+
+        if start_dir == "false":
+            start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
+
+        if "data[path]" in request.POST and request.POST["data[path]"] != "false":
+            start_dir = get_parent_directory(request.POST["data[path]"])
+        output = nav_obj.get_dir_tree_json(start_dir_path=start_dir, lazy_loading=lazy_loading)
+        return JsonResponse(output)
+
+    def get(self, request):
+        """
+        This is a get request for getting the file explorer data. It internally calls the
+        get_dir_tree_json() in navigator_utils.py to get a list of directories. THIS VIEW EXISTS
+        ONLY BECAUSE JSTREE DOES NOT HAVE SUPPORT FOR POST IN LAZY LOADING.
+
+        params sent via the request:
+
+        start_dir: Absolute path to the start directory. If not given, defaulted to "Warriorspace".
+        path: Absolute path to the current directory. Send a path via this argument indicates that
+              information for current directory's parent needs to be obtained. If not False, it is
+              prioritized over start_dir
+        lazy_loading: Indicates that jsTree lazy_loading is being used and only direct
+                      sub-children's information needs to be obtained.
+
+        """
+        nav_obj = Navigator()
+        start_dir = "false"
+        lazy_loading = True if "lazy_loading" in request.GET and request.GET["lazy_loading"].lower() == "true" else False
+        get_children_only = False
+        if "start_dir" in request.GET:
+            get_children_only = True
+            start_dir = request.GET["start_dir"]
+
+        if start_dir == "false":
+            get_children_only = False
+            start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
+
+        if "path" in request.GET:
+            get_children_only = False
+            start_dir = request.GET["path"]
+
+        output = nav_obj.get_dir_tree_json(start_dir_path=start_dir, lazy_loading=lazy_loading)
+        if get_children_only:
+            output = output["children"]
+        return JsonResponse(output, safe=False)
 
 
 def read_config_file(request):
