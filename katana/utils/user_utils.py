@@ -18,18 +18,17 @@ class UserData():
         self.wapp_name = wapp_name
 
     def get_user_path(self, request):
+        user_dir = None
         username = user_authenticated(request)
-        if username is not None:
+        if username:
             top_dir = get_user_home_dir(username)
             if top_dir:
                 user_dir = join_path(top_dir, USERDATA, username)
-                return user_dir
             else:
                 print('-- An Error Occurred -- fetching of top level directory resulted in a empty string')
-                return None
         else:
             print('-- An Error Occurred -- user not authenticated')
-            return None
+        return user_dir
 
     def get_dotdata_dir(self, request):
         """
@@ -41,7 +40,7 @@ class UserData():
         # get location to .data
         wapp_name = self.wapp_name
         # get top level directory for user_data
-        user_path = self.get_user_path(self, request)
+        user_path = self.get_user_path(request)
         if user_path and wapp_name:
             dotdata_dir = join_path(user_path, WAPPSDATA, wapp_name, DOTDATA)
             if not file_or_dir_exists(dotdata_dir):
@@ -63,7 +62,7 @@ class UserData():
         # get location to wapp_logs
         wapp_name = self.wapp_name
         # get top level directory for user_data
-        user_path = self.get_user_path(self, request)
+        user_path = self.get_user_path(request)
         if user_path and wapp_name:
             wapplogs_dir = join_path(user_path, WAPPSDATA, wapp_name, WAPPLOGS)
             if not file_or_dir_exists(wapplogs_dir):
