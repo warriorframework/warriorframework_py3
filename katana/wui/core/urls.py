@@ -2,10 +2,9 @@ from django.conf.urls import url
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.CoreView.as_view(), name='index'),
+    # url(r'^$', views.CoreView.as_view(), name='index'),
     url(r'^get_file_explorer_data/$', views.getFileExplorerData.as_view(), name='get_file_explorer_data'),
-    #url(r'^$', views.CoreView.as_view(), name='index'),
-    url(r'^$', views.UserAuthView.as_view(), name='login'),    
+    url(r'^$', views.UserAuthView.as_view(), name='login'),
     url(r'^authenticate_user/$', views.UserAuthView.as_view(), name='authenticate_user'),
     url(r'^logout/$', views.UserAuthView.as_view(), name='logout'),    
     url(r'^home/', views.UserAuthView.as_view(), name='get_home_page'),
