@@ -1,0 +1,86 @@
+<html>
+<head>
+    {% load staticfiles %}
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.2/css/all.css"
+          integrity="sha384-/rXc/GQVaYpyDdyxK+ecHPVYJSN9bmVFBvjA/9eOB+pb3F2w2N6fc5qB9Ew5yIns" crossorigin="anonymous">
+    <script src="{% static 'oss/js/jstree.min.js' %}"></script>
+    <link rel="icon" href="{% static 'core/images/logo.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'core/css/main_django.css' %}">
+    <link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Raleway" rel="stylesheet">
+    {% block headcontent %}
+    {% endblock %}
+</head>
+<body>
+<nav class="navbar sticky-top navbar-light">
+    <a class="navbar-brand" href="/katana">
+        <img src="{% static 'core/images/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
+        WARRIOR
+    </a>
+    <div class="btn-group">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+            <i class="fas fa-user"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+            <button class="dropdown-item" type="button">Profile Settings</button>
+            <button class="dropdown-item" type="button">Logout</button>
+        </div>
+    </div>
+</nav>
+
+<div class="page-content active">
+    <div class="sidebar-content">
+        <div class="sidebar">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-2" style="height: 50px; text-align: center; padding: 0;">
+                        <i class="fas fa-home" style="line-height: 50px; font-size: 1rem;"></i>
+                    </div>
+                    <div class="col-sm-10" style="height: 50px; line-height: 52px; padding: 0;">
+                        Home
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2" style="height: 50px; text-align: center; padding: 0;">
+                        <i class="fas fa-puzzle-piece" style="line-height: 50px; font-size: 1rem;"></i>
+                    </div>
+                    <div class="col-sm-10" style="height: 50px; line-height: 52px; padding: 0;">
+                        Wapps
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2" style="height: 50px; text-align: center; padding: 0;">
+                        <i class="fas fa-user" style="line-height: 50px; font-size: 1rem;"></i>
+                    </div>
+                    <div class="col-sm-10" style="height: 50px; line-height: 52px; padding: 0;">
+                        Account
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-sm-12">
+                    {% block pagecontent %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
