@@ -32,14 +32,31 @@ body {
 }
 
 .sidebar-content {
-    width: 300px;
+    width: 75px;
     height: 100%;
     float: left;
     overflow: auto;
 }
+
 .content {
-    width: calc(100% - 300px);
+    width: calc(100% - 75px);
     height: 100%;
     float: left;
     overflow: auto;
+}
+
+.active >.sidebar-content {
+    width: 300px;
+}
+
+.active > .content {
+    width: calc(100% - 300px);
+}
+
+.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 {
+    height: 50px;
+}
+
+.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i {
+    line-height: 50px;
 }
