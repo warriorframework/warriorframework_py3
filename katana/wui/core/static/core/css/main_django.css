@@ -3,8 +3,12 @@ body {
 }
 
 .navbar {
-    background-color: rgba(33, 118, 176, 1);
     color: white;
+}
+
+.navbar > .ml-auto > i {
+    padding-right: 1rem;
+    cursor: pointer;
 }
 
 .navbar-brand {
@@ -57,6 +61,20 @@ body {
     height: 50px;
 }
 
-.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i {
+.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid {
+    height: 100%;
+}
+
+.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row {
+    height: 100%;
+}
+
+.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div {
+    height: 100%;
+    padding: 0;
+    text-align: center;
+}
+
+.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div > i, span{
     line-height: 50px;
 }

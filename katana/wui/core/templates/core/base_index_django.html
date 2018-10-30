@@ -22,11 +22,15 @@
     {% endblock %}
 </head>
 <body>
-<nav class="navbar sticky-top navbar-light">
+<nav class="navbar sticky-top navbar-dark bg-dark">
     <a class="navbar-brand" href="/katana">
         <img src="{% static 'core/images/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
         WARRIOR
     </a>
+    <div class="ml-auto">
+        <i class="fas fa-cog"></i>
+        <i class="fas fa-info"></i>
+    </div>
     <div class="btn-group">
         <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="false">
@@ -45,17 +49,26 @@
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
-                        <i class="fas fa-home"></i>Home
+                        <div class="container-fluid"><div class="row">
+                            <div class="col-sm-2"><i class="fas fa-home"></i></div>
+                            <div class="col-sm-10"><span>Home</span></div>
+                        </div></div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <i class="fas fa-puzzle-piece"></i>&nbsp;&nbsp;Wapps
+                        <div class="container-fluid"><div class="row">
+                            <div class="col-sm-2"><i class="fas fa-puzzle-piece"></i></div>
+                            <div class="col-sm-10"><span>Wapps</span></div>
+                        </div></div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <i class="fas fa-user"></i>&nbsp;&nbsp;Account
+                        <div class="container-fluid"><div class="row">
+                            <div class="col-sm-2"><i class="fas fa-user"></i></div>
+                            <div class="col-sm-10"><span>Account</span></div>
+                        </div></div>
                     </div>
                 </div>
             </div>
