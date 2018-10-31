@@ -1,6 +1,14 @@
+/*****************************/
+/* Standard Page Styling Start */
 body {
     font-family: 'Raleway', 'Lato', 'Montserrat', Helvetica, Arial, sans-serif !important;
 }
+
+/* Standard Page Styling End */
+/*****************************/
+
+/*****************************/
+/* Main Navbar Styling Start */
 
 .navbar {
     color: white;
@@ -20,6 +28,29 @@ body {
     left: unset;
 }
 
+/* Main Navbar Styling End */
+/***************************/
+
+/***********************************/
+/* Full Page Content Styling Start */
+
+.page-content {
+    width: 100%;
+    height: calc(100% - 56px)
+}
+
+/* Full Page Content Styling End */
+/*********************************/
+
+/******************************/
+/* Main Sidebar Styling Start */
+
+.sidebar-content {
+    height: 100%;
+    float: left;
+    overflow: auto;
+}
+
 .sidebar {
     top: 56px;
     z-index: 1020;
@@ -30,17 +61,109 @@ body {
     width: 100%;
 }
 
-.page-content {
-    width: 100%;
-    height: calc(100% - 56px)
-}
-
-.sidebar-content {
-    width: 75px;
-    height: 100%;
-    float: left;
+.sidebar-content > .sidebar {
+    height: calc(100% - 56px);
     overflow: auto;
 }
+
+.sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 > i {
+    line-height: 40px;
+}
+
+/*-------Expanded Sidebar Styling Start------*/
+
+.expanded >.sidebar-content {
+    width: 300px;
+}
+
+.expanded > .content {
+    width: calc(100% - 300px);
+}
+
+.expanded > .sidebar-content > .sidebar-toggler {
+    height: 56px;
+    background-color: #f9f9f9;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: rgba(35, 131, 195, 1);
+    text-align: right;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row:hover {
+    background-color: rgba(35, 131, 195, 1);
+    color: white;
+    cursor: pointer;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 {
+    height: 50px;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid {
+    height: 100%;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row {
+    height: 100%;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div {
+    height: 100%;
+    padding: 0;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div:nth-child(1) {
+    text-align: center;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div > i, span {
+    line-height: 50px;
+}
+
+.expanded > .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 {
+    text-align: right;
+}
+
+.expanded > .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 > i:first-child{
+    display: none;
+}
+
+/*-------Expanded Sidebar Styling End------*/
+
+/*-------Collapsed Sidebar Styling Start------*/
+
+.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div:nth-child(2) {
+    display: none;
+}
+
+.collapsed > .sidebar-content {
+    width: 75px;
+}
+
+.collapsed > .sidebar-content > .sidebar-toggler {
+    height: 56px;
+    background-color: #f9f9f9;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    color: rgba(35, 131, 195, 1);
+    text-align: center;
+}
+
+.collapsed > .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 > i:nth-child(2){
+    display: none;
+}
+
+.collapsed > .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 {
+    text-align: center;
+}
+
+/*-------Collapsed Sidebar Styling End------*/
+
+/* Main Sidebar Styling End*/
+/***************************/
+
+/*****************************/
+/* Main Content Styling Start*/
 
 .content {
     width: calc(100% - 75px);
@@ -49,32 +172,5 @@ body {
     overflow: auto;
 }
 
-.active >.sidebar-content {
-    width: 300px;
-}
-
-.active > .content {
-    width: calc(100% - 300px);
-}
-
-.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 {
-    height: 50px;
-}
-
-.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid {
-    height: 100%;
-}
-
-.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row {
-    height: 100%;
-}
-
-.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div {
-    height: 100%;
-    padding: 0;
-    text-align: center;
-}
-
-.active > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div > i, span{
-    line-height: 50px;
-}
+/* Main Content Styling End*/
+/***************************/

@@ -18,6 +18,7 @@
     <link rel="icon" href="{% static 'core/images/logo.png' %}" type="image/png">
     <link rel="stylesheet" href="{% static 'core/css/main_django.css' %}">
     <link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Raleway" rel="stylesheet">
+    <script src="{% static 'core/js/main_django.js' %}"></script>
     {% block headcontent %}
     {% endblock %}
 </head>
@@ -43,7 +44,7 @@
     </div>
 </nav>
 
-<div class="page-content active">
+<div class="page-content collapsed">
     <div class="sidebar-content">
         <div class="sidebar">
             <div class="container-fluid">
@@ -69,6 +70,16 @@
                             <div class="col-sm-2"><i class="fas fa-user"></i></div>
                             <div class="col-sm-10"><span>Account</span></div>
                         </div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-toggler">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <i class="fas fa-chevron-right fa-2x" onclick="katana.sidebar.toggleSidebar($(this))"></i>
+                        <i class="fas fa-chevron-left fa-2x" onclick="katana.sidebar.toggleSidebar($(this))"></i>
                     </div>
                 </div>
             </div>
