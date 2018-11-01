@@ -116,7 +116,7 @@ body {
 }
 
 .expanded > .sidebar-content > .sidebar > .container-fluid > .submenu {
-    background-color: #4ea4e0;
+    background-color: rgba(111, 173, 215, 1);
 }
 
 .expanded > .sidebar-content > .sidebar > .container-fluid > .submenu:hover {
@@ -218,6 +218,14 @@ body {
     height: 100%;
     float: left;
     overflow: auto;
+}
+
+.content > .container-fluid > .row > .col-sm-12 {
+    padding: 0;
+}
+
+.navbar-internal {
+    background-color: rgba(111, 173, 215, 1);
 }
 
 /* Main Content Styling End*/
