@@ -44,32 +44,39 @@
     </div>
 </nav>
 
-<div class="page-content collapsed">
+<div class="page-content expanded">
     <div class="sidebar-content">
         <div class="sidebar">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="container-fluid"><div class="row">
-                            <div class="col-sm-2"><i class="fas fa-home"></i></div>
-                            <div class="col-sm-10"><span>Home</span></div>
-                        </div></div>
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="container-fluid"><div class="row">
-                            <div class="col-sm-2"><i class="fas fa-puzzle-piece"></i></div>
-                            <div class="col-sm-10"><span>Wapps</span></div>
-                        </div></div>
+                        <i class="fas fa-puzzle-piece"></i>
+                        <span>Wapps</span>
+                        <i class="fas fa-chevron-down" onclick="katana.sidebar.toggleSubMenu($(this))" target="wappsSubMenu"></i>
+                    </div>
+                </div>
+                <div class="row submenu hidden" id="wappsSubMenu">
+                    <div class="col-sm-12">
+                        <div class="container-fluid">
+                            <div class="row">
+                                <div class="col-sm-12">
+                                    <i class="fas fa-home"></i>
+                                    <span>Home</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="container-fluid"><div class="row">
-                            <div class="col-sm-2"><i class="fas fa-user"></i></div>
-                            <div class="col-sm-10"><span>Account</span></div>
-                        </div></div>
+                        <i class="fas fa-user"></i>
+                        <span>Account</span>
                     </div>
                 </div>
             </div>

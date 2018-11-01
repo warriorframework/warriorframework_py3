@@ -39,6 +39,10 @@ body {
     height: calc(100% - 56px)
 }
 
+.hidden {
+    display: none;
+}
+
 /* Full Page Content Styling End */
 /*********************************/
 
@@ -96,28 +100,34 @@ body {
 }
 
 .expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 {
-    height: 50px;
+    height: 60px;
 }
 
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid {
-    height: 100%;
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i, span {
+    line-height: 60px;
 }
 
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row {
-    height: 100%;
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > span {
+    padding: 0 10px;
 }
 
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div {
-    height: 100%;
-    padding: 0;
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > .col-sm-12 > span {
+    padding: 0 10px;
 }
 
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div:nth-child(1) {
-    text-align: center;
+.expanded > .sidebar-content > .sidebar > .container-fluid > .submenu {
+    background-color: #4ea4e0;
 }
 
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div > i, span {
-    line-height: 50px;
+.expanded > .sidebar-content > .sidebar > .container-fluid > .submenu:hover {
+    background-color: rgba(35, 131, 195, 1);
+    color: white;
+    cursor: pointer;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i:nth-child(3) {
+    float: right;
+    line-height: 60px;
 }
 
 .expanded > .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 {
@@ -132,12 +142,46 @@ body {
 
 /*-------Collapsed Sidebar Styling Start------*/
 
-.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > div:nth-child(2) {
+.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > span {
+    display: none;
+}
+
+.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i:nth-child(3) {
     display: none;
 }
 
 .collapsed > .sidebar-content {
     width: 75px;
+    overflow-x: hidden;
+}
+
+.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 {
+    height: 75px;
+}
+
+.collapsed > .sidebar-content > .sidebar {
+    width: 100px;
+    margin-right: 25px;
+    overflow-x: hidden;
+}
+
+.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i {
+    line-height: 75px;
+}
+
+.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 {
+    text-align: center;
+}
+
+.collapsed > .sidebar-content > .sidebar > .container-fluid {
+    padding-left: 0;
+    padding-right: 25px; /* Needs to change to 10px if the sidebar gets big enough to scroll */
+}
+
+.collapsed > .sidebar-content > .sidebar > .container-fluid > .row:hover {
+    background-color: rgba(35, 131, 195, 1);
+    color: white;
+    cursor: pointer;
 }
 
 .collapsed > .sidebar-content > .sidebar-toggler {
