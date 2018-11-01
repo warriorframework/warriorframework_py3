@@ -146,6 +146,10 @@ body {
     display: none;
 }
 
+.collapsed > .sidebar-content > .sidebar > .container-fluid > .submenu {
+    display: none;
+}
+
 .collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i:nth-child(3) {
     display: none;
 }
