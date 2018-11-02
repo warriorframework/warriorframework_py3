@@ -258,5 +258,9 @@ body {
     overflow: auto;
 }
 
+.one_rem_padding {
+    padding: 1rem;
+}
+
 /* Main Content Styling End*/
 /***************************/
