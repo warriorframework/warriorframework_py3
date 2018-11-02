@@ -255,6 +255,7 @@ body {
     width: calc(100% - 300px);
     height: 100%;
     float: left;
+    overflow: auto;
 }
 
 /* Main Content Styling End*/
