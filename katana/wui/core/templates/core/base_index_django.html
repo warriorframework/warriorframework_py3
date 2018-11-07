@@ -44,7 +44,7 @@
     </div>
 </nav>
 
-<div class="page-content collapsed">
+<div class="page-content expanded">
     <div class="sidebar-content">
         <div class="sidebar">
             <div class="container-fluid">
@@ -62,17 +62,21 @@
                            target="wappsSubMenu"></i>
                     </div>
                 </div>
-                <div class="row submenu hidden" id="wappsSubMenu">
-                    <div class="col-sm-12">
-                        <div class="container-fluid">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <i class="fas fa-home"></i>
-                                    <span>Home</span>
+                <div class="container-fluid submenu hidden" id="wappsSubMenu">
+                    {% for app in apps %}
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <i class="fas fa-{{ app.data.icon }}"></i>
+                                        <span>{{ app.data.app.name }}</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    {% endfor %}
                 </div>
                 <div class="row">
                     <div class="col-sm-12">

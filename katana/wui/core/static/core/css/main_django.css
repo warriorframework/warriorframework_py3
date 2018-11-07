@@ -52,7 +52,6 @@ body {
 .sidebar-content {
     height: 100%;
     float: left;
-    overflow: auto;
 }
 
 .sidebar {
@@ -67,7 +66,6 @@ body {
 
 .sidebar-content > .sidebar {
     height: calc(100% - 56px);
-    overflow: auto;
 }
 
 .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 > i {
@@ -119,10 +117,26 @@ body {
     background-color: rgba(111, 173, 215, 1);
 }
 
-.expanded > .sidebar-content > .sidebar > .container-fluid > .submenu:hover {
+.expanded > .sidebar-content > .sidebar > .container-fluid > .submenu > .row:hover {
     background-color: rgba(35, 131, 195, 1);
     color: white;
     cursor: pointer;
+}
+
+.submenu > .row > .col-sm-12 > .container-fluid {
+    padding: 0;
+}
+
+.submenu > .row > .col-sm-12 > .container-fluid > .row > .col-sm-12 > span {
+    padding: 0 10px;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid {
+    padding: 0;
+}
+
+.expanded > .sidebar-content > .sidebar > .container-fluid > .row {
+    padding: 0 15px;
 }
 
 .expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i:nth-child(3) {
