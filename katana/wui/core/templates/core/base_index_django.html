@@ -44,7 +44,7 @@
     </div>
 </nav>
 
-<div class="page-content expanded">
+<div class="page-content collapsed">
     <div class="sidebar-content">
         <div class="sidebar">
             <div class="container-fluid">
@@ -64,7 +64,7 @@
                 </div>
                 <div class="container-fluid submenu hidden" id="wappsSubMenu">
                     {% for app in apps %}
-                    <div class="row">
+                    <div class="row" onclick="katana.sidebar.openApp($(this))" url="{{ app.data.app.url }}">
                         <div class="col-sm-12">
                             <div class="container-fluid">
                                 <div class="row">

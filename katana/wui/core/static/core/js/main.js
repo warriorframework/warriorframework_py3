@@ -1,3 +1,12 @@
+$(document).ready(function () {
+  var loadUrl = localStorage.getItem('load_url');
+  var $elem = $(document.body).find('[url="' + loadUrl + '"]');
+  localStorage.removeItem("load_url");
+  if (loadUrl){
+    katana.templateAPI.load.call($elem);
+  }
+});
+
 var katana = {
   staticContent: 10,
   $activeTab: null,
