@@ -344,6 +344,7 @@ class WarriorCli(object):
                 response = reobj.group(0) if reobj is not None else ""
                 temp_resp_dict = {resp_ref: response}
                 resp_key_list.append(temp_resp_dict)
+                # storing the value and expected output in data repository 
                 resp_key_dict = {resp_pat_key: response}
                 data_repository.update(resp_key_dict)
                 pNote(save_msg1+'.')
@@ -382,6 +383,7 @@ class WarriorCli(object):
                         # update resp_key_list with resp_ref keys and
                         # their corresponding matched patterns
                         resp_key_list.append(dict(list(zip(keys, grps))))
+                        # To process multiple pattern values from testdata
                         for resp, grps in zip(patterns, resp_pat_list):
                             resp_key_dict = {grps: resp}
                             data_repository.update(resp_key_dict)
@@ -400,6 +402,7 @@ class WarriorCli(object):
                         presponse = reobj.group(0) if reobj is not None else ""
                         temp_resp_key_list.append(presponse)
                         pNote(save_msg2.format(pattern))
+                        # To process multiple values from testdata
                         for resp, pattern in zip(resp_pat_list, patterns):
                             reobj = re.search(pattern, response)
                             presponse = reobj.group(0) if reobj is not None else ""
