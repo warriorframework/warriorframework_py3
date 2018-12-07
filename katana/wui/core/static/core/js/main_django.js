@@ -6,9 +6,13 @@ var katana = {
         },
 
         toggleSubMenu: function ($elem) {
+            var $pageContent = $elem.closest('.page-content');
+            if($pageContent.hasClass('collapsed')) {
+                $pageContent.toggleClass('collapsed expanded');
+            }
             var $page = $('body');
             $page.find('#' + $elem.attr('target')).toggleClass('hidden');
-            $elem.toggleClass('fa-chevron-down fa-chevron-up');
+            $elem.find('.toggle-this').toggleClass('fa-chevron-down fa-chevron-up');
         },
 
         openApp: function ($elem) {
