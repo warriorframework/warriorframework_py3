@@ -29,7 +29,7 @@
         WARRIOR
     </a>
     <div class="ml-auto">
-        <i class="fas fa-cog"></i>
+        <i class="fas fa-cog" onclick="katana.sidebar.openApp($(this))" url="/katana/settings/"></i>
         <i class="fas fa-info"></i>
     </div>
     <div class="btn-group">
@@ -38,7 +38,7 @@
             <i class="fas fa-user"></i>
         </button>
         <div class="dropdown-menu dropdown-menu-right">
-            <button class="dropdown-item" type="button">Profile Settings</button>
+            <button class="dropdown-item" type="button" onclick="katana.sidebar.openApp($(this))" url="/katana/settings/">Profile Settings</button>
             <button class="dropdown-item" type="button">Logout</button>
         </div>
     </div>
@@ -48,18 +48,17 @@
     <div class="sidebar-content">
         <div class="sidebar">
             <div class="container-fluid">
-                <div class="row">
+                <div class="row" onclick="katana.sidebar.openApp($(this))" url="/katana/">
                     <div class="col-sm-12">
                         <i class="fas fa-home"></i>
                         <span>Home</span>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" onclick="katana.sidebar.toggleSubMenu($(this))" target="wappsSubMenu">
                     <div class="col-sm-12">
                         <i class="fas fa-puzzle-piece"></i>
                         <span>Wapps</span>
-                        <i class="fas fa-chevron-down" onclick="katana.sidebar.toggleSubMenu($(this))"
-                           target="wappsSubMenu"></i>
+                        <i class="fas fa-chevron-down toggle-this"></i>
                     </div>
                 </div>
                 <div class="container-fluid submenu hidden" id="wappsSubMenu">
@@ -78,7 +77,7 @@
                     </div>
                     {% endfor %}
                 </div>
-                <div class="row">
+                <div class="row" onclick="katana.sidebar.openApp($(this))" url="/katana/settings/">
                     <div class="col-sm-12">
                         <i class="fas fa-user"></i>
                         <span>Account</span>
