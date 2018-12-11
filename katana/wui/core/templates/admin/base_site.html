@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+{% load staticfiles %}
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1>
+    <div class="logo-image" style="background-image: url({% static 'core/images/logo.png' %})"></div>
+    <a href="{% url 'admin:index' %}">{{ site_header|default:_('Warrior Administration') }}</a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
