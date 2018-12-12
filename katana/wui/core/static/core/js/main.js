@@ -1,4 +1,6 @@
 $(document).ready(function () {
+  /* Function exists purely to move back and forth between the new Katana API and old
+     on the framework level. This can deprecated once all apps are moved to new API */
   var loadUrl = localStorage.getItem('load_url');
   var $elem = $(document.body).find('[url="' + loadUrl + '"]');
   localStorage.removeItem("load_url");
