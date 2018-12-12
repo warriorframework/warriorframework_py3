@@ -29,4 +29,5 @@ urlpatterns = [
     url(r'^katana/cli_data/', include('wapps.cli_data.urls')),
     url(r'^katana/suites/', include('wapps.suites.urls')),
     url(r'^katana/cases/', include('wapps.cases.urls')),
+    url(r'^katana/wdf/', include('wapps.wdf_edit.urls')),
 ]

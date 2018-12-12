@@ -1,0 +1,12 @@
+{
+  "icon": "paper-plane",
+  "color": "green",
+  "developer": "Warrior Framework",
+  "description": "Edit System Data here.",
+  "app" : {"name" : "WDF Editor", "url" : "/katana/wdf/", "include": "wapps.wdf_edit.urls"},
+  "warrior-compatibility": ":warrior-4.0.0-beta",
+  "warrior-incompatibility": "",
+  "version": "1.0.0",
+  "permissions": "",
+  "availability": ""
+}
