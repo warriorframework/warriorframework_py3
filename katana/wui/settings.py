@@ -44,6 +44,10 @@ INSTALLED_APPS = [
     'native.wappstore',
     'native.settings',
     'native.microservice_store',
+    'wapps.cases',
+    'wapps.suites',
+    'wapps.cli_data',
+    'wapps.assembler',
 ]
 
 MIDDLEWARE = [
