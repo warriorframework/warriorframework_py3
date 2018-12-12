@@ -7,13 +7,14 @@ var settings = {
             katana.openDialog('Are you sure you would like to close this page?', 'Confirm', true, katana.closeSubApp);
     },
 
-    encrypetion: {
+    encryption: {
         save: function () {
             var $elem = this;
             $elem.addClass('loading');
-            katana.templateAPI.post.call(katana.$activeTab.find('.to-save'), null, null, null, function (data) {
-                console.log('saved', data);
-                $elem.removeClass('loading').addClass('saved');
+            katana.templateAPI.post(katana.$activeTab.find('.to-save').attr('post-url'), null,
+                katana.$activeTab.find('.to-save').find('input:not([name="csrfmiddlewaretoken"]),textarea').serializeArray(), null,
+                function (data) {
+                    $elem.removeClass('loading').addClass('saved');
             });
         }
     },
@@ -151,7 +152,7 @@ var settings = {
 
     changeDetection: function () {
         var $elem = this;
-        $elem.on('change', 'input, select', function () {
+        $elem.on('change', 'input, select, textarea', function () {
             $elem.closest('.page-content').find('.saved').removeClass('saved');
         });
     },
@@ -160,7 +161,6 @@ var settings = {
         var $elem = this;
         $elem.removeClass('saved').addClass('loading');
         katana.templateAPI.post.call(katana.$activeTab.find('.to-save'), null, null, katana.toJSON(), function (data) {
-            console.log('saved', data);
             $elem.removeClass('loading').addClass('saved');
         });
     },
