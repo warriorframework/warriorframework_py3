@@ -1,0 +1,76 @@
+<body>
+<div >
+    <div class="suites-header">
+        <div>
+            <h4 class="suites-header-title"><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp;Details</h4>
+        </div>
+        <div><i class="fa fa-chevron-circle-up white" katana-click="suites.header.toggleContents" collapsed="false" aria-hidden="true" title="Show/Hide the Details section"></i></div>
+        <div><i class="fa fa-pencil white" aria-hidden="true" katana-click="suites.header.editDetails" title="Edit Details"></i></div>
+        <div></div>
+    </div>
+    <div class="suites-left-top-block" id="detail-block">
+        {% include 'suites/details_display_template.html' %}
+    </div>
+    <div class="suites-header">
+        <div>
+            <h4 class="suites-header-title"><i class="fa fa-tags" aria-hidden="true"></i>&nbsp;Requirements</h4>
+        </div>
+        <div><i class="fa fa-chevron-circle-up white" katana-click="suites.header.toggleContents" collapsed="false" aria-hidden="true" title="Show/Hide the Requirements section"></i></div>
+        <div><i class="fa fa-plus-circle white" aria-hidden="true" katana-click="suites.header.newReq" title="Add new Requirement"></i></div>
+        <div></div>
+    </div>
+    <div class="suites-left-bottom-block" id="req-block">
+        {% include 'suites/requirements_display_template.html' %}
+    </div>
+    <div class="suites-header">
+        <div>
+            <h4 class="suites-header-title"><i class="fa fa-briefcase" aria-hidden="true"></i>&nbsp;Cases</h4>
+        </div>
+        <div><i class="fa fa-chevron-circle-up white" katana-click="suites.header.toggleContents" collapsed="false" aria-hidden="true" title="Show/Hide the Steps section"></i></div>
+        <div><i class="fa fa-plus-circle white" aria-hidden="true" katana-click="suites.header.newStep" title="Add new Case"></i></div>
+        <div></div>
+    </div>
+    <div class="suites-right-step-block" id="step-block">
+        {% include 'suites/cases_display_template.html' %}
+    </div>
+    <div class="suites-side-drawer-open" style="display: none;">
+        <div class="suites-drawer-open-header">
+            <div></div>
+            <div>
+                <h4 class="suites-header-title">New Step</h4>
+            </div>
+            <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="suites.drawer.open.saveContents" title="Save"></i></div>
+            <div><i class="fa fa-times white" aria-hidden="true" katana-click="suites.drawer.open.discardContents" title="Discard contents and close"></i></div>
+        </div>
+        <div class="suites-drawer-open-body">
+            <div class="sidebar">
+                <div title="Details">
+                    <i class="fa fa-list-alt sidebar-badged" aria-hidden="true" ref="editDetails"></i>
+                </div>
+                <div title="Requirement">
+                    <i class="fa fa-tags sidebar-badged" aria-hidden="true" ref="newReq"></i>
+                </div>
+                <div class="suites-icon-bg-color" title="Step">
+                    <i class="fa fa-star sidebar-badged" aria-hidden="true" ref="newStep"></i>
+                </div>
+            </div>
+            <div class="content" style="overflow: auto">
+                {% include 'suites/details_template.html' %}
+                {% include 'suites/requirements_template.html' %}
+                {% include 'suites/cases_template.html' %}
+            </div>
+        </div>
+    </div>
+    <div class="suites-side-drawer-closed">
+        <div katana-click="suites.header.editDetails" title="Edit Details">
+            <i class="fa fa-list-alt sidebar-badged" aria-hidden="true"></i>
+        </div>
+        <div katana-click="suites.header.newReq" title="Add New Requirement">
+            <i class="fa fa-tags sidebar-badged" aria-hidden="true"></i>
+        </div>
+        <div katana-click="suites.header.newStep" title="Add New Step">
+            <i class="fa fa-briefcase sidebar-badged" aria-hidden="true"></i>
+        </div>
+    </div>
+</div>
+</body>
