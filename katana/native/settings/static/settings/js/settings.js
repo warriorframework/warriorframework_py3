@@ -12,10 +12,9 @@ var settings = {
             var $elem = this;
             $elem.addClass('loading');
             katana.templateAPI.post(katana.$activeTab.find('.to-save').attr('post-url'), null,
-                katana.$activeTab.find('.to-save').find('input:not([name="csrfmiddlewaretoken"]),textarea').serializeArray(), null,
-                function (data) {
+                katana.$activeTab.find('.to-save').find('input:not([name="csrfmiddlewaretoken"]),textarea').serializeArray(), function(data){
                     $elem.removeClass('loading').addClass('saved');
-            });
+                }, null);
         }
     },
 
