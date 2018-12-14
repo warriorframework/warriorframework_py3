@@ -25,10 +25,4 @@ urlpatterns = [
     url(r'^katana/wapp_management/', include('native.wapp_management.urls')),
     url(r'^katana/wappstore/', include('native.wappstore.urls')),
     url(r'^katana/microservice_store/', include('native.microservice_store.urls')),
-    url(r'^katana/wdf/', include('wapps.wdf_edit.urls')),
-    url(r'^katana/projects/', include('wapps.projects.urls')),
-    url(r'^katana/suites/', include('wapps.suites.urls')),
-    url(r'^katana/cases/', include('wapps.cases.urls')),
-    url(r'^katana/assembler/', include('wapps.assembler.urls')),
-    url(r'^katana/cli_data/', include('wapps.cli_data.urls')),
 ]
