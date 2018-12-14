@@ -5,7 +5,6 @@
 * extending the base_django_index.html template that can be found in the warriorframework_py3/katana/wui/core/templates/core directory.
 * UI components and their usage can be found in warriorframework_py3/katana/wui/core/templates/core/components directory
 * For any questions/support please email Warrior_PBO@fnc.fujitsu.com
-*
 * */
 
 var katana = {
