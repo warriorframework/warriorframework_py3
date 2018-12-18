@@ -39,7 +39,6 @@ h1 {
 	/* max-width: 1400px; */
 	margin: 0 auto;
 	overflow: hidden;
-	overflow: hidden;
 	background-size: cover;
 	background-color: #404040;
     background-image: url(/static/core/images/image.jpg);
