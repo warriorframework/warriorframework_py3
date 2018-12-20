@@ -1,5 +1,48 @@
 /*****************************/
 /* Standard Page Styling Start */
+
+/* raleway-regular - latin */
+@font-face {
+  font-family: 'Raleway';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../../../../../static/oss/raleway-v12-latin/raleway-v12-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Raleway'), local('Raleway-Regular'),
+       url('../../../../../static/oss/raleway-v12-latin/raleway-v12-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../../../../../static/oss/raleway-v12-latin/raleway-v12-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../../../../../static/oss/raleway-v12-latin/raleway-v12-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../../../../../static/oss/raleway-v12-latin/raleway-v12-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../../../../../static/oss/raleway-v12-latin/raleway-v12-latin-regular.svg#Raleway') format('svg'); /* Legacy iOS */
+}
+
+/* lato-regular - latin */
+@font-face {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../../../../../static/oss/lato-v14-latin/lato-v14-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Lato Regular'), local('Lato-Regular'),
+       url('../../../../../static/oss/lato-v14-latin/lato-v14-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../../../../../static/oss/lato-v14-latin/lato-v14-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../../../../../static/oss/lato-v14-latin/lato-v14-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../../../../../static/oss/lato-v14-latin/lato-v14-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../../../../../static/oss/lato-v14-latin/lato-v14-latin-regular.svg#Lato') format('svg'); /* Legacy iOS */
+}
+
+/* montserrat-regular - latin */
+@font-face {
+  font-family: 'Montserrat';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../../../../../static/oss/montserrat-v12-latin/montserrat-v12-latin-regular.eot'); /* IE9 Compat Modes */
+  src: local('Montserrat Regular'), local('Montserrat-Regular'),
+       url('../../../../../static/oss/montserrat-v12-latin/montserrat-v12-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../../../../../static/oss/montserrat-v12-latin/montserrat-v12-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../../../../../static/oss/montserrat-v12-latin/montserrat-v12-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../../../../../static/oss/montserrat-v12-latin/montserrat-v12-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../../../../../static/oss/montserrat-v12-latin/montserrat-v12-latin-regular.svg#Montserrat') format('svg'); /* Legacy iOS */
+}
+
 body {
     font-family: 'Raleway', 'Lato', 'Montserrat', Helvetica, Arial, sans-serif !important;
 }

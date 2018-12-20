@@ -68,7 +68,7 @@ class KwRepositoryDetails(RepositoryDetails):
 
     def __map_actions_to_driver(self):
         actions_for_driver_dict = self.__get_action_packages()
-        for driver_file, actions_package_list in list(actions_for_driver_dict.items()):
+        for driver_file, actions_package_list in actions_for_driver_dict.items():
             actions_dir_paths = []
             for actions_package in actions_package_list:
                 actions_dir_paths.append(os.path.join(self.repo_directory, actions_package.replace(".", os.sep)))
