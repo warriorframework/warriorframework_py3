@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'wui.users',
     'wui.core',
     'native.wapp_management',
     'native.wappstore',
@@ -103,7 +104,10 @@ DATABASES = {
     }
 }
 
-# authentication settings
+# Authentication settings
+AUTH_USER_MODEL = 'users.User'
+LOGIN_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
