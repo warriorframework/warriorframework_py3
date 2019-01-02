@@ -13,14 +13,19 @@ limitations under the License.
 
 # -*- coding: utf-8 -*-
 
-import datetime
+import logging
 from django.db import models
 from django.contrib.auth.models import AbstractUser, Group, BaseUserManager
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils import timezone
 
-# Constants
+# Public  Constants
 GROUP_WARRIOR_USERS = 'Warrior Users'  # Name for Warrior Users Group
+BACKGROUND_USER_EXPIRY_CHECK = 60  # Seconds
+
+# Private Constants
+_LOGGER = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
@@ -28,14 +33,25 @@ class User(AbstractUser):
     Custom Warrior User Class
     """
     # Add custom user fields here
-    pass
+    expires = models.DateTimeField(verbose_name="User Expiry Date", null=True, blank=True)
+
+    def expired(self):
+        """
+        Checks user expiry against current server time.
+        :return: True/False
+        """
+        expires = self.expires
+        now = timezone.now()
+        if expires and expires < now:
+            return True
+        return False
 
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     """
     Add all created users to the base Warrior Users Group
-    :return: 
+    :return:
     """
     if created:
         try:

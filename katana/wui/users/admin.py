@@ -10,7 +10,7 @@ from .models import User
 class UserCreationForm(BaseUserCreationForm):
     class Meta(BaseUserCreationForm):
         model = User
-        fields = BaseUserCreationForm.Meta.fields
+        fields = BaseUserCreationForm.Meta.fields + ('expires',)
 
 
 class UserChangeForm(BaseUserChangeForm):
@@ -23,8 +23,8 @@ class UserAdmin(BaseUserAdmin):
     model = User
     add_form = UserCreationForm
     form = UserChangeForm
-    list_display = BaseUserAdmin.list_display
-    list_filter = BaseUserAdmin.list_filter
+    list_display = BaseUserAdmin.list_display + ('expires',)
+    list_filter = BaseUserAdmin.list_filter + ('expires',)
     fieldsets = (
         ('None', {'fields': (
             'username',
@@ -36,6 +36,7 @@ class UserAdmin(BaseUserAdmin):
             'email',
         )}),
         ('Permissions', {'fields': (
+            'expires',
             'is_active',
             'is_staff',
             'is_superuser',
