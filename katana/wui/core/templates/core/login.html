@@ -1,10 +1,30 @@
-{% load staticfiles %}
+{% extends "core/unified_index.html" %}
 
+{% block logincontent %}
 
-<div class="csrf-container">{% csrf_token %}</div>
-<div class="title">Login</div>
-<div class="fields">
-	<div class="field"><label>Username:</label><input key="username" type="text" placeholder="username" id="username"></div>
-	<div class="field"><label>Password:</label><input key="password" type="password" placeholder="Password" id="password"></div>
+<div class="login-form" id="warrior_login">
+	<div class="title">Login</div>
+	<div class="fields">
+		<form  method="post" action="{% url 'login' %}">
+			{% csrf_token %}
+			<table>
+				<tr>
+					<td>{{ form.username.label_tag }}</td>
+					<td>{{ form.username }}</td>
+				</tr>
+
+				<tr>
+					<td>{{ form.password.label_tag }}</td>
+					<td>{{ form.password }}</td>
+				</tr>
+			</table>
+
+			<input type="submit" value="Login" />
+			{% if form.errors %}
+			<p>Invalid username and password combination. Please try again.</p>
+			{% endif %}
+			<input type="hidden" name="next" value="{{ next }}" />
+		</form>
+	</div>
 </div>
-<div class="button" katana-click="katana.userAuth.login()">Login</div>	
+{% endblock %}

@@ -61,6 +61,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'wui.users.middleware.UserExpiryMiddleware',
+    'wui.users.middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'wui.urls'
@@ -108,7 +109,8 @@ DATABASES = {
 
 # Authentication settings
 AUTH_USER_MODEL = 'users.User'
-LOGIN_URL = '/'
+LOGIN_URL = '/katana/login'
+LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (

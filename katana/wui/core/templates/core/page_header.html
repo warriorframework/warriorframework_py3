@@ -8,9 +8,8 @@
 			<div class="header-icon"><i class="fa fa-cog" katana-click="katana.templateAPI.load" url="/katana/settings/" jsurls="  /static/settings/js/settings.js,"></i></div>
 			<div class="header-icon"><i class="fa fa-info" ></i></i></div>
 	</div>
-	
-	{% if show_quick_user %}
-	
+
+	{% if user.is_authenticated %}
 	<div class="quick-user" katana-click="katana.toggleActiveGlobal" >		
 		<div class="profile-image image" style="background-image: url({{ userData.Base64image }})"></div>
 		<div class="hidden-menu">
