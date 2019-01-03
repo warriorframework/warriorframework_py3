@@ -1,0 +1,19 @@
+<!--
+To use this component, use the following template:
+
+<div class="main-content">
+    <div>
+        {# include 'core/components/internal_sidebar.html' with content_template="path/to/sidebar_contents.html" #}
+    </div>
+    <div>
+         Add your actual App body contents here
+    </div>
+</div>
+
+Don't forget to replace # with %
+
+-->
+
+<nav class="navbar navbar-dark navbar-internal">
+  {% include content_template %}
+</nav>

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from . import settings_logging
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -37,17 +38,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'wui.core',
     'native.wapp_management',
     'native.wappstore',
     'native.settings',
     'native.microservice_store',
-    'wapps.projects',
-    'wapps.suites',
     'wapps.cases',
-    'wapps.wdf_edit',
-    'wapps.assembler',
+    'wapps.suites',
     'wapps.cli_data',
+    'wapps.assembler',
+    'wapps.wdf_edit',
 ]
 
 MIDDLEWARE = [
@@ -81,6 +82,18 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'wui.wsgi.application'
+
+# Django Rest Framework
+# https://www.django-rest-framework.org/api-guide/settings/
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
 
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
@@ -147,3 +160,8 @@ STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'static')
     ]
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10242880
+
+# Logging
+settings_logging.BASE_DIR = BASE_DIR
+settings_logging.DEBUG = DEBUG
+LOGGING = settings_logging.get_log_config()
