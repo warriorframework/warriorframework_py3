@@ -64,7 +64,7 @@ class VerifyFileContents:
             data = copy.deepcopy(self.data["data"]["warhorn"]["dependency"])
             extra_dependencies = set()
             for i in range(0, len(data)):
-                for key, value in list(data[i].items()):
+                for key, value in data[i].items():
                     if key == "@name":
                         if value in self.dependency_dict:
                             data[i]["version"] = self.dependency_dict[value]["version"]
@@ -101,7 +101,7 @@ class VerifyFileContents:
         if "tools" not in self.data["data"]:
             self.data["data"]["tools"] = copy.deepcopy(self.ref_data["data"]["tools"])
         else:
-            for key, value in list(self.ref_data["data"]["tools"].items()):
+            for key, value in self.ref_data["data"]["tools"].items():
                 if key not in self.data["data"]["tools"]:
                     self.data["data"]["tools"][key] = self.ref_data["data"]["tools"][key]
 
@@ -128,7 +128,7 @@ class VerifyFileContents:
 
         if flag:
             for i in range(0, len(self.data["data"]["drivers"]["repository"])):
-                for key, value in list(self.ref_data["data"]["drivers"]["repository"].items()):
+                for key, value in self.ref_data["data"]["drivers"]["repository"].items():
                     if key not in self.data["data"]["drivers"]["repository"][i]:
                         if key != "driver":
                             self.data["data"]["drivers"]["repository"][i][key] = self.ref_data["data"]["drivers"]["repository"]["key"]
@@ -194,7 +194,7 @@ class VerifyFileContents:
 
         if flag:
             for i in range(0, len(self.data["data"]["warriorspace"]["repository"])):
-                for key, value in list(self.ref_data["data"]["warriorspace"]["repository"].items()):
+                for key, value in self.ref_data["data"]["warriorspace"]["repository"].items():
                     if key not in self.data["data"]["warriorspace"]["repository"][i]:
                         self.data["data"]["warriorspace"]["repository"][i][key] = self.ref_data["data"]["warriorspace"]["repository"][key]
 

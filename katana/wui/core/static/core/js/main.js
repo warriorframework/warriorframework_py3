@@ -1,3 +1,14 @@
+$(document).ready(function () {
+  /* Function exists purely to move back and forth between the new Katana API and old
+     on the framework level. This can deprecated once all apps are moved to new API */
+  var loadUrl = localStorage.getItem('load_url');
+  var $elem = $(document.body).find('[url="' + loadUrl + '"]');
+  localStorage.removeItem("load_url");
+  if (loadUrl){
+    katana.templateAPI.load.call($elem);
+  }
+});
+
 var katana = {
   staticContent: 10,
   $activeTab: null,
@@ -343,20 +354,22 @@ var katana = {
       'left': event.clientX,
       'top': event.clientY
     }).addClass('active');
-    $(window).one('click contextmenu scroll resize', function() {
+    rcMenu.mouseleave(function(){
       katana.$view.find('.rc-menu.active').remove();
     });
   },
 
   editOrder: function() {
-    var tabContainer = this.closest('.tabs');
-    katana.$view.addClass('edit-mode');
-    tabContainer.sortable({
-      items: "div:not(.complete)"
-    });
-    tabContainer.sortable("option", "disabled", false);
-    tabContainer.append('<div class="complete fa fa-check" katana-click="katana.finishOrder"></div>');
-    katana.$view.find('.rc-menu.active').remove();
+    if (!katana.$view.hasClass('edit-mode')) {
+      var tabContainer = this.closest('.tabs');
+      katana.$view.addClass('edit-mode');
+      tabContainer.sortable({
+        items: "div:not(.complete)"
+      });
+      tabContainer.sortable("option", "disabled", false);
+      tabContainer.append('<div class="complete fa fa-check" katana-click="katana.finishOrder"></div>');
+      katana.$view.find('.rc-menu.active').remove();
+    }
   },
 
 
