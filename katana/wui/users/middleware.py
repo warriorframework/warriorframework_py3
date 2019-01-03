@@ -4,7 +4,8 @@ Defines custom middleware for users and user management.
 import re
 import rest_framework
 from django.conf import settings
-from django.http import HttpResponseForbidden
+from django.shortcuts import render
+from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from .views import PublicView
 
@@ -24,7 +25,12 @@ class UserExpiryMiddleware(object):
         # the view (and later middleware) are called.
 
         if not request.user.is_anonymous and request.user.expired():
-            return HttpResponseForbidden()
+            context = {
+                'title': 'Error: Unauthorized',
+                'message': 'User {} is expired.'.format(request.user.username),
+            }
+            logout(request)
+            return render(request, 'core/base_error.html', context=context, status=403)
 
         response = self.get_response(request)
 
