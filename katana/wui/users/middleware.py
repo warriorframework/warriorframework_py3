@@ -2,11 +2,11 @@
 Defines custom middleware for users and user management.
 """
 import re
-import rest_framework
 from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from rest_framework.views import APIView
 from .views import PublicView
 
 
@@ -91,7 +91,7 @@ class LoginRequiredMiddleware(object):
 
     def process_view(self, request, view_func, view_args, view_kwargs):
         if request.user.is_authenticated \
-                or (hasattr(view_func, 'view_class') and issubclass(view_func.view_class, (rest_framework.views.APIView,))) \
+                or (hasattr(view_func, 'view_class') and issubclass(view_func.view_class, (APIView,))) \
                 or (isinstance(view_func, PublicView)) \
                 or (hasattr(view_func, 'view_class') and issubclass(view_func.view_class, PublicView)) \
                 or self.matches_public_path(request.path) \
