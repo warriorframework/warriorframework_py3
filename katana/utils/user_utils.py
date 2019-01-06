@@ -1,4 +1,18 @@
+import os
+import json
+
 from django.conf import settings
+
+from .navigator_util import join_path
+from utils.navigator_util import Navigator
+from .directory_traversal_utils import file_or_dir_exists
+from katana.wui.core.core_utils.warrior_recon_creation_class import CreateWarriorRecon
+
+DOTDATA = '.data'
+WAPPLOGS = 'wapp_logs'
+WAPPSDATA = 'wapps_data'
+USERDATA = 'user_data'
+
 
 class UserData():
     # constructor for class User_data
@@ -29,7 +43,7 @@ class UserData():
         # get location to .data
         wapp_name = self.wapp_name
         # get top level directory for user_data
-        user_path = self.get_user_path(self, request)
+        user_path = self.get_user_path(request)
         if user_path and wapp_name:
             dotdata_dir = join_path(user_path, WAPPSDATA, wapp_name, DOTDATA)
             if not file_or_dir_exists(dotdata_dir):
@@ -51,7 +65,7 @@ class UserData():
         # get location to wapp_logs
         wapp_name = self.wapp_name
         # get top level directory for user_data
-        user_path = self.get_user_path(self, request)
+        user_path = self.get_user_path(request)
         if user_path and wapp_name:
             wapplogs_dir = join_path(user_path, WAPPSDATA, wapp_name, WAPPLOGS)
             if not file_or_dir_exists(wapplogs_dir):
@@ -102,5 +116,4 @@ def get_user_data():
             userdata = json.load(f)
     except Exception as e:
         print("-- An Error Occurred -- {0}".format(e))
-        print("User data could not be retrieved.")
     return userdata

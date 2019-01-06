@@ -89,19 +89,19 @@ def rm_dir1(src):
     return output
 
 
-def copy_dir1(src, dest):
+def copy_dir1(src, dst):
     output = True
     try:
         src_files = list_dir(src)
         for file in src_files:
             full_file_name = os.path.join(src, file)
-            if (os.path.isfile(full_file_name)):
-                shutil.copy(full_file_name, dest)
+            if os.path.isfile(full_file_name):
+                shutil.copy(full_file_name, dst)
             elif os.path.isdir(full_file_name):
-                dest = os.path.join(dest, file)
-                copy_dir(full_file_name, dest)
+                dst = os.path.join(dst, file)
+                copy_dir(full_file_name, dst)
     except OSError as e:
-        print(e)
+        print('-- An Error Occurred -- {}'.format(e))
     return output
 
 
@@ -128,9 +128,17 @@ def get_wapp_static(ref):
 
 
 def get_katana_static(src, ref_list):
+    """
+        Get all the static dir list from katana/static
+    It is later used to delete all the static files
+    from katana/static
+    :param src: katana/static directory
+    :param ref_list: wapp_static list
+    :return: katana_static_list
+    """
     katana_static_list = []
-    for file in ref_list:
-        new_file = os.path.join(src, file)
+    for f_name in ref_list:
+        new_file = os.path.join(src, f_name)
         katana_static_list.append(new_file)
     return katana_static_list
 

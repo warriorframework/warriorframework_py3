@@ -109,9 +109,9 @@ def install_an_app(request):
         print('app_name: ' + installer_obj.app_name)
         # check if inside container
         # get the path to wapp
-        path_to_wapp = join_path(installer_obj.app_directory, installer_obj.app_name)
+        path_to_wapp = join_path(app_path, 'warriorframework_py3', 'katana', 'wapps', installer_obj.app_name)
         # copy wapp static files to katana static
-        if core_utils.katana_container_operlations(True, katana_static, path_to_wapp):
+        if core_utils.katana_container_operations(True, katana_static, path_to_wapp):
             print('Copied static files to katana/static')
         if installer_obj.install():
             print('App installation complete')
