@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'wui.administration',
     'wui.core',
     'native.wapp_management',
     'native.wappstore',
@@ -67,7 +68,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE_DIR, 'wui', 'core', 'templates'),
+            os.path.join(BASE_DIR, 'wui', 'administration', 'templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
