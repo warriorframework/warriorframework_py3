@@ -24,7 +24,6 @@ from utils.navigator_util import Navigator
 from wui.core.apps import AppInformation
 from wui.users.views import PublicView
 
-templates_dir = os.path.join(os.path.dirname(__file__), 'templates', 'core')
 try:
     from django_auth_ldap.backend import LDAPBackend
 except Exception as err:
@@ -129,8 +128,8 @@ def check_if_file_exists(request):
 class HomeView(View):
 
     def __init__(self):
-        self.index_page = os.path.join(templates_dir, 'unified_index.html')
-        self.home_page = os.path.join(templates_dir, 'home_page.html')
+        self.index_page = 'core/unified_index.html'
+        self.home_page = 'core/home_page.html'
         self.userprofile  = None
         self.username = None
 
@@ -167,8 +166,8 @@ class LoginView(BaseLoginView, PublicView,):
 #         """
 #         constructor for the view
 #         """
-#         self.index_page = os.path.join(templates_dir, 'unified_index.html')
-#         self.home_page = os.path.join(templates_dir, 'home_page.html')
+#         self.index_page = 'core/unified_index.html'
+#         self.home_page = 'core/home_page.html'
 #         self.userprofile  = None
 #         self.username = None
 #         self.password = None
