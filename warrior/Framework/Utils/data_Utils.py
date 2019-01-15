@@ -49,6 +49,7 @@ cmd_params = OrderedDict([("command_list", "send"),
                           ("resp_ref_list", "resp_ref"),
                           ("resp_req_list", "resp_req"),
                           ("resp_pat_req_list", "resp_pat_req"),
+                          ("resp_pat_key_list", "resp_pat_key"),
                           ("resp_key_list", "resp_keys"),
                           ("inorder_resp_ref_list", "inorder_resp_ref"),
                           ("log_list", "monitor"),
@@ -224,9 +225,8 @@ def get_credentials(datafile, system_name, myInfo=[], tag_name="system",
                         for child in child_list:
                             cred_value[child.tag] = child.text
                             if 'wtype' in child.attrib:
-                                cred_value[child.tag] = get_actual_cred_value(
-                                                        child.tag, child.text,
-                                                        child.attrib['wtype'], startdir)
+                                cred_value[child.tag] = get_actual_cred_value(child.tag, child.text,
+                                                                              child.attrib['wtype'], startdir)
                     else:
                         cred_value = get_cred_value_from_elem(element, x, startdir)
                 output_dict[x] = cred_value
@@ -366,7 +366,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
         print_info("Resolving testdata details from DB system - "
                    "'{}'".format(testdatafile.get('td_system')))
         db_td_obj = database_utils_class.create_database_connection(
-                        'dataservers', testdatafile.get('td_system'))
+            'dataservers', testdatafile.get('td_system'))
         root = db_td_obj.get_tdblock_as_xmlobj(testdatafile)
 
         # if testdata block in the datafile has separate db system
@@ -375,7 +375,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             print_info("Resolving testdata-global block from DB system - "
                        "'{}'".format(testdatafile.get('global_system')))
             db_tdglobal_obj = database_utils_class.create_database_connection(
-                                'dataservers', testdatafile.get('global_system'))
+                'dataservers', testdatafile.get('global_system'))
             global_obj = db_tdglobal_obj.get_globalblock_as_xmlobj(testdatafile)
             db_tdglobal_obj.close_connection()
         else:
@@ -392,7 +392,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
         print_info("Resolving varconfig details from DB system - "
                    "'{}'".format(varconfigfile.get('var_system')))
         db_var_obj = database_utils_class.create_database_connection(
-                        'dataservers', varconfigfile.get('var_system'))
+            'dataservers', varconfigfile.get('var_system'))
         varconfigfile = db_var_obj.get_varblock_as_xmlobj(varconfigfile)
         db_var_obj.close_connection()
 
@@ -412,8 +412,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             print_info("var_sub:{0}".format(var_sub))
             td_obj = TestData()
             details_dict = td_obj.varsub_varconfig_substitutions(
-                            details_dict, vc_file=None, var_sub=var_sub,
-                            start_pat=start_pat, end_pat=end_pat)
+                details_dict, vc_file=None, var_sub=var_sub, start_pat=start_pat, end_pat=end_pat)
 
             details_dict = td_obj.wdf_substitutions(details_dict, datafile,
                                                     kw_system_name=system_name)
@@ -426,8 +425,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             # List substitution happens after iteration because
             # list sub cannot recognize the + sign in iteration
             cmd_list_substituted, verify_text_substituted = td_obj.list_substitution_precheck(
-                                                                varconfigfile, details_dict,
-                                                                start_pat, end_pat)
+                varconfigfile, details_dict, start_pat, end_pat)
             td_obj.list_substitution(details_dict, varconfigfile, cmd_list_substituted,
                                      verify_text_substituted, start_pat, end_pat)
 
@@ -851,15 +849,15 @@ def get_no_impact_logic(context_str):
     """Get the silent tag from context
     return silence value and context value"""
     value = {
-              'YES:NOIMPACT': (True, 'YES'),
-              'YES': (False, 'YES'),
-              'Y:NOIMPACT': (True, 'YES'),
-              'Y': (False, 'YES'),
-              'NO:NOIMPACT': (True, 'No'),
-              'NO': (False, 'No'),
-              'N:NOIMPACT': (True, 'No'),
-              'N': (False, 'No'),
-            }.get(context_str.upper(), False)
+        'YES:NOIMPACT': (True, 'YES'),
+        'YES': (False, 'YES'),
+        'Y:NOIMPACT': (True, 'YES'),
+        'Y': (False, 'YES'),
+        'NO:NOIMPACT': (True, 'No'),
+        'NO': (False, 'No'),
+        'N:NOIMPACT': (True, 'No'),
+        'N': (False, 'No'),
+    }.get(context_str.upper(), False)
 
     return value
 
