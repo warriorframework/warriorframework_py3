@@ -1,0 +1,267 @@
+/*
+    DJANGO Admin styles
+    Overriding standard given by https://github.com/django/django/blob/master/django/contrib/admin/static/admin/css/base.css
+    Cannot be placed in 'admin' directory because it will collide with Django's 'admin' package.
+*/
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Bold-webfont.woff');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Regular-webfont.woff');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Roboto';
+    src: url('../fonts/Roboto-Light-webfont.woff');
+    font-weight: 300;
+    font-style: normal;
+}
+
+* {
+	font-family: 'Lato', sans-serif;
+}
+
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    font-family: Corbel;
+    color: #333;
+    background: #fff;
+}
+
+/* FORM BUTTONS */
+
+.button, input[type=submit], input[type=button], .submit-row input, a.button {
+    background: rgba(35, 131, 195, 0.95);
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    cursor: pointer;
+}
+
+.module h2, .module caption, .inline-group h2 {
+    margin: 0;
+    padding: 8px;
+    font-weight: 400;
+    font-size: 13px;
+    text-align: left;
+    background: rgba(35, 131, 195, 0.95);
+    color: #fff;
+}
+/* BREADCRUMBS */
+
+div.breadcrumbs {
+    padding: 10px 40px;
+    border: none;
+    font-size: 14px;
+    color: rgba(35, 131, 195, 0.95);
+    text-align: left;
+}
+
+div.breadcrumbs a {
+    color: black;
+}
+
+div.breadcrumbs a:focus, div.breadcrumbs a:hover {
+    color: rgba(35, 131, 195, 0.95);
+}
+
+/* HEADER */
+
+#header {
+    width: auto;
+    height: 50px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 14px;
+	background: #343a40;
+    color: white;
+    overflow: hidden;
+}
+
+#header a:link, #header a:visited {
+    color: #fff;
+}
+
+#header a:focus , #header a:hover {
+    text-decoration: underline;
+    color: white !important;
+}
+
+#branding {
+    float: left;
+}
+
+#branding h1 {
+    font-size: 1.25rem;
+    line-height: inherit;
+    padding-left: 1rem;
+    color: white;
+    padding-top: 0.05rem;
+    margin: 0;
+}
+
+#branching img {
+    border-style: none;
+}
+
+#branding h1 a {
+	font-size: 30px;
+	line-height: inherit;
+	font-weight: 500;
+	padding-left: 54px;
+	font-family: serif;
+	color: white;
+	margin: 0;
+	font-family: inherit;
+}
+
+#branding h2 {
+    padding: 0 10px;
+    font-size: 14px;
+    margin: -8px 0 8px 0;
+    font-weight: normal;
+    color: #ffc;
+}
+
+#branding a:hover {
+    text-decoration: none;
+}
+
+#user-tools {
+    float: right;
+    padding: 0;
+    margin: 0 0 0 20px;
+    font-weight: 300;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: right;
+}
+
+#user-tools a {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+#user-tools a:focus, #user-tools a:hover {
+    text-decoration: none;
+    border-bottom-color: rgba(35, 131, 195, 0.95);
+    color: rgba(35, 131, 195, 0.95);
+}
+
+
+/* LOGIN FORM */
+
+.login #container {
+    overflow: hidden;
+    min-width: 300px;
+    margin 100px auto;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: white;
+	font-size: 16px;
+}
+
+.login .title {
+    background: rgba(35, 131, 195, 0.95);
+    color: white;
+    padding: 0 20px !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	line-height: 40px;
+	box-sizing: border-box;
+	border-bottom: solid 1px #d8d8d8;
+}
+.login #content {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    position: relative;
+    top: 8%;
+    width: 25%;
+    height: 30%;
+    border: 1px solid #dedede;
+    padding: 0;
+}
+
+.login #login-form {
+    margin: 50px 20px 10px 20px;
+    width: 90%;
+}
+
+.login .button {
+    margin: 0 20px;
+    text-align: center;
+    border-radius: 5px;
+    width: 90%;
+    height: 30px;
+    background-color: rgba(35, 131, 195, 0.8);
+	padding: 2px 5px;
+	display: inline-block;
+	color: #333;
+	border: solid 1px #dedede;
+	font-size: 16px;
+	font-weight: 400;
+	position: relative;
+}
+
+.login .form-row {
+	padding: 5px 0;
+	max-width: 800px;
+	margin: 0 auto;
+	position: relative;
+}
+
+.login .form-row label {
+    padding-right: 0.5em;
+    line-height: 2em;
+    font-size: 1em;
+    clear: both;
+    color: #333;
+}
+
+.login .form-row #id_username, .login .form-row #id_password {
+    clear: both;
+    padding: 8px;
+    width: 100%;
+    -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;
+}
+
+.login span.help {
+    font-size: 10px;
+    display: block;
+}
+
+.login .submit-row {
+    clear: both;
+    padding: 1em 0 0 9.4em;
+    margin: 0;
+    border: none;
+    background: none;
+    text-align: left;
+}
+
+.login .password-reset-link {
+    text-align: center;
+}
