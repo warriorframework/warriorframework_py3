@@ -3228,3 +3228,15 @@ div#launchpad.hidden.side-bar-hidden ~ .page .page-content {
 }
 
 /* login styles end */
+
+/* error page styles */
+
+.error-message {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    position: relative;
+    top: 15%;
+}
+
+/* error styles end */
