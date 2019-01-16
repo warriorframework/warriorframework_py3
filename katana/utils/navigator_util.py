@@ -87,7 +87,7 @@ class Navigator(object):
                 print("-- Output -- {0}".format(output.decode()))
                 print("-- Errors -- {0}".format(errors.decode()))
                 return False
-        return output.decode()
+        return output
 
     def search_folder_name(self, folder_name, given_dir):
         """searches for folder by name in all subdir until found or bottom level directory"""
