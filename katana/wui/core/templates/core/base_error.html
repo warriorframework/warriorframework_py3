@@ -1,0 +1,13 @@
+{% extends "core/base_index.html" %}
+{% block pagecontent %}
+<div class="error-message w-50">
+<div class="card text-center">
+    <div class="card-body">
+        <h1 class="card-title">{{ title|default:"Error"}}</h1>
+        <div class="card-text">{{ message }}</div>
+        <br>
+        <button type="button" class="btn btn-primary" onclick="location.href='/'">Return Home</button>
+    </div>
+</div>
+</div>
+{% endblock %}

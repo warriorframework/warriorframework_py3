@@ -1377,7 +1377,7 @@ var katana = {
     		// login a user
     		var logout = $('#warrior_logout')
     		katana.templateAPI.get.call(logout, {
-    											'url': null, 
+    											'url': '/katana/logout',
     											'toSend': JSON.stringify({'action': 'logout'}), 
     											'callBack': katana.userAuth.getLogoutPage
     											}

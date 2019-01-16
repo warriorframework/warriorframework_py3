@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'wui.users',
     'wui.core',
     'native.wapp_management',
     'native.wappstore',
@@ -59,6 +60,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'wui.users.middleware.UserExpiryMiddleware',
+    'wui.users.middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'wui.urls'
@@ -90,6 +93,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
+        'wui.users.rest_addons.IsNotExpiredPermission',
     ),
 }
 
@@ -103,7 +107,11 @@ DATABASES = {
     }
 }
 
-# authentication settings
+# Authentication settings
+AUTH_USER_MODEL = 'users.User'
+LOGIN_URL = '/katana/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
