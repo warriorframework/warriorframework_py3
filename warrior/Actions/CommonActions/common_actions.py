@@ -172,7 +172,7 @@ class CommonActions(object):
                 #if bool_store_all is set to True, all content of given json file will be
                 #stored in data repository
                 if isinstance(bool_store_all, bool) and bool_store_all is True:
-                    print_info("bool_store_all is set to True, all content of given" 
+                    print_info("bool_store_all is set to True, all content of given"
                                " json file will be stored in data repository")
                     update_datarepository(json_doc)
                     print_info("{0} dictionary stored in Warrior data_repository".\
@@ -359,8 +359,8 @@ class CommonActions(object):
             :Returns:
                 1. status(boolean)
         """
-        wDesc = "Verify if the output of the arithmetic expression matches the expected"
-        Utils.testcase_Utils.pNote(wDesc)
+        wdesc = "Verify if the output of the arithmetic expression matches the expected"
+        Utils.testcase_Utils.pNote(wdesc)
         status = Utils.data_Utils.verify_arith_exp(expression, expected,
                                                    comparison, repo_key)
         return status
