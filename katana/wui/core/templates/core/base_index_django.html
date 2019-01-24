@@ -15,14 +15,15 @@
     {% endblock %}
 </head>
 <body>
-<nav class="navbar sticky-top navbar-dark bg-dark">
-    <a class="navbar-brand" href="/katana">
-        <img src="{% static 'core/images/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">
-        WARRIOR
+<nav class="navbar sticky-top navbar-dark {% block navbar_color_class %}bg-dark{% endblock %}" style="{% block navbar_extra_style %}{% endblock %}">
+    <a class="navbar-brand" href="{% block navbar_title_redirect %}/katana{% endblock %}">
+        {% block navbar_title_logo %}<img src="{% static 'core/images/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">{% endblock %}
+        {% block navbar_title %}WARRIOR{% endblock %}
     </a>
     <div class="ml-auto">
-        <i class="fas fa-cog" onclick="katana.sidebar.openApp($(this))" url="/katana/settings/"></i>
-        <i class="fas fa-info"></i>
+    {% block navbar_settings_menu %}
+        <i class="fas fa-cog" onclick="katana.sidebar.openApp($(this))" url="{% block settings_menu_link %}/katana/settings/{% endblock %}"></i>
+    {% endblock %}
     </div>
     <div class="btn-group">
         <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
@@ -30,9 +31,21 @@
             <i class="fas fa-user"></i>
         </button>
         <div class="dropdown-menu dropdown-menu-right">
-            <button class="dropdown-item" type="button" onclick="katana.sidebar.openApp($(this))" url="/katana/settings/">Profile Settings</button>
+            {% if user.is_authenticated %}
+            <button class="dropdown-item" type="button" disabled>Hello, {{ user.first_name|default:user.username }}</button>
+            {% if user.is_staff %}
+            <button class="dropdown-item" type="button" onclick="location.href='/admin';">Admin Page</button>
+            {% endif %}
             <button class="dropdown-item" type="button" onclick="location.href='/katana/logout';">Logout</button>
+            {% else %}
+            <button class="dropdown-item" type="button" disabled>You are not logged in.</button>
+            <button class="dropdown-item" type="button" onclick="location.href='/katana/login';">Login</button>
+            {% endif %}
         </div>
+    </div>
+    <div style="margin-left: 16px;">
+        {% block navbar_right_logo %}
+        {% endblock %}
     </div>
 </nav>
 
