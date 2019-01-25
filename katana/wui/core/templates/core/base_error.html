@@ -1,7 +1,9 @@
-{% extends "core/base_index.html" %}
+{% extends "core/base_index_django.html" %}
+{% block sidebar %}{% endblock %}
+{% block navbar_settings_menu %}{% endblock %}
 {% block pagecontent %}
-<div class="error-message w-50">
-<div class="card text-center">
+<div class="error-message mx-auto">
+<div class="text-center">
     <div class="card-body">
         <h1 class="card-title">{{ title|default:"Error"}}</h1>
         <div class="card-text">{{ message }}</div>
