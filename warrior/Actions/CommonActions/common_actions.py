@@ -429,3 +429,32 @@ class CommonActions(object):
         output_dict = {time_diff: time_delta}
         status = True
         return status, output_dict
+
+    def add_td_results_to_junit_file(self):
+        """
+        This keyword stored the status of testdata commands in junit file.
+         :Arguments: None
+         :Returns: (boolean)
+
+        """
+        wdesc = "To add all command results to junit file"
+        Utils.testcase_Utils.pNote(wdesc)
+        data_repository = Utils.config_Utils.data_repository
+        junit_file_obj = data_repository['wt_junit_object']
+        root = junit_file_obj.root
+        new_tag = junit_file_obj.create_element("command_status")
+        #recursively parse td_response from data repository and store in junit
+        #file
+        for session_td_key, session_td_value in data_repository.items():
+            if '_td_response' in session_td_key:
+                for title_td_key, title_td_value in session_td_value.items():
+                    for command_key, command_value in title_td_value.items():
+                        if '_status' not in command_key and '_command' not in command_key:
+                            new_tag.append(junit_file_obj.create_element\
+                             (session_td_key+"_"+title_td_key+"_"+command_key,\
+                             {'output' : repr(command_value), \
+                              'status' : title_td_value.get(command_key+"_status", None),\
+                              'command' : title_td_value.get(command_key+"_command", None)}))
+        root.append(new_tag)
+        status = True
+        return status
