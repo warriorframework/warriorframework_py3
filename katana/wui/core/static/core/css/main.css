@@ -2491,8 +2491,8 @@ i.active {
 .profile-image.image {
 	position: absolute;
 	top: 5px;
-	width: 30px;
-	height: 30px;
+	width: 40px;
+	height: 40px;
 	right: 22px;
 	background-size: cover;
 	background-position: center;
@@ -3228,3 +3228,15 @@ div#launchpad.hidden.side-bar-hidden ~ .page .page-content {
 }
 
 /* login styles end */
+
+/* error page styles */
+
+.error-message {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    position: relative;
+    top: 15%;
+}
+
+/* error styles end */

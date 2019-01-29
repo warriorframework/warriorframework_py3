@@ -6,19 +6,26 @@
 	</h1>
 	<div class="header-icon-container">
 			<div class="header-icon"><i class="fa fa-cog" katana-click="katana.templateAPI.load" url="/katana/settings/" jsurls="  /static/settings/js/settings.js,"></i></div>
-			<div class="header-icon"><i class="fa fa-info" ></i></i></div>
 	</div>
-	
-	{% if show_quick_user %}
-	
+
+	{% if user.is_authenticated %}
 	<div class="quick-user" katana-click="katana.toggleActiveGlobal" >		
 		<div class="profile-image image" style="background-image: url({{ userData.Base64image }})"></div>
 		<div class="hidden-menu">
 			<ul>
+				{% if user.is_authenticated %}
+				<li>Hello, {{ user.first_name|default:user.username }}</li>
 				<li katana-click="katana.openProfile" url="/katana/settings/" jsurls="/static/settings/js/settings.js,">Profile Settings</li>
+				{% if user.is_staff %}
+				<li onclick="location.href='/admin';">Admin Page</li>
+				{% endif %}
 				<li katana-click="katana.userAuth.logout" url="/katana/logout" id="warrior_logout">Logout</li>
+				{% else %}
+				<li>You are not logged in.</li>
+				<li onclick="location.href='/katana/login';">Logout</li>
+				{% endif %}
 			</ul>
 		</div>
 	</div>
-	{% endif %}	
+	{% endif %}
 

@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 from . import settings_logging
+try:
+    import ldap
+    from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+except Exception as err:
+    print("Please install django auth ldap to authenticate against ldap")
+    print("Error while importing django auth ldap: \n", err)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -39,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'wui.administration',
+    'wui.users',
     'wui.core',
     'native.wapp_management',
     'native.wappstore',
@@ -59,6 +67,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'wui.users.middleware.UserExpiryMiddleware',
+    'wui.users.middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'wui.urls'
@@ -66,7 +76,9 @@ ROOT_URLCONF = 'wui.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'wui', 'administration', 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -90,6 +102,7 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
+        'wui.users.rest_addons.IsNotExpiredPermission',
     ),
 }
 
@@ -103,7 +116,11 @@ DATABASES = {
     }
 }
 
-# authentication settings
+# Authentication settings
+AUTH_USER_MODEL = 'users.User'
+LOGIN_URL = '/katana/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
@@ -111,7 +128,6 @@ AUTHENTICATION_BACKENDS = (
 
 MULTI_USER_SUPPORT = False
 USER_HOME_DIR_TEMPLATE = None
-
 
 
 # Password validation
