@@ -27,6 +27,7 @@ from WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_dr
 common_execution_utils, framework_detail
 from WarriorCore.Classes import execution_files_class, junit_class, hybrid_driver_class
 import Framework.Utils as Utils
+from Framework.Utils import xml_Utils, string_Utils, testcase_Utils, config_Utils, file_Utils
 from Framework.Utils.testcase_Utils import convertLogic
 from Framework.Utils.print_Utils import print_notype, print_info, print_warning, print_error,\
     print_debug, print_exception
@@ -411,6 +412,10 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                                             timestamp=tc_timestamp,
                                             name="customProject_independant_testcase_execution",
                                             display=pj_junit_display)
+
+        data_repository = config_Utils.data_repository
+        data_repository.update({"junit_obj": tc_junit_object})
+
         if "jobid" in data_repository:
             tc_junit_object.add_jobid(data_repository["jobid"])
             del data_repository["jobid"]
