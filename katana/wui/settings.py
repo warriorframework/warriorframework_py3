@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 from . import settings_logging
+import wui.core.core_utils.core_settings as core_settings
 try:
     import ldap
     from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
@@ -129,7 +130,31 @@ AUTHENTICATION_BACKENDS = (
 MULTI_USER_SUPPORT = False
 USER_HOME_DIR_TEMPLATE = None
 
+# Logging
+settings_logging.BASE_DIR = BASE_DIR
+settings_logging.DEBUG = DEBUG
+LOGGING = settings_logging.get_log_config()
 
+# LDAP Settings (if available)
+CONFIG_FILE = os.path.join(BASE_DIR, 'wui', 'config.ini')
+try:
+    ldap_settings = core_settings.LDAPSettings(CONFIG_FILE)
+    for config, value in ldap_settings.configs.items():
+        locals()[config.upper()] = value
+    if ldap_settings.enabled:
+        AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + ('django_auth_ldap.backend.LDAPBackend',)
+        LOGGING['loggers']['django_auth_ldap'] = {
+            "level": "DEBUG",
+            "handlers": ["django_file", "console"],
+        }
+    if ldap_settings.errors:
+        print("Errors encountered during import of LDAP settings from", CONFIG_FILE)
+        print("Errors are:")
+        for k, v in ldap_settings.errors.items():
+            print("LDAP Attribute", k, "is", v)
+except Exception as ex:
+    print("Unexpected failure to import LDAP settings from", CONFIG_FILE)
+    print("Error encountered:\n", ex)
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -174,8 +199,3 @@ STATICFILES_DIRS = [
         os.path.join(BASE_DIR, 'static')
     ]
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10242880
-
-# Logging
-settings_logging.BASE_DIR = BASE_DIR
-settings_logging.DEBUG = DEBUG
-LOGGING = settings_logging.get_log_config()
