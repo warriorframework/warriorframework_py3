@@ -253,10 +253,13 @@ class WarriorCli(object):
                     result = "ERROR"
                     finalresult = "ERROR"
                 finalresult = finalresult and result
-                if details_dict["return_on_fail_list"][i] and (result == "ERROR" or result is False):
-                    if details_dict["return_on_fail_list"][i].lower() == "yes":
-                        pNote("skipping remaining commands, if exists")
-                        break;
+                if result is False or result is "ERROR":
+                    pNote("skipping remaining commands, if exists")
+                    break
+                # if details_dict["return_on_fail_list"][i] and (result == "ERROR" or result is False):
+                #     if details_dict["return_on_fail_list"][i].lower() == "yes":
+                #         pNote("skipping remaining commands, if exists")
+                #         break;
             responses_dict[key] = {k: v for d in resp_key_list for k, v in d.items()}
         return finalresult, td_resp_dict
 
