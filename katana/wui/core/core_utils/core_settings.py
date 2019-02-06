@@ -1,5 +1,6 @@
 from django.conf import settings
 import configparser
+from copy import copy
 import json
 import sys
 try:
@@ -29,6 +30,39 @@ class LDAPSettings():
         self._validate()
         if self.errors or not LDAPSettings.LDAP_IMPORT_SUCCESS:
             self.enabled = False
+
+    def configs_to_strings(self):
+        """
+        Return configs as a dictionary with object and dictionary values exported to strings
+        :return:
+        """
+        retval = copy(self.configs)
+        to_json = [
+            'AUTH_LDAP_USER_ATTR_MAP',
+            'AUTH_LDAP_GROUP_MAPPING',
+        ]
+        for k in to_json:
+            if k in retval:
+                retval[k] = json.dumps(retval[k])
+        # TODO Handle AUTH_LDAP_GROUP_SEARCH
+
+        # Handle AUTH_LDAP_GROUP_TYPE
+        if 'AUTH_LDAP_GROUP_TYPE' in retval:
+            if isinstance(retval['AUTH_LDAP_GROUP_TYPE'], GroupOfNamesType):
+                retval['AUTH_LDAP_GROUP_TYPE'] = 'GroupOfNames'
+            elif isinstance(retval['AUTH_LDAP_GROUP_TYPE'], PosixGroupType):
+                retval['AUTH_LDAP_GROUP_TYPE'] = 'PosixGroup'
+            else:
+                del retval['AUTH_LDAP_GROUP_TYPE']
+        # Handle AUTH_LDAP_USER_FLAGS_BY_GROUP
+        if 'AUTH_LDAP_USER_FLAGS_BY_GROUP' in retval:
+            flags = retval['AUTH_LDAP_USER_FLAGS_BY_GROUP']
+            if "is_staff" in flags:
+                retval['AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF'] = flags["is_staff"]
+            if "is_superuser" in flags:
+                retval['AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER'] = flags["is_superuser"]
+
+        return retval
 
     def _translate_from_settings(self):
         """
@@ -71,8 +105,12 @@ class LDAPSettings():
                     self.configs[k] = v
             if LDAPSettings.LDAP_IMPORT_SUCCESS:
                 # Import AUTH_LDAP_GROUP_SEARCH as LDAPSearch
-                group_type = self._cparser['ldap'].get('AUTH_LDAP_GROUP_TYPE', 'groupOfNames').lower()
-                group_type = 'groupOfNames' if group_type == 'groupofnames' else 'posixGroup'
+                temp = self._cparser['ldap'].get('AUTH_LDAP_GROUP_TYPE', '').lower()
+                group_type = None
+                if temp == 'groupofnames':
+                    group_type = 'groupOfNames'
+                elif temp == 'posixgroup':
+                    group_type = 'posixGroup'
                 if 'AUTH_LDAP_GROUP_SEARCH' in self._cparser['ldap']:
                     self.configs['AUTH_LDAP_GROUP_SEARCH'] = LDAPSearch(
                         self._cparser['ldap']['AUTH_LDAP_GROUP_SEARCH'],
@@ -87,6 +125,9 @@ class LDAPSettings():
                 elif group_type == 'posixGroup':
                     self.configs['AUTH_LDAP_GROUP_TYPE'] = PosixGroupType() \
                         if name_attr is None else PosixGroupType(name_attr=name_attr)
+                else:
+                    if 'AUTH_LDAP_GROUP_TYPE' in self.configs:
+                        del self.configs['AUTH_LDAP_GROUP_TYPE']
         if 'user template' in self._cparser:
             self.configs.update(self._cparser['user template'].items())
             if 'MULTI_USER_SUPPORT' in self.configs:
@@ -99,10 +140,6 @@ class LDAPSettings():
         :return:
         """
         self.errors = {}
-        # Return early (nothing wrong) if LDAP is disabled
-        if not self.enabled:
-            return
-        # Check for required values
         required = [
             'AUTH_LDAP_SERVER_URI',
             'AUTH_LDAP_USER_DN_TEMPLATE',
@@ -132,6 +169,47 @@ class LDAPSettings():
                 'AUTH_LDAP_GROUP_SEARCH'
             ]
             for r in required:
-                if r not in group_keys:
+                if r not in group_keys or self.configs[r] is None:
                     self.errors[r] = 'missing'
+        self.check_connection()
 
+    def check_connection(self):
+        """
+        Check connection to LDAP server.
+        Populate self.errors['AUTH_LDAP_CONNECTION_CHECK'] with an error message on failure.
+        :return:
+        """
+        if self.errors or not self.enabled:
+            return False
+        server = self.configs['AUTH_LDAP_SERVER_URI']
+        user = self.configs['AUTH_LDAP_BIND_DN']
+        password = self.configs['AUTH_LDAP_BIND_PASSWORD']
+        start_tls = self.configs['AUTH_LDAP_START_TLS']
+        try:
+            l = ldap.initialize(server)
+            l.set_option(ldap.OPT_NETWORK_TIMEOUT, 5.0)
+            if start_tls:
+                l.start_tls_s()
+            l.simple_bind_s(user, password)
+            return True
+        except (ldap.SERVER_DOWN, ldap.CONNECT_ERROR, ldap.TIMELIMIT_EXCEEDED, ldap.TIMEOUT):
+            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "unable to connect to LDAP server"
+        except ldap.CONFIDENTIALITY_REQUIRED:
+            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "missing session confidentiality (TLS)"
+        except (ldap.INVALID_CREDENTIALS, ldap.INVALID_DN_SYNTAX, ldap.INVALID_SYNTAX):
+            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "using invalid credentials"
+        except ldap.LDAPError as ex:
+            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "not working. Received: {}".format(ex)
+        return False
+
+    def update(self, new_configs):
+        success = False
+        # TODO Translate values to settings
+
+        self._validate()
+
+        # TODO Make changes to running settings
+
+        # TODO Make changes to config.ini
+
+        return success

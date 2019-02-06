@@ -141,7 +141,7 @@ try:
     ldap_settings = core_settings.LDAPSettings(CONFIG_FILE)
     for config, value in ldap_settings.configs.items():
         locals()[config.upper()] = value
-    if ldap_settings.enabled:
+    if ldap_settings.enabled and not ldap_settings.errors:
         AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + ('django_auth_ldap.backend.LDAPBackend',)
         LOGGING['loggers']['django_auth_ldap'] = {
             "level": "DEBUG",
