@@ -10,9 +10,51 @@ except Exception:
     pass
 
 
-class LDAPSettings():
+class FileSettings:
+
+    def save(self, file, location):
+        """
+        Save file into location.
+        :param file:
+        :param location:
+        :return: False if unable to save
+        """
+        try:
+            with open(location, 'wb+') as fd:
+                for chunk in file.chunks():
+                    fd.write(chunk)
+            return True
+        except Exception:
+            return False
+
+
+class LDAPSettings:
     CONFIG_FILE = 'config.ini'
     LDAP_IMPORT_SUCCESS = 'django_auth_ldap' in sys.modules
+
+    REQUIRED_FIELDS = [
+        'AUTH_LDAP_SERVER_URI',
+        'AUTH_LDAP_USER_DN_TEMPLATE',
+        'AUTH_LDAP_SEARCH_BASE_DN',
+        'AUTH_LDAP_BIND_DN',
+        'AUTH_LDAP_BIND_PASSWORD',
+    ]
+    REQUIRED_FOR_GROUP_FIELDS = [
+        'AUTH_LDAP_GROUP_TYPE',
+        'AUTH_LDAP_GROUP_SEARCH'
+    ]
+    JSON_FIELDS = [
+        'AUTH_LDAP_USER_ATTR_MAP',
+        'AUTH_LDAP_GROUP_MAPPING',
+    ]
+    DN_FIELDS = [
+        'AUTH_LDAP_SEARCH_BASE_DN',
+        'AUTH_LDAP_BIND_DN',
+        'AUTH_LDAP_REQUIRE_GROUP',
+        'AUTH_LDAP_DENY_GROUP',
+        'AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER',
+        'AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF',
+    ]
 
     def __init__(self, config_file=None):
         self.enabled = False
@@ -31,17 +73,24 @@ class LDAPSettings():
         if self.errors or not LDAPSettings.LDAP_IMPORT_SUCCESS:
             self.enabled = False
 
+    @staticmethod
+    def get_ldap_cert_path():
+        """
+        Get path to LDAP certificate used by system.
+        :return:
+        """
+        if LDAPSettings.LDAP_IMPORT_SUCCESS:
+            return ldap.get_option(ldap.OPT_X_TLS_CACERTFILE)
+        return ''
+
     def configs_to_strings(self):
         """
         Return configs as a dictionary with object and dictionary values exported to strings
         :return:
         """
         retval = copy(self.configs)
-        to_json = [
-            'AUTH_LDAP_USER_ATTR_MAP',
-            'AUTH_LDAP_GROUP_MAPPING',
-        ]
-        for k in to_json:
+
+        for k in LDAPSettings.JSON_FIELDS:
             if k in retval:
                 retval[k] = json.dumps(retval[k])
         # Handle AUTH_LDAP_GROUP_SEARCH
@@ -67,6 +116,7 @@ class LDAPSettings():
                 retval['AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF'] = flags["is_staff"]
             if "is_superuser" in flags:
                 retval['AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER'] = flags["is_superuser"]
+            del retval['AUTH_LDAP_USER_FLAGS_BY_GROUP']
 
         return retval
 
@@ -140,22 +190,29 @@ class LDAPSettings():
                 self.configs['MULTI_USER_SUPPORT'] = self._cparser['user template'].getboolean('MULTI_USER_SUPPORT')
         return self.configs
 
+    @staticmethod
+    def is_dn(string):
+        """
+        Checks if string is a valid dn
+        :param string:
+        :return: boolean
+        """
+        if LDAPSettings.LDAP_IMPORT_SUCCESS:
+            return ldap.dn.is_dn(string)
+        return True
+
     def _validate(self):
         """
         Validate LDAP settings
         :return:
         """
         self.errors = {}
-        required = [
-            'AUTH_LDAP_SERVER_URI',
-            'AUTH_LDAP_USER_DN_TEMPLATE',
-            'AUTH_LDAP_SEARCH_BASE_DN',
-            'AUTH_LDAP_BIND_DN',
-            'AUTH_LDAP_BIND_PASSWORD',
-        ]
-        for k in required:
+        for k in LDAPSettings.REQUIRED_FIELDS:
             if k not in self.configs:
                 self.errors[k] = 'missing'
+        for k in LDAPSettings.DN_FIELDS:
+            if k in self.configs and not LDAPSettings.is_dn(self.configs[k]):
+                self.errors[k] = 'incorrectly formatted'
         # Check user dn template is an appropriate template string
         try:
             self.configs.get('AUTH_LDAP_USER_DN_TEMPLATE', '') % {'user': 'generic_username'}
@@ -170,13 +227,15 @@ class LDAPSettings():
         # Validate group settings if any group settings are set
         group_keys = {k for k in self.configs.keys() if 'GROUP' in k}
         if group_keys:
-            required = [
-                'AUTH_LDAP_GROUP_TYPE',
-                'AUTH_LDAP_GROUP_SEARCH'
-            ]
-            for r in required:
+            for r in LDAPSettings.REQUIRED_FOR_GROUP_FIELDS:
                 if r not in group_keys or self.configs[r] is None:
                     self.errors[r] = 'missing'
+            if 'AUTH_LDAP_GROUP_SEARCH' in self.configs:
+                try:
+                    if not LDAPSettings.is_dn(self.configs['AUTH_LDAP_GROUP_SEARCH'].base_dn):
+                        self.errors['AUTH_LDAP_GROUP_SEARCH'] = 'incorrectly formatted'
+                except AttributeError:
+                    self.errors['AUTH_LDAP_GROUP_SEARCH'] = 'incorrectly formatted'
         self.check_connection()
 
     def check_connection(self):
@@ -197,14 +256,11 @@ class LDAPSettings():
             if start_tls:
                 l.start_tls_s()
             l.simple_bind_s(user, password)
-            print(ldap.get_option(ldap.OPT_X_TLS_CACERTDIR),
-                  ldap.get_option(ldap.OPT_X_TLS_CACERTFILE),
-                  ldap.get_option(ldap.OPT_X_TLS_CERTFILE))
             return True
         except (ldap.SERVER_DOWN, ldap.CONNECT_ERROR, ldap.TIMELIMIT_EXCEEDED, ldap.TIMEOUT):
             self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "unable to connect to LDAP server"
         except ldap.CONFIDENTIALITY_REQUIRED:
-            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "missing session confidentiality (TLS)"
+            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "missing session confidentiality (either Start TLS or ldaps)"
         except (ldap.INVALID_CREDENTIALS, ldap.INVALID_DN_SYNTAX):
             self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "using invalid credentials"
         except ldap.LDAPError as ex:

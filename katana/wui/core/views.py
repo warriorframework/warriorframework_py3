@@ -15,6 +15,8 @@ limitations under the License.
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
+from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth.views import LoginView as BaseLoginView
 import json
 import os
@@ -23,7 +25,7 @@ from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from wui.core.apps import AppInformation
 from wui.users.views import PublicView
-from .core_utils.core_settings import LDAPSettings
+from .core_utils.core_settings import FileSettings, LDAPSettings
 
 try:
     from django_auth_ldap.backend import LDAPBackend
@@ -150,7 +152,10 @@ class HomeView(View):
             return userdata
 
 
-class SiteSettingsView(View,):
+class SiteSettingsView(UserPassesTestMixin, View,):
+
+    def test_func(self):
+        return self.request.user.is_superuser and self.request.user.is_staff and self.request.user.is_active
 
     def get(self, request):
         ldap_settings = LDAPSettings()
@@ -163,19 +168,35 @@ class SiteSettingsView(View,):
         return render(request, "core/site_settings.html", context=context)
 
     def post(self, request):
-        print("TODO", "\n".join(sorted(["{}: {}".format(k, v) for k, v in request.POST.items()])))
         ldap_settings = LDAPSettings()
-        new_configs = {k.upper(): v for k, v in request.POST.items()
-                       if k != 'csrfmiddlewaretoken' and k != '_save' and v != ""}
-        # Handle enable checkbox field - not present in POST when not checked
-        if 'AUTH_LDAP_ENABLED' not in new_configs:
-            new_configs['AUTH_LDAP_ENABLED'] = False
-        ldap_settings.update(new_configs)
+        file_errors = {}
+        if request.POST.get('action', '') == 'ldap':
+            new_configs = {k.upper(): v for k, v in request.POST.items()
+                           if 'auth_ldap' in k and v != ""}
+            # Handle enable checkbox field - not present in POST when not checked
+            if 'AUTH_LDAP_ENABLED' not in new_configs:
+                new_configs['AUTH_LDAP_ENABLED'] = False
+            ldap_settings.update(new_configs)
+            # Send messages
+            if ldap_settings.errors:
+                messages.error(request, 'Error found in updated LDAP settings.')
+            else:
+                messages.success(request, 'Successfully updated LDAP settings.')
+        elif request.POST.get('action', '') == 'files':
+            if 'ldap_cert_file' in request.FILES:
+                location = LDAPSettings.get_ldap_cert_path()
+                success = FileSettings().save(request.FILES['ldap_cert_file'], location)
+                if success:
+                    messages.success(request, 'Successfully updated files')
+                else:
+                    messages.error(request, 'Failed to upload file(s)')
+                    file_errors['ldap_cert_file'] = 'upload failed'
         context = {
             'is_site_settings': True,
             'ldap_settings': ldap_settings.configs_to_strings(),
             'ldap_enabled': ldap_settings.enabled,
             'ldap_errors': ldap_settings.errors,
+            'file_errors': file_errors,
         }
         return render(request, "core/site_settings.html", context=context)
 

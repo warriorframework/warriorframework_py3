@@ -19,78 +19,80 @@
 
 {% block content %}
 <div id="content-main">
+    <p>Modification of these settings may cause the site to reboot or require a reboot.</p>
     <br>
     <h1>LDAP Settings</h1>
     <form enctype="multipart/form-data" id="ldap-settings-form" action method="post">
         {% csrf_token %}
-        <p>Modification of these settings may cause the site to reboot or require a reboot.</p>
+        <input type="hidden" name="action" value="ldap">
         <div>
             <fieldset class="module aligned">
                 <h2>LDAP Server Settings</h2>
-                <div class="form-row">
+                <div class="form-row" {% if ldap_errors %}errors{% endif %}>
                     <div class="checkbox-row">
+                        {% if ldap_errors %}<ul class="errorlist"><li>All errors must be resolved before LDAP single sign on can be enabled.</li></ul>{% endif %}
                         <input type="checkbox" id="auth_ldap_enabled" name="auth_ldap_enabled"
                             value = "1" {% if ldap_enabled %}checked{% endif %}>
                         <label for="auth_ldap_enabled" class="vCheckboxLabel">Enable LDAP SSO</label>
-                        {% if ldap_errors %}<p>Errors must be resolved before LDAP single sign on can be enabled.</p>{% endif %}
                     </div>
                 </div>
-                <div class="form-row">
+                <div class="form-row {% if ldap_errors.AUTH_LDAP_CONNECTION_CHECK %}errors{% endif %}">
                     {% if ldap_errors.AUTH_LDAP_CONNECTION_CHECK %}
-                    <p>Error connecting to LDAP server. LDAP client is {{ ldap_errors.AUTH_LDAP_CONNECTION_CHECK }}</p>
+                    <ul class="errorlist"><li>Error connecting to LDAP server. LDAP client is {{ ldap_errors.AUTH_LDAP_CONNECTION_CHECK }}</li></ul>
                     {% endif %}
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_SERVER_URI %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_SERVER_URI %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_SERVER_URI }}</li></ul>{% endif %}
                         <label for="auth_ldap_server_uri">Server URI</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_server_uri" name="auth_ldap_server_uri"
                             value="{{ ldap_settings.AUTH_LDAP_SERVER_URI }}">
-                        {% if ldap_errors.AUTH_LDAP_SERVER_URI %}<p>This field is {{ ldap_errors.AUTH_LDAP_SERVER_URI }}</p>{% endif %}
                     </div>
                     <br>
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE }}</li></ul>{% endif %}
                         <label for="auth_ldap_user_dn_template">User DN Template</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_user_dn_template" name="auth_ldap_user_dn_template"
                             value="{{ ldap_settings.AUTH_LDAP_USER_DN_TEMPLATE }}">
-                        {% if ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE %}<p>This field is {{ ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE }}</p>{% endif %}
                     </div>
                     <br>
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_SEARCH_BASE_DN %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_SEARCH_BASE_DN %}}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_SEARCH_BASE_DN }}</li></ul>{% endif %}
                         <label for="auth_ldap_search_base_dn">Search Base DN</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_search_base_dn" name="auth_ldap_search_base_dn"
                             value="{{ ldap_settings.AUTH_LDAP_SEARCH_BASE_DN }}">
-                        {% if ldap_errors.AUTH_LDAP_SEARCH_BASE_DN %}<p>This field is {{ ldap_errors.AUTH_LDAP_SEARCH_BASE_DN }}</p>{% endif %}
                     </div>
                     <br>
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_BIND_DN %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_BIND_DN %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_BIND_DN }}</li></ul>{% endif %}
                         <label for="auth_ldap_bind_dn">Bind DN</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_bind_dn" name="auth_ldap_bind_dn"
                             value="{{ ldap_settings.AUTH_LDAP_BIND_DN }}">
-                        {% if ldap_errors.AUTH_LDAP_BIND_DN %}<p>This field is {{ ldap_errors.AUTH_LDAP_BIND_DN }}</p>{% endif %}
                     </div>
                     <br>
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_BIND_PASSWORD %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_BIND_PASSWORD %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_BIND_PASSWORD }}</li></ul>{% endif %}
                         <label for="auth_ldap_bind_password">Bind Password</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_bind_password" name="auth_ldap_bind_password"
                             value="{{ ldap_settings.AUTH_LDAP_BIND_PASSWORD }}">
-                        {% if ldap_errors.AUTH_LDAP_BIND_PASSWORD %}<p>This field is {{ ldap_errors.AUTH_LDAP_BIND_PASSWORD }}</p>{% endif %}
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="checkbox-row">
+                    <div class="checkbox-row {% if ldap_errors.AUTH_LDAP_START_TLS %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_START_TLS %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_START_TLS }}</li></ul>{% endif %}
                         <input type="checkbox" id="auth_ldap_start_tls" name="auth_ldap_start_tls"
                             value="1" {% if ldap_settings.AUTH_LDAP_START_TLS %}checked{% endif %}>
                         <label for="auth_ldap_start_tls" class="vCheckboxLabel">Enable Start TLS</label>
-                        <p class="help">If you need to upload a custom certificate file, please see the next form for uploading files.</p>
+                        <p class="help">If you need to upload a custom certificate file, please see the file settings form below for uploading files.</p>
                     </div>
                 </div>
             </fieldset>
             <fieldset class="module aligned">
                 <h2>LDAP User Settings</h2>
                 <div class="form-row">
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_USER_ATTR_MAP %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_USER_ATTR_MAP %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_USER_ATTR_MAP }}</li></ul>{% endif %}
                         <label for="auth_ldap_user_attr_map">User Attribute Map</label>
                         <input type="textarea" class="vLargeTextField" id="auth_ldap_user_attr_map" name="auth_ldap_user_attr_map"
                             value="{{ ldap_settings.AUTH_LDAP_USER_ATTR_MAP }}">
-                        {% if ldap_errors.AUTH_LDAP_USER_ATTR_MAP %}<>This field is {{ ldap_errors.AUTH_LDAP_USER_ATTR_MAP }}</p>{% endif %}
                         <p class="help">
                             Must be a JSON of the form {"first_name":"&ltattribute&gt", "last_name": "&ltattribute&gt", "email": "&ltattribute&gt"}
                         </p>
@@ -100,61 +102,59 @@
             <fieldset class="module aligned">
                 <h2>LDAP Group Settings</h2>
                 <div class="form-row">
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_GROUP_TYPE %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_GROUP_TYPE %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_GROUP_TYPE }}</li></ul>{% endif %}
                         <label for="auth_ldap_group_type">Group Type</label>
-                        <!--<input type="text" class="vLargeTextField" id="auth_ldap_group_type" name="auth_ldap_group_type"-->
-                            <!--value="{{ ldap_settings.AUTH_LDAP_GROUP_TYPE }}">-->
                         <select id="auth_ldap_group_type" name="auth_ldap_group_type">
                             <option value="" {% if not ldap_settings.AUTH_LDAP_GROUP_TYPE %}selected{% endif %}>None</option>
                             <option value="GroupOfNames" {% if ldap_settings.AUTH_LDAP_GROUP_TYPE == "GroupOfNames" %}selected{% endif %}>GroupOfNames</option>
                             <option value="PosixGroup" {% if ldap_settings.AUTH_LDAP_GROUP_TYPE == "PosixGroup" %}selected{% endif %}>PosixGroup</option>
                         </select>
-                        {% if ldap_errors.AUTH_LDAP_GROUP_TYPE %}<p>This field is {{ ldap_errors.AUTH_LDAP_GROUP_TYPE }}</p>{% endif %}
                     </div>
                     <br>
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_GROUP_TYPE_NAME_ATTR %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_GROUP_TYPE_NAME_ATTR %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_GROUP_TYPE_NAME_ATTR }}</li></ul>{% endif %}
                         <label for="auth_ldap_group_type_name_attr">Group Type Name Attribute</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_group_type_name_attr" name="auth_ldap_group_type_name_attr"
                             value="{{ ldap_settings.AUTH_LDAP_GROUP_TYPE_NAME_ATTR }}">
-                        {% if ldap_errors.AUTH_LDAP_GROUP_TYPE_NAME_ATTR %}<p>This field is {{ ldap_errors.AUTH_LDAP_GROUP_TYPE_NAME_ATTR }}</p>{% endif %}
                     </div>
                     <br>
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_GROUP_SEARCH %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_GROUP_SEARCH %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_GROUP_SEARCH }}</li></ul>{% endif %}
                         <label for="auth_ldap_group_search">Group Search Base DN</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_group_search" name="auth_ldap_group_search"
                             value="{{ ldap_settings.AUTH_LDAP_GROUP_SEARCH }}">
-                        {% if ldap_errors.AUTH_LDAP_GROUP_SEARCH %}<p>This field is {{ ldap_errors.AUTH_LDAP_GROUP_SEARCH }}</p>{% endif %}
                     </div>
                 </div>
                 <div class="form-row">
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_REQUIRE_GROUP %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_REQUIRE_GROUP %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_REQUIRE_GROUP }}</li></ul>{% endif %}
                         <label for="auth_ldap_require_group">Required Group DN</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_require_group" name="auth_ldap_require_group"
                             value="{{ ldap_settings.AUTH_LDAP_REQUIRE_GROUP }}">
-                        {% if ldap_errors.AUTH_LDAP_REQUIRE_GROUP %}<p>This field is {{ ldap_errors.AUTH_LDAP_REQUIRE_GROUP }}</p>{% endif %}
                     </div>
                     <br>
-                    <div>
+                    <div class="{% if ldap_errors.AUTH_LDAP_DENY_GROUP %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_DENY_GROUP %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_DENY_GROUP }}</li></ul>{% endif %}
                         <label for="auth_ldap_deny_group">Denied Group DN</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_deny_group" name="auth_ldap_deny_group"
                             value="{{ ldap_settings.AUTH_LDAP_DENY_GROUP }}">
-                        {% if ldap_errors.AUTH_LDAP_DENY_GROUP %}<p>This field is {{ ldap_errors.AUTH_LDAP_DENY_GROUP }}</p>{% endif %}
                     </div>
                     <br>
                 </div>
                 <div class="form-row">
-                    <div>
-                        <label for="auth_ldap_user_flags_by_group_is_superuser">Superuser Group</label>
+                    <div class="{% if ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER }}</li></ul>{% endif %}
+                        <label for="auth_ldap_user_flags_by_group_is_superuser">Superuser Group DN</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_user_flags_by_group_is_superuser" name="auth_ldap_user_flags_by_group_is_superuser"
                             value="{{ ldap_settings.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER }}">
-                        {% if ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER %}<p>This field is {{ ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER }}</p>{% endif %}
                     </div>
                     <br>
-                    <div>
-                        <label for="auth_ldap_user_flags_by_group_is_staff">Staff Group</label>
+                    <div class="{% if ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF }}</li></ul>{% endif %}
+                        <label for="auth_ldap_user_flags_by_group_is_staff">Staff Group DN</label>
                         <input type="text" class="vLargeTextField" id="auth_ldap_user_flags_by_group_is_staff" name="auth_ldap_user_flags_by_group_is_staff"
                             value="{{ ldap_settings.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF }}">
-                        {% if ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF %}<p>This field is {{ ldap_errors.AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF }}</p>{% endif %}
                     </div>
                 </div>
                 <div class="form-row">
@@ -171,7 +171,27 @@
         <div class="submit-row">
             <input type="submit" value="Save" class="default" name="_save">
         </div>
-        <br>
+    </form>
+    <br>
+    <h1>File Settings</h1>
+    <form enctype="multipart/form-data" id="file-settings-form" action method="post">
+        <p></p>
+        {% csrf_token %}
+        <input type="hidden" name="action" value="files">
+        <div>
+            <fieldset class="module aligned">
+                <h2>Certificate Files</h2>
+                <div class="form-row {% if file_errors.ldap_cert_file %}errors{% endif %}">
+                    <div class="checkbox-row">
+                        {% if file_errors.ldap_cert_file %}<ul class="errorlist"><li>This file could not be updated.</li></ul>{% endif %}
+                        <input type="file" id="ldap_cert_file" name="ldap_cert_file">
+                        <label for="ldap_cert_file" class="vFileLabel">LDAP TLS Certificate</label>
+                    </div>
+                </div>
+            </fieldset>
+        <div class="submit-row">
+            <input type="submit" value="Save" class="default" name="_save">
+        </div>
     </form>
 </div>
 {% endblock %}
