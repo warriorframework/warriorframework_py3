@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^$', views.HomeView.as_view(), name='home'),
     url(r'^login/', views.LoginView.as_view(template_name='core/login.html'), name='login'),
     url(r'^logout/', auth_views.LogoutView.as_view(), name='logout'),
+    url(r'^site_settings/$', views.SiteSettingsView.as_view(), name='site_settings'),
     # url(r'^accounts/password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
     # url(r'^accounts/password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
     # url(r'^accounts/password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),

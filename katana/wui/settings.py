@@ -137,16 +137,17 @@ LOGGING = settings_logging.get_log_config()
 
 # LDAP Settings (if available)
 CONFIG_FILE = os.path.join(BASE_DIR, 'wui', 'config.ini')
+
 try:
+    LOGGING['loggers']['django_auth_ldap'] = {
+        "level": "DEBUG",
+        "handlers": ["django_file", "console"],
+    }
     ldap_settings = core_settings.LDAPSettings(CONFIG_FILE)
     for config, value in ldap_settings.configs.items():
         locals()[config.upper()] = value
     if ldap_settings.enabled and not ldap_settings.errors:
         AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + ('django_auth_ldap.backend.LDAPBackend',)
-        LOGGING['loggers']['django_auth_ldap'] = {
-            "level": "DEBUG",
-            "handlers": ["django_file", "console"],
-        }
     if ldap_settings.errors:
         print("Errors encountered during import of LDAP settings from", CONFIG_FILE)
         print("Errors are:")

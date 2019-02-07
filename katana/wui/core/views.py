@@ -23,6 +23,7 @@ from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from wui.core.apps import AppInformation
 from wui.users.views import PublicView
+from .core_utils.core_settings import LDAPSettings
 
 try:
     from django_auth_ldap.backend import LDAPBackend
@@ -147,6 +148,36 @@ class HomeView(View):
         with open(json_file, 'r') as f:
             userdata = json.load(f)
             return userdata
+
+
+class SiteSettingsView(View,):
+
+    def get(self, request):
+        ldap_settings = LDAPSettings()
+        context = {
+            'is_site_settings': True,
+            'ldap_settings': ldap_settings.configs_to_strings(),
+            'ldap_enabled': ldap_settings.enabled,
+            'ldap_errors': ldap_settings.errors,
+        }
+        return render(request, "core/site_settings.html", context=context)
+
+    def post(self, request):
+        print("TODO", "\n".join(sorted(["{}: {}".format(k, v) for k, v in request.POST.items()])))
+        ldap_settings = LDAPSettings()
+        new_configs = {k.upper(): v for k, v in request.POST.items()
+                       if k != 'csrfmiddlewaretoken' and k != '_save' and v != ""}
+        # Handle enable checkbox field - not present in POST when not checked
+        if 'AUTH_LDAP_ENABLED' not in new_configs:
+            new_configs['AUTH_LDAP_ENABLED'] = False
+        ldap_settings.update(new_configs)
+        context = {
+            'is_site_settings': True,
+            'ldap_settings': ldap_settings.configs_to_strings(),
+            'ldap_enabled': ldap_settings.enabled,
+            'ldap_errors': ldap_settings.errors,
+        }
+        return render(request, "core/site_settings.html", context=context)
 
 
 class LoginView(BaseLoginView, PublicView,):

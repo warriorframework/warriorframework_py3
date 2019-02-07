@@ -30,7 +30,7 @@
         {% block branding %}{% endblock %}
         </div>
         {% block usertools %}
-        {% if has_permission %}
+        {% if has_permission or is_site_settings %}
         <div id="user-tools">
             {% block welcome-msg %}
                 {% trans 'Welcome,' %}
@@ -39,6 +39,13 @@
             {% block userlinks %}
                 {% if site_url %}
                     <a href="{{ site_url }}">{% trans 'View site' %}</a> /
+                {% endif %}
+                {% if not is_site_settings %}
+                    {% if user.is_active and user.is_staff and user.is_superuser%}
+                        <a href="/katana/site_settings">Site Settings</a> /
+                    {% endif %}
+                {% else %}
+                    <a href="/admin">Main Admin Page</a> /
                 {% endif %}
                 {% if user.is_active and user.is_staff %}
                     {% url 'django-admindocs-docroot' as docsroot %}
