@@ -23,7 +23,6 @@
     </a>
     <div class="ml-auto">
     {% block navbar_settings_menu %}
-        <i class="fas fa-cog" onclick="katana.sidebar.openApp($(this))" url="{% block settings_menu_link %}/katana/settings/{% endblock %}"></i>
     {% endblock %}
     {% block navbar_info_menu %}
         <i class="fas fa-info" onclick="$('#about_us_modal').modal('show');"></i>
@@ -37,6 +36,7 @@
         <div class="dropdown-menu dropdown-menu-right">
             {% if user.is_authenticated %}
             <button class="dropdown-item" type="button" disabled>Hello, {{ user.first_name|default:user.username }}</button>
+            <button class="dropdown-item" type="button" onclick="location.href='/katana/accounts/profile';">Profile</button>
             {% if user.is_staff %}
             <button class="dropdown-item" type="button" onclick="location.href='/admin';">Admin Page</button>
             {% endif %}
@@ -87,7 +87,7 @@
                     </div>
                     {% endfor %}
                 </div>
-                <div class="row" onclick="katana.sidebar.openApp($(this))" url="/katana/settings/">
+                <div class="row" onclick="location.href='/katana/accounts/profile';">
                     <div class="col-sm-12">
                         <i class="fas fa-user"></i>
                         <span>Account</span>

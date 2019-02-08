@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 
 import os
 from . import settings_logging
+try:
+    import ldap
+    from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+except Exception as err:
+    print("Please install django auth ldap to authenticate against ldap")
+    print("Error while importing django auth ldap: \n", err)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -122,7 +128,6 @@ AUTHENTICATION_BACKENDS = (
 
 MULTI_USER_SUPPORT = False
 USER_HOME_DIR_TEMPLATE = None
-
 
 
 # Password validation
