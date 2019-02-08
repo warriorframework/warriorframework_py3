@@ -17,7 +17,9 @@ from django.shortcuts import render
 from django.views import View
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.views import LoginView as BaseLoginView
+from django.contrib.auth.forms import PasswordChangeForm
 import json
 import os
 from utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
@@ -207,6 +209,52 @@ class SiteSettingsView(UserPassesTestMixin, View,):
 class LoginView(BaseLoginView, PublicView,):
     pass
 
+
+class UserProfileView(View,):
+
+    def get(self, request):
+        return render(request, 'core/user_profile.html', {'apps': AppInformation.information.apps})
+
+    def post(self, request):
+        if request.user.has_usable_password():
+            # Users can change their first name, last name, and email only if their password is set locally
+            request.user.first_name = request.POST.get('first_name', '')
+            request.user.last_name = request.POST.get('last_name', '')
+            request.user.email = request.POST.get('email', '')
+            request.user.save()
+            messages.success(request, "Changes have been saved successfully.")
+        else:
+            messages.error(request, "Changes cannot be made. Please contact an admin.")
+        return self.get(request)
+
+
+class UserPasswordChangeView(View,):
+
+    def _prep_from(self, request, form):
+        """ Add bootstrap classes to the form. """
+        for field in form.fields.values():
+            field.widget.attrs['class'] = 'form-control'
+        return form
+
+    def get(self, request):
+        form = PasswordChangeForm(request.user)
+        form = self._prep_from(request, form)
+        return render(request, 'core/user_password_change.html',
+                      {'apps': AppInformation.information.apps, 'form': form})
+
+    def post(self, request):
+        form = PasswordChangeForm(request.user, request.POST)
+        if not request.user.has_usable_password():
+            messages.error(request, 'Your password cannot be changed. Please contact an admin.')
+        elif form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)  # Important!
+            messages.success(request, 'Password changed successfully.')
+        else:
+            messages.error(request, 'Your password could not be changed.')
+        form = self._prep_from(request, form)
+        context = {'apps': AppInformation.information.apps, 'form': form}
+        return render(request, 'core/user_password_change.html', context=context)
 
 # ===========================================================================
 #   Old UserAuthView class which combined login, logout, and home view.
