@@ -186,6 +186,7 @@
                         {% if file_errors.ldap_cert_file %}<ul class="errorlist"><li>This file could not be updated.</li></ul>{% endif %}
                         <input type="file" id="ldap_cert_file" name="ldap_cert_file">
                         <label for="ldap_cert_file" class="vFileLabel">LDAP TLS Certificate</label>
+                        <p class="help">Changing this file will require and trigger a server restart to take effect.</p>
                     </div>
                 </div>
             </fieldset>

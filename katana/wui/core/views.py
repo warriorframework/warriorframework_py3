@@ -25,7 +25,7 @@ from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from wui.core.apps import AppInformation
 from wui.users.views import PublicView
-from .core_utils.core_settings import FileSettings, LDAPSettings
+from .core_utils.core_settings import FileSettings, LDAPSettings, Restart
 
 try:
     from django_auth_ldap.backend import LDAPBackend
@@ -187,7 +187,10 @@ class SiteSettingsView(UserPassesTestMixin, View,):
                 location = LDAPSettings.get_ldap_cert_path()
                 success = FileSettings().save(request.FILES['ldap_cert_file'], location)
                 if success:
-                    messages.success(request, 'Successfully updated files')
+                    if LDAPSettings.requires_restart_ldap_cert_file():
+                        Restart().restart(delay=2)
+                        messages.warning(request, 'A server restart has been triggered.')
+                    messages.success(request, 'Successfully updated files.')
                 else:
                     messages.error(request, 'Failed to upload file(s)')
                     file_errors['ldap_cert_file'] = 'upload failed'

@@ -2,12 +2,40 @@ from django.conf import settings
 import configparser
 from copy import copy
 import json
+import os
+import time
+import threading
+from utils.navigator_util import Navigator
 import sys
 try:
     import ldap
     from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, PosixGroupType
 except Exception:
     pass
+
+
+class Restart:
+
+    def __init__(self):
+        self.settings_file = os.path.join(Navigator().get_katana_dir(), 'wui', 'settings.py')
+        print(self.settings_file)
+
+    def restart(self, delay=0):
+        """
+        Triggers a restart.
+        :param delay: Delay in seconds before restart.
+        :return:
+        """
+        threading.Thread(target=Restart._restart_job, args=[self.settings_file, delay]).start()
+
+    @staticmethod
+    def _restart_job(settings_file, delay=0):
+        time.sleep(delay)
+        try:
+            with open(settings_file, 'a'):
+                os.utime(settings_file, None)
+        except Exception as ex:
+            print(ex)
 
 
 class FileSettings:
@@ -72,6 +100,14 @@ class LDAPSettings:
         self._validate()
         if self.errors or not LDAPSettings.LDAP_IMPORT_SUCCESS:
             self.enabled = False
+
+    @staticmethod
+    def requires_restart_ldap_cert_file():
+        """
+        Boolean stating if changing the ldap_cert file requires a restart to take effect.
+        :return:
+        """
+        return True
 
     @staticmethod
     def get_ldap_cert_path():
