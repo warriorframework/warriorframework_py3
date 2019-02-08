@@ -63,6 +63,6 @@ def get_log_config():
                 "handlers": ["django_file", "mail_admins", "console"],
                 "level": "WARNING",
                 "propagate": False,
-            }
+            },
         }
     }

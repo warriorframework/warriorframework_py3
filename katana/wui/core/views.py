@@ -16,6 +16,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.forms import PasswordChangeForm
@@ -26,6 +27,7 @@ from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from wui.core.apps import AppInformation
 from wui.users.views import PublicView
+from .core_utils.core_settings import FileSettings, LDAPSettings, Restart
 
 try:
     from django_auth_ldap.backend import LDAPBackend
@@ -150,6 +152,58 @@ class HomeView(View):
         with open(json_file, 'r') as f:
             userdata = json.load(f)
             return userdata
+
+
+class SiteSettingsView(UserPassesTestMixin, View,):
+
+    def test_func(self):
+        return self.request.user.is_superuser and self.request.user.is_staff and self.request.user.is_active
+
+    def get(self, request):
+        ldap_settings = LDAPSettings()
+        context = {
+            'is_site_settings': True,
+            'ldap_settings': ldap_settings.configs_to_strings(),
+            'ldap_enabled': ldap_settings.enabled,
+            'ldap_errors': ldap_settings.errors,
+        }
+        return render(request, "core/site_settings.html", context=context)
+
+    def post(self, request):
+        ldap_settings = LDAPSettings()
+        file_errors = {}
+        if request.POST.get('action', '') == 'ldap':
+            new_configs = {k.upper(): v for k, v in request.POST.items()
+                           if 'auth_ldap' in k and v != ""}
+            # Handle enable checkbox field - not present in POST when not checked
+            if 'AUTH_LDAP_ENABLED' not in new_configs:
+                new_configs['AUTH_LDAP_ENABLED'] = False
+            ldap_settings.update(new_configs)
+            # Send messages
+            if ldap_settings.errors:
+                messages.error(request, 'Error found in updated LDAP settings.')
+            else:
+                messages.success(request, 'Successfully updated LDAP settings.')
+        elif request.POST.get('action', '') == 'files':
+            if 'ldap_cert_file' in request.FILES:
+                location = LDAPSettings.get_ldap_cert_path()
+                success = FileSettings().save(request.FILES['ldap_cert_file'], location)
+                if success:
+                    if LDAPSettings.requires_restart_ldap_cert_file():
+                        Restart().restart(delay=2)
+                        messages.warning(request, 'A server restart has been triggered.')
+                    messages.success(request, 'Successfully updated files.')
+                else:
+                    messages.error(request, 'Failed to upload file(s)')
+                    file_errors['ldap_cert_file'] = 'upload failed'
+        context = {
+            'is_site_settings': True,
+            'ldap_settings': ldap_settings.configs_to_strings(),
+            'ldap_enabled': ldap_settings.enabled,
+            'ldap_errors': ldap_settings.errors,
+            'file_errors': file_errors,
+        }
+        return render(request, "core/site_settings.html", context=context)
 
 
 class LoginView(BaseLoginView, PublicView,):
