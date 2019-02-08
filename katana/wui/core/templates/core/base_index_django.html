@@ -15,6 +15,7 @@
     {% endblock %}
 </head>
 <body>
+{% include "core/components/about_us.html" %}
 <nav class="navbar sticky-top navbar-dark {% block navbar_color_class %}bg-dark{% endblock %}" style="{% block navbar_extra_style %}{% endblock %}">
     <a class="navbar-brand" href="{% block navbar_title_redirect %}/katana{% endblock %}">
         {% block navbar_title_logo %}<img src="{% static 'core/images/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">{% endblock %}
@@ -22,6 +23,9 @@
     </a>
     <div class="ml-auto">
     {% block navbar_settings_menu %}
+    {% endblock %}
+    {% block navbar_info_menu %}
+        <i class="fas fa-info" onclick="$('#about_us_modal').modal('show');"></i>
     {% endblock %}
     </div>
     <div class="btn-group">
