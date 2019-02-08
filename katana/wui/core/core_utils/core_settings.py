@@ -71,6 +71,10 @@ class LDAPSettings:
         'AUTH_LDAP_GROUP_TYPE',
         'AUTH_LDAP_GROUP_SEARCH'
     ]
+    BOOLEAN_FIELDS = [
+        'AUTH_LDAP_ENABLED',
+        'AUTH_LDAP_START_TLS',
+    ]
     JSON_FIELDS = [
         'AUTH_LDAP_USER_ATTR_MAP',
         'AUTH_LDAP_GROUP_MAPPING',
@@ -173,53 +177,17 @@ class LDAPSettings:
         Populate self.configs from config file
         :return:
         """
+        # Translate boolean fields from cparser first
         if 'ldap' in self._cparser:
+            new_configs = {}
             for k, v in self._cparser['ldap'].items():
                 k = k.upper()
-                if k == 'AUTH_LDAP_ENABLED':
-                    self.enabled = self._cparser['ldap'].getboolean(k)
-                # Also treat AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF or _IS_SUPERUSER differently
-                elif k == 'AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_STAFF':
-                    group_flags = self.configs.get('AUTH_LDAP_USER_FLAGS_BY_GROUP', {})
-                    group_flags['is_staff'] = v
-                    self.configs['AUTH_LDAP_USER_FLAGS_BY_GROUP'] = group_flags
-                elif k == 'AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER':
-                    group_flags = self.configs.get('AUTH_LDAP_USER_FLAGS_BY_GROUP', {})
-                    group_flags['is_superuser'] = v
-                    self.configs['AUTH_LDAP_USER_FLAGS_BY_GROUP'] = group_flags
-                # AUTH_LDAP_GROUP_MAPPING and AUTH_LDAP_USER_ATTR_MAP should be imported as json
-                elif k == 'AUTH_LDAP_USER_ATTR_MAP' or k == 'AUTH_LDAP_GROUP_MAPPING':
-                    try:
-                        self.configs[k] = json.loads(v)
-                    except json.JSONDecodeError:
-                        self.errors[k] = 'not in json form'
+                if k in LDAPSettings.BOOLEAN_FIELDS:
+                    new_configs[k] = self._cparser['ldap'].getboolean(k)
                 else:
-                    self.configs[k] = v
-            if LDAPSettings.LDAP_IMPORT_SUCCESS:
-                # Import AUTH_LDAP_GROUP_SEARCH as LDAPSearch
-                temp = self._cparser['ldap'].get('AUTH_LDAP_GROUP_TYPE', '').lower()
-                group_type = None
-                if temp == 'groupofnames':
-                    group_type = 'groupOfNames'
-                elif temp == 'posixgroup':
-                    group_type = 'posixGroup'
-                if group_type and 'AUTH_LDAP_GROUP_SEARCH' in self._cparser['ldap']:
-                    self.configs['AUTH_LDAP_GROUP_SEARCH'] = LDAPSearch(
-                        self._cparser['ldap']['AUTH_LDAP_GROUP_SEARCH'],
-                        ldap.SCOPE_SUBTREE,
-                        "(objectClass={})".format(group_type)
-                    )
-                # import AUTH_LDAP_GROUP_TYPE and AUTH_LDAP_GROUP_TYPE_NAME_ATTR as object
-                name_attr = self._cparser['ldap'].get('AUTH_LDAP_GROUP_TYPE_NAME_ATTR', None)
-                if group_type == 'groupOfNames':
-                    self.configs['AUTH_LDAP_GROUP_TYPE'] = GroupOfNamesType() \
-                        if name_attr is None else GroupOfNamesType(name_attr=name_attr)
-                elif group_type == 'posixGroup':
-                    self.configs['AUTH_LDAP_GROUP_TYPE'] = PosixGroupType() \
-                        if name_attr is None else PosixGroupType(name_attr=name_attr)
-                else:
-                    if 'AUTH_LDAP_GROUP_TYPE' in self.configs:
-                        del self.configs['AUTH_LDAP_GROUP_TYPE']
+                    new_configs[k] = v
+            self._dict_to_configs(new_configs)
+        # TODO Refactor user template in ini config file to a different class/method
         if 'user template' in self._cparser:
             self.configs.update(self._cparser['user template'].items())
             if 'MULTI_USER_SUPPORT' in self.configs:
@@ -307,8 +275,27 @@ class LDAPSettings:
         old_configs = self.configs
         # Translate values to configs
         remove_configs = set(old_configs.keys()) - set(new_configs.keys())
+        self._dict_to_configs(new_configs)
+
+        # Validate configs
+        self._validate()
+        if self.errors:
+            self.enabled = False
+
+        # Make changes to config.ini
+        self._save_to_ini()
+
+        # Make changes to running settings
+        self._apply_to_django_settings(remove_configs)
+
+    def _dict_to_configs(self, new_configs):
+        """
+        Turn given dictionary into self.configs.
+        Clears all previous settings.
+        :param new_configs: dictionary of new configs; values should be booleans or strings
+        :return:
+        """
         self.configs = {}
-        # TODO Refactor shared code between the following and _translate_config_ini
         for k, v in new_configs.items():
             k = k.upper()
             if v == "":
@@ -358,17 +345,6 @@ class LDAPSettings:
             else:
                 if 'AUTH_LDAP_GROUP_TYPE' in self.configs:
                     del self.configs['AUTH_LDAP_GROUP_TYPE']
-
-        # Validate configs
-        self._validate()
-        if self.errors:
-            self.enabled = False
-
-        # Make changes to config.ini
-        self._save_to_ini()
-
-        # Make changes to running settings
-        self._apply_to_django_settings(remove_configs)
 
     def _save_to_ini(self):
         """
