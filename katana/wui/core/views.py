@@ -270,3 +270,12 @@ class UserPasswordChangeView(View,):
         form = self._prep_from(request, form)
         context = {'apps': AppInformation.information.apps, 'form': form}
         return render(request, 'core/user_password_change.html', context=context)
+
+
+class SiteLogsView(UserPassesTestMixin, View,):
+
+    def test_func(self):
+        return self.request.user.is_superuser and self.request.user.is_staff and self.request.user.is_active
+
+    def get(self, request):
+        return render(request, "core/site_logs.html", context={"is_logs_settings": True})

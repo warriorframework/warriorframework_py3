@@ -1,4 +1,5 @@
-{% load i18n static %}<!DOCTYPE html>
+<!DOCTYPE html>
+{% load i18n static %}
 {% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
 <html lang="{{ LANGUAGE_CODE|default:"en-us" }}" {% if LANGUAGE_BIDI %}dir="rtl"{% endif %}>
 <head>
@@ -30,7 +31,7 @@
         {% block branding %}{% endblock %}
         </div>
         {% block usertools %}
-        {% if has_permission or is_site_settings %}
+        {% if has_permission or is_site_settings or is_logs_settings %}
         <div id="user-tools">
             {% block welcome-msg %}
                 {% trans 'Welcome,' %}
@@ -40,9 +41,16 @@
                 {% if site_url %}
                     <a href="{{ site_url }}">{% trans 'View site' %}</a> /
                 {% endif %}
-                {% if not is_site_settings %}
+                {% if not is_site_settings%}
                     {% if user.is_active and user.is_staff and user.is_superuser%}
                         <a href="/katana/site_settings">Site Settings</a> /
+                    {% endif %}
+                {% else %}
+                    <a href="/admin">Main Admin Page</a> /
+                {% endif %}
+                {% if not is_logs_settings%}
+                    {% if user.is_active and user.is_staff and user.is_superuser%}
+                        <a href="/katana/site_logs">Logs</a> /
                     {% endif %}
                 {% else %}
                     <a href="/admin">Main Admin Page</a> /
