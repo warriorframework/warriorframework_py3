@@ -18,9 +18,11 @@ import base64
 import codecs
 import traceback
 import binascii
+import random
+import string
 
 from Framework.Utils import file_Utils
-from Framework.Utils.print_Utils import print_exception, print_error, print_info
+from Framework.Utils.print_Utils import print_exception, print_error, print_warning
 from Framework.Utils.testcase_Utils import pNote
 import Tools
 
@@ -30,9 +32,6 @@ try:
     from Crypto import Random
 except ImportError as err:
     pNote("Please Install Pycryptodome 3.6.1 and above", "error")
-
-from Framework.Utils.print_Utils import print_error
-
 
 def get_key(encoded_key):
     """
@@ -54,8 +53,23 @@ def get_key(encoded_key):
             MYFILE = Tools.__path__[0]+os.sep+"admin"+os.sep+'secret.key'
             with open(MYFILE, 'r') as myfileHandle:
                 encoded_key = myfileHandle.read()
+            if not encoded_key:
+                print_warning("Could not find the key  in Tools/Admin/secret.key!" \
+                              " Generating random secret key")
+                #generate 16 character random key
+                secret_key = ''.join(random.choice(string.ascii_uppercase + \
+                    string.ascii_lowercase + string.digits) for _ in range(16))
+                #set secret key, will be stored in warrior/Framework/Tools/admin/secret.key
+                status, encoded_key = set_secret_key(secret_key)
+
         except IOError:
-            print_error("Could not find the secret.key file in Tools/Admin!")
+            print_warning("Could not find the secret.key file in Tools/Admin!" \
+                " Generating random secret key")
+            #generate 16 character random key
+            secret_key = ''.join(random.choice(string.ascii_uppercase + \
+                string.ascii_lowercase + string.digits) for _ in range(16))
+            #set secret key, will be stored in warrior/Framework/Tools/admin/secret.key
+            status, encoded_key = set_secret_key(secret_key)
     try:
         IV = Random.new().read(AES.block_size)
         CIPHER = AES.new(base64.b64decode(encoded_key), AES.MODE_CFB, IV)
