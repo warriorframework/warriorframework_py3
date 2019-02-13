@@ -283,3 +283,13 @@ class SiteLogsView(UserPassesTestMixin, View,):
     def get(self, request):
         logger.info("Katana Log: '{0}' is viewing the Logs".format(request.user.username))
         return render(request, "core/site_logs.html", context={"is_logs_settings": True})
+
+
+class LogMessage(View):
+    types = {"open_app": "opening tab {0}", "close_app": "closing tab {0}"}
+
+    def post(self, request, value):
+        data = request.POST
+        message = self.types.get(value, "-- activity could not be determined -- ").format(data.get("tab_name", "-- tab name could not be determined --"))
+        logger.info("Katana Log: '{0}' is {1}".format(request.user.username, message))
+        return JsonResponse({})

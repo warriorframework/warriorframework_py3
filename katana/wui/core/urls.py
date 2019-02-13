@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^read_config_file/$', views.read_config_file, name='read_config_file'),
     url(r'^check_if_file_exists/$', views.check_if_file_exists, name='check_if_file_exists'),
     url(r'^refresh_landing_page/$', views.refresh_landing_page, name='refresh_landing_page'),
+    url(r'^log_message/(?P<value>[a-z]\w+)/$', views.LogMessage.as_view(), name='log_message'),
 ]

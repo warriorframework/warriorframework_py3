@@ -7,6 +7,7 @@
 	</head>
 	<body>
 		<div class="view activeView" id="warrior_index_view" >
+			{% csrf_token %}
 			<div class="header">
                 {% include "core/page_header.html" with show_quick_user=1 %}
 			</div>

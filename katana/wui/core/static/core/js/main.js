@@ -154,10 +154,26 @@ var katana = {
     $elem.siblings().removeClass('active');
     $elem.addClass('active');
     katana.$activeTab = katana.$view.find('#' + uid).removeClass('hidden');
+    $.ajax({
+        headers: {
+            'X-CSRFToken': katana.$view.find('input[name="csrfmiddlewaretoken"]').attr('value')
+        },
+        type: 'POST',
+        url: 'log_message/open_app/',
+        data: {"tab_name": katana.$activeTab.attr('id')}
+      }).done(function(data){});
   },
 
   closeTab: function(ignore) {
     var tab = this.closest('.tab');
+    $.ajax({
+        headers: {
+            'X-CSRFToken': katana.$view.find('input[name="csrfmiddlewaretoken"]').attr('value')
+        },
+        type: 'POST',
+        url: 'log_message/close_app/',
+        data: {"tab_name": tab.attr('uid')}
+      }).done(function(data){});
     if (tab.hasClass('active') && !ignore)
       katana.switchTab();
     katana.$view.find('#' + tab.attr('uid')).remove();
@@ -764,7 +780,6 @@ var katana = {
   },
 
   tabMod: function(tab, tabTemp) {
-
     var tempUID = 'a12410831987013878091870190';
     tab.attr('uid', tempUID);
     katana.$activeTab.attr('id', tempUID);
@@ -951,8 +966,9 @@ var katana = {
           } else {
             katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
           }
-        } else
+        } else {
           katana.templateAPI.tabRequst(katana.$activeTab, tabTitle, url, limitedStyles, callBack, options);
+        }
       }
     },
 
