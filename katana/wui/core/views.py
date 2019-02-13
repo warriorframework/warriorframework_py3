@@ -227,6 +227,7 @@ class LogoutView(BaseLogoutView, PublicView,):
 class UserProfileView(View,):
 
     def get(self, request):
+        logger.info("Katana Log: '{0}' is viewing the Profile Settings Page.".format(request.user.username))
         return render(request, 'core/user_profile.html', {'apps': AppInformation.information.apps})
 
     def post(self, request):
