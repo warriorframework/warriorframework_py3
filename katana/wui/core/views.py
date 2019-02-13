@@ -169,6 +169,7 @@ class SiteSettingsView(UserPassesTestMixin, View,):
             'ldap_enabled': ldap_settings.enabled,
             'ldap_errors': ldap_settings.errors,
         }
+        logger.info("Katana Log: '{0}' is viewing the Site Settings Page.".format(request.user.username))
         return render(request, "core/site_settings.html", context=context)
 
     def post(self, request):
@@ -238,8 +239,10 @@ class UserProfileView(View,):
             request.user.email = request.POST.get('email', '')
             request.user.save()
             messages.success(request, "Changes have been saved successfully.")
+            logger.info("Katana Log: '{0}' has changed their password.".format(request.user.username))
         else:
             messages.error(request, "Changes cannot be made. Please contact an admin.")
+            logger.info("Katana Log: '{0}' has attempted to change their password but failed.".format(request.user.username))
         return self.get(request)
 
 
@@ -278,4 +281,5 @@ class SiteLogsView(UserPassesTestMixin, View,):
         return self.request.user.is_superuser and self.request.user.is_staff and self.request.user.is_active
 
     def get(self, request):
+        logger.info("Katana Log: '{0}' is viewing the Logs".format(request.user.username))
         return render(request, "core/site_logs.html", context={"is_logs_settings": True})
