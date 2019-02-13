@@ -13,22 +13,23 @@ limitations under the License.
 
 # -*- coding: utf-8 -*-
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.views import LoginView as BaseLoginView
+from django.contrib.auth.views import LogoutView as BaseLogoutView
 from django.contrib.auth.forms import PasswordChangeForm
 import json
-import os
 from utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
 from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from wui.core.apps import AppInformation
 from wui.users.views import PublicView
 from .core_utils.core_settings import FileSettings, LDAPSettings, Restart
-
+import logging
+logger = logging.getLogger(__name__)
 try:
     from django_auth_ldap.backend import LDAPBackend
 except Exception as err:
@@ -139,6 +140,7 @@ class HomeView(View):
         self.username = None
 
     def get(self, request):
+        logger.info("Katana Log: '{0}' is viewing the Home Page".format(request.user.username))
         user_data = self.get_user_data()
         return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
 
@@ -207,7 +209,19 @@ class SiteSettingsView(UserPassesTestMixin, View,):
 
 
 class LoginView(BaseLoginView, PublicView,):
-    pass
+
+    def dispatch(self, request, *args, **kwargs):
+        username = request.POST.get("username")
+        if username:
+            logger.info("Katana Log: '{0}' is trying to log in".format(username))
+        return super().dispatch(request, *args, **kwargs)
+
+
+class LogoutView(BaseLogoutView, PublicView,):
+
+    def dispatch(self, request, *args, **kwargs):
+        logger.info("Katana Log: '{0}' has logged out".format(request.user.username))
+        return super().dispatch(request, *args, **kwargs)
 
 
 class UserProfileView(View,):
@@ -255,213 +269,3 @@ class UserPasswordChangeView(View,):
         form = self._prep_from(request, form)
         context = {'apps': AppInformation.information.apps, 'form': form}
         return render(request, 'core/user_password_change.html', context=context)
-
-# ===========================================================================
-#   Old UserAuthView class which combined login, logout, and home view.
-#   Now deprecated, but kept commented for posterity.
-# ===========================================================================
-# class UserAuthView(View):
-#     """
-#     User authentication view
-#     """
-#
-#     def __init__(self):
-#         """
-#         constructor for the view
-#         """
-#         self.index_page = 'core/unified_index.html'
-#         self.home_page = 'core/home_page.html'
-#         self.userprofile  = None
-#         self.username = None
-#         self.password = None
-#         self.op_dict = {'auth_status': 0, 'redirect_url': None}
-#         self.action_method_map = {
-#                             'login': self.get_login_page,
-#                             'logout': self.logout_user,
-#                             'redirect_to_home_page': self.redirect_to_home_page
-#                         }
-#
-#     def get(self, request):
-#         """
-#         Render the form for user authentication
-#         """
-#         req_data = request.GET.get('data')
-#         data_dict = json.loads(req_data) if req_data else {}
-#         action = data_dict.get('action')
-#         method = self.action_method_map.get(action, self.get_login_page)
-#         return method(request)
-#
-#     def post(self, request):
-#         """
-#         authenticate and login a user
-#         auth_status = 0 means authentication failed
-#                       1 means authentication success
-#                       2 means multi user supported but no home dir for user
-#
-#         """
-#
-#         data_dict = json.loads(request.POST.get('data'))
-#         self.username = data_dict.get('username', None)
-#         self.password = data_dict.get('password')
-#         # authenticate, login  the user
-#         self.userprofile = self.authenticate_user()
-#         multi_user_support = getattr(settings, 'MULTI_USER_SUPPORT', False)
-#         home_dir_template = getattr(settings, 'USER_HOME_DIR_TEMPLATE', None)
-#         # if multi user support is False then just login user
-#         if not multi_user_support:
-#             self.login_user(request)
-#
-#         # if multi user supported then home_dir_template is mandatory
-#         if multi_user_support:
-#             if not home_dir_template:
-#                 self.op_dict['msg'] = "Please configure HOME_DIR_TEMPLATE in settings, mandatory in case \
-#                 of multi user environment."
-#                 self.op_dict['auth_status'] = 2
-#             else:
-#                 self.login_user(request)
-#
-#         return JsonResponse(self.op_dict)
-#
-#     def authenticate_user(self):
-#         """
-#         authenticate the user
-#         """
-#         userprofile = None
-#         try:
-#             userprofile = authenticate(username=self.username, password=self.password)
-#         except Exception as err:
-#             print(err)
-#             self.op_dict['msg'] = err
-#         return userprofile
-#
-#     def login_user(self, request):
-#         """
-#         login an authenticated user
-#
-#         """
-#
-#         try:
-#             if self.userprofile is not None:
-#                 self.op_dict['msg'] = "authentication for user={0} successful.".format(self.username)
-#                 home_dir = user_utils.get_user_home_dir(self.username)
-#
-#                 login(request, self.userprofile)
-#                 request.session['home_dir'] = home_dir
-#                 self.op_dict['redirect_url'] = 'home/'
-#                 self.op_dict['auth_status'] = 1
-#
-#             else:
-#                 self.op_dict['msg'] = "authentication for user={0} failed.".format(self.username)
-#         except Exception as err:
-#             self.op_dict['msg'] = str(err)
-#
-#         return
-#
-#     def redirect_to_home_page(self, request):
-#         """
-#         on successful login build the homepage for the user
-#         """
-#         user_data = self.get_user_data()
-#         return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
-#
-#     def get_login_page(self, request):
-#         """
-#         """
-#         user_data = self.get_user_data()
-#         return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
-#
-#     def get_user_data(self):
-#         """
-#         function is still used for backward compatibility,
-#         can be deprecated once completely handled by client server model
-#         """
-#         userdata = {}
-#         json_file = Navigator().get_katana_dir() + '/user_profile.json'
-#         with open(json_file, 'r') as f:
-#             userdata = json.load(f)
-#         return userdata
-#
-#     def logout_user(self, request):
-#         """
-#         logout the user
-#         """
-#         logout(request)
-#         path = request.get_full_path()
-#         self.op_dict['redirect_url'] = '/'
-#         return JsonResponse(self.op_dict)
-#
-#     #===========================================================================
-#     # for future use, remain commented for now
-#     #
-#     #
-#     # def get_home_dir(self, request):
-#     #     """
-#     #     get the home directory associated to the user.
-#     #     """
-#     #     home_dir = True
-#     #     auth_backend = request.session['_auth_user_backend']
-#     #
-#     #     if auth_backend == 'django_auth_ldap.backend.LDAPBackend':
-#     #         # get home_dir of the user
-#     #         attrs_req = ['homeDirectory', 'homeDrive']
-#     #         home_dir = self.get_ldap_user_attrib(request, attrs_req)
-#     #         print(home_dir, type(home_dir))
-#     #
-#     #         pass
-#     #
-#     #
-#     #     return True
-#     #===========================================================================
-#
-#     #===========================================================================
-#     # for future use remain commented for now
-#     #
-#     # def get_ldap_user_attrib(self, request, attrs):
-#     #     """
-#     #     if attribs req is an empty list then return all the attribs
-#     #     as dict
-#     #     """
-#     #     #print('user_dict:',request.user.__dict__)
-#     #     attribs = {}
-#     #     import ldap
-#     #     import ldap.filter
-#     #     ldap_uri = settings.AUTH_LDAP_SERVER_URI
-#     #     bind_dn = settings.AUTH_LDAP_BIND_DN
-#     #     bind_dn_password = settings.AUTH_LDAP_BIND_PASSWORD
-#     #     ldap_search_base_dn = settings.AUTH_LDAP_SEARCH_BASE_DN
-#     #     search_username = request.user.username
-#     #     filter_string = '(samaccountname={0})'.format(search_username)
-#     #
-#     #     #from django_auth_ldap.config import LDAPSearch
-#     #     #print('attrs:', self.userprofile.ldap_user.__dict__)
-#     #
-#     #     #results = LDAPSearch(ldap_search_base_dn, ldap.SCOPE_SUBTREE, filter_string, ['*'])
-#     #     #print('results: ',results.__dict__)
-#     #     #=======================================================================
-#     #     import ldap
-#     #     import ldap.filter
-#     #     # from django_auth_ldap.config import LDAPSearch
-#     #     # # direct python-ldap search
-#     #     l = ldap.initialize(ldap_uri)
-#     #     l.protocol_version = ldap.VERSION3
-#     #     l.simple_bind_s(bind_dn, bind_dn_password )
-#     #     results = l.search(ldap_search_base_dn, ldap.SCOPE_SUBTREE, filter_string, attrs)
-#     #     result_type, result_data = l.result(results, 0)
-#     #     op = result_data[0][1]
-#     #     print (op)
-#     #     attribs = {k: v[0].decode('utf8') for k, v in op.items()}
-#     #     #=======================================================================
-#     #     return attribs
-#     #===========================================================================
-#
-
-
-
-    
-    
-    
-    
-    
-
-
-

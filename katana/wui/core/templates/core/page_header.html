@@ -19,7 +19,7 @@
 				{% if user.is_staff %}
 				<li onclick="location.href='/admin';">Admin Page</li>
 				{% endif %}
-				<li katana-click="katana.userAuth.logout" url="/katana/logout" id="warrior_logout">Logout</li>
+				<li onclick="location.href='/katana/logout';">Logout</li>
 				{% else %}
 				<li>You are not logged in.</li>
 				<li onclick="location.href='/katana/login';">Logout</li>
