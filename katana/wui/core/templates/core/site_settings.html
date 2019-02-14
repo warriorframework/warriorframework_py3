@@ -19,9 +19,15 @@
 
 {% block content %}
 <div id="content-main">
+    <h1>Site-Wide Settings</h1>
     <p>Modification of these settings may cause the site to reboot or require a reboot.</p>
+    <ul class="object-tools">
+        <li>
+            <a href="">Refresh</a>
+        </li>
+    </ul>
     <br>
-    <h1>LDAP Settings</h1>
+    <h2>LDAP Settings</h2>
     <form enctype="multipart/form-data" id="ldap-settings-form" action method="post">
         {% csrf_token %}
         <input type="hidden" name="action" value="ldap">
@@ -169,11 +175,12 @@
             </fieldset>
         </div>
         <div class="submit-row">
+            <input type="submit" value="Save and Restart" class="default" name="_save">
             <input type="submit" value="Save" class="default" name="_save">
         </div>
     </form>
     <br>
-    <h1>File Settings</h1>
+    <h2>File Settings</h2>
     <form enctype="multipart/form-data" id="file-settings-form" action method="post">
         <p></p>
         {% csrf_token %}
@@ -186,11 +193,12 @@
                         {% if file_errors.ldap_cert_file %}<ul class="errorlist"><li>This file could not be updated.</li></ul>{% endif %}
                         <input type="file" id="ldap_cert_file" name="ldap_cert_file">
                         <label for="ldap_cert_file" class="vFileLabel">LDAP TLS Certificate</label>
-                        <p class="help">Changing this file will require and trigger a server restart to take effect.</p>
+                        <p class="help">Changing this file will trigger a server restart to take effect.</p>
                     </div>
                 </div>
             </fieldset>
         <div class="submit-row">
+            <input type="submit" value="Save and Restart" class="default" name="_save">
             <input type="submit" value="Save" class="default" name="_save">
         </div>
     </form>

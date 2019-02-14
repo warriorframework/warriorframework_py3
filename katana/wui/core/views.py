@@ -184,15 +184,18 @@ class SiteSettingsView(UserPassesTestMixin, View,):
                 messages.error(request, 'Error found in updated LDAP settings.')
             else:
                 messages.success(request, 'Successfully updated LDAP settings.')
+            if not ldap_settings.errors and 'Restart' in request.POST.get('_save', 'Save'):
+                messages.warning(request, 'A server restart has been triggered.')
+                Restart().restart(delay=2)
         elif request.POST.get('action', '') == 'files':
             if 'ldap_cert_file' in request.FILES:
                 location = LDAPSettings.get_ldap_cert_path()
                 success = FileSettings().save(request.FILES['ldap_cert_file'], location)
                 if success:
-                    if LDAPSettings.requires_restart_ldap_cert_file():
+                    messages.success(request, 'Successfully updated files.')
+                    if LDAPSettings.requires_restart_ldap_cert_file() or 'Restart' in request.POST.get('_save', 'Save'):
                         Restart().restart(delay=2)
                         messages.warning(request, 'A server restart has been triggered.')
-                    messages.success(request, 'Successfully updated files.')
                 else:
                     messages.error(request, 'Failed to upload file(s)')
                     file_errors['ldap_cert_file'] = 'upload failed'
