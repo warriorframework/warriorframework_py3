@@ -28,7 +28,7 @@ def get_log_config():
                 "include_html": True,
             },
             "console": {
-                "level": "WARNING",
+                "level": "INFO",
                 "class": "logging.StreamHandler",
                 "formatter": "standard",
             },
