@@ -1,4 +1,6 @@
 /*****************************/
+/* Globals */
+@import 'globals';
 /* Standard Page Styling Start */
 
 /* raleway-regular - latin */
@@ -54,16 +56,15 @@ body {
 /* Main Navbar Styling Start */
 
 .navbar {
-    color: white;
-}
-
-.navbar > .ml-auto > i {
-    padding-right: 1rem;
-    cursor: pointer;
+    color: $navbar-color;
+    > .ml-auto > i {
+      padding-right: 1rem;
+      cursor: pointer;
+    }
 }
 
 .navbar-brand {
-    color: white !important;
+    color: $navbar-color;
 }
 
 .dropdown-menu-right {
@@ -79,7 +80,7 @@ body {
 
 .page-content {
     width: 100%;
-    height: calc(100% - 56px)
+    height: calc(100% - #{$navbar-height});
 }
 
 .hidden {
@@ -95,171 +96,142 @@ body {
 .sidebar-content {
     height: 100%;
     float: left;
+    > .sidebar {
+        height: calc(100% - #{$navbar-height});
+    }
+    > .sidebar-toggler > .container-fluid > .row > .col-sm-12 > i {
+        line-height: 40px;
+    }
 }
 
 .sidebar {
-    top: 56px;
+    top: $navbar-height;
     z-index: 1020;
     display: block;
-    background-color: #f6f6f6;
-    border-right: 1px solid #eee;
+    background-color: $sidebar-background-color;
+    border-right: 1px solid $sidebar-border-color;
     height: 100%;
     width: 100%;
 }
 
-.sidebar-content > .sidebar {
-    height: calc(100% - 56px);
-}
-
-.sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 > i {
-    line-height: 40px;
-}
-
 /*-------Expanded Sidebar Styling Start------*/
-
-.expanded >.sidebar-content {
-    width: 300px;
-}
-
-.expanded > .content {
-    width: calc(100% - 300px);
-}
-
-.expanded > .sidebar-content > .sidebar-toggler {
-    height: 56px;
-    background-color: #f9f9f9;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    color: rgba(35, 131, 195, 1);
-    text-align: right;
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row:hover {
-    background-color: rgba(35, 131, 195, 1);
-    color: white;
-    cursor: pointer;
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 {
-    height: 60px;
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i, span {
-    line-height: 60px;
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > span {
-    padding: 0 10px;
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > .container-fluid > .row > .col-sm-12 > span {
-    padding: 0 10px;
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid > .submenu {
-    background-color: rgba(111, 173, 215, 1);
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid > .submenu > .row:hover {
-    background-color: rgba(35, 131, 195, 1);
-    color: white;
-    cursor: pointer;
-}
-
-.submenu > .row > .col-sm-12 > .container-fluid {
-    padding: 0;
-}
-
-.submenu > .row > .col-sm-12 > .container-fluid > .row > .col-sm-12 > span {
-    padding: 0 10px;
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid {
-    padding: 0;
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row {
-    padding: 0 15px;
-}
-
-.expanded > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i:nth-child(3) {
-    float: right;
-    line-height: 60px;
-}
-
-.expanded > .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 {
-    text-align: right;
-}
-
-.expanded > .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 > i:first-child{
-    display: none;
+.expanded {
+    >.sidebar-content {
+        width: $sidebar-width;
+        > .sidebar-toggler {
+            height: $navbar-height;
+            background-color: $sidebar-toggler-background-color;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            color: $sidebar-toggler-color;
+            text-align: right;
+            > .container-fluid > .row > .col-sm-12 {
+                text-align: right;
+                    > i:first-child{
+                    display: none;
+                }
+            }
+        }
+        > .sidebar {
+            > .container-fluid {
+                padding: 0;
+                > .row {
+                    padding: 0 15px;
+                    > .col-sm-12 {
+                        height: $sidebar-item-height;
+                        &:hover {
+                            background-color: $sidebar-hover-background-color;
+                            color: $sidebar-hover-color;
+                            cursor: pointer;
+                        }
+                        > i, span {
+                            line-height: $sidebar-item-height;
+                        }
+                        > span {
+                            padding: 0 10px;
+                        }
+                        > .container-fluid {
+                            > .row > .col-sm-12 > span {
+                                padding: 0 10px;
+                            }
+                        }
+                        > i:nth-child(3) {
+                            float: right;
+                            line-height: $sidebar-item-height;
+                        }
+                    }
+                }
+                > .submenu {
+                    background-color: $sidebar-submenu-background-color;
+                    > .row {
+                        &:hover {
+                            background-color: $sidebar-submenu-hover-background-color;
+                            color: $sidebar-submenu-color;
+                            cursor: pointer;
+                        }
+                        > .col-sm-12 > .container-fluid > .row > .col-sm-12 > span {
+                            padding: 0 10px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    > .content {
+        width: calc(100% - #{$sidebar-width});
+    }
 }
 
 /*-------Expanded Sidebar Styling End------*/
 
 /*-------Collapsed Sidebar Styling Start------*/
 
-.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > span {
-    display: none;
-}
+.collapsed {
+    > .sidebar-content {
+        width: $sidebar-collapsed-width;
+        overflow-x: hidden;
+        > .sidebar {
+            overflow-x: hidden;
+            > .container-fluid {
+                > .row > .col-sm-12 {
+                    height: $sidebar-collapsed-item-height;
+                    text-align: center;
+                    > i {
+                        line-height: $sidebar-collapsed-item-height;
+                    }
+                    > i:nth-child(3) {
+                        display: none;
+                    }
+                    > span {
+                        display: none;
+                    }
+                }
+                > .row:hover {
+                    background-color: $sidebar-submenu-hover-background-color;
+                    color: $sidebar-submenu-color;
+                    cursor: pointer;
+                }
+                > .submenu {
+                    display: none;
+                }
+            }
 
-.collapsed > .sidebar-content > .sidebar > .container-fluid > .submenu {
-    display: none;
-}
-
-.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i:nth-child(3) {
-    display: none;
-}
-
-.collapsed > .sidebar-content {
-    width: 75px;
-    overflow-x: hidden;
-}
-
-.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 {
-    height: 75px;
-}
-
-.collapsed > .sidebar-content > .sidebar {
-    width: 100px;
-    margin-right: 25px;
-    overflow-x: hidden;
-}
-
-.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 > i {
-    line-height: 75px;
-}
-
-.collapsed > .sidebar-content > .sidebar > .container-fluid > .row > .col-sm-12 {
-    text-align: center;
-}
-
-.collapsed > .sidebar-content > .sidebar > .container-fluid {
-    padding-left: 0;
-    padding-right: 25px; /* Needs to change to 10px if the sidebar gets big enough to scroll */
-}
-
-.collapsed > .sidebar-content > .sidebar > .container-fluid > .row:hover {
-    background-color: rgba(35, 131, 195, 1);
-    color: white;
-    cursor: pointer;
-}
-
-.collapsed > .sidebar-content > .sidebar-toggler {
-    height: 56px;
-    background-color: #f9f9f9;
-    padding-top: 8px;
-    padding-bottom: 8px;
-    color: rgba(35, 131, 195, 1);
-    text-align: center;
-}
-
-.collapsed > .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 > i:nth-child(2){
-    display: none;
-}
-
-.collapsed > .sidebar-content > .sidebar-toggler > .container-fluid > .row > .col-sm-12 {
-    text-align: center;
+        }
+        > .sidebar-toggler {
+            height: $navbar-height;
+            background-color: $sidebar-toggler-background-color;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            color: $sidebar-toggler-color;
+            text-align: center;
+            > .container-fluid > .row > .col-sm-12 {
+                text-align: center;
+                > i:nth-child(2) {
+                    display: none;
+                }
+            }
+        }
+    }
 }
 
 /*-------Collapsed Sidebar Styling End------*/
@@ -271,18 +243,17 @@ body {
 /* Main Content Styling Start*/
 
 .content {
-    width: calc(100% - 75px);
+    width: calc(100% - #{$sidebar-collapsed-width});
     height: 100%;
     float: left;
     overflow: auto;
-}
-
-.content > .container-fluid > .row > .col-sm-12 {
-    padding: 0;
+    > .container-fluid > .row > .col-sm-12 {
+        padding: 0;
+    }
 }
 
 .navbar-internal {
-    background-color: #364859;
+    background-color: $navbar-internal-background-color;
 }
 
 .reusable-component > .row > .col-sm-12 {
@@ -292,32 +263,29 @@ body {
 
 .sidebar-internal {
     height: 100%;
-    width: 300px;
-    background-color: #e3e3e3;
+    width: $sidebar-internal-width;
+    background-color: $sidebar-internal-background-color;
     overflow: auto;
 }
 
 .main-content {
-    height: calc(100% - 56px);
+    height: calc(100% - #{$navbar-height});
     width: 100%;
-}
-
-.main-content > div:first-child {
-    width: 300px;
-    height: 100%;
-    float: left;
-}
-
-.main-content > div:nth-child(2) {
-    width: calc(100% - 300px);
-    height: 100%;
-    float: left;
-    overflow: auto;
+    > div:first-child {
+        width: $sidebar-width;
+        height: 100%;
+        float: left;
+    }
+    > div:nth-child(2) {
+        width: calc(100% - #{$sidebar-width});
+        height: 100%;
+        float: left;
+        overflow: auto;
+    }
 }
 
 .one_rem_padding {
     padding: 1rem;
 }
-
 /* Main Content Styling End*/
 /***************************/

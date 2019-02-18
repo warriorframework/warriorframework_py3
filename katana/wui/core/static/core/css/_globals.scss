@@ -1,0 +1,33 @@
+/* Global variables */
+$light-grey: #f6f6f6;
+$very-light-grey: #f9f9f9;
+$blue: rgba(35, 131, 195, 1);
+
+/* Navbar */
+$navbar-height: 56px;
+$navbar-color: white;
+$navbar-background-color: black;
+
+/* Sidebar */
+$sidebar-width: 300px;
+$sidebar-item-height: 60px;
+$sidebar-collapsed-width: 75px;
+$sidebar-collapsed-item-height: 75px;
+
+$sidebar-background-color: $light-grey;
+$sidebar-border-color: #eee;
+$sidebar-toggler-background-color: $very-light-grey;
+$sidebar-toggler-color: $blue;
+
+$sidebar-hover-background-color: $blue;
+$sidebar-hover-color: white;
+
+$sidebar-submenu-background-color: $very-light-grey;
+$sidebar-submenu-color: white;
+$sidebar-submenu-hover-background-color: $blue;
+
+/* Internal Components */
+$navbar-internal-background-color: #364859;
+
+$sidebar-internal-width: 300px;
+$sidebar-internal-background-color: #e3e3e3;
