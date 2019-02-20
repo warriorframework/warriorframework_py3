@@ -471,7 +471,7 @@ class CommonActions(object):
             value = Utils.data_Utils.get_object_from_datarepository(keyname)
             if value:
                 new_tag = obj.create_element(keyname, {keyname: value})
-                new_tag.append(value)
+                #new_tag.append(value)
                 main_tag.append(new_tag)
         root.append(main_tag)
 
