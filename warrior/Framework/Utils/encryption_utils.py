@@ -18,8 +18,6 @@ import base64
 import codecs
 import traceback
 import binascii
-import random
-import string
 
 from Framework.Utils import file_Utils
 from Framework.Utils.print_Utils import print_exception, print_error, print_warning
@@ -54,27 +52,17 @@ def get_key(encoded_key):
             with open(MYFILE, 'r') as myfileHandle:
                 encoded_key = myfileHandle.read()
             if not encoded_key:
-                print_warning("Could not find the key  in Tools/Admin/secret.key!" \
-                              " Generating random secret key")
-                #generate 16 character random key
-                secret_key = ''.join(random.choice(string.ascii_uppercase + \
-                    string.ascii_lowercase + string.digits) for _ in range(16))
-                #set secret key, will be stored in warrior/Framework/Tools/admin/secret.key
-                status, encoded_key = set_secret_key(secret_key)
-
+                print_warning("Could not find the key  in Tools/Admin/secret.key!"
+                              " use ./Warrior -encrypt anything -secretkey sixteenlenstring")
         except IOError:
-            print_warning("Could not find the secret.key file in Tools/Admin!" \
-                " Generating random secret key")
-            #generate 16 character random key
-            secret_key = ''.join(random.choice(string.ascii_uppercase + \
-                string.ascii_lowercase + string.digits) for _ in range(16))
-            #set secret key, will be stored in warrior/Framework/Tools/admin/secret.key
-            status, encoded_key = set_secret_key(secret_key)
-    try:
-        IV = Random.new().read(AES.block_size)
-        CIPHER = AES.new(base64.b64decode(encoded_key), AES.MODE_CFB, IV)
-    except Exception as e:
-        print_exception("Some problem occured: {0}".format(e))
+            print_warning("Could not find the secret.key file in Tools/Admin!"
+                          " use ./Warrior -encrypt anything -secretkey sixteenlenstring")
+    if encoded_key:
+        try:
+            IV = Random.new().read(AES.block_size)
+            CIPHER = AES.new(base64.b64decode(encoded_key), AES.MODE_CFB, IV)
+        except Exception as e:
+            print_exception("Some problem occured: {0}".format(e))
 
     return IV, CIPHER
 
@@ -94,16 +82,21 @@ def encrypt(message, encoded_key=False):
 def decrypt(message, encoded_key=False):
     """This is decryption"""
     iv, cipher = get_key(encoded_key)
-    try:
-        # in python2, can just use message.decode("hex")
-        # but in python3, str.decode is removed
-        return str(cipher.decrypt(codecs.decode(message, "hex_codec"))[len(iv):], 'utf-8')
-    except binascii.Error as err:
-        # This is dangerous...
-        # using exception to handle if encrypted/not encrypted condition
-        return message
-    except Exception:
-        print_error(traceback.format_exc())
+    if cipher is None:
+        print_warning("encrypted messages if any, can't be decrypted")
+        decrypt_message = message
+    else:
+        try:
+            # in python2, can just use message.decode("hex")
+            # but in python3, str.decode is removed
+            decrypt_message = str(cipher.decrypt(codecs.decode(message, "hex_codec"))[len(iv):], 'utf-8')
+        except binascii.Error as err:
+            # This is dangerous...
+            # using exception to handle if encrypted/not encrypted condition
+            decrypt_message = message
+        except Exception:
+            print_error(traceback.format_exc())
+    return decrypt_message
 
 
 def set_secret_key(plain_text_key):
