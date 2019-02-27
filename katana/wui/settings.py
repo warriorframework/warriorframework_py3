@@ -70,6 +70,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'wui.users.middleware.UserExpiryMiddleware',
     'wui.users.middleware.LoginRequiredMiddleware',
+    'wui.users.middleware.UserActivityMiddleware',
 ]
 
 ROOT_URLCONF = 'wui.urls'

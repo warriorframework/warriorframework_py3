@@ -99,3 +99,43 @@ class LoginRequiredMiddleware(object):
             return None
         else:
             return login_required(view_func)(request, *view_args, **view_kwargs)
+
+
+class UserActivityMiddleware(object):
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self._library = {
+            "GET": {
+                "authenticated": {
+
+                },
+                "not authenticated": {
+
+                }
+            },
+            "POST": {
+                "authenticated": {
+
+                },
+                "not authenticated": {
+
+                }
+            }
+        }
+
+    def __call__(self, request):
+        self._process_request(request)
+        return self.get_response(request)
+
+    def _process_request(self, request):
+        mapping = {"GET": self._process_get_calls,
+                   "POST": self._process_post_calls}
+        mapping[request.method](request, request.method, request.user.is_authenticated())
+
+    def _process_get_calls(self, request, method, is_authenticated):
+        print("GET call")
+
+
+    def _process_post_calls(self, request, method, is_authenticated):
+        print("POST call")
