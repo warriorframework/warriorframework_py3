@@ -73,7 +73,7 @@
                 </div>
                 <div class="container-fluid submenu hidden" id="wappsSubMenu">
                     {% for app in apps %}
-                    <div class="row" onclick="katana.sidebar.openApp($(this))" url="{{ app.data.app.url }}">
+                    <div class="row" onclick="katana.sidebar.openApp($(this))" url="{{ app.data.app.url }}" pure-django="{{ app.data.pure_django }}">
                         <div class="col-sm-12">
                             <div class="container-fluid">
                                 <div class="row">

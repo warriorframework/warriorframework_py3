@@ -24,7 +24,8 @@ var katana = {
             /* Function exists purely to move back and forth between the old Katana API and new
             on the framework level. This can deprecated once all apps are moved to new API */
             var url = $elem.attr("url");
-            if (url.startsWith('/katana')) {
+            var pureDjango = $elem.attr('pure-django').toLowerCase() === "true";
+            if ( !pureDjango ) {
                 localStorage.setItem("load_url", url);
                 window.location.href = '/katana';
             } else {
