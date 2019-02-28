@@ -1581,7 +1581,7 @@ class PexpectConnect(object):
             WarriorCli._send_cmd_by_type(self.target_host, command)
             try:
                 while True:
-                    if kwargs["sleep_before"]:
+                    if kwargs.get("sleep_before", None):
                         pNote("Sleeping for {0} seconds before match" \
                             .format(kwargs["sleep_before"]))
                         time.sleep(int(kwargs["sleep_before"]))
