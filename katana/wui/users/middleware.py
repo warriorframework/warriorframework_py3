@@ -131,11 +131,10 @@ class UserActivityMiddleware(object):
     def _process_request(self, request):
         mapping = {"GET": self._process_get_calls,
                    "POST": self._process_post_calls}
-        mapping[request.method](request, request.method, request.user.is_authenticated())
+        mapping[request.method](request, request.method, request.user.is_authenticated)
 
     def _process_get_calls(self, request, method, is_authenticated):
-        print("GET call")
-
+        pass
 
     def _process_post_calls(self, request, method, is_authenticated):
-        print("POST call")
+        pass
