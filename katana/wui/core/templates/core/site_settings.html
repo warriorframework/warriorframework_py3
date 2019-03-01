@@ -194,5 +194,25 @@
             <input type="submit" value="Save" class="default" name="_save">
         </div>
     </form>
+    <br>
+    <h1>Kibana URL</h1>
+    <form enctype="multipart/form-data" id="kibana-url-form" action method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="kibana">
+        <div>
+            <fieldset class="module aligned">
+                <h2>Kibana Dashboard Link</h2>
+                <div class="form-row {% if kibana_error %}kibana_error{% endif %}"></div>
+                <div class="form-row">
+                    <div>
+                        <label for="url">URL for the Kibana Warrior Dashboard</label>
+                        <input type="textarea" class="vLargeTextField" id="url" name="url" value="{{kibana_data.url}}">
+                    </div>
+                </div>
+            </fieldset>
+        <div class="submit-row">
+            <input type="submit" value="Save" class="default" name="_save">
+        </div>
+    </form>
 </div>
 {% endblock %}

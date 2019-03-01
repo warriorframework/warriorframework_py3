@@ -27,7 +27,7 @@ from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from wui.core.apps import AppInformation
 from wui.users.views import PublicView
-from .core_utils.core_settings import FileSettings, LDAPSettings, Restart
+from .core_utils.core_settings import FileSettings, LDAPSettings, Restart, KibanaSettings
 import logging
 logger = logging.getLogger(__name__)
 try:
@@ -163,17 +163,21 @@ class SiteSettingsView(UserPassesTestMixin, View,):
 
     def get(self, request):
         ldap_settings = LDAPSettings()
+        kibana_data = KibanaSettings()
         context = {
             'is_site_settings': True,
             'ldap_settings': ldap_settings.configs_to_strings(),
             'ldap_enabled': ldap_settings.enabled,
             'ldap_errors': ldap_settings.errors,
+            'kibana_data': kibana_data.data,
+            'kibana_error': kibana_data.errors
         }
         logger.info("Katana Log: '{0}' is viewing the Site Settings Page.".format(request.user.username))
         return render(request, "core/site_settings.html", context=context)
 
     def post(self, request):
         ldap_settings = LDAPSettings()
+        kibana_data = KibanaSettings()
         file_errors = {}
         if request.POST.get('action', '') == 'ldap':
             new_configs = {k.upper(): v for k, v in request.POST.items()
@@ -199,12 +203,18 @@ class SiteSettingsView(UserPassesTestMixin, View,):
                 else:
                     messages.error(request, 'Failed to upload file(s)')
                     file_errors['ldap_cert_file'] = 'upload failed'
+        elif request.POST.get('action', '') == 'kibana':
+            new_configs = {k.upper(): v for k, v in request.POST.items()}
+            kibana_data.update_data(new_configs)
+
         context = {
             'is_site_settings': True,
             'ldap_settings': ldap_settings.configs_to_strings(),
             'ldap_enabled': ldap_settings.enabled,
             'ldap_errors': ldap_settings.errors,
             'file_errors': file_errors,
+            'kibana_data': kibana_data.data,
+            'kibana_error': kibana_data.errors
         }
         return render(request, "core/site_settings.html", context=context)
 

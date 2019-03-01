@@ -50,7 +50,7 @@
                 {% endif %}
                 {% if not is_logs_settings%}
                     {% if user.is_active and user.is_staff and user.is_superuser%}
-                        <a href="/katana/site_logs">Logs</a> /
+                        <a href="{% if kibana_data.url %} {{ kibana_data.url }} {% else %} /katana/site_logs {% endif %}">Logs</a> /
                     {% endif %}
                 {% else %}
                     <a href="/admin">Main Admin Page</a> /

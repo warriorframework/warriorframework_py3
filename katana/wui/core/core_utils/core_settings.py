@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 import configparser
 from copy import copy
@@ -12,6 +14,7 @@ try:
     from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, PosixGroupType
 except Exception:
     pass
+logger = logging.getLogger(__name__)
 
 
 class Restart:
@@ -384,3 +387,68 @@ class LDAPSettings:
             if 'django_auth_ldap.backend.LDAPBackend' in settings.AUTHENTICATION_BACKENDS:
                 settings.AUTHENTICATION_BACKENDS = tuple(x for x in settings.AUTHENTICATION_BACKENDS
                                                          if x != 'django_auth_ldap.backend.LDAPBackend')
+
+
+class KibanaSettings(object):
+
+    def __init__(self):
+        """
+        kibana_url = Initializes the kibana information file
+        data = contains information stored in the file
+        fields = keys that are present in the file
+        """
+        self.kibana_url_file = os.path.join(Navigator().get_katana_dir(), 'wui', 'core', '.data', 'kibana.json')
+        self.lock = threading.Lock()
+        self.data = self.get_data()
+        self.fields = {"url": self._validate_url}
+        self.errors = ""
+
+    def get_data(self):
+        """
+        Reads data from the Kibana file
+        :return: data in JSON format
+        """
+        data = {}
+        self.lock.acquire()
+        try:
+            with open(self.kibana_url_file, 'r') as f:
+                data = json.load(f)
+        except (IOError, Exception) as e:
+            self.errors = "Katana Log: Unable to read Kibana data. Exception: {0}".format(e)
+            logger.exception(self.errors)
+        finally:
+            self.lock.release()
+        return data
+
+    def get_url(self):
+        """
+        :return: the kibana url, False if not set
+        """
+        return self.data.get("url", False)
+
+    def update_data(self, data):
+        """
+        :param data: contains data to be updates
+        """
+        try:
+            for k, v in data.items():
+                _k = k.lower()
+                if _k in self.fields:
+                    self.data[_k] = self.fields[_k](v)
+            self.lock.acquire()
+            with open(self.kibana_url_file, 'w') as f:
+                f.write(json.dumps(self.data))
+        except (AttributeError, IOError, Exception) as e:
+            self.errors = "Katana Log: Unable to save Kibana data. Exception: {0}".format(e)
+            logger.exception(self.errors)
+        else:
+            logger.info("Katana Log: Updated Kibana data successfully.")
+        finally:
+            self.lock.release()
+
+    def _validate_url(self, url):
+        """
+        :param url: URL to be validated
+        :return: Validated URL
+        """
+        return url
