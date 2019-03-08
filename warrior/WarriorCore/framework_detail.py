@@ -16,6 +16,7 @@ import os
 import platform
 import re
 import getpass
+import subprocess
 from Framework.Utils.print_Utils import print_info, print_notype
 from Framework.Utils import file_Utils
 from Framework.Utils.testcase_Utils import pNote
@@ -59,6 +60,12 @@ def warrior_framework_details():
                 version = match.group(2)
 
     user = getpass.getuser()
+    proc1 = subprocess.Popen(['git', 'branch'], stdout=subprocess.PIPE)
+    proc2 = subprocess.Popen(['grep', '*'], stdin=proc1.stdout,
+                             stdout=subprocess.PIPE, stderr=None)
+    proc1.stdout.close() # Allow proc1 to receive a SIGPIPE if proc2 exits.
+    branch = proc2.communicate()[0]
+
     if release and version and version_file_path:
         pNote("========================== WARRIOR FRAMEWORK DETAILS ==========================",
               'notype')
@@ -66,6 +73,7 @@ def warrior_framework_details():
         print_info('The Warrior framework user is {0}'.format(user))
         print_info('The Warrior framework Release is{0}'.format(release))
         print_info('The Warrior framework version is{0}'.format(version))
+        print_info('The Warrior framework branch is{0}'.format(branch.strip('*')))
         print_info('The Warrior framework running on python version: {0} with OS: {1}'.
                    format(platform.python_version(), platform.platform()))
         pNote("========================== WARRIOR FRAMEWORK DETAILS ==========================",
