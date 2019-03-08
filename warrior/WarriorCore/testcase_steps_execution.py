@@ -93,12 +93,10 @@ class TestCaseStepsExecutionClass(object):
         else:
             # Skip because of goto
             return self._skip_because_of_goto()
-
         runmode, value, runmode_timer = \
             common_execution_utils.get_runmode_from_xmlfile(self.current_step)
         retry_type, retry_cond, retry_cond_value, retry_value, retry_interval = \
             common_execution_utils.get_retry_from_xmlfile(self.current_step)
-
         if runmode is not None:
             return self._execute_runmode_step(runmode_timer, runmode, self.step_status, value)
 
@@ -222,6 +220,11 @@ class TestCaseStepsExecutionClass(object):
         # execution of same TC step and move to next actual step
         elif runmode.upper() == "RUF" and step_status is False:
             self.go_to_step_number = str(value)
+            if self.current_step.find("onError").get("action")=="abort":
+                self.go_to_step_number = onerror_driver.main(self.current_step, self.default_error_action,
+                                                         self.default_error_value, skip_invoked=self.skip_invoked,
+                                                         current_step_number=self.current_step_number)
+                return self.current_step_number, self.go_to_step_number, "break"
         # if runmode is 'rup' & step_status is True, skip the repeated
         # execution of same TC step and move to next actual step
         elif runmode.upper() == "RUP" and step_status is True:
@@ -229,7 +232,8 @@ class TestCaseStepsExecutionClass(object):
         else:
             if step_status is False or str(step_status).upper() in ["ERROR", "EXCEPTION"]:
                 self.go_to_step_number = onerror_driver.main(self.current_step, self.default_error_action,
-                                                   self.default_error_value, skip_invoked=self.skip_invoked)
+                                                   self.default_error_value, skip_invoked=self.skip_invoked,
+                                                             current_step_number = self.current_step_number)
                 if self.go_to_step_number in ['ABORT', 'ABORT_AS_ERROR']:
                     return self.current_step_number, self.go_to_step_number, "break"
                 elif type(self.go_to_step_number) is list:
