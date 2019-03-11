@@ -208,8 +208,9 @@ class client(Thread):
             dispdata = data.replace("\n", "")
             dispdata = re.sub("> +<", "><", dispdata)
             pNote("netconf send: \n" + \
-                  parseString(dispdata).toprettyxml(indent="  "))
-
+                  parseString(dispdata).toprettyxml(
+                  indent="  ", encoding="utf-8"))
+            #
             try:
                 if data.endswith("\n"):
                     data = data[:-1]
@@ -337,9 +338,9 @@ class client(Thread):
                 rlist, wlist, xlist = select(
                     [self.__chan], [], [], POLL_INTERVAL)
                 if rlist:
-                    data = self.__chan.recv(BUF_SIZE).decode('utf-8')
+                    data = self.__chan.recv(BUF_SIZE)
                     if data:
-                        self.__temp_buf += data
+                        self.__temp_buf += str(data)
                     else:
                         # in case of something unexpected happens
                         if len(self.__temp_buf) > 0:
@@ -348,6 +349,7 @@ class client(Thread):
                         self.__wait_resp.set()
                         self.close()
                         return False
+
                 if len(self.__wait_string) != 0 and self.__wait_string[0]:
                     waitstr = self.__wait_string
                     for notification in self.__notification_list:
@@ -355,11 +357,16 @@ class client(Thread):
                               "##{}##".format(notification))
                         match = False
                         xml = etree.fromstring(notification)
-                        temp = xml.xpath(waitstr[0], namespaces=waitstr[1])
-                        if isinstance(temp, bool) and temp:
-                            match = True
-                        elif isinstance(temp, list) and len(temp) > 0:
-                            match = True
+                        #Contains list of xpath
+                        xpath_list = waitstr[0].split(",")
+                        for xpath in xpath_list:
+                            #Validation for the xpath given
+                            status = xml.xpath(xpath, namespaces=waitstr[1])
+                            if status:
+                              match = True
+                            else:
+                              match = False
+                              break
                         if match:
                             self.__wait_rept.set()
                             self.__notification_list.remove(notification)
