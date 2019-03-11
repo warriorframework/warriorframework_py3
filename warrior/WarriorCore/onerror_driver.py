@@ -93,6 +93,8 @@ def getErrorHandlingParameters(node, def_on_error_action, def_on_error_value, ex
     if (runmode == "RUP" or runmode == "RMT") and (current_step_number == runmode_value-1) \
             or runmode == "RUF":
         action = action
+    elif action:
+        action = action
     else:
         action = "next"
 
