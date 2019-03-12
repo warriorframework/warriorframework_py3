@@ -46,13 +46,13 @@ def get_key(encoded_key):
     """
     IV = None
     CIPHER = None
+    MYFILE = Tools.__path__[0]+os.sep+"admin"+os.sep+'secret.key'
     try:
-        if encoded_key is False:
-            MYFILE = Tools.__path__[0]+os.sep+"admin"+os.sep+'secret.key'
+        if not encoded_key:
             with open(MYFILE, 'r') as myfileHandle:
                 encoded_key = myfileHandle.read()
-                if not encoded_key:
-                    raise IOError("encoded key is not present in secret.key file")
+            if not encoded_key:
+                raise IOError("encoded key is not present in secret.key file")
     except IOError:
         print_warning("Could not find the secret.key file in Tools/Admin! or secret.key is empty"
                       " use ./Warrior -encrypt anything -secretkey sixteenlenstring")
