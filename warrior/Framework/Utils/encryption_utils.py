@@ -46,18 +46,17 @@ def get_key(encoded_key):
     """
     IV = None
     CIPHER = None
-    if encoded_key is False:
-        try:
+    try:
+        if encoded_key is False:
             MYFILE = Tools.__path__[0]+os.sep+"admin"+os.sep+'secret.key'
             with open(MYFILE, 'r') as myfileHandle:
                 encoded_key = myfileHandle.read()
-            if not encoded_key:
-                print_warning("Could not find the key  in Tools/Admin/secret.key!"
-                              " use ./Warrior -encrypt anything -secretkey sixteenlenstring")
-        except IOError:
-            print_warning("Could not find the secret.key file in Tools/Admin!"
-                          " use ./Warrior -encrypt anything -secretkey sixteenlenstring")
-    if encoded_key:
+                if not encoded_key:
+                    raise IOError("encoded key is not present in secret.key file")
+    except IOError:
+        print_warning("Could not find the secret.key file in Tools/Admin! or secret.key is empty"
+                      " use ./Warrior -encrypt anything -secretkey sixteenlenstring")
+    else:
         try:
             IV = Random.new().read(AES.block_size)
             CIPHER = AES.new(base64.b64decode(encoded_key), AES.MODE_CFB, IV)
@@ -95,6 +94,8 @@ def decrypt(message, encoded_key=False):
             # using exception to handle if encrypted/not encrypted condition
             decrypt_message = message
         except Exception:
+            decrypt_message = message
+            print_error("Exception occured, couldn't decrypt given message")
             print_error(traceback.format_exc())
     return decrypt_message
 
