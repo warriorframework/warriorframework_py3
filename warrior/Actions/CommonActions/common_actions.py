@@ -468,7 +468,13 @@ class CommonActions(object):
         root = obj.root
         main_tag = obj.create_element("additional_info")
         for keyname in list_args:
-            value = Utils.data_Utils.get_object_from_datarepository(keyname)
+            if keyname == "gissue":
+                value = Utils.data_Utils.get_object_from_datarepository("NE_td_response.get_system_info.gissue")
+            elif keyname == "signature":
+                value = Utils.data_Utils.get_object_from_datarepository("NE_td_response.ne_backup_rdisk.signature")
+            else:
+                value = Utils.data_Utils.get_object_from_datarepository(keyname)
+
             if value:
                 new_tag = obj.create_element(keyname, {keyname: value})
                 #new_tag.append(value)
