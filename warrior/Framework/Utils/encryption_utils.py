@@ -20,7 +20,7 @@ import traceback
 import binascii
 
 from Framework.Utils import file_Utils
-from Framework.Utils.print_Utils import print_exception, print_error, print_info
+from Framework.Utils.print_Utils import print_exception, print_error, print_warning
 from Framework.Utils.testcase_Utils import pNote
 import Tools
 
@@ -30,9 +30,6 @@ try:
     from Crypto import Random
 except ImportError as err:
     pNote("Please Install Pycryptodome 3.6.1 and above", "error")
-
-from Framework.Utils.print_Utils import print_error
-
 
 def get_key(encoded_key):
     """
@@ -49,18 +46,22 @@ def get_key(encoded_key):
     """
     IV = None
     CIPHER = None
-    if encoded_key is False:
-        try:
-            MYFILE = Tools.__path__[0]+os.sep+"admin"+os.sep+'secret.key'
+    MYFILE = Tools.__path__[0]+os.sep+"admin"+os.sep+'secret.key'
+    try:
+        if not encoded_key:
             with open(MYFILE, 'r') as myfileHandle:
                 encoded_key = myfileHandle.read()
-        except IOError:
-            print_error("Could not find the secret.key file in Tools/Admin!")
-    try:
-        IV = Random.new().read(AES.block_size)
-        CIPHER = AES.new(base64.b64decode(encoded_key), AES.MODE_CFB, IV)
-    except Exception as e:
-        print_exception("Some problem occured: {0}".format(e))
+            if not encoded_key:
+                raise IOError("encoded key is not present in secret.key file")
+    except IOError:
+        print_warning("Could not find the secret.key file in Tools/Admin! or secret.key is empty"
+                      " use ./Warrior -encrypt anything -secretkey sixteenlenstring")
+    else:
+        try:
+            IV = Random.new().read(AES.block_size)
+            CIPHER = AES.new(base64.b64decode(encoded_key), AES.MODE_CFB, IV)
+        except Exception as e:
+            print_exception("Some problem occured: {0}".format(e))
 
     return IV, CIPHER
 
@@ -80,16 +81,23 @@ def encrypt(message, encoded_key=False):
 def decrypt(message, encoded_key=False):
     """This is decryption"""
     iv, cipher = get_key(encoded_key)
-    try:
-        # in python2, can just use message.decode("hex")
-        # but in python3, str.decode is removed
-        return str(cipher.decrypt(codecs.decode(message, "hex_codec"))[len(iv):], 'utf-8')
-    except binascii.Error as err:
-        # This is dangerous...
-        # using exception to handle if encrypted/not encrypted condition
-        return message
-    except Exception:
-        print_error(traceback.format_exc())
+    if cipher is None:
+        print_warning("encrypted messages if any, can't be decrypted")
+        decrypt_message = message
+    else:
+        try:
+            # in python2, can just use message.decode("hex")
+            # but in python3, str.decode is removed
+            decrypt_message = str(cipher.decrypt(codecs.decode(message, "hex_codec"))[len(iv):], 'utf-8')
+        except binascii.Error as err:
+            # This is dangerous...
+            # using exception to handle if encrypted/not encrypted condition
+            decrypt_message = message
+        except Exception:
+            decrypt_message = message
+            print_error("Exception occured, couldn't decrypt given message")
+            print_error(traceback.format_exc())
+    return decrypt_message
 
 
 def set_secret_key(plain_text_key):
