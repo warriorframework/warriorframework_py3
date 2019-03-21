@@ -206,7 +206,7 @@ class WRest(object):
         """
         if response is not None and expected_api_response is not None:
             if expected_response_type in response.headers['Content-Type']:
-                extracted_response = response.content
+                extracted_response = response.content.decode('utf-8')
                 extension = Utils.rest_Utils.get_extension_from_path(expected_api_response)
                 if 'xml' in response.headers['Content-Type']:
                     try:
@@ -224,11 +224,15 @@ class WRest(object):
                     try:
                         expected_api_response = JSON.load(open(expected_api_response, 'r'))
                         for key, value in expected_api_response.items():
-                            # repalcing the environment variable with value in the verify json
+                            # replacing the environment variable with value in the verify json
                             if "${" in value:
                                 s_out = value.split("}")[0]
                                 env_var = s_out.split(".")[-1]
                                 env_value = os.getenv(env_var)
+                                if env_value is None:
+                                    print_error("The env var {} is not presented in environment variables so unable to "
+                                                "fetch the value ".format(env_var))
+                                    return False
                                 pattern = r'(\$\{.*\})'
                                 line = re.sub(pattern, env_value, value)
                                 expected_api_response[key] = line
@@ -338,9 +342,13 @@ class WRest(object):
                     status = Utils.xml_Utils.compare_xml_using_xpath(extracted_response,
                                                                      path_list, responses_list)
                 elif "json" in response.headers['Content-Type']:
+                    if isinstance(extracted_response, bytes):
+                        extracted_response = extracted_response.decode('utf-8')
                     status = self.json_utils.compare_json_using_jsonpath(extracted_response,
                                                                          path_list, responses_list)
                 else:
+                    if isinstance(extracted_response, bytes):
+                        extracted_response = extracted_response.decode('utf-8')
                     status = Utils.string_Utils.compare_string_using_regex(extracted_response,
                                                                            path_list)
             else:
