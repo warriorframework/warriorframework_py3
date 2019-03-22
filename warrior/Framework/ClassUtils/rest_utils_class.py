@@ -517,9 +517,11 @@ class WRest(object):
     @staticmethod
     def get_output_response(api_response):
         """
-        This method
-        :param api_response:
-        :return:
+        This method is used to convert the given api_response in the form of text / xml / json
+        Params:
+            api_response : api_response
+        Returns:
+            output_response in the form of text/xml/json
         """
         if api_response is not None:
             try:
