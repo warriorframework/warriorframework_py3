@@ -3222,21 +3222,36 @@ class RestActions(object):
             Return :
                 Boolean value : True/False
             """
+            wdesc = "Verify the json content in the console log"
+            pNote(wdesc)
             for key, value in data.items():
                 if isinstance(value, dict):
                     if re.search(key, lines):
-                        verify_in_the_console_logs(value)
+                        ret_value = verify_in_the_console_logs(value)
+                        if not ret_value:
+                            return ret_value
                     else:
+                        print_Utils.print_warning("The key {} is not presented".format(key))
                         return False
                 else:
-                    value = ''.join(e if e.isalnum() or e.isspace() else r"\{}".format(e)
+                    value = ''.join(e if e.isalnum() or e.isspace() else r"{}".format(e)
                                     for e in str(value))
-                    if re.search(key, lines) and re.search(r'{}'.format(str(value)), lines,
-                                                           re.I | re.M):
+                    if "${" in value:
+                        s_out = value.split("}")[0]
+                        env_var = s_out.split(".")[-1]
+                        env_value = os.getenv(env_var)
+                        if env_value is None:
+                            print_Utils.print_warning("The env variable {} is not presented .so unable to "
+                                                      "fetch the value ".format(env_var))
+                            return False
+                        pat = r'(\$\{.*\})'
+                        value = re.sub(pat, env_value, value)
+                    if re.search(key, lines) and re.search(value, lines):
                         pass
                     else:
                         print_Utils.print_warning("The {}/{} are not presented in the console log"
                                                   .format(key, value))
+
                         return False
             return True
 
@@ -3259,8 +3274,8 @@ class RestActions(object):
                 data = json.load(file_obg)
                 status = verify_in_the_console_logs(data)
                 if status:
-                    print_Utils.print_info("The expected json event is found in the console log")
+                    print_Utils.print_info("The expected json(file content) event is found in the console log")
                     return True
-                print_Utils.print_warning("The expected json event is not found "
+                print_Utils.print_warning("The expected json (file content) event is not found "
                                           "in the console log")
                 return False
