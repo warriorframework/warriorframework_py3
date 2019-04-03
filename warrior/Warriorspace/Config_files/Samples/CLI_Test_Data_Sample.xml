@@ -269,7 +269,7 @@ Also refer the python regex documentation https://docs.python.org/2/library/re.h
 
                 15.     :log:                   (supported value = "false"), log="false" skips printing command and command output information in console logs, useful for
                                                         sensitive commands. by default, commands and output will be shown in console logs if 'log' is not present 
-                                                        in command or log!="false"
+                                                        in command or log is not "false"
 
                 16.     :return_on_fail:        (supported value = "yes"),  return_on_fail="yes" skips executing subsequent commands present in testdata block if this command FAILS.
                                                         by default, this behaviour is disabled, all commands in testdata block will be executed irrespective of their status.
