@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <Testcase>
         <Details>
-                <Name>tc_store_in_repo.xml</Name>
-                <Title>tc_store_in_repo.xml</Title>
+                <Name>test_slurp_json.xml</Name>
+                <Title>test_slurp_json</Title>
                 <Engineer>Sekhar</Engineer>
-                <Date>2018-11-13</Date>
+                <Date>2018-11-30</Date>
                 <Time>12:08</Time>
                 <State/>
                 <InputDataFile>No_Data</InputDataFile>
@@ -18,9 +18,49 @@
                 <Requirement/>
         </Requirements>
         <Steps>
+                 <step Driver="common_driver" Keyword="store_in_repo" TS="1" draft="no">
+                        <Arguments>
+                          <argument name="filepath" value="../../config_files/common_action_tests/slurp_content.json"/>
+                                <argument name="bool_store_all" value="True"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description>Using filepath(json file) option to slurp whole json content</Description>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                 </step>
+                 
+               <step Driver="common_driver" Keyword="verify_data" TS="1">
+                        <Arguments>
+                                <argument name="expected" value="30"/>
+                                <argument name="object_key" value="data_set1.var_str"/>
+                                <argument name="type" value="str"/>
+                        </Arguments>
+                        <onError action="next"/>
+                        <Description></Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+               </step>
+               
+               <step Driver="common_driver" Keyword="verify_data" TS="1">
+                        <Arguments>
+                                <argument name="expected" value="55"/>
+                                <argument name="object_key" value="data_set1.var_dict_complex.c.test1"/>
+                                <argument name="type" value="int"/>
+                        </Arguments>
+                        <onError action="next"/>
+                        <Description></Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+               </step>
                 <step Driver="common_driver" Keyword="store_in_repo" TS="1" draft="no">
                         <Arguments>
-                                <argument name="filepath" value="repo_variables.json"/>
+                          <argument name="filepath" value="../../config_files/common_action_tests/test_repo_variables.json"/>
+                          <argument name="bool_store_all" value="False"/>
                         </Arguments>
                         <Execute ExecType="Yes"/>
                         <onError action="next"/>
@@ -30,27 +70,6 @@
                         <impact>impact</impact>
                         <runmode type="Standard" value=""/>
                  </step>
-                 
-                <step Driver="common_driver" Keyword="fetch_in_repo" TS="1">
-                        <Arguments>
-                                <argument name="datavar" value="var2.var3.a"/>
-                        </Arguments>
-                        <onError action="next"/>
-                        <Description></Description>
-                        <Execute ExecType="Yes"/>
-                        <context>positive</context>
-                        <impact>impact</impact>
-                </step>
-                <step Driver="common_driver" Keyword="fetch_in_repo" TS="1">
-                        <Arguments>
-                                <argument name="datavar" value="invalid.var3.a"/>
-                        </Arguments>
-                        <onError action="next"/>
-                        <Description></Description>
-                        <Execute ExecType="Yes"/>
-                        <context>positive</context>
-                        <impact>impact</impact>
-                </step>
                 <step Driver="common_driver" Keyword="verify_data" TS="1">
                         <Arguments>
                                 <argument name="expected" value="10"/>
@@ -64,18 +83,6 @@
                         <impact>impact</impact>
                 </step>
             
-                <step Driver="common_driver" Keyword="verify_data" TS="1">
-                        <Arguments>
-                                <argument name="expected" value="100"/>
-                                <argument name="object_key" value="var2.var3.b"/>
-                                <argument name="type" value="str"/>
-                        </Arguments>
-                        <onError action="next"/>
-                        <Description></Description>
-                        <Execute ExecType="Yes"/>
-                        <context>positive</context>
-                        <impact>impact</impact>
-                </step>
                 
                 <step Driver="common_driver" Keyword="verify_data" TS="1">
                         <Arguments>
@@ -89,11 +96,23 @@
                         <context>positive</context>
                         <impact>impact</impact>
                 </step>
-                       
-                <step Driver="common_driver" Keyword="verify_data" TS="1">
+                 <step Driver="common_driver" Keyword="store_in_repo" TS="1" draft="no">
                         <Arguments>
-                                <argument name="expected" value="50"/>
-                                <argument name="object_key" value="var6.b"/>
+                          <argument name="filepath" value="../../config_files/common_action_tests/dup_slurp_content.json"/>
+                          <argument name="bool_store_all" value="True"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description>Verify duplicate keys in data repository</Description>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                 </step>
+               <step Driver="common_driver" Keyword="verify_data" TS="1">
+                        <Arguments>
+                                <argument name="expected" value="200"/>
+                                <argument name="object_key" value="data_set1.var_dict_complex.c.test1"/>
                                 <argument name="type" value="int"/>
                         </Arguments>
                         <onError action="next"/>
