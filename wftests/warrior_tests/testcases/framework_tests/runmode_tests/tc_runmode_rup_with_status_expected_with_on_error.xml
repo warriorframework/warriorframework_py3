@@ -62,7 +62,7 @@
                         <Arguments>
                                 <argument name="key" value="tc_rupswa"/>
                                 <argument name="status" value="fail"/>
-                                <argument name="max_value" value="2"/>
+                                <argument name="max_value" value="5"/>
                                 <argument name="max_status" value="fail"/>
                         </Arguments>
                         <onError action="abort"/>

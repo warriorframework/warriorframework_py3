@@ -90,13 +90,13 @@ def getErrorHandlingParameters(node, def_on_error_action, def_on_error_value, ex
     runmode = Utils.xml_Utils.get_attributevalue_from_directchildnode(node, 'runmode', 'type')
     runmode_value = Utils.xml_Utils.get_attributevalue_from_directchildnode(node,
                                                                             'runmode', 'value')
-    if (runmode == "RUP" or runmode == "RMT") and (current_step_number == runmode_value-1) \
+    if (runmode == "RUP" or runmode == "RUF") and (current_step_number == runmode_value-1) \
             or runmode == "RUF":
         action = action
-    elif action:
-        action = action
-    else:
+    elif runmode == "RUP" or runmode == "RUF":
         action = "next"
+    if action and runmode is None:
+        action = action
 
     if action is None or action is False or action == '':
         action = def_on_error_action
