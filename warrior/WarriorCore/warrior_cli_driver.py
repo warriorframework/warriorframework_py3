@@ -441,9 +441,10 @@ def decide_action(w_cli_obj, namespace):
             else:
                 print_info("The encrypted text for '{0}' is: {1}".
                            format(namespace.encrypt[0], message))
+                exit(0)
         else:
             print_error("Encrypted text could not be generated.")
-        exit(1)
+            exit(1)
 
     elif namespace.decrypt:
         status = True
@@ -467,9 +468,10 @@ def decide_action(w_cli_obj, namespace):
             message = Encrypt.decrypt(namespace.decrypt[0], encoded_key)
             print_info("The decrypted text for '{0}' is: {1}".
                            format(namespace.decrypt[0], message))
+            exit(0)
         else:
             print_error("Decrypted text could not be generated.")
-        exit(1)
+            exit(1)
 
     elif any(cli_args):
         filepath = w_cli_obj.examine_cli_args(cli_args, namespace)
