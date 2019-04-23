@@ -248,13 +248,14 @@ class LDAPSettings:
         if extra_keys:
             self.errors['AUTH_LDAP_USER_ATTR_MAP'] = 'This field is incorrect'
         # Validate if AUTH_LDAP_USER_SEARCH is correctly formatted
-        for search in self.configs["AUTH_LDAP_USER_SEARCH"].searches:
-            try:
-                if not LDAPSettings.is_dn(search.base_dn):
+        if "AUTH_LDAP_USER_SEARCH" in self.configs:
+            for search in self.configs["AUTH_LDAP_USER_SEARCH"].searches:
+                try:
+                    if not LDAPSettings.is_dn(search.base_dn):
+                        self.errors['AUTH_LDAP_USER_SEARCH'] = 'This field is incorrectly formatted'
+                        break
+                except AttributeError:
                     self.errors['AUTH_LDAP_USER_SEARCH'] = 'This field is incorrectly formatted'
-                    break
-            except AttributeError:
-                self.errors['AUTH_LDAP_USER_SEARCH'] = 'This field is incorrectly formatted'
 
         # Validate group settings if any group settings are set
         group_keys = {k for k in self.configs.keys() if 'GROUP' in k}
@@ -351,15 +352,16 @@ class LDAPSettings:
         if LDAPSettings.LDAP_IMPORT_SUCCESS:
             # Import AUTH_LDAP_USER_SEARCH as LDAPSearchUnion
 
-            temp = self.configs["AUTH_LDAP_USER_SEARCH"]
-            ldap_searches = []
-            for el in temp:
-                ldap_searches.append(LDAPSearch(
-                    el["search"],
-                    ldap.SCOPE_SUBTREE,
-                    el["filter"]
-                ))
-            self.configs["AUTH_LDAP_USER_SEARCH"] = LDAPSearchUnion(*ldap_searches)
+            if "AUTH_LDAP_USER_SEARCH" in self.configs:
+                temp = self.configs["AUTH_LDAP_USER_SEARCH"]
+                ldap_searches = []
+                for el in temp:
+                    ldap_searches.append(LDAPSearch(
+                        el["search"],
+                        ldap.SCOPE_SUBTREE,
+                        el["filter"]
+                    ))
+                self.configs["AUTH_LDAP_USER_SEARCH"] = LDAPSearchUnion(*ldap_searches)
 
             # Import AUTH_LDAP_GROUP_SEARCH as LDAPSearch
             temp = new_configs.get('AUTH_LDAP_GROUP_TYPE', '').lower()
