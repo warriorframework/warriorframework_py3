@@ -62,10 +62,12 @@ class LDAPSettings:
 
     REQUIRED_FIELDS = [
         'AUTH_LDAP_SERVER_URI',
-        'AUTH_LDAP_USER_DN_TEMPLATE',
         'AUTH_LDAP_SEARCH_BASE_DN',
         'AUTH_LDAP_BIND_DN',
         'AUTH_LDAP_BIND_PASSWORD',
+    ]
+    EITHER_REQ_FIELDS = [
+        ['AUTH_LDAP_USER_DN_TEMPLATE', 'AUTH_LDAP_USER_SEARCH']
     ]
     REQUIRED_FOR_GROUP_FIELDS = [
         'AUTH_LDAP_GROUP_TYPE',
@@ -214,6 +216,16 @@ class LDAPSettings:
         for k in LDAPSettings.REQUIRED_FIELDS:
             if k not in self.configs:
                 self.errors[k] = 'missing'
+        for el in LDAPSettings.EITHER_REQ_FIELDS:
+            count = 0
+            for k in el:
+                if k in self.configs:
+                    count += 1
+            else:
+                if count == 0:
+                    self.errors.update({k: 'At least one field in this section must be populated' for k in el})
+                if count > 1:
+                    self.errors.update({k: 'Only one field in this section may be populated' for k in el})
         for k in LDAPSettings.DN_FIELDS:
             if k in self.configs and not LDAPSettings.is_dn(self.configs[k]):
                 self.errors[k] = 'incorrectly formatted'

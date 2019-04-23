@@ -53,13 +53,6 @@
                             value="{{ ldap_settings.AUTH_LDAP_SERVER_URI }}">
                     </div>
                     <br>
-                    <div class="{% if ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE %}errors{% endif %}">
-                        {% if ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE %}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE }}</li></ul>{% endif %}
-                        <label for="auth_ldap_user_dn_template">User DN Template</label>
-                        <input type="text" class="vLargeTextField" id="auth_ldap_user_dn_template" name="auth_ldap_user_dn_template"
-                            value="{{ ldap_settings.AUTH_LDAP_USER_DN_TEMPLATE }}">
-                    </div>
-                    <br>
                     <div class="{% if ldap_errors.AUTH_LDAP_SEARCH_BASE_DN %}errors{% endif %}">
                         {% if ldap_errors.AUTH_LDAP_SEARCH_BASE_DN %}}<ul class="errorlist"><li>This field is {{ ldap_errors.AUTH_LDAP_SEARCH_BASE_DN }}</li></ul>{% endif %}
                         <label for="auth_ldap_search_base_dn">Search Base DN</label>
@@ -88,6 +81,24 @@
                             value="1" {% if ldap_settings.AUTH_LDAP_START_TLS %}checked{% endif %}>
                         <label for="auth_ldap_start_tls" class="vCheckboxLabel">Enable Start TLS</label>
                         <p class="help">If you need to upload a custom certificate file, please see the file settings form below for uploading files.</p>
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="module aligned">
+                <h2>LDAP Search Settings</h2>
+                <div class="form-row">
+                    <div class="{% if ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE %}<ul class="errorlist"><li>{{ ldap_errors.AUTH_LDAP_USER_DN_TEMPLATE }}</li></ul>{% endif %}
+                        <label for="auth_ldap_user_dn_template">User DN Template</label>
+                        <input type="text" class="vLargeTextField" id="auth_ldap_user_dn_template" name="auth_ldap_user_dn_template"
+                            value="{{ ldap_settings.AUTH_LDAP_USER_DN_TEMPLATE }}">
+                    </div>
+                    <br>
+                    <div class="{% if ldap_errors.AUTH_LDAP_USER_SEARCH %}errors{% endif %}">
+                        {% if ldap_errors.AUTH_LDAP_USER_SEARCH %}<ul class="errorlist"><li>{{ ldap_errors.AUTH_LDAP_USER_SEARCH }}</li></ul>{% endif %}
+                        <label for="auth_ldap_user_search">Search</label>
+                        <input type="textarea" class="vLargeTextField" id="auth_ldap_user_search" name="auth_ldap_user_search"
+                            value="{{ ldap_settings.AUTH_LDAP_USER_SEARCH }}">
                     </div>
                 </div>
             </fieldset>
