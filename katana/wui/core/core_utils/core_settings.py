@@ -67,11 +67,14 @@ class LDAPSettings:
         'AUTH_LDAP_BIND_PASSWORD',
     ]
     EITHER_REQ_FIELDS = [
-        ['AUTH_LDAP_USER_DN_TEMPLATE', 'AUTH_LDAP_USER_SEARCH']
+        ['AUTH_LDAP_USER_DN_TEMPLATE', 'AUTH_LDAP_USER_SEARCH'],
     ]
     REQUIRED_FOR_GROUP_FIELDS = [
         'AUTH_LDAP_GROUP_TYPE',
         'AUTH_LDAP_GROUP_SEARCH'
+    ]
+    USER_SEARCH = [
+        'AUTH_LDAP_USER_SEARCH'
     ]
     BOOLEAN_FIELDS = [
         'AUTH_LDAP_ENABLED',
@@ -80,6 +83,7 @@ class LDAPSettings:
     JSON_FIELDS = [
         'AUTH_LDAP_USER_ATTR_MAP',
         'AUTH_LDAP_GROUP_MAPPING',
+        'AUTH_LDAP_USER_SEARCH',
     ]
     DN_FIELDS = [
         'AUTH_LDAP_SEARCH_BASE_DN',
@@ -133,7 +137,7 @@ class LDAPSettings:
         retval = copy(self.configs)
 
         for k in LDAPSettings.JSON_FIELDS:
-            if k in retval:
+            if k in retval and type(retval[k]) == json:
                 retval[k] = json.dumps(retval[k])
         # Handle AUTH_LDAP_GROUP_SEARCH
         if 'AUTH_LDAP_GROUP_SEARCH' in retval:
@@ -224,7 +228,7 @@ class LDAPSettings:
             else:
                 if count == 0:
                     self.errors.update({k: 'At least one field in this section must be populated' for k in el})
-                if count > 1:
+                elif count > 1:
                     self.errors.update({k: 'Only one field in this section may be populated' for k in el})
         for k in LDAPSettings.DN_FIELDS:
             if k in self.configs and not LDAPSettings.is_dn(self.configs[k]):
@@ -324,7 +328,7 @@ class LDAPSettings:
                 group_flags['is_superuser'] = v
                 self.configs['AUTH_LDAP_USER_FLAGS_BY_GROUP'] = group_flags
             # AUTH_LDAP_GROUP_MAPPING and AUTH_LDAP_USER_ATTR_MAP should be imported as json
-            elif k == 'AUTH_LDAP_USER_ATTR_MAP' or k == 'AUTH_LDAP_GROUP_MAPPING':
+            elif k in LDAPSettings.JSON_FIELDS:
                 try:
                     self.configs[k] = json.loads(v)
                 except json.JSONDecodeError:
