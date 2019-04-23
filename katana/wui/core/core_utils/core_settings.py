@@ -73,9 +73,6 @@ class LDAPSettings:
         'AUTH_LDAP_GROUP_TYPE',
         'AUTH_LDAP_GROUP_SEARCH'
     ]
-    USER_SEARCH = [
-        'AUTH_LDAP_USER_SEARCH'
-    ]
     BOOLEAN_FIELDS = [
         'AUTH_LDAP_ENABLED',
         'AUTH_LDAP_START_TLS',
@@ -230,8 +227,7 @@ class LDAPSettings:
         for el in LDAPSettings.EITHER_REQ_FIELDS:
             count = 0
             for k in el:
-                if k in self.configs:
-                    count += 1
+                count += (1 if k in self.configs else 0)
             else:
                 if count == 0:
                     self.errors.update({k: 'At least one field in this section must be populated' for k in el if k not in self.errors})
