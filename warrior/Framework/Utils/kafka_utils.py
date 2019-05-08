@@ -10,6 +10,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+from print_Utils import print_error, print_exception
 try:
     from kafka import KafkaClient
 except ImportError as err:
@@ -20,7 +21,7 @@ from kafka import KafkaConsumer
 from kafka import KafkaProducer
 from kafka import TopicPartition
 from kafka.admin import KafkaAdminClient, NewTopic, NewPartitions
-from print_Utils import print_debug, print_info, print_error, print_warning, print_exception
+
 
 class WarriorKafkaConsumer(object):
     """
