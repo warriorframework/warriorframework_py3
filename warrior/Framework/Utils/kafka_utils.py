@@ -1,14 +1,26 @@
-from kafka import KafkaConsumer
-from kafka import KafkaProducer
-from kafka import TopicPartition
-from kafka.admin import KafkaAdminClient, NewTopic, NewPartitions
-from print_Utils import print_debug, print_info, print_error, print_warning, print_exception
-
+'''
+Copyright 2019, Fujitsu Network Communications, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+'''
 try:
     from kafka import KafkaClient
 except ImportError as err:
     print_error("Module kafka is not installed, Refer to the exception trace below for more details")
     print_exception(err)
+    
+from kafka import KafkaConsumer
+from kafka import KafkaProducer
+from kafka import TopicPartition
+from kafka.admin import KafkaAdminClient, NewTopic, NewPartitions
+from print_Utils import print_debug, print_info, print_error, print_warning, print_exception
 
 class WarriorKafkaConsumer(object):
     """
