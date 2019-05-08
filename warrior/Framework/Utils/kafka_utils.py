@@ -2,6 +2,13 @@ from kafka import KafkaConsumer
 from kafka import KafkaProducer
 from kafka import TopicPartition
 from kafka.admin import KafkaAdminClient, NewTopic, NewPartitions
+from print_Utils import print_debug, print_info, print_error, print_warning, print_exception
+
+try:
+    from kafka import KafkaClient
+except ImportError as err:
+    print_error("Module kafka is not installed, Refer to the exception trace below for more details")
+    print_exception(err)
 
 class WarriorKafkaConsumer(object):
     """
