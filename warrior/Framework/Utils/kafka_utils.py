@@ -12,16 +12,13 @@ limitations under the License.
 '''
 from Framework.Utils.print_Utils import print_error, print_exception
 try:
-    from kafka import KafkaClient
+    from kafka import KafkaConsumer
+    from kafka import KafkaProducer
+    from kafka import TopicPartition
+    from kafka.admin import KafkaAdminClient, NewTopic, NewPartitions
 except ImportError as err:
     print_error("Module kafka is not installed, Refer to the exception trace below for more details")
     print_exception(err)
-    
-from kafka import KafkaConsumer
-from kafka import KafkaProducer
-from kafka import TopicPartition
-from kafka.admin import KafkaAdminClient, NewTopic, NewPartitions
-
 
 class WarriorKafkaConsumer(object):
     """
