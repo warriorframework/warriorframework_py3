@@ -1,5 +1,5 @@
 '''
-Copyright 2019, Fujitsu Network Communications, Inc.
+Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -21,7 +21,7 @@ except ImportError as err:
     print_error("Module kafka is not installed, Refer exception below")
     print_exception(err)
 
-class WarriorKafkaConsumer(object):
+class WarriorKafkaConsumer():
     """
     This class contains all kafka consumer methods
     """
@@ -160,7 +160,7 @@ class WarriorKafkaConsumer(object):
             topic_list = None
         return topic_list
 
-class WarriorKafkaProducer(object):
+class WarriorKafkaProducer():
     """
     This class contains all kafka producer methods
     """
@@ -204,7 +204,7 @@ class WarriorKafkaProducer(object):
             result = False
         return result
 
-class WarriorKafkaClient(object):
+class WarriorKafkaClient():
     """
     This class contains all kafka admin client related
     methods
