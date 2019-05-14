@@ -572,24 +572,23 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_junit_object.update_attr("logsdir", os.path.dirname(data_repository['wt_logsdir']),
                                 "tc", tc_timestamp)
     data_file = data_repository["wt_datafile"]
+    match = False
     try:
+        system_name = "kafka_server"
         fd = open(data_file)
+        match = re.search(system_name, fd.read())
     except:
         pass
-    match = re.search("kafka_server", fd.read())
     if match:
         junit_file_obj = data_repository['wt_junit_object']
         root = junit_file_obj.root
         suite_details = root.findall("testsuite")[0]
         test_case_details = suite_details.findall("testcase")[0]
         print_info("kafka server is presented in Inputdata file..")
-        system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(data_file,
-                                                                                     "kafka_server")
-
         system_details = _get_system_or_subsystem(data_file, system_name)
         data = {}
         for item in system_details.getchildren():
-            if item.tag == "ssh_port":
+            if item.tag == "kafka_port":
                 ssh_port = item.text
                 continue
             if item.tag == "ip":
