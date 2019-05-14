@@ -578,6 +578,10 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
         pass
     match = re.search("kafka_server", fd.read())
     if match:
+        junit_file_obj = data_repository['wt_junit_object']
+        root = junit_file_obj.root
+        suite_details = root.findall("testsuite")[0]
+        test_case_details = suite_details.findall("testcase")[0]
         print_info("kafka server is presented in Inputdata file..")
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(data_file,
                                                                                      "kafka_server")
@@ -602,8 +606,10 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
         data.update({"value_serializer": lambda x: dumps(x).encode('utf-8')})
         try:
             producer = WarriorKafkaProducer(**data)
-            producer.send_messages('warrior_results', "warrior_results")
-            print("message published to topic: warrior_results", "warrior_results")
+            producer.send_messages('warrior_results', suite_details.items())
+            producer.send_messages('warrior_results', test_case_details.items())
+            print_info("message published to topic: warrior_results {}".format(suite_details.items()))
+            print_info("message published to topic: warrior_results {}".format(test_case_details.items()))
         except:
             print_warning("Unable to connect kafka server !!")
 
