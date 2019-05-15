@@ -22,7 +22,7 @@ import time
 import shutil
 import copy
 import ast
-import re
+import xml.etree.ElementTree as et
 from WarriorCore.defects_driver import DefectsDriver
 from WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
 from WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
@@ -571,14 +571,18 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_junit_object.update_attr("logsdir", os.path.dirname(data_repository['wt_logsdir']),
                                 "tc", tc_timestamp)
     data_file = data_repository["wt_datafile"]
-    match = False
+    system_name = ""
     try:
-        system_name = "kafka_server"
-        fd = open(data_file)
-        match = re.search(system_name, fd.read())
+        tree = et.parse(data_file)
+        for elem in tree.iter():
+            if elem.tag == "system":
+                for key, value in elem.items():
+                    if value == "kafka_producer":
+                        system_name = elem.get("name")
+                        break
     except:
         pass
-    if match:
+    if system_name:
         junit_file_obj = data_repository['wt_junit_object']
         root = junit_file_obj.root
         suite_details = root.findall("testsuite")[0]
