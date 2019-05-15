@@ -34,7 +34,7 @@ from Framework.Utils.print_Utils import print_notype, print_info, print_warning,
     print_debug, print_exception
 from Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
 from json import loads, dumps
-from Framework.Utils.data_Utils import getSystemData, get_session_id, get_credentials, _get_system_or_subsystem
+from Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
 import Framework.Utils.email_utils as email
 
 
@@ -48,7 +48,7 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     Utils.config_Utils.set_datarepository(data_repository)
     name = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Name')
     title = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Title')
-    expResults = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath,'Details',
+    expResults = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details',
                                                          'ExpectedResults')
     category = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Category')
     def_on_error_action = Utils.testcase_Utils.get_defonerror_fromxml_file(testcase_filepath)
@@ -446,7 +446,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_junit_object.add_property("resultsdir", os.path.dirname(data_repository['wt_resultsdir']),
                                  "tc", tc_timestamp)
     tc_junit_object.update_attr("console_logfile", data_repository['wt_console_logfile'],
-                                 "tc", tc_timestamp)
+                                "tc", tc_timestamp)
     tc_junit_object.update_attr("title", data_repository['wt_title'], "tc", tc_timestamp)
 
     data_repository['wt_junit_object'] = tc_junit_object
@@ -501,8 +501,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                               "iterate upon")
                 tc_status = False
             elif len(system_list) > 0:
-                tc_status = iterative_sequential_kw_driver.main(
-                 step_list, data_repository, tc_status, system_list)
+                tc_status = iterative_sequential_kw_driver.main(step_list,
+                                                                data_repository, tc_status, system_list)
         elif data_type.upper() == 'ITERATIVE' and \
                 runtype.upper() == 'PARALLEL_KEYWORDS':
             tc_junit_object.remove_html_obj()
@@ -520,16 +520,15 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                               "iterate upon")
                 tc_status = False
             elif len(system_list) > 0:
-                tc_status = iterative_parallel_kw_driver.main(
-                 step_list, data_repository, tc_status, system_list)
+                tc_status = iterative_parallel_kw_driver.main(step_list,
+                                                              data_repository, tc_status, system_list)
         elif data_type.upper() == "HYBRID":
             print_info("Hybrid")
-            system_list, system_node_list = get_system_list(
-             data_repository['wt_datafile'], node_req=True)
+            system_list, system_node_list = get_system_list(data_repository['wt_datafile'],
+                                                            node_req=True)
             # call the hybrid driver here
-            hyb_drv_obj = hybrid_driver_class.HybridDriver(
-             step_list, data_repository, tc_status, system_list,
-             system_node_list)
+            hyb_drv_obj = hybrid_driver_class.HybridDriver(step_list, data_repository,
+                                                           tc_status, system_list, system_node_list)
             tc_status = hyb_drv_obj.execute_hybrid_mode()
         else:
             print_warning("unsupported value provided for testcase data_type "
@@ -607,8 +606,10 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
             producer = WarriorKafkaProducer(**data)
             producer.send_messages('warrior_results', suite_details.items())
             producer.send_messages('warrior_results', test_case_details.items())
-            print_info("message published to topic: warrior_results {}".format(suite_details.items()))
-            print_info("message published to topic: warrior_results {}".format(test_case_details.items()))
+            print_info("message published to topic: warrior_results {}".format(
+                suite_details.items()))
+            print_info("message published to topic: warrior_results {}".format(
+                test_case_details.items()))
         except:
             print_warning("Unable to connect kafka server !!")
 
@@ -648,9 +649,10 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                     email_setting = "every_failure"
 
             if email_setting is not None:
-                email.compose_send_email("Test Case: ", data_repository[
-                 'wt_testcase_filepath'], data_repository['wt_logsdir'],
-                 data_repository['wt_resultsdir'], tc_status, email_setting)
+                email.compose_send_email("Test Case: ", data_repository['wt_testcase_filepath'],
+                                         data_repository['wt_logsdir'],
+                                         data_repository['wt_resultsdir'], tc_status,
+                                         email_setting)
 
         if not tc_parallel and not data_repository["war_parallel"]:
             if 'wp_results_execdir' in data_repository:
