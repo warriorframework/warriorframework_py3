@@ -21,6 +21,8 @@ import os
 import time
 import shutil
 import copy
+import ast
+import xml.etree.ElementTree as et
 from WarriorCore.defects_driver import DefectsDriver
 from WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
 from WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
@@ -30,6 +32,9 @@ import Framework.Utils as Utils
 from Framework.Utils.testcase_Utils import convertLogic
 from Framework.Utils.print_Utils import print_notype, print_info, print_warning, print_error,\
     print_debug, print_exception
+from Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
+from json import loads, dumps
+from Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
 import Framework.Utils.email_utils as email
 
 
@@ -43,7 +48,7 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     Utils.config_Utils.set_datarepository(data_repository)
     name = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Name')
     title = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Title')
-    expResults = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath,'Details',
+    expResults = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details',
                                                          'ExpectedResults')
     category = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Category')
     def_on_error_action = Utils.testcase_Utils.get_defonerror_fromxml_file(testcase_filepath)
@@ -441,7 +446,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_junit_object.add_property("resultsdir", os.path.dirname(data_repository['wt_resultsdir']),
                                  "tc", tc_timestamp)
     tc_junit_object.update_attr("console_logfile", data_repository['wt_console_logfile'],
-                                 "tc", tc_timestamp)
+                                "tc", tc_timestamp)
     tc_junit_object.update_attr("title", data_repository['wt_title'], "tc", tc_timestamp)
 
     data_repository['wt_junit_object'] = tc_junit_object
@@ -496,8 +501,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                               "iterate upon")
                 tc_status = False
             elif len(system_list) > 0:
-                tc_status = iterative_sequential_kw_driver.main(
-                 step_list, data_repository, tc_status, system_list)
+                tc_status = iterative_sequential_kw_driver.main(step_list,
+                                                                data_repository, tc_status, system_list)
         elif data_type.upper() == 'ITERATIVE' and \
                 runtype.upper() == 'PARALLEL_KEYWORDS':
             tc_junit_object.remove_html_obj()
@@ -515,16 +520,15 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                               "iterate upon")
                 tc_status = False
             elif len(system_list) > 0:
-                tc_status = iterative_parallel_kw_driver.main(
-                 step_list, data_repository, tc_status, system_list)
+                tc_status = iterative_parallel_kw_driver.main(step_list,
+                                                              data_repository, tc_status, system_list)
         elif data_type.upper() == "HYBRID":
             print_info("Hybrid")
-            system_list, system_node_list = get_system_list(
-             data_repository['wt_datafile'], node_req=True)
+            system_list, system_node_list = get_system_list(data_repository['wt_datafile'],
+                                                            node_req=True)
             # call the hybrid driver here
-            hyb_drv_obj = hybrid_driver_class.HybridDriver(
-             step_list, data_repository, tc_status, system_list,
-             system_node_list)
+            hyb_drv_obj = hybrid_driver_class.HybridDriver(step_list, data_repository,
+                                                           tc_status, system_list, system_node_list)
             tc_status = hyb_drv_obj.execute_hybrid_mode()
         else:
             print_warning("unsupported value provided for testcase data_type "
@@ -555,7 +559,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_junit_object.update_count("tests", "1", "ts", data_repository['wt_ts_timestamp'])
     tc_junit_object.update_count("tests", "1", "pj", "not appicable")
     tc_junit_object.update_attr("status", str(tc_status), "tc", tc_timestamp)
-    tc_junit_object.update_attr("time", str(tc_duration), "tc", tc_timestamp)    
+    tc_junit_object.update_attr("time", str(tc_duration), "tc", tc_timestamp)
     tc_junit_object.add_testcase_message(tc_timestamp, tc_status)
     if str(tc_status).upper() in ["FALSE", "ERROR", "EXCEPTION"]:
         tc_junit_object.update_attr("defects", defectsdir, "tc", tc_timestamp)
@@ -566,6 +570,52 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                                 "tc", tc_timestamp)
     tc_junit_object.update_attr("logsdir", os.path.dirname(data_repository['wt_logsdir']),
                                 "tc", tc_timestamp)
+    data_file = data_repository["wt_datafile"]
+    system_name = ""
+    try:
+        tree = et.parse(data_file)
+        for elem in tree.iter():
+            if elem.tag == "system":
+                for key, value in elem.items():
+                    if value == "kafka_producer":
+                        system_name = elem.get("name")
+                        break
+    except:
+        pass
+    if system_name:
+        junit_file_obj = data_repository['wt_junit_object']
+        root = junit_file_obj.root
+        suite_details = root.findall("testsuite")[0]
+        test_case_details = suite_details.findall("testcase")[0]
+        print_info("kafka server is presented in Inputdata file..")
+        system_details = _get_system_or_subsystem(data_file, system_name)
+        data = {}
+        for item in system_details.getchildren():
+            if item.tag == "kafka_port":
+                ssh_port = item.text
+                continue
+            if item.tag == "ip":
+                ip_address = item.text
+                continue
+            try:
+                value = ast.literal_eval(item.text)
+            except ValueError:
+                value = item.text
+            data.update({item.tag: value})
+
+        ip_port = ["{}:{}".format(ip_address, ssh_port)]
+        data.update({"bootstrap_servers": ip_port})
+        data.update({"value_serializer": lambda x: dumps(x).encode('utf-8')})
+        try:
+            producer = WarriorKafkaProducer(**data)
+            producer.send_messages('warrior_results', suite_details.items())
+            producer.send_messages('warrior_results', test_case_details.items())
+            print_info("message published to topic: warrior_results {}".format(
+                suite_details.items()))
+            print_info("message published to topic: warrior_results {}".format(
+                test_case_details.items()))
+        except:
+            print_warning("Unable to connect kafka server !!")
 
     report_testcase_result(tc_status, data_repository)
     if not from_ts:
@@ -603,9 +653,10 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                     email_setting = "every_failure"
 
             if email_setting is not None:
-                email.compose_send_email("Test Case: ", data_repository[
-                 'wt_testcase_filepath'], data_repository['wt_logsdir'],
-                 data_repository['wt_resultsdir'], tc_status, email_setting)
+                email.compose_send_email("Test Case: ", data_repository['wt_testcase_filepath'],
+                                         data_repository['wt_logsdir'],
+                                         data_repository['wt_resultsdir'], tc_status,
+                                         email_setting)
 
         if not tc_parallel and not data_repository["war_parallel"]:
             if 'wp_results_execdir' in data_repository:
