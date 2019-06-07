@@ -23,7 +23,6 @@ from Framework.ClassUtils.snmp_utlity_class import WSnmp as ws
 from Framework.Utils import testcase_Utils, config_Utils, data_Utils, snmp_utils
 from threading import Thread
 from time import sleep
-import Queue
 try:
     from pysnmp.entity.rfc3413 import ntfrcv
     from pysnmp.smi import builder, view, compiler, rfc1902, error
