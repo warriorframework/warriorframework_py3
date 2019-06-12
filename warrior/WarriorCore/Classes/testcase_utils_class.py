@@ -362,7 +362,9 @@ class TestcaseUtils(object):
         EXCEPTION -> ERROR
         """
         result = {True: 'PASS', False: 'FAIL',
-                  'ERROR': 'ERROR', 'EXCEPTION': 'ERROR', 'RAN': 'RAN'}.get(text)
+                  # 'ERROR': 'ERROR', 'EXCEPTION': 'ERROR', 'RAN': 'RAN'}.get(text)
+            'ERROR': 'ERROR', 'EXCEPTION': 'ERROR', 'RAN': 'RAN', 'WARN': 'WARN'}.get(text)
+
         if result is None:
             print_error("junk or no value received, expecting TRUE/FALSE/ERROR/EXCEPTION")
             result = 'ERROR'
@@ -630,7 +632,9 @@ class TestcaseUtils(object):
         """Gets the default on error value of a step/testcase/suite
         from the testcase.xml/testsuite.xml/project.xml file """
 
-        def_on_error_action = self.xml_utils().getChildAttributebyParentTag(filepath, 'Details',
+        # def_on_error_action = self.xml_utils().getChildAttributebyParentTag(filepath, 'Details',
+        def_on_error_action = self.xml_utils().getChildAttributebyParentTag(filepath, 'Details',\
+
                                                                      'default_onError', 'action')
 
         if def_on_error_action is None or def_on_error_action is False:
@@ -645,6 +649,26 @@ class TestcaseUtils(object):
                 print_info("Hence using default value for default_onError action which is 'next'")
                 def_on_error_action = 'NEXT'
         return def_on_error_action
+
+    def get_setup_on_error(self, filepath):
+        """Gets the setup on error value
+        from the wrapperfile.xml file """
+
+        setup_on_error_action = self.xml_utils().getChildAttributebyParentTag(filepath, 'Details',\
+                                                                     'setup_onError', 'action')
+
+        if setup_on_error_action is None or setup_on_error_action is False:
+            setup_on_error_action = 'abort'
+
+        elif setup_on_error_action is not None and setup_on_error_action is not False:
+            supported_values = ['next', 'abort']
+            if not str(setup_on_error_action).lower() in supported_values:
+                print_warning("unsupported option '{0}' provided for setup_onError"\
+                              "action, supported values are {1}".format(setup_on_error_action,
+                                                                        supported_values))
+                print_info("Hence using default value for setup_onError action which is 'abort'")
+                setup_on_error_action = 'abort'
+        return setup_on_error_action
 
     def get_requirement_id_list(self, testcase_filepath):
         """gets the list of requirements for the testcase """

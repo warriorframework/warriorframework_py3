@@ -278,6 +278,28 @@ class ExecFilesClass(object):
                 data_type = 'CUSTOM'
         return data_type
 
+
+    #def to get runtype of the testcase from xml
+    def check_get_runtype(self):
+        """Check and get the runtype for testcase
+        """
+        if xml_Utils.nodeExists(self.filepath, 'Runtype'):
+            run_type = xml_Utils.getChildTextbyParentTag(self.filepath, 'Details', 'Runtype')
+            if run_type is not None and run_type is not False:
+               run_type = str(run_type).strip()
+               supported_values = ['sequential_keywords', 'parallel_keywords']
+               if run_type.lower() not in supported_values:
+                   print_warning("unsupported value '{0}' provided for run_type,"
+                                 "supported values are "\
+                                "'{1}' and case-insensitive".format(run_type, supported_values))
+                   print_info("Hence using default value for run_type which is 'sequential_keywords'")
+                   run_type = 'SEQUENTIAL_KEYWORDS'
+        else:
+            run_type = "SEQUENTIAL_KEYWORDS"
+        return run_type
+
+
+
 def get_execution_files(filepath, execution_dir, extn):
     """Get the execution files like resultfile, logfile etc"""
 

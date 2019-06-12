@@ -267,6 +267,11 @@ def get_defonerror_fromxml_file(filepath):
     testcase.xml/testsuite.xml/project.xml file """
 
     return TCOBJ.get_defonerror_fromxml_file(filepath)
+    
+def get_setup_on_error(filepath):
+    """Gets the default setup on error value from the
+    wrapper file """
+    return TCOBJ.get_setup_on_error(filepath)
 
 def get_requirement_id_list(testcase_filepath):
     """gets the list of requirements for the testcase """
