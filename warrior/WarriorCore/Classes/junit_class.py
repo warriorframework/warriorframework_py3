@@ -21,7 +21,7 @@ from WarriorCore.Classes.html_results_class import WarriorHtmlResults
 from WarriorCore.Classes.execution_summary_class import ExecutionSummary
 
 
-class Junit(object):
+class Junit():
     """Junit class"""
 
     def __init__(self, filename, **kwargs):
@@ -33,7 +33,7 @@ class Junit(object):
         properties = self.create_element("properties")
         self.root.append(properties)
 
-    def init_arg(self, **kwargs):
+    def init_arg(**kwargs):
         """
             initialize the common attribute for an element
         """

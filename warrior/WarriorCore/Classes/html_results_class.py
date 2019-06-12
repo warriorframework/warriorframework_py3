@@ -33,7 +33,8 @@ class LineResult:
 
     def __init__(self):
         """Constructor for class LineResult"""
-        self.keys = ['type', 'name', 'info', 'description', 'timestamp', 'duration', 'status', 'impact', 'onerror', 'msc', 'static',
+        self.keys = ['type', 'name', 'info', 'description', 'timestamp',
+         'duration', 'status', 'impact', 'onerror', 'msc', 'static',
                      'dynamic']
 
     def get_info(self, line):
@@ -54,47 +55,42 @@ class LineResult:
         """sets attributes"""
         if 'Keyword' not in variant and 'step' not in variant:
             stepcount = ''
-        result_path = line.get("resultsfile") if line.get("resultsfile") else line.get("resultsdir") if line.get("resultsdir") else ''
+        result_path = line.get("resultsfile") if line.get("resultsfile")\
+        else line.get("resultsdir") if line.get("resultsdir") else ''
         logs_path = line.get("console_logfile") if line.get("console_logfile") else ''
 #         defects_path = line.get("defects") if line.get("defects") else ''
         status_name = line.get("status") if line.get("status") else ''
 
-        #
-        #katana-click='execution.resultsViewer.openLogs'
-
-        # There won't be results link in html anymore as we decided we will not be linking xml files in our html results
-#         results_span = "<span style='padding-left:10px; padding-right: 10px;'>"\
-#                         "<a  name='results-link' href='{0}' target='_blank' >"\
-#                         "<i name='results-icon' class='fa fa-line-chart'  data-logPath='{0}' katana-click='execution.resultsViewer.openLogs'> </i>"\
-#                         "</a>"\
-#                         "</span>".format(result_path)
-
         # the link to logs should only be applied to a testcase and it will open the console logs of the testcase
         logs_span = "<span style='padding-left:10px; padding-right: 10px;'>"\
                     "<a  name='results-link' href='{0}' target='_blank' >"\
-                    "<i name='logs-icon' class='fa fa-book'  data-logPath='{0}' katana-click='execution.resultsViewer.openConsoleLogFile' > </i>"\
+                    "<i name='logs-icon' class='fa fa-book'  data-logPath='{0}'\
+                    katana-click='execution.resultsViewer.openConsoleLogFile' > </i>"\
                     "</a>"\
-                    "</span>".format(line.get("console_logfile")) if line.get("console_logfile") else ''
+                    "</span>".format(line.get("console_logfile"))
+                    if line.get("console_logfile") else ''
 
         # link to defects will only be applied to a keyword and it will open the defects json file in a popup
         defects_span = "<span style='padding-left:10px; padding-right: 10px;'>"\
                         "<a name='bug-link' href='{0}' target='_blank' >"\
-                        "<i name='bug-icon' class='fa fa-bug'  data-logPath='{0}' katana-click='execution.resultsViewer.openDefectsJson'> </i>"\
+                        "<i name='bug-icon' class='fa fa-bug'  data-logPath='{0}'\
+                        katana-click='execution.resultsViewer.openDefectsJson'> </i>"\
                         "</a>"\
                         "</span>".format(line.get("defects"))  if line.get("defects") else ''
         span_html = ""
         if variant == "Testcase":
-            span_html =  logs_span
+            span_html = logs_span
             locn = line.get('testcasefile_path')
-        elif variant =="Keyword":
+        elif variant == "Keyword":
             span_html = defects_span
-            locn =""
+            locn = ""
         else:
             locn_tag = line.find('./properties/property[@name="location"]')
             locn = locn_tag.get('value') if locn_tag is not None else ""
 
         self.data = {'nameAttr': variant + 'Record',
-                     'type': variant.replace('Test', '').replace('Keyword', 'step ') + str(stepcount),
+                     'type': variant.replace('Test', '').replace('Keyword', 'step ')\
+                    + str(stepcount),
                      'name': line.get("name"),
                      'info': self.get_info(line),
                      'description': line.get("description"),
@@ -120,12 +116,15 @@ class LineResult:
                 for elem in self.keys:
                     if elem == 'dynamic':
                         for dynamicElem in self.data['dynamic']:
-                            top_level_next += '<td>' + (dynamicElem if dynamicElem else '0') + '</td>'
+                            top_level_next += '<td>' + \
+                            (dynamicElem if dynamicElem else '0') + '</td>'
                     elif elem == 'static':
                         for staticElem in self.data['static']:
                             top_level += '<td>' + (staticElem if staticElem else '') + '</td>'
                     elif elem == 'name':
-                        div_html = '<div data-path="{0}", data-type="{1}", katana-click="execution.resultsViewer.openXmlInApp">'.format(self.data['locn'], self.data['type'])
+                        div_html = '<div data-path="{0}", data-type="{1}",\
+                        katana-click="execution.resultsViewer.openXmlInApp">'\
+                        .format(self.data['locn'], self.data['type'])
                         top_level += '<td rowspan="2">'+ div_html + (
                             self.data[elem] if self.data[elem] else '') + '</div></td>'
 
@@ -144,7 +143,8 @@ class LineResult:
                         top_level += '<td rowspan="2"><div>' + (
                             self.data[elem] if self.data[elem] else '') + '</div></td>'
 
-            self.html = '<tr name="' + self.data['nameAttr'] + '">' + top_level + '</tr>' + top_level_next
+            self.html = '<tr name="' + self.data['nameAttr']\
+             + '">' + top_level + '</tr>' + top_level_next
 
 class WarriorHtmlResults:
     """Class that generates html results using hte junit result file """
@@ -226,7 +226,8 @@ class WarriorHtmlResults:
         template_html = temp.read().replace('\n', '')
         temp.close()
         index = template_html.rfind('</table>')
-        return template_html[:index] + dynamic_html + template_html[index:] + self.get_war_version()
+        return template_html[:index] + dynamic_html \
+        + template_html[index:] + self.get_war_version()
 
     def get_war_version(self):
         """ find the warrior version """
@@ -279,7 +280,8 @@ class WarriorHtmlResults:
             livehtmllocn["html_result"] = live_final_string
 
     def write_live_results(self, junitObj, givenPath, is_final):
-        """ build the html givenPath: added this feature in case of later down the line calling from outside junit
+        """ build the html givenPath: added this feature in case of
+        later down the line calling from outside junit
         file ( no actual use as of now )
         """
         if junitObj:
@@ -315,7 +317,8 @@ class WarriorHtmlResults:
             print_info("+++++++++++++++++++++++++")
 
     def generate_html(self, junitObj, givenPath, is_final):
-        """ build the html givenPath: added this feature in case of later down the line calling from outside junit
+        """ build the html givenPath: added this feature in case 
+        of later down the line calling from outside junit
         file ( no actual use as of now )
         """
         if junitObj:

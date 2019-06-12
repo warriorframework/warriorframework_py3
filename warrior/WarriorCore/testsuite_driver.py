@@ -159,14 +159,14 @@ def report_testsuite_result(suite_repository, suite_status):
                     'ERROR': 'FAIL'}.get(str(suite_status).upper())
     print_info("Testsuite:{0}  STATUS:{1}".format(suite_repository['suite_name'], suite_status))
     testsuite_utils.pSuite_report_suite_result(suite_resultfile)
-    print_info("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END OF TEST SUITE $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print_info("\n$$$$$$$$$$$$$$$$$$$ END OF TEST SUITE $$$$$$$$$$$$$$$$$$$$$$$$$")
     return suite_status
 
 
 def print_suite_details_to_console(suite_repository, testsuite_filepath, junit_resultfile):
     """Prints the testsuite details to console """
 
-    print_info("\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  TESTSUITE-DETAILS  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
+    print_info("\n\n$$$$$$$$$$$$$$$$$$$  TESTSUITE-DETAILS  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
 
     print_info("Executing testsuite '{0}'".format(suite_repository['suite_name'].strip()))
     print_info("Title: {0}".format(suite_repository['suite_title'].strip()))
@@ -310,7 +310,8 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
 
     #get testwrapperfile details
     # testwrapperfile, j_data_type, j_runtype = \
-    testwrapperfile, j_data_type, j_runtype, setup_on_error_action = get_testwrapper_file_details(testsuite_filepath, data_repository)
+    testwrapperfile, j_data_type, j_runtype, setup_on_error_action = \
+    get_testwrapper_file_details(testsuite_filepath, data_repository)
     setup_tc_status, cleanup_tc_status = True, True
     #execute setup steps defined in testwrapper file if testwrapperfile is present
     if testwrapperfile:

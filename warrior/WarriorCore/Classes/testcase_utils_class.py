@@ -27,7 +27,7 @@ import traceback
 
 from Framework.Utils.print_Utils import  print_info, print_debug, print_warning,\
 print_error, print_exception, print_sub, print_notype, print_without_logging
-import Framework.Utils.config_Utils as config_Utils 
+import Framework.Utils.config_Utils as config_Utils
 
 #import Framework.Utils.file_Utils as file_Utils
 #import Framework.Utils.config_Utils as config_Utils
@@ -59,13 +59,12 @@ class TestcaseUtils(object):
         """
         import Framework.Utils.file_Utils as file_utils
         return file_utils
-        
+
     def xml_utils(self):
         """
         """
         import Framework.Utils.xml_Utils as xml_utils
         return xml_utils
-           
 
 
     def print_output(self):
@@ -234,7 +233,7 @@ class TestcaseUtils(object):
         """Remove non_printable ascii control characters """
         #Removes the ascii escape chars
         try:
-            txt = re.sub(r'[^\x20-\x7E|\x09-\x0A]','', txt)
+            txt = re.sub(r'[^\x20-\x7E|\x09-\x0A]', '', txt)
             # remove non-ascii characters
             # txt = repr(txt)[1:-1]
         except Exception as exception:
@@ -363,7 +362,7 @@ class TestcaseUtils(object):
         """
         result = {True: 'PASS', False: 'FAIL',
                   # 'ERROR': 'ERROR', 'EXCEPTION': 'ERROR', 'RAN': 'RAN'}.get(text)
-            'ERROR': 'ERROR', 'EXCEPTION': 'ERROR', 'RAN': 'RAN', 'WARN': 'WARN'}.get(text)
+                  'ERROR': 'ERROR', 'EXCEPTION': 'ERROR', 'RAN': 'RAN', 'WARN': 'WARN'}.get(text)
 
         if result is None:
             print_error("junk or no value received, expecting TRUE/FALSE/ERROR/EXCEPTION")
@@ -378,7 +377,7 @@ class TestcaseUtils(object):
         On receiving a Skip reports keyword status as Skipped
         On receiving a Exception reports keyword status as Exception
         On receiving a Error reports Keyword status as Error
-        On receiving a RAN reports Keyword status as RAN 
+        On receiving a RAN reports Keyword status as RAN
 
         :Arguments:
             1. status = (bool) True or False
@@ -488,7 +487,8 @@ class TestcaseUtils(object):
         tree = ET.ElementTree(self.root)
         tree.write(resultfile)
 
-    def append_result_files(self, dst_resultfile, kw_resultfile_list, dst_root='Testcase', childtag='Keyword'):
+    def append_result_files(self, dst_resultfile, kw_resultfile_list, \
+        dst_root='Testcase', childtag='Keyword'):
         """Append kw/system result files into a testcase result file"""
         try:
             finstring = ''
@@ -567,7 +567,7 @@ class TestcaseUtils(object):
 
         system_results_dir = self.file_utils().createDir(resultsdir, 'System_Results')
         system_resultfile = self.file_utils().getCustomLogFile('system', system_results_dir,
-                                                        system_name, '.xml')
+            system_name, '.xml')
         self.append_result_files(system_resultfile, kw_resultfile_list, dst_root='System')
         return system_resultfile
 
@@ -616,7 +616,7 @@ class TestcaseUtils(object):
                 print_info("Hence using default value for context which is 'positive'")
                 context = 'POSITIVE'
         return context
-    
+
     def get_description_from_xmlfile(self, element):
         """Gets the description value of a step/testcase/suite
         from the testcase.xml/testsuite.xml/project.xml file """
@@ -634,8 +634,7 @@ class TestcaseUtils(object):
 
         # def_on_error_action = self.xml_utils().getChildAttributebyParentTag(filepath, 'Details',
         def_on_error_action = self.xml_utils().getChildAttributebyParentTag(filepath, 'Details',\
-
-                                                                     'default_onError', 'action')
+            'default_onError', 'action')
 
         if def_on_error_action is None or def_on_error_action is False:
             def_on_error_action = 'NEXT'

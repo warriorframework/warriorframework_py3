@@ -21,7 +21,7 @@ from Framework.Utils import xml_Utils as xml_Utils
 from Framework.Utils.print_Utils import print_info, print_warning, print_error, print_exception
 from Framework.Utils.data_Utils import get_credentials
 
-class ExecFilesClass(object):
+class ExecFilesClass():
     """Execution Files class """
     def __init__(self, filepath, filetype, res_startdir=None, logs_startdir=None):
         """Constructor """
@@ -119,18 +119,18 @@ class ExecFilesClass(object):
             logs_location = xml_Utils.getChildTextbyParentTag(self.filepath, 'Details', 'Logsdir')
             results_location = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                                  'Details', 'Resultsdir')
-            
+
             #get default logs and results directory
-            default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'        
-            default_logsdir = get_credentials(default_xml, 'def_dir',['Logsdir'], 'Setting')
-            default_resultsdir = get_credentials(default_xml, 'def_dir',['Resultsdir'], 'Setting')
+            default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+            default_logsdir = get_credentials(default_xml, 'def_dir', ['Logsdir'], 'Setting')
+            default_resultsdir = get_credentials(default_xml, 'def_dir', ['Resultsdir'], 'Setting')
             #use the default directory if user didn't define it in test case/test suite/project
-            if results_location is None or results_location is False :
-                if default_resultsdir['Resultsdir'] is not None :
+            if results_location is None or results_location is False:
+                if default_resultsdir['Resultsdir'] is not None:
                     results_location = default_resultsdir['Resultsdir']
             
-            if logs_location is None or logs_location is False :
-                if default_logsdir['Logsdir'] is not None :
+            if logs_location is None or logs_location is False:
+                if default_logsdir['Logsdir'] is not None:
                     logs_location = default_logsdir['Logsdir']
 
             if logs_location is None or logs_location is False\
@@ -216,14 +216,13 @@ class ExecFilesClass(object):
 
         datafile = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                      'Details', 'InputDataFile')
-        
-        
+
         if datafile is None or datafile is False or \
         str(datafile).strip() == "":
             if self.filetype == "tc":
                 #print "get default datatype for testcase"
                 datafile = get_default_xml_datafile(self.filepath)
-            
+
             if self.filetype == "ts":
                 # Check if test suite datatype starts with iterative.
                 # If yes then get default datafile else set it as false
@@ -289,15 +288,15 @@ class ExecFilesClass(object):
                run_type = str(run_type).strip()
                supported_values = ['sequential_keywords', 'parallel_keywords']
                if run_type.lower() not in supported_values:
-                   print_warning("unsupported value '{0}' provided for run_type,"
+                   print_warning("unsupported value '{0}' provided for run_type," \
                                  "supported values are "\
                                 "'{1}' and case-insensitive".format(run_type, supported_values))
-                   print_info("Hence using default value for run_type which is 'sequential_keywords'")
+                   print_info("Hence using default value for run_type which is \
+                    'sequential_keywords'")
                    run_type = 'SEQUENTIAL_KEYWORDS'
         else:
             run_type = "SEQUENTIAL_KEYWORDS"
         return run_type
-
 
 
 def get_execution_files(filepath, execution_dir, extn):

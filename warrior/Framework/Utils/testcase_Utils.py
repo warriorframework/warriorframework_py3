@@ -115,7 +115,7 @@ def update_step_num(step_num):
     test case result xml file"""
 
     TCOBJ.update_step_num(step_num)
-    
+
 def update_arguments(args):
     """ adds step_num attribute to the step tag in
             test case result xml file"""
@@ -267,7 +267,7 @@ def get_defonerror_fromxml_file(filepath):
     testcase.xml/testsuite.xml/project.xml file """
 
     return TCOBJ.get_defonerror_fromxml_file(filepath)
-    
+
 def get_setup_on_error(filepath):
     """Gets the default setup on error value from the
     wrapper file """

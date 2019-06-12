@@ -21,7 +21,7 @@ import Framework.Utils as Utils
 from Framework.Utils.print_Utils import print_error, print_info
 import WarriorCore.Classes.manual_defect_class as manual_defect_class
 
-class WarriorCliClass(object):
+class WarriorCliClass():
     """Handle the command line input for warrior"""
     # Class variable for warmock functionality
     mock = False
@@ -197,7 +197,8 @@ class WarriorCliClass(object):
 
         # Display version and framework details 
         parser.add_argument('--version', action='store_true', default=False,
-                            help=':version: Help the user with Current Warrior version and other Warrior package details ')
+                            help=':version: Help the user with \
+                            Current Warrior version and other Warrior package details ')
 
 
         # schedule sleep
@@ -274,7 +275,8 @@ class WarriorCliClass(object):
                             help=":testcae sequential: Set testcase exec_type to sequential")
 
         parser.add_argument('-RMT', type=int, default=0,
-                            help=" :run multiple times: Set testcase exec_type to run multiple times,"\
+                            help=" :run multiple times: Set testcase exec_type to \
+                            run multiple times,"
                             " Enter value for number of attempts after tag")
 
         parser.add_argument('-RUF', type=int, default=0,
@@ -342,9 +344,11 @@ class WarriorCliClass(object):
                             help="create a property in test junit files which name is "\
                             "resultlocation and value is <job_url<url>> + <jobid>")
 
-        parser.add_argument('-encrypt', action='store', nargs='*', dest="encrypt", help="encrypt data string")
+        parser.add_argument('-encrypt', action='store', nargs='*',\
+            dest="encrypt", help="encrypt data string")
 
-        parser.add_argument('-decrypt', action='store', nargs='*', dest="decrypt", help="decrypt data string")
+        parser.add_argument('-decrypt', action='store', nargs='*',\
+         dest="decrypt", help="decrypt data string")
 
         # Run Testcases/Suites/Projects in default locations
         parser.add_argument('-wt', action='store', nargs='*', dest="tc_name",
@@ -389,7 +393,7 @@ class WarriorCliClass(object):
                             "TO be used by Katana only " \
                             "Will be set when katana executes warrior " \
                             "UI will read live html results from this location" \
-                            "and display html results in a live fashion " )
+                            "and display html results in a live fashion ")
 
         #Running Warrior in Mock mode and Test mode
         parser.add_argument('-mock', action='store_true', default=False,
@@ -408,7 +412,8 @@ class WarriorCliClass(object):
                             "User can verify input value from console output/result file")
 
         parser.add_argument('-headless', action='store_true', default=False,
-                            help="If headless mode is enabled, all selenium tests will run in xfvb "\
+                            help="If headless mode is enabled, all selenium \
+                            tests will run in xfvb " \
                             "which will not need a GUI")
 
         namespace = parser.parse_args(arglist)
@@ -419,7 +424,7 @@ class WarriorCliClass(object):
             WarriorCliClass.sim = True
         return namespace
 
-class CreateTestSuite(object):
+class CreateTestSuite():
     """create testsuite xml file"""
     def __init__(self, suite_path, filename, tc_list):
         """Constructor to intialize default values for creating a suite """

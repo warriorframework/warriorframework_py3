@@ -523,7 +523,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     get_testcase_details(testcase_filepath, data_repository, jiraproj)
     #get testwrapperfile details like testwrapperfile, data_type and runtype
     # testwrapperfile, j_data_type, j_runtype = \
-    testwrapperfile, j_data_type, j_runtype, setup_on_error_action = get_testwrapper_file_details(testcase_filepath, data_repository)
+    testwrapperfile, j_data_type, j_runtype, setup_on_error_action = \
+    get_testwrapper_file_details(testcase_filepath, data_repository)
     data_repository['wt_testwrapperfile'] = testwrapperfile
 
 
