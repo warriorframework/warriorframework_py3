@@ -11,8 +11,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-"""Class which generates the consolidated test cases result in console at the
-end of Test Suite or Project Execution """
+"""Class which generates the consolidated test cases 
+result in console at the end of Test Suite or Project Execution"""
 import os
 from Framework.Utils import xml_Utils
 from Framework.Utils.print_Utils import print_info
@@ -93,7 +93,8 @@ class ExecutionSummary():
                     case_result_dir = os.path.dirname(case_result_dir_with_tc_name)
                     # suite junit element will not have resultsdir attrib for case execution
                     if suite_result_dir is None or suite_result_dir == case_result_dir:
-                        suite_tc_list.append(["Cleanup", cleanup_name, cleanup_status, cleanup_location])
+                        suite_tc_list.append(["Cleanup", cleanup_name, cleanup_status, \
+                            cleanup_location])
 
 
         # suite_tc_list appends suites and test cases as per execution order
@@ -116,7 +117,7 @@ class ExecutionSummary():
            Suite/Project Execution"""
         file_type = self.get_file_type(junit_file)
         # Formatting execution summary as project_summary and suite_summary returns the list values
-        print_info("+++++++++++++++++++++++++++++++++++++++++++++++++ Execution Summary +++++++++++++++++++++++++++++++++++++++++++++++++")
+        print_info("++++++++++++++++++++++++++++++++ Execution Summary +++++++++++++++++++++++++")
         print_info("{0:10}{1:50}{2:10}{3:50}".format('Type', 'Name', 'Status', 'Path'))
         if file_type == "Project":
             project_exec = self.project_summary(junit_file)
@@ -132,4 +133,4 @@ class ExecutionSummary():
             for suite_tc in suite_tc_exec:
                 print_info(("{0:10}{1:50}{2:10}{3:30}"
                             .format(suite_tc[0], suite_tc[1], suite_tc[2], suite_tc[3])))
-        print_info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+        print_info("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
