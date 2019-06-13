@@ -566,8 +566,8 @@ class TestcaseUtils(object):
         """Generates a system resultfile from the list of keyword result files """
 
         system_results_dir = self.file_utils().createDir(resultsdir, 'System_Results')
-        system_resultfile = self.file_utils().getCustomLogFile('system', system_results_dir,
-            system_name, '.xml')
+        system_resultfile = self.file_utils().getCustomLogFile('system', \
+            system_results_dir,system_name, '.xml')
         self.append_result_files(system_resultfile, kw_resultfile_list, dst_root='System')
         return system_resultfile
 

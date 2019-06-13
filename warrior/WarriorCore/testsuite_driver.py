@@ -559,7 +559,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
 def main(testsuite_filepath, data_repository={}, from_project=False, auto_defects=False,
          jiraproj=None, res_startdir=None, logs_startdir=None, ts_onError_action=None,
          queue=None, ts_parallel=False):
-    """Executes a test suite """ 
+    """Executes a test suite """
     try:
         test_suite_status, suite_repository = execute_testsuite(testsuite_filepath,
                                                                 data_repository, from_project,

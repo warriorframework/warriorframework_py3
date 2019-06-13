@@ -473,7 +473,8 @@ def decide_action(w_cli_obj, namespace):
         if status:
             # sends secret key and encrypted text password for decryption
             message = Encrypt.decrypt(namespace.decrypt[0], encoded_key)
-            print_info("The decrypted text for '{0}' is: {1}".format(namespace.decrypt[0],message))
+            print_info("The decrypted text for '{0}' is: {1}"\
+                .format(namespace.decrypt[0], message))
             exit(0)
         else:
             print_error("Decrypted text could not be generated.")

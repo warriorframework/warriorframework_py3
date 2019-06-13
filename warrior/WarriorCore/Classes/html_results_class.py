@@ -67,8 +67,7 @@ class LineResult:
                     "<i name='logs-icon' class='fa fa-book'  data-logPath='{0}'\
                     katana-click='execution.resultsViewer.openConsoleLogFile' > </i>"\
                     "</a>"\
-                    "</span>".format(line.get("console_logfile"))
-                    if line.get("console_logfile") else ''
+                    "</span>".format(line.get("console_logfile"))  if line.get("console_logfile") else ''
 
         # link to defects will only be applied to a keyword and it will open the defects json file in a popup
         defects_span = "<span style='padding-left:10px; padding-right: 10px;'>"\
