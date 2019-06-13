@@ -33,7 +33,7 @@ class Junit():
         properties = self.create_element("properties")
         self.root.append(properties)
 
-    def init_arg(**kwargs):
+    def init_arg(self, **kwargs):
         """
             initialize the common attribute for an element
         """

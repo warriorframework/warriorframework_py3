@@ -140,10 +140,10 @@ def file_execution(cli_args, abs_filepath, default_repo):
             abs_filepath, auto_defects=a_defects,
             jiraproj=jiraproj, data_repository=default_repo)
         update_jira_by_id(jiraproj, jiraid,
-                          project_repository['project_execution_dir'], result)
+                           project_repository['project_execution_dir'], result)
         email.compose_send_email("Project: ", abs_filepath,
-                                 project_repository['wp_logs_execdir'],
-                                 project_repository['wp_results_execdir'], result)
+                                project_repository['wp_logs_execdir'],
+                                project_repository['wp_results_execdir'], result)
     else:
         print_error("Unrecognized root tag in the input xml file ! exiting!!!")
 
