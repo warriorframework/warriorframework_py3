@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+
+<configuration>
+    <registry name="registry">
+        <args name="args"
+              address="{{ data.registry.address }}"
+              image="{{ data.registry.image }}"
+              image_name="{{ data.registry.image_name }}"
+              image_tag="{{ data.registry.image_tag }}"
+        />
+    </registry>
+    <host name="host">
+        <args name="args"
+              kube_pod_name="{{data.host.pod_name}}"
+              end_prompt="{{ data.host.end_prompt }}"
+              password="{{ data.host.password }}"
+              flags="{{data.host.flags}}"
+              run_flags="{{data.host.run_flags}}"
+              expose_flags="{{data.host.expose_flags}}"
+              scripts="{{data.host.scripts}}"
+        />
+    </host>
+</configuration>

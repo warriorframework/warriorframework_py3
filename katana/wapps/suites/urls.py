@@ -1,11 +1,9 @@
 from django.conf.urls import url
-
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'editSuite', views.editSuite, name='editSuite'),
-    url(r'getSuiteDataBack', views.getSuiteDataBack, name='getSuiteDataBack'),
-    url(r'getJSONSuiteData', views.getJSONSuiteData, name='getJSONSuiteData'),
-    url(r'getSuiteListTree', views.getSuiteListTree, name='getSuiteListTree'),
+    url(r'^$', views.SuitesView.as_view(), name='index'),
+    url(r'^get_list_of_suites/$', views.get_list_of_suites, name='get_list_of_suites'),
+    url(r'^get_file/$', views.get_file, name='get_file'),
+    url(r'^save_file/$', views.save_file, name='save_file'),
 ]

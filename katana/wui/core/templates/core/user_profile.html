@@ -1,0 +1,74 @@
+{% extends 'core/base_index_django.html' %}
+
+{% block headcontent %}
+<title>User Settings</title>
+{% load staticfiles %}
+{% endblock %}
+{% block pagecontent %}
+<div class="card h-100">
+  <div class="card-header">
+    <h3>Your Profile</h3>
+  </div>
+  <div class="card-body">
+    <div class="card-text row">
+      <form class="card-text col-10" action="" method="post" role="form" id="user-profile-form">
+        <h5 class="card-title">Personal Information</h5>
+        {% csrf_token %}
+        {% for message in messages %}
+        <h5 class="card-title">{{ message }}</h5>
+        {% endfor %}
+        {% if form.errors %}
+        <p>
+          {% if form.errors.items|length == 1 %}Please correct the error below.{% else %}Please correct the errors below.{% endif %}
+        </p>
+        {% endif %}
+        {% if not user.has_usable_password %}
+        <p>Your first name, last name, email address, and password cannot be changed because you have been authenticated through an external single-sign on service.</p>
+        {% endif %}
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" class="form-control" id="username" name="username" placeholder="Username" value="{{ user.username|default:'' }}" disabled>
+        </div>
+        <div class="form-group row">
+          <div class="col">
+          <label for="first_name">First Name</label>
+          <input type="text" class="form-control" id="first_name" name="first_name" placeholder="First Name" value="{{ user.first_name|default:'' }}" {% if not user.has_usable_password %}disabled {% endif %}>
+          </div>
+          <div class="col">
+          <label for="last_name">Last Name</label>
+          <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Last Name" value="{{ user.last_name|default:'' }}" {% if not user.has_usable_password %}disabled {% endif %}>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="text" class="form-control" id="email" name="email" placeholder="Email" value="{{ user.email|default:'' }}" {% if not user.has_usable_password %}disabled {% endif %}>
+        </div>
+        {% if user.expires %}
+        <h5 class="card-title">Other Information</h5>
+        <div class="form-group row">
+          <div class="col">
+            <label for="expires">Expiry Date</label>
+            <input type="text" class="form-control" id="expires" name="expires" placeholder="Expiry Date" value="{{ user.expires|date:'jS F Y H:i' }}" disabled>
+          </div>
+          <div class="col">
+            <label for="server_time">Current Server Time</label>
+            <input type="text" class="form-control" id="server_time" placeholder="" value="{% now 'jS F Y H:i' %}" disabled>
+          </div>
+        </div>
+        {% endif %}
+      </form>
+    </div>
+    <div class="row">
+      <div class="col-3">
+        <button type="submit" form="user-profile-form" class="btn btn-primary btn-block">Save Changes</button>
+        {% if user.has_usable_password %}
+        <a href="/katana/accounts/profile/password_change/" class="btn btn-primary btn-block">Change Password</a>
+        {% endif %}
+        {% if user.is_staff %}
+        <a href="/admin" class="btn btn-primary btn-block">Go to Admin Site</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

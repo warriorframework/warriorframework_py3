@@ -49,6 +49,7 @@ cmd_params = OrderedDict([("command_list", "send"),
                           ("resp_ref_list", "resp_ref"),
                           ("resp_req_list", "resp_req"),
                           ("resp_pat_req_list", "resp_pat_req"),
+                          ("resp_pat_key_list", "resp_pat_key"),
                           ("resp_key_list", "resp_keys"),
                           ("inorder_resp_ref_list", "inorder_resp_ref"),
                           ("log_list", "monitor"),
@@ -58,8 +59,10 @@ cmd_params = OrderedDict([("command_list", "send"),
                           ("operator_list", "operator"),
                           ("cond_value_list", "cond_value"),
                           ("cond_type_list", "cond_type"),
-                          ("repeat_list", "repeat")])
-
+                          ("repeat_list", "repeat"),
+                          ("sleeptime_before_match_list", "sleep_before_match"),
+                          ("return_on_fail_list", "return_on_fail"),
+                          ("logmsg_list", "log")])
 
 def get_nc_request_rpc_string(config_datafile, xmlns, request_type, xmlns_tag):
     """
@@ -224,9 +227,8 @@ def get_credentials(datafile, system_name, myInfo=[], tag_name="system",
                         for child in child_list:
                             cred_value[child.tag] = child.text
                             if 'wtype' in child.attrib:
-                                cred_value[child.tag] = get_actual_cred_value(
-                                                        child.tag, child.text,
-                                                        child.attrib['wtype'], startdir)
+                                cred_value[child.tag] = get_actual_cred_value(child.tag, child.text,
+                                                                              child.attrib['wtype'], startdir)
                     else:
                         cred_value = get_cred_value_from_elem(element, x, startdir)
                 output_dict[x] = cred_value
@@ -366,7 +368,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
         print_info("Resolving testdata details from DB system - "
                    "'{}'".format(testdatafile.get('td_system')))
         db_td_obj = database_utils_class.create_database_connection(
-                        'dataservers', testdatafile.get('td_system'))
+            'dataservers', testdatafile.get('td_system'))
         root = db_td_obj.get_tdblock_as_xmlobj(testdatafile)
 
         # if testdata block in the datafile has separate db system
@@ -375,7 +377,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             print_info("Resolving testdata-global block from DB system - "
                        "'{}'".format(testdatafile.get('global_system')))
             db_tdglobal_obj = database_utils_class.create_database_connection(
-                                'dataservers', testdatafile.get('global_system'))
+                'dataservers', testdatafile.get('global_system'))
             global_obj = db_tdglobal_obj.get_globalblock_as_xmlobj(testdatafile)
             db_tdglobal_obj.close_connection()
         else:
@@ -392,7 +394,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
         print_info("Resolving varconfig details from DB system - "
                    "'{}'".format(varconfigfile.get('var_system')))
         db_var_obj = database_utils_class.create_database_connection(
-                        'dataservers', varconfigfile.get('var_system'))
+            'dataservers', varconfigfile.get('var_system'))
         varconfigfile = db_var_obj.get_varblock_as_xmlobj(varconfigfile)
         db_var_obj.close_connection()
 
@@ -412,8 +414,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             print_info("var_sub:{0}".format(var_sub))
             td_obj = TestData()
             details_dict = td_obj.varsub_varconfig_substitutions(
-                            details_dict, vc_file=None, var_sub=var_sub,
-                            start_pat=start_pat, end_pat=end_pat)
+                details_dict, vc_file=None, var_sub=var_sub, start_pat=start_pat, end_pat=end_pat)
 
             details_dict = td_obj.wdf_substitutions(details_dict, datafile,
                                                     kw_system_name=system_name)
@@ -426,8 +427,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             # List substitution happens after iteration because
             # list sub cannot recognize the + sign in iteration
             cmd_list_substituted, verify_text_substituted = td_obj.list_substitution_precheck(
-                                                                varconfigfile, details_dict,
-                                                                start_pat, end_pat)
+                varconfigfile, details_dict, start_pat, end_pat)
             td_obj.list_substitution(details_dict, varconfigfile, cmd_list_substituted,
                                      verify_text_substituted, start_pat, end_pat)
 
@@ -813,13 +813,14 @@ def get_verify_text_context_as_list(testdata, verify_list):
 def verify_resp_across_sys(match_list, context_list, command,
                            response, varconfigfile=None, verify_on_list=None,
                            verify_list=None, remote_resp_dict=None,
-                           endprompt="", verify_group=None):
+                           endprompt="", verify_group=None, log="true"):
     """ New method to verify response of a command
     sent on one system with the response recieved from
     another system """
 
     msg = ("Verification required for command: '{0}' ".format(command))
-    testcase_Utils.pNote(msg, "debug")
+    if log != "false":
+        testcase_Utils.pNote(msg, "debug")
 
     status = True
     for i in range(0, len(verify_on_list)):
@@ -837,7 +838,7 @@ def verify_resp_across_sys(match_list, context_list, command,
                 data = remote_resp_dict[verify_on_list[i][j]]
                 tmp_status = verify_cmd_response([match_list[i]], [context_list[i]], command,
                                                  data, verify_on_list[i][j], varconfigfile,
-                                                 endprompt, verify_group)
+                                                 endprompt, verify_group, log)
                 status = status and tmp_status
             except KeyError:
                 print_error("Response could not be collected for {0}, hence, "
@@ -851,15 +852,15 @@ def get_no_impact_logic(context_str):
     """Get the silent tag from context
     return silence value and context value"""
     value = {
-              'YES:NOIMPACT': (True, 'YES'),
-              'YES': (False, 'YES'),
-              'Y:NOIMPACT': (True, 'YES'),
-              'Y': (False, 'YES'),
-              'NO:NOIMPACT': (True, 'No'),
-              'NO': (False, 'No'),
-              'N:NOIMPACT': (True, 'No'),
-              'N': (False, 'No'),
-            }.get(context_str.upper(), False)
+        'YES:NOIMPACT': (True, 'YES'),
+        'YES': (False, 'YES'),
+        'Y:NOIMPACT': (True, 'YES'),
+        'Y': (False, 'YES'),
+        'NO:NOIMPACT': (True, 'No'),
+        'NO': (False, 'No'),
+        'N:NOIMPACT': (True, 'No'),
+        'N': (False, 'No'),
+    }.get(context_str.upper(), False)
 
     return value
 
@@ -882,7 +883,7 @@ def convert2type(value, data_type='str'):
 @mocked
 def verify_cmd_response(match_list, context_list, command, response,
                         verify_on_system, varconfigfile=None, endprompt="",
-                        verify_group=None):
+                        verify_group=None, log="true"):
     """Verifies the response with the provided
     match and context list
     """
@@ -948,18 +949,19 @@ def verify_cmd_response(match_list, context_list, command, response,
                                          "would not impact command status")
                 else:
                     result = False
-            if pattern_match is True and found is True:
-                print_info(msg .format(match_list[i], command, verify_on_system,
-                                       "Yes", "verification Passed"))
-            elif pattern_match is True and found is False:
-                print_debug(msg .format(match_list[i], command, verify_on_system,
-                                        "No", "verification Failed"))
-            elif pattern_match is False and found is True:
-                print_debug(msg .format(match_list[i], command, verify_on_system,
-                                        "Yes", "verification Failed"))
-            elif pattern_match is False and found is False:
-                print_info(msg .format(match_list[i], command, verify_on_system,
-                                       "No", "verification Passed"))
+            if log != "false":
+                if pattern_match is True and found is True:
+                    print_info(msg .format(match_list[i], command, verify_on_system,
+                                           "Yes", "verification Passed"))
+                elif pattern_match is True and found is False:
+                    print_debug(msg .format(match_list[i], command, verify_on_system,
+                                            "No", "verification Failed"))
+                elif pattern_match is False and found is True:
+                    print_debug(msg .format(match_list[i], command, verify_on_system,
+                                            "Yes", "verification Failed"))
+                elif pattern_match is False and found is False:
+                    print_info(msg .format(match_list[i], command, verify_on_system,
+                                           "No", "verification Passed"))
         elif context_list[i] and match_list[i] == "":
             noiimpact, found = get_no_impact_logic(context_list[i])
             found = string_Utils.conv_str_to_bool(found)
@@ -1030,8 +1032,12 @@ def verify_data(expected, key, data_type='str', comparison='eq'):
         'gt': lambda x, y: x > y,
         'ge': lambda x, y: x >= y,
         'lt': lambda x, y: x < y,
-        'le': lambda x, y: x <= y
+        'le': lambda x, y: x <= y,
+        're.match': lambda x, y: re.match(y, x),
+        're.search': lambda x, y: re.search(y, x)
     }
+    if comparison == 're.match' or comparison == 're.search':
+        data_type = 'str'
     result, err_msg, exp = validate()
     value = get_object_from_datarepository(key)
     key_err_msg = "In the given key '{0}', '{1}' is not present in data repository"
@@ -2116,3 +2122,13 @@ def generate_datafile(lists_of_systems, output_dir, filename):
             fd.write(xml_Utils.convert_element_to_string(root))
             result.append(output_file)
     return result
+
+
+def set_gnmi_cert_params(p_dic):
+    """
+    Set the data params for GNMI
+    """
+    ca_crt = p_dic['ca_crt']
+    client_crt = p_dic['client_crt']
+    client_key = p_dic['client_key']
+    return ca_crt, client_crt, client_key

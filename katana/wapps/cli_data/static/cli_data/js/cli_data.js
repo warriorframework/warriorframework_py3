@@ -25,7 +25,6 @@ var cliData = {
 
         saveFile: function() {
             var $currentPage = katana.$activeTab;
-            var filepath = $currentPage.find('.tool-bar').find('.title').attr("filepath");
             $.ajax({
                 headers: {
                     'X-CSRFToken': $currentPage.find('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -41,7 +40,7 @@ var cliData = {
                         },
                         type: 'POST',
                         url: 'cli_data/save_testdata_file/',
-                        data: {"json_data": JSON.stringify(finalJson), "filename": inputValue, "directory": filepath}
+                        data: {"json_data": JSON.stringify(finalJson), "filename": inputValue, "directory": config_file_data.testdata}
                     }).done(function(data) {
                         if(data.saved){
                             cliData.fileDisplayAPI.init();
@@ -72,7 +71,7 @@ var cliData = {
                             },
                             type: 'POST',
                             url: 'check_if_file_exists/',
-                            data: {"filename": inputValue, "directory": filepath, "extension": ".xml"}
+                            data: {"filename": inputValue, "directory": config_file_data.testdata, "extension": ".xml"}
                         }).done(function(data){
                              if(data.exists){
                                 katana.openAlert({
@@ -246,7 +245,6 @@ var cliData = {
                                             $mainDiv.show();
                                             var $toolBarDiv = $currentPage.find('.tool-bar');
                                             $toolBarDiv.find('.title').html(data["name"]);
-                                            $toolBarDiv.find('.title').attr("filepath", data["filepath"]);
 
                                             $newBtn.hide();
                                             $closeBtn.show();
@@ -287,7 +285,6 @@ var cliData = {
                 $mainDiv.show();
                 var $toolBarDiv = $currentPage.find('.tool-bar');
                 $toolBarDiv.find('.title').html(data["name"]);
-                $toolBarDiv.find('.title').attr("filepath", data["filepath"]);
 
                 $newBtn.hide();
                 $closeBtn.show();

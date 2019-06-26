@@ -78,4 +78,3 @@ def translate_mib(custom_mib_paths, load_mib_modules, name, val):
                          (name.prettyPrint(), temp_type,
                           val.prettyPrint()))
         return name.prettyPrint(), val.prettyPrint()
-
