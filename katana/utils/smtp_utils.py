@@ -1,5 +1,7 @@
 from utils.class_utils import Singleton
 from abc import ABCMeta, abstractmethod
+from django.core.mail.message import EmailMessage
+from django.core.mail import send_mail
 
 
 class WarriorMessagingBaseClass(metaclass=ABCMeta):
@@ -54,8 +56,20 @@ class WarriorMailManager(WarriorMessagingBaseClass):
         self.server_email = server_email
         self.connections_class = WarriorMailLiveConnectionsClass()
 
-    def send_message(self, connection_name, subject, message, from_email, recipient_list, fail_silently=False, auth_user=None, auth_password=None, connection=None, html_message=None):
-        current_conn = self.connections_class.get_connection(connection_name)
+    def send_message(self, connection_name, subject="", message="", from_email=None, to=None, cc=None, bcc=None,
+                     fail_silently=False, connection=None, attachments=None, headers=None, reply_to=None, html_message=False):
+        """
+        Warrior wrapper for the Email class in Django Mail.
+
+        :param connection_name: Name of the connection to be used. Set in WarriorMailLiveConnectionsClass()
+        Complete Documentation: https://docs.djangoproject.com/en/2.2/topics/email/#emailmessage-objects
+
+        :return: None
+        """
+        email_message = EmailMessage(subject=subject, body=message, from_email=from_email, to=to, bcc=bcc,
+                                     connection=self.connections_class.get_connection(connection_name),
+                                     attachments=attachments, headers=headers, cc=cc, reply_to=None)
+        email_message.send(fail_silently=fail_silently)
 
     def send_mass_message(self, connection_name, datatuple, fail_silently=False, auth_user=None, auth_password=None, connection=None):
         current_conn = self.connections_class.get_connection(connection_name)
