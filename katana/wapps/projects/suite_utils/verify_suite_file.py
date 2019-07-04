@@ -62,13 +62,6 @@ class VerifySuiteFile:
         elif not isinstance(self.data[self.root][top_key]["Testsuite"], list):
             self.data[self.root][top_key]["Testsuite"] = [self.data[self.root][top_key]["Testsuite"]]
 
-        for i in range(0, len(self.data[self.root][top_key]["Testsuite"])):
-            for key, value in self.template_data[self.root][top_key]["Testsuite"].items():
-                key, value, self.data[self.root][top_key]["Testsuite"][i] = \
-                    self.__verified_steps_key_value(key, value,
-                                                    self.data[self.root][top_key]["Testsuite"][i])
-                self.data[self.root][top_key]["Testsuite"][i][key] = \
-                    self.__verify_values(key, value, self.data[self.root][top_key]["Testsuite"][i])
 
     @staticmethod
     def __verified_steps_key_value(key, value, verify_data):
@@ -121,3 +114,4 @@ class VerifySuiteFile:
             else:
                 output = parent[tmpl_key] if parent[tmpl_key].strip() != "" else tmpl_value
         return output
+

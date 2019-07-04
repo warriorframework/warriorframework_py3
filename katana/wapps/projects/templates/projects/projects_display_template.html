@@ -18,6 +18,7 @@
                 </thead>
                 <tbody>
                 {% for tc in data.Project.Testsuites.Testsuite %}
+
                 <tr katana-click="projects.stepSection.selectStep" key="Testsuite">
                     <td class="col-sm-2" key="@TS">{{ forloop.counter }}</td>
                     <td class="col-sm-4" key="path" title={{tc.path}}>{{ tc.path }}</td>
@@ -58,16 +59,16 @@
         </div>
 
         <div class="suites-step-toolbar">
-            <div katana-click="projects.stepSection.toolbar.editStep" title="Select a step to edit it">
+            <div katana-click="projects.stepSection.toolbar.editStep" title="Select a Suite to edit it">
                 <i class="fa fa-pencil" aria-hidden="true"></i>
             </div>
-            <div katana-click="projects.stepSection.toolbar.insertStep" title="Select a step to insert above it">
+            <div katana-click="projects.stepSection.toolbar.insertStep" title="Select a Suite to insert above it">
                 <i class="fa fa-reply" aria-hidden="true"></i>
             </div>
-            <div katana-click="projects.stepSection.toolbar.deleteStep" title="Select a step or multiple steps to delete it/them">
+            <div katana-click="projects.stepSection.toolbar.deleteStep" title="Select a suite or multiple suites to delete it/them">
                 <i class="fa fa-trash-o" aria-hidden="true"></i>
             </div>
-            <div katana-click="projects.stepSection.toolbar.multiselect" title="Toggle between selecting single and multiple steps">
+            <div katana-click="projects.stepSection.toolbar.multiselect" title="Toggle between selecting single and multiple suites">
                 <i class="fa fa-th-list badged" aria-hidden="true" multiselect="on">
                     <i class="fa fa-check-circle" aria-hidden="true"></i>
                 </i>

@@ -246,6 +246,8 @@ var projects = {
                         }
                         if (index === 0) {
                             katana.$activeTab.find('#suites-steps-template').find('tbody').prepend(displayContent);
+                            //displayContent.insertAfter($($allTrs[index-1]));
+                            projects.redoStepNums();
                         } else {
                             displayContent.insertAfter($($allTrs[index-1]));
                             projects.redoStepNums();
@@ -799,7 +801,7 @@ var projects = {
     addTsToStepsHtmlBlock: function ($container, stepNum) {
         /* This function adds the step number to the case-step (side-drawer) block */
 
-        $container.find('[key="@TS"]').attr('value', stepNum).val(stepNum);
+         $container.find('[key="@TS"]').attr('value', stepNum).val(stepNum);
         return $container
     },
 
@@ -966,6 +968,7 @@ var projects = {
                 } else {
                     insertAtIndex = $($allTrElems[0]).index();
                 }
+                console.log($($allTrElems[0]).index())
 
                 projects.drawer.openClosedDrawer(projects.mappings.newStep.title);
                 projects.drawer.open.highlightSidebar(2);

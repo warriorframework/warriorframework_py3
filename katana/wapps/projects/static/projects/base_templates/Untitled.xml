@@ -12,18 +12,5 @@
 		<default_onError action="next" value=""/>
 		<Resultsdir/>
 	</Details>
-	<Requirements>
-		<Requirement/>
-	</Requirements>
-	<Testsuites>
-		<Testsuite>
-			<path/>
 
-            <Execute ExecType="Yes">
-				<Rule Condition="" Condvalue="" Else="next" Elsevalue=""/>
-			</Execute>
-			<onError action="next" value=""/>
-			<impact>impact</impact>
-		</Testsuite>
-    </Testsuites>
 </Project>
