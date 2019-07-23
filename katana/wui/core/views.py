@@ -27,7 +27,7 @@ from utils.json_utils import read_json_data
 from utils.navigator_util import Navigator
 from wui.core.apps import AppInformation
 from wui.users.views import PublicView
-from .core_utils.core_settings import FileSettings, LDAPSettings, Restart
+from .core_utils.core_settings import FileSettings, LDAPSettings, Restart, EMAILSettings
 
 try:
     from django_auth_ldap.backend import LDAPBackend
@@ -161,16 +161,19 @@ class SiteSettingsView(UserPassesTestMixin, View,):
 
     def get(self, request):
         ldap_settings = LDAPSettings()
+        email_settings = EMAILSettings()
         context = {
             'is_site_settings': True,
             'ldap_settings': ldap_settings.configs_to_strings(),
             'ldap_enabled': ldap_settings.enabled,
             'ldap_errors': ldap_settings.errors,
+            'email_settings': email_settings.configs,
         }
         return render(request, "core/site_settings.html", context=context)
 
     def post(self, request):
         ldap_settings = LDAPSettings()
+        email_settings = EMAILSettings()
         file_errors = {}
         if request.POST.get('action', '') == 'ldap':
             new_configs = {k.upper(): v for k, v in request.POST.items()
@@ -199,12 +202,20 @@ class SiteSettingsView(UserPassesTestMixin, View,):
                 else:
                     messages.error(request, 'Failed to upload file(s)')
                     file_errors['ldap_cert_file'] = 'upload failed'
+        elif request.POST.get('action', '') == 'email':
+            new_configs = {k.upper(): v for k, v in request.POST.items()
+                           if 'email' in k and v != ""}
+            # Handle use_tls field - not present in POST when not checked
+            if 'EMAIL_USE_TLS' not in new_configs:
+                new_configs['EMAIL_USE_TLS'] = False
+            email_settings.update(new_configs)
         context = {
             'is_site_settings': True,
             'ldap_settings': ldap_settings.configs_to_strings(),
             'ldap_enabled': ldap_settings.enabled,
             'ldap_errors': ldap_settings.errors,
             'file_errors': file_errors,
+            'email_settings': email_settings.configs,
         }
         return render(request, "core/site_settings.html", context=context)
 

@@ -216,5 +216,56 @@
             <input type="submit" value="Save" class="default" name="_save">
         </div>
     </form>
+    <br>
+    <h2>Email Settings</h2>
+    <form enctype="multipart/form-data" id="email-settings-form" action method="post">
+        <p></p>
+        {% csrf_token %}
+        <input type="hidden" name="action" value="email">
+        <div>
+            <fieldset class="module aligned">
+                <h2>SMTP Server Settings</h2>
+                <div class="form-row">
+                    <div>
+                        <label for="email_host">Host</label>
+                        <input type="text" class="vLargeTextField" id="email_host" name="email_host"
+                            value="{{ email_settings.EMAIL_HOST }}">
+                    </div>
+                    <br>
+                    <div>
+                        <label for="email_port">PORT</label>
+                        <input type="text" class="vLargeTextField" id="email_port" name="email_port"
+                            value="{{ email_settings.EMAIL_PORT }}">
+                    </div>
+                    <br>
+                    <div>
+                        <label for="email_host_user">USERNAME</label>
+                        <input type="text" class="vLargeTextField" id="email_host_user" name="email_host_user"
+                            value="{{ email_settings.EMAIL_HOST_USER }}">
+                    </div>
+                    <br>
+                    <div>
+                        <label for="email_host_password">PASSWORD</label>
+                        <input type="text" class="vLargeTextField" id="email_host_password" name="email_host_password"
+                            value="{{ email_settings.EMAIL_HOST_PASSWORD }}">
+                    </div>
+		    <br>
+                    <div>
+                        <label for="default_from_email">FROM EMAIL</label>
+                        <input type="text" class="vLargeTextField" id="default_from_email" name="default_from_email"
+                            value="{{ email_settings.DEFAULT_FROM_EMAIL }}">
+                    </div>
+		    <br>
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="email_use_tls" name="email_use_tls"
+                            value = "1" {% if email_settings.EMAIL_USE_TLS %}checked{% endif %}>
+                        <label for="email_use_tls" class="vCheckboxLabel">USE TLS</label>
+                    </div>
+            </fieldset>
+        </div>
+        <div class="submit-row">
+            <input type="submit" value="Save" class="default" name="_save">
+        </div>
+    </form>
 </div>
 {% endblock %}

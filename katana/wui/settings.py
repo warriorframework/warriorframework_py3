@@ -138,6 +138,7 @@ LOGGING = settings_logging.get_log_config()
 # LDAP Settings (if available)
 CONFIG_FILE = os.path.join(BASE_DIR, 'wui', 'config.ini')
 
+
 try:
     LOGGING['loggers']['django_auth_ldap'] = {
         "level": "DEBUG",
@@ -156,6 +157,19 @@ try:
 except Exception as ex:
     print("Unexpected failure to import LDAP settings from", CONFIG_FILE)
     print("Error encountered:\n", ex)
+
+
+#Mail Servers
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+try:
+    email_settings = core_settings.EMAILSettings(CONFIG_FILE)
+    for config, value in email_settings.configs.items():
+        locals()[config.upper()] = value
+except Exception as ex:
+    print("Unexpected failure to import Email settings from", CONFIG_FILE)
+    print("Error encountered:\n", ex)
+
+
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
