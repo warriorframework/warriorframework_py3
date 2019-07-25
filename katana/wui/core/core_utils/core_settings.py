@@ -9,7 +9,7 @@ from utils.navigator_util import Navigator
 import sys
 try:
     import ldap
-    from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, PosixGroupType
+    from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, PosixGroupType, LDAPSearchUnion
 except Exception:
     pass
 
@@ -62,10 +62,12 @@ class LDAPSettings:
 
     REQUIRED_FIELDS = [
         'AUTH_LDAP_SERVER_URI',
-        'AUTH_LDAP_USER_DN_TEMPLATE',
         'AUTH_LDAP_SEARCH_BASE_DN',
         'AUTH_LDAP_BIND_DN',
         'AUTH_LDAP_BIND_PASSWORD',
+    ]
+    EITHER_REQ_FIELDS = [
+        ['AUTH_LDAP_USER_DN_TEMPLATE', 'AUTH_LDAP_USER_SEARCH'],
     ]
     REQUIRED_FOR_GROUP_FIELDS = [
         'AUTH_LDAP_GROUP_TYPE',
@@ -78,6 +80,7 @@ class LDAPSettings:
     JSON_FIELDS = [
         'AUTH_LDAP_USER_ATTR_MAP',
         'AUTH_LDAP_GROUP_MAPPING',
+        'AUTH_LDAP_USER_SEARCH',
     ]
     DN_FIELDS = [
         'AUTH_LDAP_SEARCH_BASE_DN',
@@ -130,6 +133,15 @@ class LDAPSettings:
         """
         retval = copy(self.configs)
 
+        # Convert AUTH_LDAP_USER_SEARCH to Json
+        if 'AUTH_LDAP_USER_SEARCH' in retval:
+            temp, retval['AUTH_LDAP_USER_SEARCH'] = retval['AUTH_LDAP_USER_SEARCH'], []
+            try:
+                for search in temp.searches:
+                    retval['AUTH_LDAP_USER_SEARCH'].append({"search": search.base_dn, "filter": search.filterstr})
+            except AttributeError:
+                pass
+
         for k in LDAPSettings.JSON_FIELDS:
             if k in retval:
                 retval[k] = json.dumps(retval[k])
@@ -157,7 +169,6 @@ class LDAPSettings:
             if "is_superuser" in flags:
                 retval['AUTH_LDAP_USER_FLAGS_BY_GROUP_IS_SUPERUSER'] = flags["is_superuser"]
             del retval['AUTH_LDAP_USER_FLAGS_BY_GROUP']
-
         return retval
 
     def _translate_from_settings(self):
@@ -210,36 +221,54 @@ class LDAPSettings:
         Validate LDAP settings
         :return:
         """
-        self.errors = {}
         for k in LDAPSettings.REQUIRED_FIELDS:
             if k not in self.configs:
-                self.errors[k] = 'missing'
+                self.errors[k] = 'This field is missing'
+        for el in LDAPSettings.EITHER_REQ_FIELDS:
+            count = 0
+            for k in el:
+                count += (1 if k in self.configs else 0)
+            else:
+                if count == 0:
+                    self.errors.update({k: 'At least one field in this section must be populated' for k in el if k not in self.errors})
+                elif count > 1:
+                    self.errors.update({k: 'Only one field in this section may be populated' for k in el if k not in self.errors})
         for k in LDAPSettings.DN_FIELDS:
             if k in self.configs and not LDAPSettings.is_dn(self.configs[k]):
-                self.errors[k] = 'incorrectly formatted'
+                self.errors[k] = 'This field is incorrectly formatted'
         # Check user dn template is an appropriate template string
         try:
             self.configs.get('AUTH_LDAP_USER_DN_TEMPLATE', '') % {'user': 'generic_username'}
         except ValueError:
-            self.errors['AUTH_LDAP_USER_DN_TEMPLATE'] = 'formatted incorrectly'
+            self.errors['AUTH_LDAP_USER_DN_TEMPLATE'] = 'This field is formatted incorrectly'
         # Verify that user attribute map is setting valid user attributes
         attr_map = self.configs.get('AUTH_LDAP_USER_ATTR_MAP', {})
         accepted_keys = {'first_name', 'last_name', 'email', 'expires'}
         extra_keys = set(attr_map.keys()) - accepted_keys
         if extra_keys:
-            self.errors['AUTH_LDAP_USER_ATTR_MAP'] = 'incorrect'
+            self.errors['AUTH_LDAP_USER_ATTR_MAP'] = 'This field is incorrect'
+        # Validate if AUTH_LDAP_USER_SEARCH is correctly formatted
+        if "AUTH_LDAP_USER_SEARCH" in self.configs:
+            for search in self.configs["AUTH_LDAP_USER_SEARCH"].searches:
+                try:
+                    if not LDAPSettings.is_dn(search.base_dn):
+                        self.errors['AUTH_LDAP_USER_SEARCH'] = 'This field is incorrectly formatted'
+                        break
+                except AttributeError:
+                    self.errors['AUTH_LDAP_USER_SEARCH'] = 'This field is incorrectly formatted'
+
         # Validate group settings if any group settings are set
         group_keys = {k for k in self.configs.keys() if 'GROUP' in k}
         if group_keys:
             for r in LDAPSettings.REQUIRED_FOR_GROUP_FIELDS:
                 if r not in group_keys or self.configs[r] is None:
-                    self.errors[r] = 'missing'
+                    self.errors[r] = 'This field is missing'
             if 'AUTH_LDAP_GROUP_SEARCH' in self.configs:
                 try:
                     if not LDAPSettings.is_dn(self.configs['AUTH_LDAP_GROUP_SEARCH'].base_dn):
-                        self.errors['AUTH_LDAP_GROUP_SEARCH'] = 'incorrectly formatted'
+                        self.errors['AUTH_LDAP_GROUP_SEARCH'] = 'This field is incorrectly formatted'
                 except AttributeError:
-                    self.errors['AUTH_LDAP_GROUP_SEARCH'] = 'incorrectly formatted'
+                    self.errors['AUTH_LDAP_GROUP_SEARCH'] = 'This field is incorrectly formatted'
         self.check_connection()
 
     def check_connection(self):
@@ -262,16 +291,17 @@ class LDAPSettings:
             l.simple_bind_s(user, password)
             return True
         except (ldap.SERVER_DOWN, ldap.CONNECT_ERROR, ldap.TIMELIMIT_EXCEEDED, ldap.TIMEOUT):
-            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "unable to connect to LDAP server"
+            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "Error connecting to LDAP server. LDAP client is unable to connect to LDAP server"
         except ldap.CONFIDENTIALITY_REQUIRED:
-            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "missing session confidentiality (either Start TLS or ldaps)"
+            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "Error connecting to LDAP server. LDAP client is missing session confidentiality (either Start TLS or ldaps)"
         except (ldap.INVALID_CREDENTIALS, ldap.INVALID_DN_SYNTAX):
-            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "using invalid credentials"
+            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "Error connecting to LDAP server. LDAP client is using invalid credentials"
         except ldap.LDAPError as ex:
-            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "not working. Received unexpected error: {}".format(ex)
+            self.errors['AUTH_LDAP_CONNECTION_CHECK'] = "Error connecting to LDAP server. LDAP client is not working. Received unexpected error: {}".format(ex)
         return False
 
     def update(self, new_configs):
+        self.errors = {}
         old_configs = self.configs
         # Translate values to configs
         remove_configs = set(old_configs.keys()) - set(new_configs.keys())
@@ -312,14 +342,27 @@ class LDAPSettings:
                 group_flags['is_superuser'] = v
                 self.configs['AUTH_LDAP_USER_FLAGS_BY_GROUP'] = group_flags
             # AUTH_LDAP_GROUP_MAPPING and AUTH_LDAP_USER_ATTR_MAP should be imported as json
-            elif k == 'AUTH_LDAP_USER_ATTR_MAP' or k == 'AUTH_LDAP_GROUP_MAPPING':
+            elif k in LDAPSettings.JSON_FIELDS:
                 try:
                     self.configs[k] = json.loads(v)
                 except json.JSONDecodeError:
-                    self.errors[k] = 'not in json form'
+                    self.errors[k] = 'This field is not in json form'
             else:
                 self.configs[k] = v
         if LDAPSettings.LDAP_IMPORT_SUCCESS:
+            # Import AUTH_LDAP_USER_SEARCH as LDAPSearchUnion
+
+            if "AUTH_LDAP_USER_SEARCH" in self.configs:
+                temp = self.configs["AUTH_LDAP_USER_SEARCH"]
+                ldap_searches = []
+                for el in temp:
+                    ldap_searches.append(LDAPSearch(
+                        el["search"],
+                        ldap.SCOPE_SUBTREE,
+                        el["filter"]
+                    ))
+                self.configs["AUTH_LDAP_USER_SEARCH"] = LDAPSearchUnion(*ldap_searches)
+
             # Import AUTH_LDAP_GROUP_SEARCH as LDAPSearch
             temp = new_configs.get('AUTH_LDAP_GROUP_TYPE', '').lower()
             group_type = None

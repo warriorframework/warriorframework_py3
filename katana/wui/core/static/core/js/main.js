@@ -14,6 +14,8 @@ var katana = {
   $activeTab: null,
   $view: 'null',
   $prevTab: null,
+  intervals_calls: {},
+
 
   initApp: function() {
     katana.loadView();
@@ -90,6 +92,8 @@ var katana = {
       var temp = katana.$view.find('.nav .tab').first();
       var created = temp.clone().insertAfter(temp);
       created.attr('uid', uid).append('<i class="fa fa-times" katana-click="katana.closeTab"></i>');
+      created.attr('wuid', uid);
+      katana.intervals_calls[uid] = {};
       created.find('span').text(uid);
       katana.switchTab.call(created, uid);
       callBack && callBack(newTab.find('.page-content-inner'), created);
@@ -161,7 +165,13 @@ var katana = {
     if (tab.hasClass('active') && !ignore)
       katana.switchTab();
     katana.$view.find('#' + tab.attr('uid')).remove();
+    wuid = tab.attr('wuid');
     tab.remove();
+    localStorage.removeItem('bandwidth_manager');
+    $.each(katana.intervals_calls[wuid], function(i, v){
+        window.clearInterval(katana.intervals_calls[wuid][v]);
+        delete katana.intervals_calls[wuid][v]
+    })
   },
 
   closePocketFields: function() {
@@ -353,6 +363,8 @@ var katana = {
     rcMenu.css({
       'left': event.clientX,
       'top': event.clientY
+//      'left': event.offsetX,
+//      'top': event.offsetY
     }).addClass('active');
     rcMenu.mouseleave(function(){
       katana.$view.find('.rc-menu.active').remove();
@@ -434,7 +446,7 @@ var katana = {
       }
     }
   },
-  
+
   openAlert: function(data, callBack_on_accept, callBack_on_dismiss) {
     /*
 	    data = {
@@ -1029,6 +1041,32 @@ var katana = {
       }
     },
 
+    postAsync: function(url, csrf, toSend, callBack, fallBack, callBackData, fallBackData ) {
+      var $elem = this && this != katana.templateAPI ? this : katana.$activeTab;
+      var toSend = toSend ? toSend : $elem.find('input:not([name="csrfmiddlewaretoken"])').serializeArray();
+      var url = url ? url : $elem.attr('post-url');
+      var csrf = csrf ? csrf : $elem.find('.csrf-container > input').val();
+
+      $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+          if (!this.crossDomain)
+            xhr.setRequestHeader("X-CSRFToken", csrf);
+        }
+      });
+      $.ajax({
+        url: url,
+        type: "POST",
+        data: {
+          data: toSend
+        },
+        async:false
+      }).done(function(data) {
+        callBack && callBack(data, callBackData);
+      }).fail(function(data) {
+        fallBack && fallBack(data, fallBackData);
+      });
+    },
+
     get: function({url, toSend, dataType, callBack, fallBack, callBackData, fallBackData}={}) {
 
       // intialize values for url, csrf, dataType, toSend
@@ -1288,6 +1326,15 @@ var katana = {
 
     utils: {
 
+        sleep: function (milliseconds) {
+            var start = new Date().getTime();
+            for (var i = 0; i < 1e7; i++) {
+                if ((new Date().getTime() - start) > milliseconds) {
+                    break;
+                }
+            }
+        },
+
         getRelativeFilepath: function (basePath, path, basePathIsDir) {
           /* This function gets relative path (out of a given path argument) from a basePath and path */
           var basePathSeries = katana.utils._convertBackSlashes(basePath, basePathIsDir).split('/');
@@ -1416,11 +1463,4 @@ var katana = {
     	}
     	
     }
-
-  
-  
-  
-  
-  
-  
 };
