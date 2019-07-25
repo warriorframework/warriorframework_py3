@@ -29,7 +29,7 @@ class projectsView(View):
         """
         Get Request Method
         """
-        return render(reqest, 'projects/projects.html')
+        return render(request, 'projects/projects.html')
 
 
 def get_list_of_suites(request):
