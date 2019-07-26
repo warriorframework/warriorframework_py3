@@ -1,0 +1,63 @@
+<div class="suites-intentional-space-x" id="suites-requirements-template">
+    <div class="suites-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+            {% for req in data.TestSuite.Requirements.Requirement %}
+            {% if forloop.counter <= mid_req %}
+            <tr req-number="{{ forloop.counter }}">
+                <th scope="row">{{ forloop.counter }}</th>
+                <td class="suites-req">
+                    <div style="width: 90%; float: left;" key="Requirement">
+                        {{ req }}
+                    </div>
+                    <div class="suites-req-options">
+                        <i class="fa fa-pencil" aria-hidden="true" katana-click="projects.reqSection.editReq"></i>
+                        &nbsp;
+                        <i class="fa fa-trash-o" aria-hidden="true" katana-click="projects.reqSection.deleteReq"></i>
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div class="suites-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+            {% for req in data.TestSuite.Requirements.Requirement %}
+            {% if forloop.counter > mid_req %}
+            <tr req-number="{{ forloop.counter }}">
+                <th scope="row">{{ forloop.counter }}</th>
+                <td class="suites-req">
+                    <div style="width: 90%; float: left;" key="Requirement">
+                        {{ req }}
+                    </div>
+                    <div class="suites-req-options">
+                        <i class="fa fa-pencil" aria-hidden="true" katana-click="projects.reqSection.editReq"></i>
+                        &nbsp;
+                        <i class="fa fa-trash-o" aria-hidden="true" katana-click="projects.reqSection.deleteReq"></i>
+                    </div>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <table class="table table-bordered" id="req-table-template" style="display: none;">
+        <tbody>
+        <tr req-number="{{ forloop.counter }}">
+            <th scope="row"></th>
+            <td class="suites-req">
+                <div style="width: 90%; float: left;"></div>
+                <div class="suites-req-options">
+                    <i class="fa fa-pencil" aria-hidden="true" katana-click="projects.reqSection.editReq"></i>
+                    &nbsp;
+                    <i class="fa fa-trash-o" aria-hidden="true" katana-click="projects.reqSection.deleteReq"></i>
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
