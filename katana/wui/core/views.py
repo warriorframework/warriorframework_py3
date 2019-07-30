@@ -20,6 +20,7 @@ from django.contrib.auth.mixins import UserPassesTestMixin
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.forms import PasswordChangeForm
+from django.conf import settings
 import json
 import os
 from utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
@@ -160,7 +161,9 @@ class SiteSettingsView(UserPassesTestMixin, View,):
         return self.request.user.is_superuser and self.request.user.is_staff and self.request.user.is_active
 
     def get(self, request):
-        ldap_settings = LDAPSettings()
+        auths = getattr(settings, 'AUTHENTICATION_BACKENDS')
+        enabled = True if 'django_auth_ldap.backend.LDAPBackup' in auths else False
+        ldap_settings = LDAPSettings() if enabled else LDAPSettings(LDAPSettings.CONFIG_FILE)
         context = {
             'is_site_settings': True,
             'ldap_settings': ldap_settings.configs_to_strings(),

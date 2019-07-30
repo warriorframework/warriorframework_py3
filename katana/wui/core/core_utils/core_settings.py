@@ -301,7 +301,7 @@ class LDAPSettings:
         return False
 
     def update(self, new_configs):
-        self.errors = {}
+        #self.errors = {}
         old_configs = self.configs
         # Translate values to configs
         remove_configs = set(old_configs.keys()) - set(new_configs.keys())
@@ -309,11 +309,13 @@ class LDAPSettings:
 
         # Validate configs
         self._validate()
-        if self.errors:
-            self.enabled = False
+        # if self.errors:
+        #     self.enabled = False
 
         # Make changes to config.ini
-        self._save_to_ini()
+        #self._save_to_ini()
+        if (self.enabled and not self.errors) or not self.enabled:
+            self._save_to_ini()
 
         # Make changes to running settings
         self._apply_to_django_settings(remove_configs)
