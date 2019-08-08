@@ -1,0 +1,54 @@
+{% load project_filters %}
+<div class="suites-intentional-space-x" id="suites-display-template">
+    <div class="suites-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <th scope="row">Name</th>
+                <td key="Name">{{ data.Project.Details.Name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Title</th>
+                <td key="Title">{{ data.Project.Details.Title }}</td>
+            </tr>
+            <tr>
+                <th scope="row">State</th>
+                <td key="State">{{ data.Project.Details.State }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Engineer</th>
+                <td key="Engineer">{{ data.Project.Details.Engineer }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Date</th>
+                <td key="Date">{{ data.Project.Details.Date }}</td>
+            </tr>
+            
+            </tbody>
+        </table>
+    </div>
+    <div class="suites-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+
+
+            <tr>
+                <th scope="row">On Error (Default)</th>
+                <td key="default_onError.@action">{{ data.Project.Details.default_onError|get_attribute:"action"|convert_on_errors }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Go To Step (If Applicable)</th>
+                <td key="default_onError.@value">{{ data.Project.Details.default_onError|get_attribute:"value" }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Results Directory</th>
+                <td key="Resultsdir">{{ data.Project.Details.Resultsdir }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Time</th>
+                <td key="Time">{{ data.Project.Details.Time }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

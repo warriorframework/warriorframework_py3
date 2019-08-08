@@ -65,6 +65,7 @@ class Navigator(object):
                     if "^" in temp:
                         temp = temp.split('^')[0]
                     tags_list.add(temp)
+        tags_list.add(self.get_wf_version())
         return tags_list
 
     def _get_versions(self):

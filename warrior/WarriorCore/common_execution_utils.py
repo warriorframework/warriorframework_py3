@@ -14,6 +14,7 @@ limitations under the License.
 import copy
 import glob
 import os
+import random
 
 from Framework.Utils.print_Utils import print_warning, print_info
 import Framework.Utils as Utils
@@ -45,7 +46,7 @@ def append_step_list(step_list, step, value, go_next, mode, tag):
     return step_list
 
 
-def get_step_list(filepath, step_tag, sub_step_tag):
+def get_step_list(filepath, step_tag, sub_step_tag, randomize=False):
     """
     Takes the location of Testcase/Suite/Project file as input
     Returns a list of all the step/testcase/testsuite elements
@@ -107,6 +108,8 @@ def get_step_list(filepath, step_tag, sub_step_tag):
                                   "Given path will be used for the Warrior "
                                   "execution.".format(orig_step_abspath))
                     step_list.append(orig_step)
+        if randomize:
+            random.shuffle(step_list)
     # iterate all steps to get the runmode and retry details
     for _, step in enumerate(step_list):
         runmode, value, _ = get_runmode_from_xmlfile(step)

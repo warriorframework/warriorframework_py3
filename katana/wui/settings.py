@@ -15,7 +15,7 @@ from . import settings_logging
 import wui.core.core_utils.core_settings as core_settings
 try:
     import ldap
-    from django_auth_ldap.config import LDAPSearch, GroupOfNamesType
+    from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion, GroupOfNamesType
 except Exception as err:
     print("Please install django auth ldap to authenticate against ldap")
     print("Error while importing django auth ldap: \n", err)
@@ -58,6 +58,8 @@ INSTALLED_APPS = [
     'wapps.cli_data',
     'wapps.assembler',
     'wapps.wdf_edit',
+    'wapps.execution',
+    'wapps.projects',
 ]
 
 MIDDLEWARE = [

@@ -22,7 +22,7 @@ setup(
     author="warriorframework org",
     url="https://github.com/warriorframework/warriorframework",
     install_requires=["pexpect==4.2", "requests==2.21.0", "selenium==3.8.0",
-                      "lxml==3.3.3", "paramiko==2.4.2", "pysnmp==4.3.2",
+                      "lxml==3.3.3", "paramiko==2.4.2", "pysnmp==4.4.9",
                       "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6"]
 
 )
