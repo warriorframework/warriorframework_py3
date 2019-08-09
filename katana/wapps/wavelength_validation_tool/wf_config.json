@@ -1,9 +1,9 @@
 {
-  "icon": "bus",
+  "icon": "bolt",
   "color": "lightblue",
   "developer": "Warrior Framework",
   "description": "mew dummy app",
-  "app" : {"name" : "new_app", "url" : "/katana/new_app/", "include": "wapps.new_app.urls"},
+  "app" : {"name" : "wavelength_validation_tool", "url" : "/katana/wavelength_validation_tool/", "include": "wapps.wavelength_validation_tool.urls"},
   "warrior-compatibility": ":warrior-4.0.0-beta",
   "warrior-incompatibility": "",
   "version": "1.0.0",

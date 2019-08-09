@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'wui.administration',
     'wui.users',
     'wui.core',
-    'wapps.new_app',
+    'wapps.wavelength_validation_tool',
     'wapps.att_mobility',
 
 ]
