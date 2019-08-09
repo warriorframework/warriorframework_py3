@@ -31,5 +31,7 @@ urlpatterns = [
     url(r'^katana/cases/', include('wapps.cases.urls')),
     url(r'^katana/wdf/', include('wapps.wdf_edit.urls')),
     url(r'^katana/execution/', include('wapps.execution.urls')),
-    url(r'^katana/projects/', include('wapps.projects.urls'))
+    url(r'^katana/projects/', include('wapps.projects.urls')),
+    url(r'^katana/new_app/', include('wapps.new_app.urls')),
+    url(r'^katana/att_mobility/', include('wapps.att_mobility.urls')),
 ]

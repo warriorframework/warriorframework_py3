@@ -1,0 +1,12 @@
+{
+  "icon": "bus",
+  "color": "lightblue",
+  "developer": "Warrior Framework",
+  "description": "mew dummy app",
+  "app" : {"name" : "new_app", "url" : "/katana/new_app/", "include": "wapps.new_app.urls"},
+  "warrior-compatibility": ":warrior-4.0.0-beta",
+  "warrior-incompatibility": "",
+  "version": "1.0.0",
+  "permissions": "",
+  "availability": ""
+}

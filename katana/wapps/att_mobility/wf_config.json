@@ -1,0 +1,12 @@
+{
+  "icon": "mobile",
+  "color": "lightblue",
+  "developer": "Warrior Framework",
+  "description": "mew dummy app",
+  "app" : {"name" : "att_mobility", "url" : "/katana/att_mobility/", "include": "wapps.att_mobility.urls"},
+  "warrior-compatibility": ":warrior-4.0.0-beta",
+  "warrior-incompatibility": "",
+  "version": "1.0.0",
+  "permissions": "",
+  "availability": ""
+}

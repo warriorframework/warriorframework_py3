@@ -49,17 +49,9 @@ INSTALLED_APPS = [
     'wui.administration',
     'wui.users',
     'wui.core',
-    'native.wapp_management',
-    'native.wappstore',
-    'native.settings',
-    'native.microservice_store',
-    'wapps.cases',
-    'wapps.suites',
-    'wapps.cli_data',
-    'wapps.assembler',
-    'wapps.wdf_edit',
-    'wapps.execution',
-    'wapps.projects',
+    'wapps.new_app',
+    'wapps.att_mobility',
+
 ]
 
 MIDDLEWARE = [
