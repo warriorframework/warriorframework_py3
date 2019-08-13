@@ -244,6 +244,7 @@ var suites = {
                         }
                         if (index === 0) {
                             katana.$activeTab.find('#suites-steps-template').find('tbody').prepend(displayContent);
+                            suites.redoStepNums();
                         } else {
                             displayContent.insertAfter($($allTrs[index-1]));
                             suites.redoStepNums();

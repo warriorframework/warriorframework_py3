@@ -82,12 +82,12 @@ class VerifyCaseFile:
         elif not isinstance(self.data[self.root][self.major[2]]["step"], list):
             self.data[self.root][self.major[2]]["step"] = [self.data[self.root][self.major[2]]["step"]]
 
-        for i in range(0, len(self.data[self.root][self.major[2]]["step"])):
-            for key, value in self.template_data[self.root][self.major[2]]["step"].items():
-                key, value, self.data[self.root][self.major[2]]["step"][i] = \
-                    self.__verified_steps_key_value(key, value, self.data[self.root][self.major[2]]["step"][i])
-                self.data[self.root][self.major[2]]["step"][i][key] = \
-                    self.__verify_values(key, value, self.data[self.root][self.major[2]]["step"][i])
+        # for i in range(0, len(self.data[self.root][self.major[2]]["step"])):
+        #     for key, value in self.template_data[self.root][self.major[2]]["step"].items():
+        #         key, value, self.data[self.root][self.major[2]]["step"][i] = \
+        #             self.__verified_steps_key_value(key, value, self.data[self.root][self.major[2]]["step"][i])
+        #         self.data[self.root][self.major[2]]["step"][i][key] = \
+        #             self.__verify_values(key, value, self.data[self.root][self.major[2]]["step"][i])
 
     @staticmethod
     def __verified_steps_key_value(key, value, verify_data):

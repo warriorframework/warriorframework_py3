@@ -228,6 +228,7 @@ var cases = {
                         }
                         if (index === 0) {
                             katana.$activeTab.find('#cases-steps-template').find('tbody').prepend(displayContent);
+                            cases.redoStepNums();
                         } else {
                             displayContent.insertAfter($($allTrs[index-1]));
                             cases.redoStepNums();

@@ -15,18 +15,4 @@
 	<Requirements>
 		<Requirement/>
 	</Requirements>
-	<Testcases>
-		<Testcase>
-			<path/>
-            <InputDataFile/>
-            <runtype>sequential_keywords</runtype>
-            <Execute ExecType="Yes">
-				<Rule Condition="" Condvalue="" Else="next" Elsevalue=""/>
-			</Execute>
-			<context>positive</context>
-            <runmode type="standard" value=""/>
-			<onError action="next" value=""/>
-			<impact>impact</impact>
-		</Testcase>
-    </Testcases>
 </TestSuite>

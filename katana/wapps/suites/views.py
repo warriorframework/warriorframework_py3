@@ -52,7 +52,7 @@ def get_file(request):
     if output["status"]:
         mid_req = (len(data["TestSuite"]["Requirements"]["Requirement"]) + 1) / 2
         if file_path == TEMPLATE:
-            output["filepath"] = read_json_data(CONFIG_FILE)["xmldir"]
+            output["filepath"] = read_json_data(CONFIG_FILE)["testsuitedir"]
         else:
             output["filepath"] = get_parent_dir_path(file_path)
         output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
