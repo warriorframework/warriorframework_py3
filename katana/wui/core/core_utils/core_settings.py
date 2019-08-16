@@ -1,4 +1,3 @@
-from django.conf import settings
 import configparser
 from copy import copy
 import json
@@ -7,6 +6,7 @@ import time
 import threading
 from utils.navigator_util import Navigator
 import sys
+from django.conf import settings
 try:
     import ldap
     from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, PosixGroupType, LDAPSearchUnion
@@ -427,3 +427,104 @@ class LDAPSettings:
             if 'django_auth_ldap.backend.LDAPBackend' in settings.AUTHENTICATION_BACKENDS:
                 settings.AUTHENTICATION_BACKENDS = tuple(x for x in settings.AUTHENTICATION_BACKENDS
                                                          if x != 'django_auth_ldap.backend.LDAPBackend')
+
+class EMAILSettings:
+    CONFIG_FILE = 'config.ini'
+    REQUIRED_FIELDS = [
+        'EMAIL_HOST',
+        'EMAIL_PORT',
+        'EMAIL_HOST_USER',
+        'EMAIL_HOST_PASSWORD',
+        'EMAIL_USE_TLS',
+        'DEFAULT_FROM_EMAIL',
+    ]
+    BOOLEAN_FIELDS = [
+        'EMAIL_USE_TLS',
+    ]
+    
+    def __init__(self, config_file=None):
+        self.configs = {}
+        if config_file:
+            # Get from config file
+            EMAILSettings.CONFIG_FILE = config_file
+            self._cparser = configparser.RawConfigParser()
+            self._cparser.read(EMAILSettings.CONFIG_FILE)
+            self._translate_config_file()
+        else:
+            # Get from settings
+            self._translate_from_settings()
+    
+    def _translate_config_file(self):
+        """
+        Populate self.configs from config file
+        :return:
+        """
+        # Translate boolean fields from cparser first
+        self.configs = {}
+        if 'email' in self._cparser:
+            self.configs = {}
+            for k, v in self._cparser['email'].items():
+                k = k.upper()
+                if k in EMAILSettings.BOOLEAN_FIELDS:
+                    self.configs[k] = self._cparser['email'].getboolean(k)
+                else:
+                    self.configs[k] = v
+        return self.configs
+    
+    def _translate_from_settings(self):
+        """
+        Populate self.configs from Django settings
+        :return:
+        """
+        email_attrs = {k: v for k, v in vars(settings._wrapped).items() if 'EMAIL' in k}
+        self.configs.update(email_attrs)
+    
+    def update(self, new_configs):
+        old_configs = self.configs
+        # Translate values to configs
+        remove_configs = set(old_configs.keys()) - set(new_configs.keys())
+        self.configs = {}
+        for k, v in new_configs.items():
+            k = k.upper()
+            if k in EMAILSettings.BOOLEAN_FIELDS:
+                self.configs[k] = bool(v)
+            else:
+                self.configs[k] = v
+
+        # Make changes to config.ini
+        self._save_to_ini()
+
+        # Make changes to running settings
+        self._apply_to_django_settings(remove_configs)
+    
+    def _save_to_ini(self):
+        """
+        Save configs to config file.
+        :return:
+        """
+        conf = configparser.RawConfigParser()
+        conf.read(EMAILSettings.CONFIG_FILE)
+        if 'email' in conf:
+            del conf['email']
+        conf.add_section('email')
+        to_write = self.configs
+        for k, v in to_write.items():
+            if 'EMAIL_USE_TLS' in k:
+                conf['email'][k] = str(int(v))
+            else:
+                conf['email'][k] = v
+        with open(EMAILSettings.CONFIG_FILE, 'w') as fd:
+            conf.write(fd)
+    
+    def _apply_to_django_settings(self, remove_configs):
+        """
+        Apply current configs to django settings.
+        :param remove_configs: A list of configs to remove from django settings
+        :return:
+        """
+        for r in remove_configs:
+            delattr(settings, r)
+        for k, v in self.configs.items():
+            setattr(settings, k, v)
+        # Add to email backends
+        setattr(settings, "EMAIL_BACKEND", 'django.core.mail.backends.smtp.EmailBackend')
