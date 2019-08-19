@@ -234,7 +234,7 @@ class TestcaseUtils(object):
         """Remove non_printable ascii control characters """
         #Removes the ascii escape chars
         try:
-            txt = re.sub(r'[^\x20-\x7E|\x09-\x0A]','', txt)
+            txt = re.sub(r'[^\x20-\x7E|\x09-\x0A]','',txt)
             # remove non-ascii characters
             # txt = repr(txt)[1:-1]
         except Exception as exception:
@@ -361,8 +361,8 @@ class TestcaseUtils(object):
         ERROR -> ERROR
         EXCEPTION -> ERROR
         """
-        result = {True: 'PASS', False: 'FAIL',
-            'ERROR': 'ERROR', 'EXCEPTION': 'ERROR', 'RAN': 'RAN', 'WARN': 'WARN'}.get(text)
+        result = {True: 'PASS', False: 'FAIL',\
+        'ERROR': 'ERROR', 'EXCEPTION': 'ERROR', 'RAN': 'RAN', 'WARN': 'WARN'}.get(text)
         if result is None:
             print_error("junk or no value received, expecting TRUE/FALSE/ERROR/EXCEPTION")
             result = 'ERROR'

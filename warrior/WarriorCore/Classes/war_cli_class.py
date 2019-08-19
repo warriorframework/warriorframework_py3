@@ -390,12 +390,12 @@ class WarriorCliClass(object):
                             "TO be used by Katana only " \
                             "Will be set when katana executes warrior " \
                             "UI will read live html results from this location" \
-                            "and display html results in a live fashion " )
+                            "and display html results in a live fashion" )
 
         #Running Warrior in Mock mode and Test mode
         parser.add_argument('-mock', action='store_true', default=False,
                             help=":mock mode: In this mode, connection to server "\
-                            "will be mocked (won't actually connect) and keywords will run. "\
+                            "will be mocked (won't actually connect) and keywords will run."\
                             "User can verify input value from console output/result file")
 
         #Running Warrior in Mock mode and Test mode

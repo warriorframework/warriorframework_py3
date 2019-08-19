@@ -84,11 +84,11 @@ class LineResult:
                         "</span>".format(line.get("defects"))  if line.get("defects") else ''
         span_html = ""
         if variant == "Testcase":
-            span_html =  logs_span
+            span_html = logs_span
             locn = line.get('testcasefile_path')
-        elif variant =="Keyword":
+        elif variant == "Keyword":
             span_html = defects_span
-            locn =""
+            locn = ""
         else:
             locn_tag = line.find('./properties/property[@name="location"]')
             locn = locn_tag.get('value') if locn_tag is not None else ""

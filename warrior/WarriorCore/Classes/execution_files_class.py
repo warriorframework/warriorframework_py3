@@ -231,7 +231,7 @@ class ExecFilesClass(object):
                 else:
                     datafile = False
                 elif self.filetype == "proj":
-                datafile = False
+                    datafile = False
         elif str(datafile).strip().upper() == "DEFAULT":
             print_info("This testcase will be executed using the default InputDataFile")
             datafile = get_default_xml_datafile(self.filepath)
