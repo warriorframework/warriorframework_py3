@@ -188,8 +188,9 @@ def print_suite_details_to_console(suite_repository, testsuite_filepath, junit_r
 #get the details of testwrapperfile, data_type, runtype from test suite xml
 def get_testwrapper_file_details(testsuite_filepath, data_repository):
     """retuns testwrapperfile to use if specified, else returns False"""
-    if data_repository.has_key('ow_testwrapperfile'):
+    if 'ow_testwrapperfile' in 'data_repository':
         testwrapperfile = data_repository['ow_testwrapperfile']
+
     else:
         if Utils.xml_Utils.nodeExists(testsuite_filepath, "TestWrapperFile"):
             testwrapperfile = Utils.xml_Utils.getChildTextbyParentTag\
