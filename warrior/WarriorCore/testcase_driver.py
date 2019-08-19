@@ -454,9 +454,13 @@ def execute_steps(data_type, runtype, data_repository, step_list, tc_junit_objec
 #get all the details of testwrapperfile like testwrapperfile name, datatype, runtype
 def get_testwrapper_file_details(testcase_filepath, data_repository):
     """retuns testwrapperfile to use if specified, else returns False"""
-    if data_repository.has_key('ow_testwrapperfile'):
+    # if data_repository.has_key('ow_testwrapperfile'):
+    #     testwrapperfile = data_repository['ow_testwrapperfile']
+    # elif data_repository.has_key('suite_testwrapper_file'):
+    #     testwrapperfile = data_repository['suite_testwrapper_file']
+    if 'ow_testwrapperfile' in data_repository:
         testwrapperfile = data_repository['ow_testwrapperfile']
-    elif data_repository.has_key('suite_testwrapper_file'):
+    elif 'suite_testwrapper_file' in data_repository:
         testwrapperfile = data_repository['suite_testwrapper_file']
     else:
         if Utils.xml_Utils.nodeExists(testcase_filepath, "TestWrapperFile"):
