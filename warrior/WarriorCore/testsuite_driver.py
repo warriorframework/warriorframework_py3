@@ -17,7 +17,7 @@ import traceback
 import shutil
 import copy
 import glob
-import testcase_driver
+from . import testcase_driver
 from . import sequential_testcase_driver
 from . import parallel_testcase_driver
 from WarriorCore.Classes import execution_files_class, junit_class
@@ -514,7 +514,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
     elif test_suite_status == True and cleanup_tc_status != True:
         print_warning("setting test suite status to WARN as cleanup failed")
         test_suite_status = 'WARN'
-    
+
     suite_duration = Utils.datetime_utils.get_time_delta(suite_start_time)
     hms = Utils.datetime_utils.get_hms_for_seconds(suite_duration)
     print_info("Testsuite duration= {0}".format(hms))
