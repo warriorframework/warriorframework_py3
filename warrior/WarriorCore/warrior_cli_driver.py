@@ -354,6 +354,13 @@ def decide_overwrite_var(namespace):
         if namespace.datafile[0] != os.sep:
             namespace.datafile = os.getcwd() + os.sep + namespace.datafile
         overwrite['ow_datafile'] = namespace.datafile
+
+    #namespace for wrapperfile
+    if namespace.wrapperfile:
+        if namespace.wrapperfile[0] != os.sep:
+            namespace.wrapperfile = os.getcwd() + os.sep + namespace.wrapperfile
+        overwrite['ow_testwrapperfile'] = namespace.wrapperfile
+
     #namespace for random tc execution
     if namespace.random_tc_execution:
         overwrite['random_tc_execution'] = namespace.random_tc_execution
