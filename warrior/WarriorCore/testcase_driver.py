@@ -584,7 +584,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
         #2.execute setup steps if testwrapperfile is present in testcase
         #and from testsuite execution and testwrapperfile is not defined in test suite.
         if (testwrapperfile and not from_ts) or (testwrapperfile and \
-            from_ts and not data_repository.has_key('suite_testwrapper_file')):
+            from_ts and not 'suite_testwrapper_file' in data_repository):
             setup_step_list = common_execution_utils.get_step_list(testwrapperfile,
                                                                    "Setup", "step")
             if not len(setup_step_list):
@@ -619,7 +619,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
         #2.execute cleanup steps if testwrapperfile is present in testcase
         #and from testsuite execution and testwrapperfile is not defined in test suite.
         if (testwrapperfile and not from_ts) or (testwrapperfile and \
-            from_ts and not data_repository.has_key('suite_testwrapper_file')):
+            from_ts and not 'suite_testwrapper_file' in data_repository):
             cleanup_step_list = common_execution_utils.get_step_list(testwrapperfile,
                                                                      "Cleanup", "step")
             if not len(cleanup_step_list):
