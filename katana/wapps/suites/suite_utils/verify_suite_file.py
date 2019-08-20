@@ -62,14 +62,6 @@ class VerifySuiteFile:
         elif not isinstance(self.data[self.root][top_key]["Testcase"], list):
             self.data[self.root][top_key]["Testcase"] = [self.data[self.root][top_key]["Testcase"]]
 
-        for i in range(0, len(self.data[self.root][top_key]["Testcase"])):
-            for key, value in self.template_data[self.root][top_key]["Testcase"].items():
-                key, value, self.data[self.root][top_key]["Testcase"][i] = \
-                    self.__verified_steps_key_value(key, value,
-                                                    self.data[self.root][top_key]["Testcase"][i])
-                self.data[self.root][top_key]["Testcase"][i][key] = \
-                    self.__verify_values(key, value, self.data[self.root][top_key]["Testcase"][i])
-
     @staticmethod
     def __verified_steps_key_value(key, value, verify_data):
         """ Verifies specific keys in each step """
