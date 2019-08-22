@@ -354,6 +354,13 @@ def decide_overwrite_var(namespace):
         if namespace.datafile[0] != os.sep:
             namespace.datafile = os.getcwd() + os.sep + namespace.datafile
         overwrite['ow_datafile'] = namespace.datafile
+
+    #namespace for wrapperfile
+    if namespace.wrapperfile:
+        if namespace.wrapperfile[0] != os.sep:
+            namespace.wrapperfile = os.getcwd() + os.sep + namespace.wrapperfile
+        overwrite['ow_testwrapperfile'] = namespace.wrapperfile
+
     #namespace for random tc execution
     if namespace.random_tc_execution:
         overwrite['random_tc_execution'] = namespace.random_tc_execution
@@ -469,8 +476,8 @@ def decide_action(w_cli_obj, namespace):
         if status:
             # sends secret key and encrypted text password for decryption
             message = Encrypt.decrypt(namespace.decrypt[0], encoded_key)
-            print_info("The decrypted text for '{0}' is: {1}".
-                           format(namespace.decrypt[0], message))
+            print_info("The decrypted text for '{0}' is: {1}".\
+                format(namespace.decrypt[0], message))
             exit(0)
         else:
             print_error("Decrypted text could not be generated.")

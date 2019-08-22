@@ -84,11 +84,11 @@ class LineResult:
                         "</span>".format(line.get("defects"))  if line.get("defects") else ''
         span_html = ""
         if variant == "Testcase":
-            span_html =  logs_span
+            span_html = logs_span
             locn = line.get('testcasefile_path')
-        elif variant =="Keyword":
+        elif variant == "Keyword":
             span_html = defects_span
-            locn =""
+            locn = ""
         else:
             locn_tag = line.find('./properties/property[@name="location"]')
             locn = locn_tag.get('value') if locn_tag is not None else ""
@@ -175,10 +175,28 @@ class WarriorHtmlResults:
             self.create_line_result(project_node, "Project")
             for testsuite_node in project_node.findall("testsuite"):
                 self.create_line_result(testsuite_node, "Testsuite")
+                #to add setup result in html file
+                for setup_node in testsuite_node.findall("Setup"):
+                    self.create_line_result(setup_node, "Setup")
+                    self.steps = 0
+                    for step_node in setup_node.findall("properties"):
+                        for node in step_node.findall("property"):
+                            if node.get('type') == 'keyword':
+                                self.steps += 1
+                                self.create_line_result(node, "Keyword")
                 for testcase_node in testsuite_node.findall("testcase"):
                     self.create_line_result(testcase_node, "Testcase")
                     self.steps = 0
                     for step_node in testcase_node.findall("properties"):
+                        for node in step_node.findall("property"):
+                            if node.get('type') == 'keyword':
+                                self.steps += 1
+                                self.create_line_result(node, "Keyword")
+                #to add cleanup result in html file
+                for cleanup_node in testsuite_node.findall("Cleanup"):
+                    self.create_line_result(cleanup_node, "Cleanup")
+                    self.steps = 0
+                    for step_node in cleanup_node.findall("properties"):
                         for node in step_node.findall("property"):
                             if node.get('type') == 'keyword':
                                 self.steps += 1
