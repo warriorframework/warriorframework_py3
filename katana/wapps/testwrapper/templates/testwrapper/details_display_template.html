@@ -1,0 +1,75 @@
+{% load cases_filters %}
+<div class="cases-intentional-space-x" id="cases-display-template">
+    <div class="cases-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <th scope="row">Name</th>
+                <td key="Name">{{ data.TestWrapper.Details.Name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Title</th>
+                <td key="Title">{{ data.TestWrapper.Details.Title }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Category</th>
+                <td key="Category">{{ data.TestWrapper.Details.Category }}</td>
+            </tr>
+            <tr>
+                <th scope="row">State</th>
+                <td key="State">{{ data.TestWrapper.Details.State }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Engineer</th>
+                <td key="Engineer">{{ data.TestWrapper.Details.Engineer }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Date</th>
+                <td key="Date">{{ data.TestWrapper.Details.Date }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Time</th>
+                <td key="Time">{{ data.TestWrapper.Details.Time }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="cases-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <th scope="row">On Error (Default)</th>
+                <td key="default_onError.@action">{{ data.TestWrapper.Details.default_onError|get_attribute:"action"|convert_on_errors }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Go To Step (If Applicable)</th>
+                <td key="default_onError.@value">
+                    {% if data.TestWrapper.Details.default_onError|get_attribute:"action"|convert_on_errors == "Go To" %}
+                        {{ data.TestWrapper.Details.default_onError|get_attribute:"value" }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Input Data File</th>
+                <td key="InputDataFile">{{ data.TestWrapper.Details.InputDataFile }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Data Type</th>
+                <td key="Datatype">{{ data.TestWrapper.Details.Datatype }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Logs Directory</th>
+                <td key="Logsdir">{{ data.TestWrapper.Details.Logsdir }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Results Directory</th>
+                <td key="Resultsdir">{{ data.TestWrapper.Details.Resultsdir }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Expected Results</th>
+                <td key="ExpectedResults">{{ data.TestWrapper.Details.ExpectedResults }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
