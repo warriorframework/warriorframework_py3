@@ -49,7 +49,7 @@ def append_step_list(step_list, step, value, go_next, mode, tag):
     return step_list
 
 
-def get_step_list(filepath, step_tag, sub_step_tag, loop_tag="Loop"):
+def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="Loop"):
     """
     Takes the location of Testcase/Suite/Project file as input
     Returns a list of all the step/testcase/testsuite elements
