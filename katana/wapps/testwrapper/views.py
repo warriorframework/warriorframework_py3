@@ -70,8 +70,7 @@ def validate_details_data(data):
     """
     Validates details of the file before saving
     """
-    if data["default_onError"]["@action"] in on_errors():
-        data["default_onError"]["@action"] = on_errors()[data["default_onError"]["@action"]]
+
     return data
 
 
