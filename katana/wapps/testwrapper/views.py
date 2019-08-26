@@ -17,8 +17,8 @@ from wapps.testwrapper.testwrapper_utils.verify_testwrapper_file import VerifyTe
 
 navigator = Navigator()
 CONFIG_FILE = join_path(navigator.get_katana_dir(), "config.json")
-APP_DIR = join_path(navigator.get_katana_dir(), "wapps", "cases")
-STATIC_DIR = join_path(APP_DIR, "static", "cases")
+APP_DIR = join_path(navigator.get_katana_dir(), "wapps", "testwrapper")
+STATIC_DIR = join_path(APP_DIR, "static", "testwrapper")
 TEMPLATE = join_path(STATIC_DIR, "base_templates", "Untitled.xml")
 DROPDOWN_DEFAULTS = read_json_data(join_path(STATIC_DIR, "base_templates", "dropdowns_data.json"))
 

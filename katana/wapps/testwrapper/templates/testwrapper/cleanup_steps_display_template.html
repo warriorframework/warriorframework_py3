@@ -26,11 +26,13 @@
                     <td class="col-sm-1" key="@Keyword">{{ step|get_attribute:"Keyword" }}</td>
                     <td class="col-sm-2" key="Arguments">
                         {% for arg in step.Arguments.argument %}
+                        {% if forloop.counter == 1 %}
                         <div key="Arguments.argument">
-                            <span key="Arguments.argument.@name">{{ arg|get_attribute:"name" }}</span>
+                            <span key="Arguments.argument.@name">{{ step.Arguments.argument|get_attribute:"name" }}</span>
                             <span> = </span>
-                            <span key="Arguments.argument.@value">{{ arg|get_attribute:"value" }}</span>
+                            <span key="Arguments.argument.@value">{{ step.Arguments.argument|get_attribute:"value" }}</span>
                         </div>
+                        {% endif %}
                         {% endfor %}
                     </td>
                     <td class="col-sm-1" key="Description">{{ step.Description }}</td>

@@ -638,9 +638,9 @@ var cases = {
             var value = false;
             for (var i=0; i <$allKeys.length; i++) {
                 value = $($allKeys[i]).val() ? $($allKeys[i]).val().trim() : $($allKeys[i]).html().trim();
-                finalJson.Requirements.Requirement.push(value);
+
             }
-            return finalJson;
+            return ;
         },
 
         generateStep: function ($container) {
@@ -1822,9 +1822,9 @@ var cleanupcases = {
             var value = false;
             for (var i=0; i <$allKeys.length; i++) {
                 value = $($allKeys[i]).val() ? $($allKeys[i]).val().trim() : $($allKeys[i]).html().trim();
-                finalJson.Requirements.Requirement.push(value);
+
             }
-            return finalJson;
+            return ;
         },
 
         generateStep: function ($container) {
