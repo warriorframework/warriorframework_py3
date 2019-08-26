@@ -1,6 +1,20 @@
 from utils.dict_utils import invert_dict
 
 
+
+def executiontypes():
+    return {
+        "Sequential Cases": "sequential_testcases",
+        "Parallel Cases": "parallel_testcases",
+        "Iterative Sequential Cases": "iterative_sequential",
+        "Iterative Parallel Cases": "iterative_parallel",
+        "Run Multiple Times": "run_multiple",
+        "Run Until Pass": "run_until_pass",
+        "Run Until Failure": "run_until_failure"
+    }
+
+
+
 def runmodes():
     return {
         "Standard": "standard",
@@ -8,6 +22,13 @@ def runmodes():
         "Run Until Pass": "rup",
         "Run Until Failure": "ruf"
     }
+
+def inverted_executiontypes():
+    return invert_dict(executiontypes())
+
+
+def inverted_executiontypes_list():
+    return [key for key in inverted_executiontypes()]
 
 
 def runmodes_list():

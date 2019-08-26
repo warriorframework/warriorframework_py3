@@ -11,17 +11,7 @@
     <div class="cases-left-top-block" id="detail-block">
         {% include 'testwrapper/details_display_template.html' %}
     </div>
-    <div class="cases-header">
-        <div>
-            <h4 class="cases-header-title"><i class="fa fa-tags" aria-hidden="true"></i>&nbsp;Requirementss</h4>
-        </div>
-        <div><i class="fa fa-chevron-circle-down white" katana-click="cases.header.toggleContents" collapsed="true" aria-hidden="true" title="Show/Hide the Requirements section"></i></div>
-        <div><i class="fa fa-plus-circle white" aria-hidden="true" katana-click="cases.header.newReq" title="Add new Requirement"></i></div>
-        <div></div>
-    </div>
-    <div class="cases-left-bottom-block" id="req-block" style="display:none;">
-        {% include 'testwrapper/requirements_display_template.html' %}
-    </div>
+
     <div class="cases-header">
         <div>
             <h4 class="cases-header-title"><i class="fa fa-star" aria-hidden="true"></i>&nbsp;Setup Steps</h4>
@@ -67,7 +57,19 @@
             <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="cases.drawer.open.saveContents" title="Save"></i></div>
             <div><i class="fa fa-times white" aria-hidden="true" katana-click="cases.drawer.open.discardContents" title="Discard contents and close"></i></div>
         </div>
+
+        <!--Edit Details Data Starts Here-->
+        <div class="cases-drawer-open-header" id="editDetails">
+            <div></div>
+            <div>
+                <div class="cases-header-title">Edit Details</div>
+            </div>
+            <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="cases.drawer.open.saveContents" title="Save"></i></div>
+            <div><i class="fa fa-times white" aria-hidden="true" katana-click="cases.drawer.open.discardContents" title="Discard contents and close"></i></div>
+        </div>
+        <!--Edit Details Data Ends Here-->
         <!--cleanup -->
+
         <div class="cases-drawer-open-header" id="hiddingsecond">
             <div></div>
             <div>

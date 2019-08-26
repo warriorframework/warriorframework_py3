@@ -1,6 +1,6 @@
 from django import template
 from wapps.testwrapper.testwrapper_utils.defaults import inverted_on_errors, inverted_contexts, \
-    inverted_impacts, inverted_runmodes, inverted_iteration_types
+    inverted_impacts, inverted_runmodes, inverted_iteration_types, inverted_executiontypes
 
 register = template.Library()
 
@@ -9,6 +9,10 @@ register = template.Library()
 def convert_runmodes(value):
     return inverted_runmodes()[value.strip().lower()]
 
+
+@register.filter(name='convert_executiontypes')
+def convert_executiontypes(value):
+    return inverted_executiontypes()[value.strip().lower()]
 
 @register.filter(name='convert_on_errors')
 def convert_on_errors(value):

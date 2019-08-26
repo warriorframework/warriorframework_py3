@@ -37,6 +37,11 @@ var cases = {
         },
 
         editDetails: function() {
+                document.getElementById("hiddingsecond").style.display="none";
+               document.getElementById("hiddingfirst").style.display="none";
+               document.getElementById("editfirst").style.display="none";
+               document.getElementById("editsecond").style.display="none";
+                document.getElementById("editDetails").style.display="block";
             /* This function gets data from displayed details block and
             creates the details block in the side drawer*/
             var $elem = $(this);
@@ -555,6 +560,7 @@ var cases = {
                document.getElementById("hiddingfirst").style.display="block";
                document.getElementById("editfirst").style.display="none";
                document.getElementById("editsecond").style.display="none";
+               document.getElementById("editDetails").style.display="none";
 //                    document.getElementById("hiddingfirst").style.display="none";
                 /* This function opens a new step in the step editor and inserts it into a speific spot when saved */
                 var $elem = $(this);
@@ -588,6 +594,7 @@ var cases = {
                document.getElementById("hiddingfirst").style.display="none";
                document.getElementById("editfirst").style.display="block";
                document.getElementById("editsecond").style.display="none";
+               document.getElementById("editDetails").style.display="none";
                 var $elem = $(this);
                 var $tbodyElem = katana.$activeTab.find('#step-block').find('tbody');
                 var $allTrElems = $tbodyElem.children('tr[marked="true"]');
@@ -1736,6 +1743,7 @@ var cleanupcases = {
             document.getElementById("hiddingsecond").style.display="block";
             document.getElementById("editfirst").style.display="none";
                document.getElementById("editsecond").style.display="none";
+               document.getElementById("editDetails").style.display="none";
 //                document.getElementById("hiddingfirst").style.display="none ";
                 /* This function opens a new step in the step editor and inserts it into a speific spot when saved */
                 var $elem = $(this);
@@ -1768,6 +1776,7 @@ var cleanupcases = {
             document.getElementById("hiddingsecond").style.display="none";
             document.getElementById("editfirst").style.display="none";
                document.getElementById("editsecond").style.display="block";
+               document.getElementById("editDetails").style.display="none";
                 console.log("editStep")
                 /* This function opens the step in the step editor and replaces the existing step when saved */
                 var $elem = $(this);
