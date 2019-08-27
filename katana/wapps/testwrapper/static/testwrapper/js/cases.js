@@ -1798,14 +1798,12 @@ var cleanupcases = {
                         "show_cancel_btn": false
                     });
                 } else {
-                    var data = cleanupcases.generateJson.generateStep($($allTrElems[0]));
-                    cleanupcases.drawer.openClosedDrawer(cleanupcases.mappings.editStep.title);
-                    cleanupcases.drawer.open.highlightSidebar(2);
+                    var data = cases.generateJson.generateStep($($allTrElems[0]));
+                    cases.drawer.openClosedDrawer(cases.mappings.editStep.title);
+                    cases.drawer.open.highlightSidebar(2);
                     var $container = $elem.closest('#main-div').find('#steps_drawer_template').clone().attr('step-type', 'edit').attr('index', $($allTrElems[0]).index());
-                    cleanupcases.drawer.open.switchView.steps($container, data);
-                    console.log("fifth")
+                    cases.drawer.open.switchView.steps($container, data);
                 }
-                console.log("editStepEnds")
             }
         }
     },
