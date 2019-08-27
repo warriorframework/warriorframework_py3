@@ -61,6 +61,11 @@ var cases = {
 
         newStep: function() {
             /* This function creates a new step block in the side drawer*/
+               document.getElementById("hiddingsecond").style.display="none";
+               document.getElementById("hiddingfirst").style.display="block";
+               document.getElementById("editfirst").style.display="none";
+               document.getElementById("editsecond").style.display="none";
+               document.getElementById("editDetails").style.display="none";
             var $elem = $(this);
             cases.drawer.openClosedDrawer(cases.mappings.newStep.title);
             cases.drawer.open.highlightSidebar(2);
@@ -1245,6 +1250,11 @@ var cleanupcases = {
 
         newStep: function() {
             /* This function creates a new step block in the side drawer*/
+               document.getElementById("hiddingsecond").style.display="block";
+               document.getElementById("hiddingfirst").style.display="none";
+               document.getElementById("editfirst").style.display="none";
+               document.getElementById("editsecond").style.display="none";
+               document.getElementById("editDetails").style.display="none";
             var $elem = $(this);
             cleanupcases.drawer.openClosedDrawer(cleanupcases.mappings.newStep.title);
             cleanupcases.drawer.open.highlightSidebar(2);
