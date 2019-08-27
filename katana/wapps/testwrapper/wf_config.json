@@ -3,7 +3,7 @@
   "icon": "briefcase",
   "color": "blue",
   "developer": "Warrior Framework",
-  "description": "Edit your Cases with this App",
+  "description": "Edit your wrapper files with this App",
   "app" : {"name" : "TestWrapper", "url" : "/katana/testwrapper/", "include": "wapps.testwrapper.urls"},
   "warrior-compatibility": ":warrior-4.0.0-beta",
   "warrior-incompatibility": "",
