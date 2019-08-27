@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'wapps.wdf_edit',
     'wapps.execution',
     'wapps.projects',
+    'wapps.testwrapper',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,42 @@
+{% load testwrapper_filters %}
+<div class="cases-intentional-space-x" id="cases-display-template">
+    <div class="cases-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <th scope="row">Name</th>
+                <td key="Name">{{ data.TestWrapper.Details.Name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Title</th>
+                <td key="Title">{{ data.TestWrapper.Details.Title }}</td>
+            </tr>
+
+
+            <tr>
+                <th scope="row">Engineer</th>
+                <td key="Engineer">{{ data.TestWrapper.Details.Engineer }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Date</th>
+                <td key="Date">{{ data.TestWrapper.Details.Date }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Time</th>
+                <td key="Time">{{ data.TestWrapper.Details.Time }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="cases-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <th scope="row">Data Type</th>
+                <td key="Datatype">{{ data.TestWrapper.Details.Datatype }}</td>
+            </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
