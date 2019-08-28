@@ -1,3 +1,4 @@
+import collections
 from django import template
 from wapps.testwrapper.testwrapper_utils.defaults import inverted_on_errors, inverted_contexts, \
     inverted_impacts, inverted_runmodes, inverted_iteration_types, inverted_executiontypes
@@ -37,3 +38,12 @@ def convert_impacts(value):
 @register.filter(name='get_attribute')
 def get_attribute(value, attribute_name):
     return value["@" + attribute_name]
+
+@register.filter(name='get_attribute_new')
+def get_attribute_new(value):
+    if type(value) == list :
+        return "list"
+    elif type(value) ==  None:
+        pass
+    elif type(value) == collections.OrderedDict:
+        return "str"
