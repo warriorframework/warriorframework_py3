@@ -440,6 +440,7 @@ var suites = {
                             "show_cancel_btn": false
                         });
                         suites.suiteViewer.close();
+                        window.setTimeout(function(){window.location.reload()}, 1000);
                     } else {
                         katana.openAlert({
                             "alert_type": "danger",

@@ -1,6 +1,6 @@
 {
-  "icon": "cube",
-  "color": "lightblue",
+  "icon": "cubes",
+  "color": "lightred",
   "developer": "Warrior Framework",
   "description": "Edit your Projects Files here.",
   "app" : {"name" : "Projects", "url" : "/katana/projects/", "include": "wapps.projects.urls"},
