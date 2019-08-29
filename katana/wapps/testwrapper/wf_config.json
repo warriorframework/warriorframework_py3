@@ -1,0 +1,13 @@
+{
+
+  "icon": "file-text",
+  "color": "blue",
+  "developer": "Warrior Framework",
+  "description": "Edit your wrapper files with this App",
+  "app" : {"name" : "TestWrapper", "url" : "/katana/testwrapper/", "include": "wapps.testwrapper.urls"},
+  "warrior-compatibility": ":warrior-4.0.0-beta",
+  "warrior-incompatibility": "",
+  "version": "1.0.0",
+  "permissions": "",
+  "availability": ""
+}

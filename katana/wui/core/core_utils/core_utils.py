@@ -78,7 +78,8 @@ def validate_config_json(json_data, warrior_dir):
                        ('testsuitedir', 'Suites'),
                        ('projdir', 'Projects'),
                        ('idfdir', 'Data'),
-                       ('testdata', 'Config_files')])
+                       ('testdata', 'Config_files'),
+                       ('testwrapper', 'wrapper_files')])
 
     for key, value in list(ref.items()):
         if key not in json_data or json_data[key] == "":
