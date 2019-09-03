@@ -278,6 +278,10 @@ var cases = {
             inputDataFile: function () {
                 /* This function calls logsOrResultsDir with relative as true so that relative path is created. */
                 cases.drawer.openFileExplorer.logsOrResultsDir(true, $(this));
+            },
+            testWrapperFile: function () {
+                /* This function calls logsOrResultsDir with relative as true so that relative path is created. */
+                cases.drawer.openFileExplorer.logsOrResultsDir(true, $(this));
             }
         }
     },
