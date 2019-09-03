@@ -63,6 +63,7 @@
                         {% endfor %}
                         {% endif %}
                     </td>
+                    {% if step.runmode %}
                     <td class="col-sm-1">
                         <span key="runmode.@type"> {{ step.runmode|get_attribute:"type"|convert_runmodes }} </span>
                         {% if step.runmode|get_attribute:"type"|convert_runmodes != "Standard" %}
@@ -70,9 +71,21 @@
                         <span key="runmode.@value"> {{ step.runmode|get_attribute:"value" }} </span>
                         {% endif %}
                     </td>
+                    {% else %}
+                    <td class="col-sm-1">
+                        <span key="runmode.@type"> Standard</span>
+
+                    </td>
+                    {% endif %}
+                    {% if step.Iteration_type%}
                     <td class="col-sm-1">
                         <div key="Iteration_type.@type">{{ step.Iteration_type|get_attribute:"type"|convert_iteration_types }} </div>
                     </td>
+                    {% else %}
+                    <td class="col-sm-1">
+                        <div key="Iteration_type.@type">Standard </div>
+                    </td>
+                    {% endif %}
                     <td class="col-sm-1" key="context">{{ step.context|convert_contexts }}</td>
                     <td class="col-sm-1" key="impact">{{ step.impact|convert_impacts }}</td>
                     <td class="col-sm-1">
@@ -130,6 +143,7 @@
                         {% endfor %}
                         {% endif %}
                     </td>
+                    {% if data.TestWrapper.Cleanup.step.runmode %}
                     <td class="col-sm-1">
                         <span key="runmode.@type"> {{ data.TestWrapper.Cleanup.step.runmode|get_attribute:"type"|convert_runmodes }} </span>
                         {% if data.TestWrapper.Cleanup.step.runmode|get_attribute:"type"|convert_runmodes != "Standard" %}
@@ -137,9 +151,21 @@
                         <span key="runmode.@value"> {{ data.TestWrapper.Cleanup.step.runmode|get_attribute:"value" }} </span>
                         {% endif %}
                     </td>
+                    {% else %}
+                    <td class="col-sm-1">
+                        <span key="runmode.@type"> Standard </span>
+                    </td>
+                    {% endif %}
+
+                    {% if data.TestWrapper.Cleanup.step.Iteration_type %}
                     <td class="col-sm-1">
                         <div key="Iteration_type.@type">{{ data.TestWrapper.Cleanup.step.Iteration_type|get_attribute:"type"|convert_iteration_types }} </div>
                     </td>
+                    {% else %}
+                    <td class="col-sm-1">
+                        <div key="Iteration_type.@type"> Standard </div>
+                    </td>
+                    {% endif %}
                     <td class="col-sm-1" key="context">{{ data.TestWrapper.Cleanup.step.context|convert_contexts }}</td>
                     <td class="col-sm-1" key="impact">{{ data.TestWrapper.Cleanup.step.impact|convert_impacts }}</td>
                     <td class="col-sm-1">
