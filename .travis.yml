@@ -11,10 +11,10 @@ matrix:
       env: INSTALL=yes TESTFILE=./wftests/ci/pylint.sh PYLINT=yes
     - sudo: false
       dist: trusty
-      env: INSTALL=yes TESTFILES_1=yes
+      env: INSTALL=yes
     - sudo: false
       dist: trusty
-      env: INSTALL=yes TESTFILES_2=yes
+      env: INSTALL=yes
     - sudo: required
       dist: trusty
       env: INSTALL=yes
