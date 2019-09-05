@@ -291,6 +291,53 @@
     transition: all 0.2s ease-in-out;
 }
 
+
+.desc {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.cases-intentional-space-x > .cases-internal-section > div > table > thead > tr > td:nth-child(1) {
+    text-align: center;
+}
+
+.cases-intentional-space-x > .cases-internal-section > div > table > thead > tr:hover > .desc {
+    white-space: initial;
+    word-break: break-all;
+}
+
+.cases-intentional-space-x > .cases-internal-section > div > table > thead > tr:hover {
+    background-color: lightblue;
+    height: auto;
+    white-space: initial;
+    transition: all 0.2s ease-in-out;
+}
+
+.desccleanup {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: left;
+}
+
+.cases-intentional-space-x > .cases-internal-section > div > table > thead > tr > td:nth-child(1) {
+    text-align: center;
+}
+
+.cases-intentional-space-x > .cases-internal-section > div > table > thead > tr:hover > .desccleanup {
+    white-space: initial;
+    word-break: break-all;
+}
+
+.cases-intentional-space-x > .cases-internal-section > div > table > thead > tr:hover {
+    background-color: lightblue;
+    height: auto;
+    white-space: initial;
+    transition: all 0.2s ease-in-out;
+}
+
 .cases-intentional-space-x > .cases-internal-section > div > table:hover {
 }
 
