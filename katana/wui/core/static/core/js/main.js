@@ -1205,14 +1205,6 @@ var katana = {
 
   fileExplorerAPI: {
 
-    init: function() {
-      var $elem = this;
-      var input = $elem.parent().find('input');
-      katana.fileExplorerAPI.openFileExplorer(null, null, null, null, function(str) {
-        input.val(str).trigger('change');
-      });
-    },
-
     openFileExplorer: function(heading, start_directory, csrftoken, parent, callBack_on_accept, callBack_on_dismiss) {
       /*
       This function opens the file explorer on screen and populates it with directory data. It is always lazy loaded.
