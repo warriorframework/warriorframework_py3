@@ -1,5 +1,33 @@
 var settings = {
 
+    openFileExplorer: {
+
+            logsOrResultsDir: function (relative, $elem) {
+                /* This common function gets filepath from the fileexplorer and ataches it to the correct input field*/
+                $elem = $elem ? $elem : $(this);
+                var $inputElem = $elem.parent().children('input');
+                relative = !!relative;
+                katana.fileExplorerAPI.openFileExplorer("Select a Path", false,
+                    katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value'), false,
+                    function (inputValue){
+                        if (relative) {
+                            var tcPath = katana.$activeTab.find('#main-div').attr("current-file");
+                            inputValue = katana.utils.getRelativeFilepath(tcPath, inputValue, true);
+                        }
+                        $inputElem.val(inputValue);
+                        $inputElem.attr('value', inputValue);
+                        $("#saveButton").removeClass("saved");
+                    },
+                    false)
+            },
+
+            inputDataFile: function () {
+                /* This function calls logsOrResultsDir with relative as true so that relative path is created. */
+                settings.openFileExplorer.logsOrResultsDir(true, $(this));
+            },
+
+        },
+
     closeSetting: function () {
         if (this.parent().find('.saved').length)
             katana.closeSubApp();
