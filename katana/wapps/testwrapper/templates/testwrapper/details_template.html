@@ -6,7 +6,7 @@
                 <label class="cases-label">Name<span>*</span></label>
             </div>
             <div class="field col-sm-9">
-                <input key="Name" title="Name of the Case" validation-check="cases.validations.checkIfEmpty">
+                <input key="Name" title="Name of the Case" validation-check="setupcases.validations.checkIfEmpty">
             </div>
         </div>
         <div class="row">
@@ -14,7 +14,7 @@
                 <label class="cases-label">Title<span>*</span></label>
             </div>
             <div class="field col-sm-9">
-                <input key="Title" title="Title of the Case" validation-check="cases.validations.checkIfEmpty">
+                <input key="Title" title="Title of the Case" validation-check="setupcases.validations.checkIfEmpty">
             </div>
         </div>
 
@@ -24,7 +24,7 @@
                 <label class="cases-label">Engineer<span>*</span></label>
             </div>
             <div class="field col-sm-9">
-                <input key="Engineer" title="Name of the Engineer who developed this Case" validation-check="cases.validations.checkIfEmpty">
+                <input key="Engineer" title="Name of the Engineer who developed this Case" validation-check="setupcases.validations.checkIfEmpty">
             </div>
         </div>
         <div class="row">
@@ -51,7 +51,7 @@
                 <label class="cases-label">Data Type<span>*</span></label>
             </div>
             <div class="col-sm-9">
-                <select key="Datatype" katana-change="cases.detailsEditor.updateIterationTypeStepTmpl" title="Data Type of the testcase">
+                <select key="Datatype" katana-change="setupcases.detailsEditor.updateIterationTypeStepTmpl" title="Data Type of the testcase">
                     {% for value in defaults.details.datatypes %}
                     <option>{{value}}</option>
                     {% endfor %}

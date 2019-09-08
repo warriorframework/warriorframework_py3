@@ -1,4 +1,4 @@
-var cases = {
+var setupcases = {
 
     mappings: {
         newStep: {
@@ -45,18 +45,18 @@ var cases = {
             /* This function gets data from displayed details block and
             creates the details block in the side drawer*/
             var $elem = $(this);
-            var data = cases.generateJson.generateDetails($elem.closest('#main-div').find('#detail-block'));
-            cases.drawer.openClosedDrawer(cases.mappings.editDetails.title);
-            cases.drawer.open.highlightSidebar(0);
-            cases.drawer.open.switchView.details($elem.closest('#main-div').find('#details_drawer_template').clone(), data);
+            var data = setupcases.generateJson.generateDetails($elem.closest('#main-div').find('#detail-block'));
+            setupcases.drawer.openClosedDrawer(setupcases.mappings.editDetails.title);
+            setupcases.drawer.open.highlightSidebar(0);
+            setupcases.drawer.open.switchView.details($elem.closest('#main-div').find('#details_drawer_template').clone(), data);
         },
 
         newReq: function() {
             /* This function creates a new requirements block in the side drawer*/
             var $elem = $(this);
-            cases.drawer.openClosedDrawer(cases.mappings.newReq.title);
-            cases.drawer.open.highlightSidebar(1);
-            cases.drawer.open.switchView.requirements($elem.closest('#main-div').find('#reqs_drawer_template').clone());
+            setupcases.drawer.openClosedDrawer(setupcases.mappings.newReq.title);
+            setupcases.drawer.open.highlightSidebar(1);
+            setupcases.drawer.open.switchView.requirements($elem.closest('#main-div').find('#reqs_drawer_template').clone());
         },
 
         newStep: function() {
@@ -67,10 +67,10 @@ var cases = {
                document.getElementById("editsecond").style.display="none";
                document.getElementById("editDetails").style.display="none";
             var $elem = $(this);
-            cases.drawer.openClosedDrawer(cases.mappings.newStep.title);
-            cases.drawer.open.highlightSidebar(2);
-            var $container = $elem.closest('#main-div').find('#steps_drawer_template').clone().attr('step-type', 'edit').attr('index', cases.getLastStepNum());
-            cases.drawer.open.switchView.steps($container, false, cases.getLastStepNum() + 1);
+            setupcases.drawer.openClosedDrawer(setupcases.mappings.newStep.title);
+            setupcases.drawer.open.highlightSidebar(2);
+            var $container = $elem.closest('#main-div').find('#steps_drawer_template').clone().attr('step-type', 'edit').attr('index', setupcases.getLastStepNum());
+            setupcases.drawer.open.switchView.steps($container, false, setupcases.getLastStepNum() + 1);
         }
     },
 
@@ -140,8 +140,8 @@ var cases = {
                 details: function($container, data) {
                     /* This function generates the details html for the drawer and attaches it to the drawer */
                     $container.attr("id", "current_details_editor").show();
-                    cases.generateDetailsDisplayHtmlBlock($container, data);
-                    katana.$activeTab.find('#details_drawer_template').parent().prepend(cases.proofDetailsContainer($container));
+                    setupcases.generateDetailsDisplayHtmlBlock($container, data);
+                    katana.$activeTab.find('#details_drawer_template').parent().prepend(setupcases.proofDetailsContainer($container));
                 },
 
                 requirements: function($container, data, current) {
@@ -158,11 +158,11 @@ var cases = {
                     /* This function generates the step html for the drawer and attaches it to the drawer */
                     $container.attr("id", "current_steps_editor").show();
                     if (data) {
-                        $container = cases.generateStepsHtmlBlock($container, data);
+                        $container = setupcases.generateStepsHtmlBlock($container, data);
                     } else {
-                        $container = cases.addTsToStepsHtmlBlock($container, stepNum);
+                        $container = setupcases.addTsToStepsHtmlBlock($container, stepNum);
                     }
-                    katana.$activeTab.find('#steps_drawer_template').parent().prepend(cases.proofStepsContainer($container));
+                    katana.$activeTab.find('#steps_drawer_template').parent().prepend(setupcases.proofStepsContainer($container));
                 }
 
             },
@@ -176,15 +176,15 @@ var cases = {
                 if ($switchElem) {
                     var reference = $switchElem.attr('ref');
                     if (reference === "editDetails") {
-                        saved = cases.drawer.open._saveContents.details($openDrawer.find('.content').find('#current_details_editor'));
+                        saved = setupcases.drawer.open._saveContents.details($openDrawer.find('.content').find('#current_details_editor'));
                     } else if (reference === "newReq") {
-                        saved = cases.drawer.open._saveContents.requirements($openDrawer.find('.content').find('#current_reqs_editor'));
+                        saved = setupcases.drawer.open._saveContents.requirements($openDrawer.find('.content').find('#current_reqs_editor'));
                     } else if (reference === "newStep") {
-                        saved = cases.drawer.open._saveContents.steps($openDrawer.find('.content').find('#current_steps_editor'));
+                        saved = setupcases.drawer.open._saveContents.steps($openDrawer.find('.content').find('#current_steps_editor'));
                     }
                     if (saved) {
                         $openDrawer.find('.cases-drawer-open-body').find('.content').find('[id^="current"]').remove();
-                        cases.drawer.closeOpenedDrawer();
+                        setupcases.drawer.closeOpenedDrawer();
                     }
                 }
             },
@@ -194,8 +194,8 @@ var cases = {
                 details: function ($container) {
                     /* This function collects details data from the drawer and adds it to the displayed details block*/
                     if (katana.validationAPI.init($container)) {
-                        var data = cases.generateJson.generateDetails($container);
-                        var displayContent = cases.generateDetailsDisplayHtmlBlock(katana.$activeTab.find('#cases-display-template').clone(), data);
+                        var data = setupcases.generateJson.generateDetails($container);
+                        var displayContent = setupcases.generateDetailsDisplayHtmlBlock(katana.$activeTab.find('#cases-display-template').clone(), data);
                         katana.$activeTab.find('#cases-display-template').replaceWith(displayContent);
                         return true;
                     } else {
@@ -206,11 +206,11 @@ var cases = {
                 requirements: function ($container) {
                     /* This function collects reqs data from the drawer and adds it to the displayed reqs block*/
                     if (katana.validationAPI.init($container)) {
-                        var data = cases.generateJson.generateRequirements(katana.$activeTab.find('#cases-requirements-template'));
-                        var temp = cases.generateJson.generateRequirements($container);
+                        var data = setupcases.generateJson.generateRequirements(katana.$activeTab.find('#cases-requirements-template'));
+                        var temp = setupcases.generateJson.generateRequirements($container);
                         var index = $container.attr('current') ? $container.attr('current') : data.Requirements.Requirement.length;
                         data.Requirements.Requirement.splice(index, 1, temp.Requirements.Requirement[0]);
-                        var displayContent = cases.generateRequirementsHtmlBlock(katana.$activeTab.find('#cases-requirements-template').clone(), data);
+                        var displayContent = setupcases.generateRequirementsHtmlBlock(katana.$activeTab.find('#cases-requirements-template').clone(), data);
                         katana.$activeTab.find('#cases-requirements-template').replaceWith(displayContent);
                         return true;
                     } else {
@@ -221,7 +221,7 @@ var cases = {
                 steps: function ($container) {
                     /* This function collects step data from the drawer and adds it to the displayed step block*/
                     if (katana.validationAPI.init($container)) {
-                        var data = cases.generateJson.generateStep($container);
+                        var data = setupcases.generateJson.generateStep($container);
                         var filteredArgs = [];
                         for (var i=0; i<data.Setup.step[0].Arguments.argument.length; i++) {
                             if (data.Setup.step[0].Arguments.argument[i]["@value"] !== "") {
@@ -229,7 +229,7 @@ var cases = {
                             }
                         }
                         data.Setup.step[0].Arguments.argument = filteredArgs;
-                        var displayContent = cases.generateStepsDisplayHtmlBlock(katana.$activeTab.find('#step-row-template').clone().attr('id', ''), data);
+                        var displayContent = setupcases.generateStepsDisplayHtmlBlock(katana.$activeTab.find('#step-row-template').clone().attr('id', ''), data);
                         var stepType = $container.attr('step-type') === "edit";
                         var index = parseInt($container.attr('index'));
                         var $allTrs = katana.$activeTab.find('#cases-steps-template').find('tbody').find('tr');
@@ -238,10 +238,10 @@ var cases = {
                         }
                         if (index === 0) {
                             katana.$activeTab.find('#cases-steps-template').find('tbody').prepend(displayContent);
-                            cases.redoStepNums();
+                            setupcases.redoStepNums();
                         } else {
                             displayContent.insertAfter($($allTrs[index-1]));
-                            cases.redoStepNums();
+                            setupcases.redoStepNums();
                         }
                         return true;
                     } else {
@@ -260,7 +260,7 @@ var cases = {
                     "text": "This action will discard all changes, are you sure you want to continue?"
                     }, function () {
                         $openDrawer.find('.cases-drawer-open-body').find('.content').find('[id^="current"]').remove();
-                        cases.drawer.closeOpenedDrawer();
+                        setupcases.drawer.closeOpenedDrawer();
                     })
             }
         },
@@ -287,7 +287,7 @@ var cases = {
 
             inputDataFile: function () {
                 /* This function calls logsOrResultsDir with relative as true so that relative path is created. */
-                cases.drawer.openFileExplorer.logsOrResultsDir(true, $(this));
+                setupcases.drawer.openFileExplorer.logsOrResultsDir(true, $(this));
             }
         }
     },
@@ -333,11 +333,11 @@ var cases = {
                             data: {"path": data["node"]["li_attr"]["data-path"]}
                         }).done(function(data){
                             if(data.status){
-                                cases.invert();
+                                setupcases.invert();
                                 katana.$activeTab.find('#main-div').attr("current-file", data.filepath);
                                 katana.$activeTab.find('.tool-bar').find('.title').html(data.filename);
                                 katana.$activeTab.find('#main-div').html(data.html_data);
-                                cases.mappings.newStep.drivers = data.drivers;
+                                setupcases.mappings.newStep.drivers = data.drivers;
                             } else {
                                 katana.openAlert({"alert_type": "danger",
                                     "heading": "Could not open file",
@@ -361,12 +361,11 @@ var cases = {
                 data: {"path": false}
             }).done(function(data){
                 if(data.status){
-                    cases.invert();
-                    console.log("cases opefole")
+                    setupcases.invert();
                     katana.$activeTab.find('#main-div').attr("current-file", data.filepath);
                     katana.$activeTab.find('.tool-bar').find('.title').html(data.filename);
                     katana.$activeTab.find('#main-div').html(data.html_data);
-                    cases.mappings.newStep.drivers = data.drivers;
+                    setupcases.mappings.newStep.drivers = data.drivers;
                     cleanupcases.mappings.newStep.drivers = data.drivers;
                 } else {
                     katana.openAlert({"alert_type": "danger",
@@ -385,7 +384,7 @@ var cases = {
             /* This function closes the testcase */
             katana.$activeTab.find('#main-div').html("");
             katana.$activeTab.find('.tool-bar').find('.title').html("");
-            cases.invert();
+            setupcases.invert();
         },
 
         save: function () {
@@ -393,9 +392,9 @@ var cases = {
             var final_json = {"TestWrapper": {}};
             var filepath = katana.$activeTab.find('#main-div').attr("current-file");
             var filename = katana.$activeTab.find('.tool-bar').find('.title').html();
-            $.extend(true, final_json.TestWrapper, cases.generateJson.generateDetails(katana.$activeTab.find('#detail-block')));
-            $.extend(true, final_json.TestWrapper, cases.generateJson.generateRequirements(katana.$activeTab.find('#req-block')));
-            $.extend(true, final_json.TestWrapper, cases.generateJson.generateStep(katana.$activeTab.find('#step-block')));
+            $.extend(true, final_json.TestWrapper, setupcases.generateJson.generateDetails(katana.$activeTab.find('#detail-block')));
+            $.extend(true, final_json.TestWrapper, setupcases.generateJson.generateRequirements(katana.$activeTab.find('#req-block')));
+            $.extend(true, final_json.TestWrapper, setupcases.generateJson.generateStep(katana.$activeTab.find('#step-block')));
             $.extend(true, final_json.TestWrapper, cleanupcases.generateJson.generateStep(katana.$activeTab.find('#step-block-cleanup')));
 
 
@@ -415,7 +414,7 @@ var cases = {
                             "text": inputValue + " has been saved successfully",
                             "show_cancel_btn": false
                         });
-                        cases.caseViewer.close();
+                        setupcases.caseViewer.close();
                         window.setTimeout(function(){window.location.reload()}, 2000)
                     } else {
                         katana.openAlert({
@@ -476,8 +475,8 @@ var cases = {
                 "text": "Are you sure you want to delete the requirement? This cannot be undone."
             }, function(){
                 $toBeDeleted.remove();
-                var data = cases.generateJson.generateRequirements($topLevel);
-                var displayContent = cases.generateRequirementsHtmlBlock($topLevel.clone(), data);
+                var data = setupcases.generateJson.generateRequirements($topLevel);
+                var displayContent = setupcases.generateRequirementsHtmlBlock($topLevel.clone(), data);
                 $topLevel.replaceWith(displayContent);
             });
         },
@@ -486,9 +485,9 @@ var cases = {
             /* This function opens a req in the req editor*/
             var $elem = $(this);
             var data = $($elem.closest('.cases-req').children('div')[0]).html().trim();
-            cases.drawer.openClosedDrawer(cases.mappings.editReq.title);
-            cases.drawer.open.highlightSidebar(1);
-            cases.drawer.open.switchView.requirements($elem.closest('#main-div').find('#reqs_drawer_template').clone(), data, $elem.closest('tr').attr('req-number')-1);
+            setupcases.drawer.openClosedDrawer(cases.mappings.editReq.title);
+            setupcases.drawer.open.highlightSidebar(1);
+            setupcases.drawer.open.switchView.requirements($elem.closest('#main-div').find('#reqs_drawer_template').clone(), data, $elem.closest('tr').attr('req-number')-1);
         }
     },
 
@@ -556,7 +555,7 @@ var cases = {
                             for (var i=0; i<$allTrElems.length; i++){
                                 $($allTrElems[i]).remove();
                             }
-                            cases.redoStepNums();
+                            setupcases.redoStepNums();
                         })
                 }
             },
@@ -587,10 +586,10 @@ var cases = {
                     insertAtIndex = $($allTrElems[0]).index();
                 }
 
-                cases.drawer.openClosedDrawer(cases.mappings.newStep.title);
-                cases.drawer.open.highlightSidebar(2);
+                setupcases.drawer.openClosedDrawer(setupcases.mappings.newStep.title);
+                setupcases.drawer.open.highlightSidebar(2);
                 var $container = $elem.closest('#main-div').find('#steps_drawer_template').clone().attr("step-type", "insert").attr("index", insertAtIndex);
-                cases.drawer.open.switchView.steps($container, false, insertAtIndex+1);
+                setupcases.drawer.open.switchView.steps($container, false, insertAtIndex+1);
 
             },
 
@@ -620,11 +619,11 @@ var cases = {
                         "show_cancel_btn": false
                     });
                 } else {
-                    var data = cases.generateJson.generateStep($($allTrElems[0]));
-                    cases.drawer.openClosedDrawer(cases.mappings.editStep.title);
-                    cases.drawer.open.highlightSidebar(2);
+                    var data = setupcases.generateJson.generateStep($($allTrElems[0]));
+                    setupcases.drawer.openClosedDrawer(setupcases.mappings.editStep.title);
+                    setupcases.drawer.open.highlightSidebar(2);
                     var $container = $elem.closest('#main-div').find('#steps_drawer_template').clone().attr('step-type', 'edit').attr('index', $($allTrElems[0]).index());
-                    cases.drawer.open.switchView.steps($container, data);
+                    setupcases.drawer.open.switchView.steps($container, data);
                 }
             }
         }
@@ -639,7 +638,7 @@ var cases = {
             var value = false;
             for (var i=0; i <$allKeys.length; i++) {
                 value = $($allKeys[i]).val() ? $($allKeys[i]).val().trim() : $($allKeys[i]).html().trim();
-                $.extend(true, finalJson.Details, cases.generateJson._updateJson($($allKeys[i]).attr("key").trim(), value));
+                $.extend(true, finalJson.Details, setupcases.generateJson._updateJson($($allKeys[i]).attr("key").trim(), value));
             }
             return finalJson;
         },
@@ -668,10 +667,10 @@ var cases = {
                 for (var j=0; j<$allKeys.length; j++) {
                     var key = $($allKeys[j]).attr("key").trim();
                     var value = $($allKeys[j]).val() ? $($allKeys[j]).val().trim() : $($allKeys[j]).html().trim();
-                    $.extend(true, partialData, cases.generateJson._updateJson(key, value));
+                    $.extend(true, partialData, setupcases.generateJson._updateJson(key, value));
                 }
-                $.extend(true, partialData, cases.generateJson.generateArguments($($allSteps[i]).find('[key="Arguments.argument"]')));
-                $.extend(true, partialData, cases.generateJson.generateExecuteRules($($allSteps[i]).find('[key="Execute.Rule"]')));
+                $.extend(true, partialData, setupcases.generateJson.generateArguments($($allSteps[i]).find('[key="Arguments.argument"]')));
+                $.extend(true, partialData, setupcases.generateJson.generateExecuteRules($($allSteps[i]).find('[key="Execute.Rule"]')));
                 finalJson.Setup.step.push(partialData);
             }
             return finalJson
@@ -690,7 +689,7 @@ var cases = {
                     var key = $($ruleBlock[j]).attr("key").trim();
                     var val = $($ruleBlock[j]).val() ? $($ruleBlock[j]).val().trim() : $($ruleBlock[j]).attr('value');
                     var value = val ? val.trim() : $($ruleBlock[j]).html().trim();
-                    $.extend(true, partialData, cases.generateJson._updateJson(key, value));
+                    $.extend(true, partialData, setupcases.generateJson._updateJson(key, value));
                 }
                 finalJson.Execute.Rule.push(Object.assign({}, partialData.Execute.Rule));
             }
@@ -710,7 +709,7 @@ var cases = {
                     var key = $($argBlock[j]).attr("key").trim();
                     var val = $($argBlock[j]).val() ? $($argBlock[j]).val().trim() : $($argBlock[j]).attr('value');
                     var value = val ? val.trim() : $($argBlock[j]).html().trim();
-                    $.extend(true, partialData, cases.generateJson._updateJson(key, value));
+                    $.extend(true, partialData, setupcases.generateJson._updateJson(key, value));
                 }
                 finalJson.Arguments.argument.push(Object.assign({}, partialData.Arguments.argument));
             }
@@ -724,7 +723,7 @@ var cases = {
             var key = unrefined_key.split(/\.(.+)/)[0];
             var remaining_key = unrefined_key.split(/\.(.+)/)[1];
             if (key !== undefined && remaining_key !== undefined) {
-                data[key] = cases.generateJson._updateJson(remaining_key, value)
+                data[key] = setupcases.generateJson._updateJson(remaining_key, value)
             } else {
                 data[unrefined_key] = value;
             }
@@ -738,7 +737,7 @@ var cases = {
         var key = unrefined_key.split(/\.(.+)/)[0];
         var remaining_key = unrefined_key.split(/\.(.+)/)[1];
         if (key !== undefined && remaining_key !== undefined) {
-            return cases.getValueFromJson(data[key], remaining_key)
+            return setupcases.getValueFromJson(data[key], remaining_key)
         }
         return data[key]
     },
@@ -748,10 +747,10 @@ var cases = {
         var $allKeys = $container.find('[key]');
         for (var i=0; i<$allKeys.length; i++) {
             if ($($allKeys[i]).prop('type') === 'text') {
-                $($allKeys[i]).attr('value', cases.getValueFromJson(data.Details, $($allKeys[i]).attr('key')));
+                $($allKeys[i]).attr('value', setupcases.getValueFromJson(data.Details, $($allKeys[i]).attr('key')));
             } else if ($($allKeys[i]).prop('type') === 'select-one') {
-                $($allKeys[i]).attr('value', cases.getValueFromJson(data.Details, $($allKeys[i]).attr('key')));
-                var value = cases.getValueFromJson(data.Details, $($allKeys[i]).attr('key'));
+                $($allKeys[i]).attr('value', setupcases.getValueFromJson(data.Details, $($allKeys[i]).attr('key')));
+                var value = setupcases.getValueFromJson(data.Details, $($allKeys[i]).attr('key'));
                 var $allOptions = $($allKeys[i]).children();
                 for (var j=0; j<$allOptions.length; j++) {
                     if ($($allOptions[j]).text() === value) {
@@ -760,7 +759,7 @@ var cases = {
                     }
                 }
             } else {
-                $($allKeys[i]).html(cases.getValueFromJson(data.Details, $($allKeys[i]).attr('key')));
+                $($allKeys[i]).html(setupcases.getValueFromJson(data.Details, $($allKeys[i]).attr('key')));
             }
         }
         return $container
@@ -772,8 +771,8 @@ var cases = {
         var start = 0;
         var mid = Math.floor((data.Requirements.Requirement.length + 1) /2);
         var end = data.Requirements.Requirement.length;
-        var $tableTemplateLeft = cases._generateReqTable(data, start, mid, $constantTemplate, $constantTemplate.clone());
-        var $tableTemplateRight = cases._generateReqTable(data, mid, end, $constantTemplate, $constantTemplate.clone());
+        var $tableTemplateLeft = setupcases._generateReqTable(data, start, mid, $constantTemplate, $constantTemplate.clone());
+        var $tableTemplateRight = setupcases._generateReqTable(data, mid, end, $constantTemplate, $constantTemplate.clone());
         $($container.find('.cases-internal-space')[0]).html($tableTemplateLeft);
         $($container.find('.cases-internal-space')[1]).html($tableTemplateRight);
         return $container;
@@ -798,10 +797,10 @@ var cases = {
         var $allKeys = $container.find('[key]').not('[key*="Execute"]').not('[key*="Arguments"]');
         for (var i=0; i<$allKeys.length; i++) {
             if ($($allKeys[i]).prop('type') === 'text') {
-                $($allKeys[i]).attr('value', cases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
+                $($allKeys[i]).attr('value', setupcases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
             } else if ($($allKeys[i]).prop('type') === 'select-one') {
-                $($allKeys[i]).attr('value', cases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
-                var value = cases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key'));
+                $($allKeys[i]).attr('value', setupcases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
+                var value = setupcases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key'));
                 var $allOptions = $($allKeys[i]).children();
                 for (var j=0; j<$allOptions.length; j++) {
                     if ($($allOptions[j]).text() === value) {
@@ -810,11 +809,11 @@ var cases = {
                     }
                 }
             } else {
-                $($allKeys[i]).html(cases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
+                $($allKeys[i]).html(setupcases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
             }
         }
-        $container = cases._addExecuteBlock($container, data);
-        $container = cases._addArgumentsEtcBlock($container, data);
+        $container = setupcases._addExecuteBlock($container, data);
+        $container = setupcases._addArgumentsEtcBlock($container, data);
         return $container
     },
 
@@ -822,21 +821,21 @@ var cases = {
         /* This function generates the execute block (side-drawer) out of an HTML block and json data.
         This function should not be called independently */
         var $execTypeBlock = $container.find('[key="Execute.@ExecType"]');
-        $execTypeBlock.attr('current-value', cases.getValueFromJson(data.Setup.step[0], $execTypeBlock.attr('key')));
-        cases._selectOption($execTypeBlock, $execTypeBlock.attr('current-value'));
+        $execTypeBlock.attr('current-value', setupcases.getValueFromJson(data.Setup.step[0], $execTypeBlock.attr('key')));
+        setupcases._selectOption($execTypeBlock, $execTypeBlock.attr('current-value'));
 
         var $ruleBlock = $execTypeBlock.closest('.row').next().find('#rule-template');
         for (var k=0; k<data.Setup.step[0].Execute.Rule.length; k++) {
             var $currentRuleBlock = $ruleBlock.clone().attr('id', '').attr('key', 'Execute.Rule').show();
             var $allKeys = $currentRuleBlock.find('[key]');
             for (var i=0; i<$allKeys.length; i++) {
-                var value = cases.getValueFromJson({"Execute" : {"Rule": data.Setup.step[0].Execute.Rule[k]}}, $($allKeys[i]).attr('key'));
+                var value = setupcases.getValueFromJson({"Execute" : {"Rule": data.Setup.step[0].Execute.Rule[k]}}, $($allKeys[i]).attr('key'));
                 $($allKeys[i]).attr('value', value);
                 if ($($allKeys[i]).prop('type') === 'select-one') {
-                    cases._selectOption($($allKeys[i]), value);
+                    setupcases._selectOption($($allKeys[i]), value);
                 }
             }
-            cases.stepEditor.updateRuleElseValue($currentRuleBlock.find('[key="Execute.Rule.@Else"]'));
+            setupcases.stepEditor.updateRuleElseValue($currentRuleBlock.find('[key="Execute.Rule.@Else"]'));
             $ruleBlock.parent().append($currentRuleBlock);
             $execTypeBlock.closest('.row').next().show();
         }
@@ -847,7 +846,7 @@ var cases = {
     _addArgumentsEtcBlock: function ($container, data) {
         /* This function generates the arguments block (side-drawer) out of an HTML block and json data.
         This function should not be called independently */
-        cases.stepEditor.getKeywords($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val());
+        setupcases.stepEditor.getKeywords($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val());
         var $allArgs = $container.find('[key="Arguments.argument"]');
         for (var i=0 ; i<$allArgs.length; i++) {
             var currentArg = $($allArgs[i]).find('.cases-label').text();
@@ -867,10 +866,10 @@ var cases = {
         var $allKeys = $container.find('[key]').not('[key*="Execute.Rule"]').not('[key*="Arguments"]');
         for (var i=0; i<$allKeys.length; i++) {
             if ($($allKeys[i]).prop('type') === 'text') {
-                $($allKeys[i]).attr('value', cases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
+                $($allKeys[i]).attr('value', setupcases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
             } else if ($($allKeys[i]).prop('type') === 'select-one') {
-                $($allKeys[i]).attr('value', cases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
-                var value = cases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key'));
+                $($allKeys[i]).attr('value', setupcases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
+                var value = setupcases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key'));
                 var $allOptions = $($allKeys[i]).children();
                 for (var j=0; j<$allOptions.length; j++) {
                     if ($($allOptions[j]).text() === value) {
@@ -879,13 +878,13 @@ var cases = {
                     }
                 }
             } else {
-                $($allKeys[i]).html(cases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
+                $($allKeys[i]).html(setupcases.getValueFromJson(data.Setup.step[0], $($allKeys[i]).attr('key')));
             }
         }
-        $container = cases.evaluateDisplayRunmode($container);
-        $container = cases.evaluateDisplayOnError($container);
-        $container = cases.evaluateDisplayArguments($container, data);
-        $container = cases.evaluateDisplayExecute($container, data);
+        $container = setupcases.evaluateDisplayRunmode($container);
+        $container = setupcases.evaluateDisplayOnError($container);
+        $container = setupcases.evaluateDisplayArguments($container, data);
+        $container = setupcases.evaluateDisplayExecute($container, data);
         return $container;
     },
 
@@ -933,7 +932,7 @@ var cases = {
             var $currentTemplate = $templateExecRule.clone();
             var $allKeys = $currentTemplate.find('[key]');
             for (var j=0; j<$allKeys.length; j++) {
-                $($allKeys[j]).html(cases.getValueFromJson({"Execute": {"Rule": data.Setup.step[0].Execute.Rule[i]}}, $($allKeys[j]).attr('key')));
+                $($allKeys[j]).html(setupcases.getValueFromJson({"Execute": {"Rule": data.Setup.step[0].Execute.Rule[i]}}, $($allKeys[j]).attr('key')));
             }
             $container.find('[key="Execute.@ExecType"]').parent().append($currentTemplate);
             $container.find('[key="Execute.@ExecType"]').parent().append('<br>');
@@ -955,16 +954,16 @@ var cases = {
 
     proofDetailsContainer: function ($container) {
         /* This function verifies if the all the correct fields are shown/hidden in the details (side-drawer) block */
-        cases.detailsEditor.updateDefaultOnError($container.find('[key="default_onError.@action"]'));
-        cases.detailsEditor.updateIterationTypeStepTmpl($container.find('[key="Datatype"]'));
+        setupcases.detailsEditor.updateDefaultOnError($container.find('[key="default_onError.@action"]'));
+        setupcases.detailsEditor.updateIterationTypeStepTmpl($container.find('[key="Datatype"]'));
         return $container;
     },
 
     proofStepsContainer: function ($container) {
         /* This function verifies if the all the correct fields are shown/hidden in the step (side-drawer) block */
-        cases.stepEditor.updateRules($container.find('[key="Execute.@ExecType"]'));
-        cases.stepEditor.updateRunmode($container.find('[key="runmode.@type"]'));
-        cases.stepEditor.updateOnErrorValue($container.find('[key="onError.@action"]'));
+        setupcases.stepEditor.updateRules($container.find('[key="Execute.@ExecType"]'));
+        setupcases.stepEditor.updateRunmode($container.find('[key="runmode.@type"]'));
+        setupcases.stepEditor.updateOnErrorValue($container.find('[key="onError.@action"]'));
         return $container
     },
 
@@ -1005,7 +1004,7 @@ var cases = {
             /* This function hides/shows  the corresponding "goto value" field for the onerror "goto".
             Internally calls the _updateCommonOnError function */
             $elem = $elem ? $elem : $(this);
-            cases._updateCommonOnError($elem);
+            setupcases._updateCommonOnError($elem);
         },
 
         updateIterationTypeStepTmpl: function ($elem) {
@@ -1034,16 +1033,16 @@ var cases = {
             var $kwRow = $elem.closest('.row').next();
             $kwRow.find('input').attr("value", kwName).val(kwName);
             $kwRow.find('#keywords').html("");
-            console.log(cases.mappings.newStep.drivers);
+            console.log(setupcases.mappings.newStep.drivers);
             console.log(driverName)
-            if (driverName in cases.mappings.newStep.drivers) {
-                for (var key in cases.mappings.newStep.drivers[driverName].actions){
-                    if (cases.mappings.newStep.drivers[driverName].actions.hasOwnProperty(key)){
+            if (driverName in setupcases.mappings.newStep.drivers) {
+                for (var key in setupcases.mappings.newStep.drivers[driverName].actions){
+                    if (setupcases.mappings.newStep.drivers[driverName].actions.hasOwnProperty(key)){
                         $kwRow.find('#keywords').append('<option>' + key + '</option>');
                     }
                 }
             }
-            cases.stepEditor.getArgumentsEtc($kwRow.find('input'));
+            setupcases.stepEditor.getArgumentsEtc($kwRow.find('input'));
         },
 
         getArgumentsEtc: function ($elem, data) {
@@ -1054,16 +1053,16 @@ var cases = {
             var driverName = $elem.closest('.row').prev().find('input').val();
             data = data ? data : false;
 
-            if (driverName in cases.mappings.newStep.drivers) {
-                if (kwName in cases.mappings.newStep.drivers[driverName].actions) {
-                    data = cases.mappings.newStep.drivers[driverName].actions[kwName]
+            if (driverName in setupcases.mappings.newStep.drivers) {
+                if (kwName in setupcases.mappings.newStep.drivers[driverName].actions) {
+                    data = setupcases.mappings.newStep.drivers[driverName].actions[kwName]
                 }
             }
 
-            cases.stepEditor._setSignature($elem.closest('.row').next(), data);
-            cases.stepEditor._setArguments($elem.closest('.row').next().next(), data);
-            cases.stepEditor._setWDescription($elem.closest('.row').next().next().next(), data);
-            cases.stepEditor._setComments($elem.closest('.row').next().next().next().next(), data);
+            setupcases.stepEditor._setSignature($elem.closest('.row').next(), data);
+            setupcases.stepEditor._setArguments($elem.closest('.row').next().next(), data);
+            setupcases.stepEditor._setWDescription($elem.closest('.row').next().next().next(), data);
+            setupcases.stepEditor._setComments($elem.closest('.row').next().next().next().next(), data);
         },
 
         _setSignature: function ($topLevelSignRow, data) {
@@ -1140,7 +1139,7 @@ var cases = {
             /* This function hides/shows  the corresponding "goto value" field for the onerror "goto".
             Internally calls the _updateCommonOnError function */
             $elem = $elem ? $elem : $(this);
-            cases._updateCommonOnError($elem);
+            setupcases._updateCommonOnError($elem);
         },
 
         updateRunmode: function ($elem) {
@@ -1159,7 +1158,7 @@ var cases = {
             /* This function hides/shows  the corresponding "goto value" field for the onerror "goto".
             Internally calls the _updateCommonOnError function */
             $elem = $elem ? $elem : $(this);
-            cases._updateCommonOnError($elem);
+            setupcases._updateCommonOnError($elem);
         }
     },
 
