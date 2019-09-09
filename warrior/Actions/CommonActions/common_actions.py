@@ -482,3 +482,49 @@ class CommonActions(object):
         root.append(main_tag)
 
         return True
+
+    def get_warrior_result(self):
+        """Returns warrior status and failed command details.
+           :Returns:
+                1. script_status(boolean) : True if all steps Passed else False
+                2. step_status_message (str) : step status
+                3. failure_reason (str) : failure reason
+        """
+        wdesc = "to get current status of warrior script and failure reason"
+        Utils.testcase_Utils.pNote(wdesc)
+        script_status = True
+        step_status_message = None
+        failure_reason = None
+        data_repository = Utils.config_Utils.data_repository
+        for session_td_key, session_td_value in data_repository.items():
+            if session_td_key.startswith('step') and session_td_key.endswith('_result'):
+                if session_td_value != "PASS":
+                    script_status = False
+                    step_status_message = "{0} status {1}".\
+                            format(session_td_key.replace('_result', ''), session_td_value)
+                    print_error(step_status_message)
+
+            if script_status is False and '_td_response' in session_td_key:
+                for title_td_key, title_td_value in session_td_value.items():
+                    for command_key, command_value in title_td_value.items():
+                        if '_status' not in command_key and '_command' not in command_key:
+                            command = title_td_value.get(command_key+"_command", None)
+                            status = title_td_value.get(command_key+"_status", None)
+                            print_error("status is {}".format(status))
+                            if status is not None and status != "PASS":
+                                script_status = False
+                                splitted_command = command.split(":")
+                                if splitted_command[0] == "3" or splitted_command[0] == \
+                                        "wctrl:x" or splitted_command[0] == ";":
+                                    failure_reason = "Communication Failure with device"
+                                else:
+                                    failure_reason = "{0} Failed".format(splitted_command[0])
+                                    if str(splitted_command[0]) == "None":
+                                        failure_reason = "Unable to get command failure details"
+                                print_error(failure_reason)
+
+        output_dict = {"script_status": script_status, \
+                       "step_status_message" : step_status_message, \
+                       "failure_reason" : failure_reason}
+        status = True
+        return status, output_dict
