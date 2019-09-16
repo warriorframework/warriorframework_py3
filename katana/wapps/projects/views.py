@@ -45,30 +45,33 @@ def get_file(request):
     """
     Reads a file, validates it, computes the HTML and returns it as a JSON response
     """
-    file_path = request.GET.get('path')
-    if file_path == "false":
-        file_path = TEMPLATE
-    vcf_obj = VerifyProjectFile(TEMPLATE, file_path)
+    try:
+            file_path = request.GET.get('path')
+            if file_path == "false":
+                file_path = TEMPLATE
+            vcf_obj = VerifyProjectFile(TEMPLATE, file_path)
 
-    output, data = vcf_obj.verify_file()
+            output, data = vcf_obj.verify_file()
 
-    if output["status"]:
-        mid_req = (len(data["Project"]["Requirements"]["Requirement"]) + 1) / 2
-        if file_path == TEMPLATE:
-            output["filepath"] = read_json_data(CONFIG_FILE)["projdir"]
-        else:
-            output["filepath"] = get_parent_dir_path(file_path)
-        output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
+            if output["status"]:
+                mid_req = (len(data["Project"]["Requirements"]["Requirement"]) + 1) / 2
+                if file_path == TEMPLATE:
+                    output["filepath"] = read_json_data(CONFIG_FILE)["projdir"]
+                else:
+                    output["filepath"] = get_parent_dir_path(file_path)
+                output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
 
-        print(output)
-        output["html_data"] = render_to_string('projects/display_suite.html',
-                                               {"data": data, "mid_req": mid_req,
-                                                "defaults": DROPDOWN_DEFAULTS})
-        print(output)
-        return JsonResponse(output)
-    else:
-        print(output)
-        JsonResponse({"status": output["status"], "message": output["message"]})
+                print(output)
+                output["html_data"] = render_to_string('projects/display_suite.html',
+                                                       {"data": data, "mid_req": mid_req,
+                                                        "defaults": DROPDOWN_DEFAULTS})
+                print(output)
+                return JsonResponse(output)
+            else:
+                print(output)
+                JsonResponse({"status": output["status"], "message": output["message"]})
+    except Exception as e:
+        return JsonResponse({"status": 0,"message":"Exception opening the file"})
 
 
 def save_file(request):

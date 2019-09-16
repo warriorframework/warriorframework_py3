@@ -22,9 +22,16 @@
                     <td class="col-sm-1" key="@TS">{{ forloop.counter }}</td>
                     <td class="col-sm-2" key="path">{{ tc.path }}</td>
                     <td class="col-sm-2" key="InputDataFile">{{ tc.InputDataFile }}</td>
+                    {% if tc.runtype %}
                     <td class="col-sm-1">
                         <span key="runtype">{{ tc.runtype|convert_runtypes }}</span>
                     </td>
+                    {% else %}
+                    <td class="col-sm-1">
+                        <span key="runtype"> None</span>
+                    </td>
+                    {% endif %}
+                    {% if tc.Execute %}
                     <td class="col-sm-2">
                         <span key="Execute.@ExecType">{{ tc.Execute|get_attribute:"ExecType" }}</span><br>
                         {% if tc.Execute|get_attribute:"ExecType" == "If" or tc.Execute|get_attribute:"ExecType" == "If Not" %}
@@ -43,6 +50,12 @@
                         {% endfor %}
                         {% endif %}
                     </td>
+                    {% else %}
+                    <td class="col-sm-2">
+                        <span key="Execute.@ExecType"> Yes</span>
+                    </td>
+                    {% endif %}
+                    {% if tc.runmode %}
                     <td class="col-sm-1">
                         <span key="runmode.@type"> {{ tc.runmode|get_attribute:"type"|convert_runmodes }} </span>
                         {% if tc.runmode|get_attribute:"type"|convert_runmodes != "Standard" %}
@@ -50,8 +63,22 @@
                         <span key="runmode.@value"> {{ tc.runmode|get_attribute:"value" }} </span>
                         {% endif %}
                     </td>
+                    {% else %}
+                    <td class="col-sm-1">
+                        <span key="runmode.@type"> Standard</span>
+                    </td>
+                    {% endif %}
+                    {% if tc.context %}
                     <td class="col-sm-1" key="context">{{ tc.context|convert_contexts }}</td>
+                    {% else %}
+                    <td class="col-sm-1" key="context">Positive</td>
+                    {% endif %}
+                    {% if tc.impact %}
                     <td class="col-sm-1" key="impact">{{ tc.impact|convert_impacts }}</td>
+                    {% else %}
+                    <td class="col-sm-1" key="impact">Impact</td>
+                    {% endif %}
+                    {% if tc.onError %}
                     <td class="col-sm-1">
                         <span key="onError.@action"> {{ tc.onError|get_attribute:"action"|convert_on_errors }} </span>
                         {% if tc.onError|get_attribute:"action"|convert_on_errors == "Go To" %}
@@ -59,6 +86,11 @@
                         <span key="onError.@value"> {{ tc.onError|get_attribute:"value" }} </span>
                         {% endif %}
                     </td>
+                    {% else %}
+                    <td class="col-sm-1">
+                        <span key="onError.@action"> Next</span>
+                    </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
                 </tbody>

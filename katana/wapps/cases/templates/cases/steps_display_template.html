@@ -9,8 +9,8 @@
                     <th scope="col" class="col-sm-1">Driver</th>
                     <th scope="col" class="col-sm-1">Keyword</th>
                     <th scope="col" class="col-sm-2">Arguments</th>
-                    <th scope="col" class="col-sm-1">Description</th>
-                    <th scope="col" class="col-sm-1">Execute</th>
+                    <th scope="col" class="col-sm-1 desc" >Description</th>
+                    <th scope="col" class="col-sm-1 desc" >Execute</th>
                     <th scope="col" class="col-sm-1">Run Mode</th>
                     <th scope="col" class="col-sm-1">Iteration Type</th>
                     <th scope="col" class="col-sm-1">Context</th>
@@ -25,6 +25,7 @@
                     <td class="col-sm-1" key="@Driver">{{ step|get_attribute:"Driver" }}</td>
                     <td class="col-sm-1" key="@Keyword">{{ step|get_attribute:"Keyword" }}</td>
                     <td class="col-sm-2" key="Arguments">
+                        {% if step.Arguments.argument|get_attribute_new == "list" %}
                         {% for arg in step.Arguments.argument %}
                         <div key="Arguments.argument">
                             <span key="Arguments.argument.@name">{{ arg|get_attribute:"name" }}</span>
@@ -32,11 +33,23 @@
                             <span key="Arguments.argument.@value">{{ arg|get_attribute:"value" }}</span>
                         </div>
                         {% endfor %}
+                        {% endif %}
+                        {% if step.Arguments.argument|get_attribute_new == "str" %}
+                        <div key="Arguments.argument">
+                            <span key="Arguments.argument.@name">{{ step.Arguments.argument|get_attribute:"name" }}</span>
+                            <span> = </span>
+                            <span key="Arguments.argument.@value">{{ step.Arguments.argument|get_attribute:"value" }}</span>
+                        </div>
+                        {% endif %}
                     </td>
+                    {% if step.Description %}
                     <td class="col-sm-1" key="Description">{{ step.Description }}</td>
+                    {% else %}
+                    <td class="col-sm-1" key="Description">None</td>
+                    {% endif %}
                     <td class="col-sm-1">
                         <span key="Execute.@ExecType">{{ step.Execute|get_attribute:"ExecType" }}</span><br>
-                        {% if step.Execute|get_attribute:"ExecType" == "If" or step.Execute|get_attribute:"ExecType" == "If Not" %}
+                        {% if rule|get_attribute_new == "list" %}
                         {% for rule in step.Execute.Rule %}
                         <span key="Execute.Rule">
                             <br>
@@ -52,6 +65,7 @@
                         {% endfor %}
                         {% endif %}
                     </td>
+                    {% if step.runmode %}
                     <td class="col-sm-1">
                         <span key="runmode.@type"> {{ step.runmode|get_attribute:"type"|convert_runmodes }} </span>
                         {% if step.runmode|get_attribute:"type"|convert_runmodes != "Standard" %}
@@ -59,18 +73,43 @@
                         <span key="runmode.@value"> {{ step.runmode|get_attribute:"value" }} </span>
                         {% endif %}
                     </td>
+                    {% else %}
+                    <td class="col-sm-1">
+                        <span key="runmode.@type"> Standard</span>
+                    </td>
+                    {% endif %}
+                    {% if step.Iteration_type %}
                     <td class="col-sm-1">
                         <div key="Iteration_type.@type">{{ step.Iteration_type|get_attribute:"type"|convert_iteration_types }} </div>
                     </td>
-                    <td class="col-sm-1" key="context">{{ step.context|convert_contexts }}</td>
-                    <td class="col-sm-1" key="impact">{{ step.impact|convert_impacts }}</td>
+                    {% else %}
                     <td class="col-sm-1">
-                        <span key="onError.@action"> {{ step.onError|get_attribute:"action"|convert_on_errors }} </span>
-                        {% if step.onError|get_attribute:"action"|convert_on_errors == "Go To" %}
+                        <div key="Iteration_type.@type">Standard </div>
+                    </td>
+                    {% endif %}
+                    {% if step.context %}
+                    <td class="col-sm-1" key="context">{{ step.context|convert_contexts }}</td>
+                    {% else %}
+                    <td class="col-sm-1" key="context">Yes </td>
+                    {% endif %}
+                    {% if step.impact %}
+                    <td class="col-sm-1" key="impact">{{ step.impact|convert_impacts }}</td>
+                    {% else %}
+                    <td class="col-sm-1" key="impact">Impact </td>
+                    {% endif %}
+                    {% if step.onError|get_attribute:"action" %}
+                    <td class="col-sm-1">
+                        <span key="onError.@action"> {{ step.onError|get_attribute:"action" }} </span>
+                        {% if step.onError|check_value_is_available_or_not == "str" %}
                         <span> = </span>
                         <span key="onError.@value"> {{ step.onError|get_attribute:"value" }} </span>
                         {% endif %}
                     </td>
+                    {% else %}
+                    <td class="col-sm-1">
+                        <span key="onError.@action"> sssNext</span>
+                    </td>
+                    {% endif %}
                 </tr>
                 {% endfor %}
                 </tbody>
