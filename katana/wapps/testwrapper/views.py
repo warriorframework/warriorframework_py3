@@ -97,8 +97,6 @@ def validate_step_data(data):
 
 def save_file(request):
     """ This function saves the file in the given path. """
-    # import pdb
-    # pdb.set_trace()
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
     data["TestWrapper"]["Details"] = validate_details_data(data["TestWrapper"]["Details"])
