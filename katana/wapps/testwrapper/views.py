@@ -97,11 +97,14 @@ def validate_step_data(data):
 
 def save_file(request):
     """ This function saves the file in the given path. """
+    # import pdb
+    # pdb.set_trace()
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
     data["TestWrapper"]["Details"] = validate_details_data(data["TestWrapper"]["Details"])
     data["TestWrapper"]["Setup"]["step"] = validate_step_data(data["TestWrapper"]["Setup"]["step"])
     data["TestWrapper"]["Cleanup"]["step"] = validate_step_data(data["TestWrapper"]["Cleanup"]["step"])
+    data["TestWrapper"]["Debug"]["step"] = validate_step_data(data["TestWrapper"]["Debug"]["step"])
     xml_data = xmltodict.unparse(data, pretty=True)
     directory = request.POST.get("directory")
     filename = request.POST.get("filename")
