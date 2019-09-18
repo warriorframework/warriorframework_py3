@@ -44,27 +44,30 @@ def get_file(request):
     """
     Reads a case file and returns it's contents in JSOn format
     """
-    file_path = request.GET.get('path')
-    if file_path == "false":
-        file_path = TEMPLATE
-    vcf_obj = VerifyTestWrapperFile(TEMPLATE, file_path)
-    output, data = vcf_obj.verify_file()
-    if output["status"]:
 
-        da_obj = GetDriversActions(navigator.get_warrior_dir()[:-1])
-        if file_path == TEMPLATE:
-            output["filepath"] = read_json_data(CONFIG_FILE)["testwrapper"]
-        else:
-            output["filepath"] = get_parent_dir_path(file_path)
-        output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
-        output["drivers"] = da_obj.get_all_actions()
-        output["html_data"] = render_to_string('testwrapper/display_case.html', {"data": data,
-                                                                           "defaults": DROPDOWN_DEFAULTS,
-                                                                           "drivers": output["drivers"]})
-        return JsonResponse(output)
-    else:
-        JsonResponse({"status": output["status"], "message": output["message"]})
+    try:
+            file_path = request.GET.get('path')
+            if file_path == "false":
+                file_path = TEMPLATE
+            vcf_obj = VerifyTestWrapperFile(TEMPLATE, file_path)
+            output, data = vcf_obj.verify_file()
+            if output["status"]:
 
+                da_obj = GetDriversActions(navigator.get_warrior_dir()[:-1])
+                if file_path == TEMPLATE:
+                    output["filepath"] = read_json_data(CONFIG_FILE)["testwrapper"]
+                else:
+                    output["filepath"] = get_parent_dir_path(file_path)
+                output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
+                output["drivers"] = da_obj.get_all_actions()
+                output["html_data"] = render_to_string('testwrapper/display_case.html', {"data": data,
+                                                                                   "defaults": DROPDOWN_DEFAULTS,
+                                                                                   "drivers": output["drivers"]})
+                return JsonResponse(output)
+            else:
+                JsonResponse({"status": output["status"], "message": output["message"]})
+    except Exception as e:
+        return JsonResponse({"status": 0,"message":"Exception opening the file"})
 
 def validate_details_data(data):
     """
