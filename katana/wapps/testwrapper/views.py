@@ -102,6 +102,7 @@ def save_file(request):
     data["TestWrapper"]["Details"] = validate_details_data(data["TestWrapper"]["Details"])
     data["TestWrapper"]["Setup"]["step"] = validate_step_data(data["TestWrapper"]["Setup"]["step"])
     data["TestWrapper"]["Cleanup"]["step"] = validate_step_data(data["TestWrapper"]["Cleanup"]["step"])
+    data["TestWrapper"]["Debug"]["step"] = validate_step_data(data["TestWrapper"]["Debug"]["step"])
     xml_data = xmltodict.unparse(data, pretty=True)
     directory = request.POST.get("directory")
     filename = request.POST.get("filename")
