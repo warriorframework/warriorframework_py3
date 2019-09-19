@@ -77,43 +77,53 @@
 			<context>negative</context>
 			<impact>impact</impact>
 		</step>
-	</Cleanup>
- <!-- Debug section contains all the debug steps which will be executed upon test case and test suite failure.
+  </Cleanup>
+	<!-- Debug section contains all the debug steps which will be executed upon test case and test suite failure.
       if wrapper file is included in test case, debug will be executed upon test case failure, before cleanup execution.
       if wrapper file is included in test suite, debug will be executed upon test suite failure, before cleanup execution.
  -->
-       <Debug>
-                <step Driver="cli_driver" Keyword="send_commands_by_testdata_title" >
-		<Arguments>
-			<argument name="system_name" value="server1[interface1]" />
-			<argument name="title" value="valid-single-no_verifications" />
-
-		</Arguments>
-		<onError action='next' value='4'  />
-		<rmt></rmt>
-		<context>positive</context>
+	<Debug>
+		<step TS="1" Driver="cli_driver" Keyword="send_commands_by_testdata_title">
+			<Description>None</Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="title" value="valid-single-no_verifications"></argument>
+				<argument name="system_name" value="server1[interface1]"></argument>
+			</Arguments>
 		</step>
-
-		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" >
-		<Arguments>
-			<argument name="system_name" value="server1[interface1]" />
-			<argument name="title" value="valid-mix-no_verifications" />
-
-		</Arguments>
-		<onError action='next' value='4'  />
-		<rmt></rmt>
-		<context>positive</context>
+		<step TS="2" Driver="cli_driver" Keyword="send_commands_by_testdata_title">
+			<Description>None</Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="title" value="valid-mix-no_verifications"></argument>
+				<argument name="system_name" value="server1[interface1]"></argument>
+			</Arguments>
 		</step>
-
-		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" >
-		<Arguments>
-			<argument name="system_name" value="server1[interface1]" />
-			<argument name="title" value="valid-with_param_iter-no_verifications" />
-
-		</Arguments>
-		<onError action='next' value='4'  />
-		<rmt></rmt>
-		<context>positive</context>
+		<step TS="3" Driver="cli_driver" Keyword="send_commands_by_testdata_title">
+			<Description>None</Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="title" value="valid-with_param_iter-no_verifications"></argument>
+				<argument name="system_name" value="server1[interface1]"></argument>
+			</Arguments>
 		</step>
-       </Debug>
+	</Debug>
 </TestWrapper>
