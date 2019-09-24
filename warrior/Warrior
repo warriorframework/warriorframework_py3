@@ -18,7 +18,8 @@ if sys.version_info < (3, 4):
     sys.exit(0)
 try:
     from warrior.WarriorCore import warrior_cli_driver
-except ModuleNotFoundError as error:
+#except ModuleNotFoundError as error:
+except:
     WARRIORDIR = dirname(dirname(abspath(__file__)))
     sys.path.append(WARRIORDIR)
     try:
