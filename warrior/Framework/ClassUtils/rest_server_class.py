@@ -11,16 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from Framework.OSS.bottle import Bottle, run, request, response, ServerAdapter
+from warrior.Framework.OSS.bottle import Bottle, run, request, response, ServerAdapter
 from wsgiref.simple_server import make_server
 import threading
 from time import sleep
-from Framework.Utils import data_Utils, file_Utils
-from Framework.Utils.file_Utils import getAbsPath, getDirName
+from warrior.Framework.Utils import data_Utils, file_Utils
+from warrior.Framework.Utils.file_Utils import getAbsPath, getDirName
 import json
 from ast import literal_eval
 import xml.etree.ElementTree as ET
-from Framework.Utils.xml_Utils import getChildElementWithSpecificXpath, compare_xml
+from warrior.Framework.Utils.xml_Utils import getChildElementWithSpecificXpath, compare_xml
 
 request_verify_list = ["request_verify_data", "request_param", "request_verify"]
 on_fail_response_list = ["on_fail_response_value", "on_fail_response_status_code"]

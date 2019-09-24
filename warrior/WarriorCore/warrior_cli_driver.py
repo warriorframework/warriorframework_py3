@@ -17,19 +17,19 @@ try:
     print("import os was successful")
     import shutil
     print("import shutil was successful")
-    import Framework.Utils.email_utils as email
+    import warrior.Framework.Utils.email_utils as email
     print("import email was successful")
-    import Framework.Utils as Utils
+    from warrior.Framework import Utils
     print("import Utils was successful")
-    from Framework.Utils.print_Utils import print_error, print_info
+    from warrior.Framework.Utils.print_Utils import print_error, print_info
     print("import print_Utils was successful")
-    from WarriorCore import testcase_driver, testsuite_driver, project_driver
+    from warrior.WarriorCore import testcase_driver, testsuite_driver, project_driver
     print("import testcase_driver, testsuite_driver, project_driver were successful")
-    from WarriorCore import ironclaw_driver, framework_detail
+    from warrior.WarriorCore import ironclaw_driver, framework_detail
     print("import ironclaw_driver, framework_detail were successful")
-    from WarriorCore.Classes.jira_rest_class import Jira
+    from warrior.WarriorCore.Classes.jira_rest_class import Jira
     print("import jira_rest_class was successful")
-    from Framework.ClassUtils import database_utils_class
+    from warrior.Framework.ClassUtils import database_utils_class
     print("import database_utils_class was successful")
 except:
     print("\033[1;31m*********************************************")
@@ -43,11 +43,11 @@ except:
 import re
 import sys
 import multiprocessing
-import Tools
-from Framework.Utils import config_Utils, file_Utils, xml_Utils
-from Framework.Utils.data_Utils import get_credentials
-import Framework.Utils.encryption_utils as Encrypt
-from WarriorCore.Classes import war_cli_class
+from warrior import Tools
+from warrior.Framework.Utils import config_Utils, file_Utils, xml_Utils
+from warrior.Framework.Utils.data_Utils import get_credentials
+import warrior.Framework.Utils.encryption_utils as Encrypt
+from warrior.WarriorCore.Classes import war_cli_class
 
 """Handle all the cli command, new functions may be added later"""
 
@@ -188,7 +188,17 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
                         add_live_table_divs(livehtmllocn, parameter_list)
                     elif iter_count == 0 and livehtmlobj is not None:
                         add_live_table_divs(livehtmlobj, parameter_list)
-
+                
+                #Adding user repo's to pythonpath
+                path_list = []
+                if default_repo.get("pythonpath", False):
+                    path_list = default_repo.get("pythonpath").split(":")
+                    print_info("user repositories path list is {}".format(path_list))
+                for path in path_list:
+                    if os.path.exists(path):
+                        sys.path.append(path)
+                    else:
+                        print_error("Given pythonpath doesn't exist : {}".format(path))
                 result = file_execution(cli_args, abs_filepath, default_repo)
             else:
                 print_error("file does not exist !! exiting!!")
@@ -391,6 +401,8 @@ def decide_overwrite_var(namespace):
             print_info("Using jobid only in JUnit file")
             url = ""
         overwrite['jobid'] = url + str(namespace.jobid)
+    if namespace.pythonpath:
+        overwrite['pythonpath'] = namespace.pythonpath
     return overwrite
 
 

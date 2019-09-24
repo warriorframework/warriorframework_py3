@@ -15,11 +15,11 @@ limitations under the License.
 Implementation of the Bottle web socket server related keywords
 """
 
-import Framework.Utils as Utils
-from Framework.ClassUtils.rest_server_class import RestServer
+from warrior.Framework import Utils
+from warrior.Framework.ClassUtils.rest_server_class import RestServer
 # Written by Sourav
-# from Framework.Utils import rest_server
-# from Framework.Utils.rest_server import b_start_server, b_stop_server, \
+# from warrior.Framework.Utils import rest_server
+# from warrior.Framework.Utils.rest_server import b_start_server, b_stop_server, \
 #     b_create_route, b_get_request, b_get_response
 
 class ServerActions(object):

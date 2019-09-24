@@ -12,9 +12,9 @@ limitations under the License.
 '''
 
 """" Network driver """
-from WarriorCore import kw_driver
-import Actions.NetworkActions.Diagnostics
-import Actions.NetworkActions.FileOps
+from warrior.WarriorCore import kw_driver
+import warrior.Actions.NetworkActions.Diagnostics
+import warrior.Actions.NetworkActions.FileOps
 
 def main(keyword, data_repository, args_repository):
     """Import all actions related to network driver and call
@@ -22,7 +22,7 @@ def main(keyword, data_repository, args_repository):
     # Declare a list of packages to be used by this driver,
     # if you want to add more packages import them outside the main function
     # and then add them to the package_list below
-    package_list = [Actions.NetworkActions.Diagnostics,
+    package_list = [warrior.Actions.NetworkActions.Diagnostics,
                     Actions.NetworkActions.FileOps]
 
     return kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)

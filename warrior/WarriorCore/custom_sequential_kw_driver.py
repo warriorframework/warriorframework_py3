@@ -18,9 +18,9 @@ the keywords of a testcase in sequential order where data_type = custom"""
 
 import traceback
 from . import testcase_steps_execution
-import Framework
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_debug, print_error
+from warrior import Framework
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_debug, print_error
 
 def execute_custom_sequential(step_list, data_repository, tc_status, system_name):
     """ Takes a list of steps as input and executes

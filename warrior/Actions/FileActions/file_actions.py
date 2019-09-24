@@ -10,10 +10,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
-import Framework.Utils as Utils
+from warrior.Framework import Utils
 import re
-from Framework.Utils.testcase_Utils import pNote, pStep
-from Framework.Utils import file_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote, pStep
+from warrior.Framework.Utils import file_Utils
 """This is file_actions module that has all file related keywords """
 
 

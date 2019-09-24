@@ -14,8 +14,8 @@ limitations under the License.
 """Class which generates the consolidated test cases result in console at the
 end of Test Suite or Project Execution """
 import os
-from Framework.Utils import xml_Utils
-from Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils import xml_Utils
+from warrior.Framework.Utils.print_Utils import print_info
 
 
 class ExecutionSummary():

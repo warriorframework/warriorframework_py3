@@ -13,8 +13,8 @@ limitations under the License.
 import ast
 import traceback
 from io import IOBase
-from Framework.Utils.print_Utils import print_error, print_info, print_warning
-from Framework.Utils import config_Utils, file_Utils
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning
+from warrior.Framework.Utils import config_Utils, file_Utils
 
 """This is argument datatype class api that converts the user input
 arguments in Warrior testcase xml into python datatypes

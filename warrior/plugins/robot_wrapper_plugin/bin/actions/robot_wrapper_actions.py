@@ -17,13 +17,13 @@ limitations under the License.
 import os
 import time
 
-from Framework.Utils import config_Utils
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.data_Utils import get_object_from_datarepository,\
+from warrior.Framework.Utils import config_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository,\
  get_session_id, get_credentials
-from Framework.Utils.file_Utils import getAbsPath, get_modified_files,\
+from warrior.Framework.Utils.file_Utils import getAbsPath, get_modified_files,\
  get_file_from_remote_server
-from plugins.robot_wrapper_plugin.bin.utils import robot_wrapper_utils
+from warrior.plugins.robot_wrapper_plugin.bin.utils import robot_wrapper_utils
 
 
 class RobotWrapperActions(object):

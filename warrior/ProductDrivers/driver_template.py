@@ -13,7 +13,7 @@ limitations under the License.
 
 """"This file provides the template to write a new Product Driver """
 
-from WarriorCore import kw_driver
+from warrior.WarriorCore import kw_driver
 
 #======================================================================
 # Importing the package specific to your driver
@@ -22,12 +22,12 @@ from WarriorCore import kw_driver
 # where Actions.SampleActions is imported
 #================================================================
 
-import Actions.ExampleActions
+import warrior.Actions.ExampleActions
 
 def main(keyword, data_repository, args_repository):
     """ Declare a list of packages to be used by this driver in the variable 'package_list' below
     if you want to add more packages import them outside the main function as
     described above and then add them to the package_list below """
-    package_list = [Actions.ExampleActions]
+    package_list = [warrior.Actions.ExampleActions]
 
     return kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)

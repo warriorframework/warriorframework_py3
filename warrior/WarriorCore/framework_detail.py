@@ -17,9 +17,9 @@ import platform
 import re
 import getpass
 import subprocess
-from Framework.Utils.print_Utils import print_info, print_notype
-from Framework.Utils import file_Utils
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import print_info, print_notype
+from warrior.Framework.Utils import file_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
 
 
 def warrior_banner():

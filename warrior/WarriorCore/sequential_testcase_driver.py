@@ -18,10 +18,10 @@ import time
 import traceback
 from . import testcase_driver
 from . import onerror_driver
-import Framework.Utils as Utils
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.print_Utils import print_info, print_error, print_debug, print_warning
-from WarriorCore import testsuite_utils, common_execution_utils
+from warrior.Framework import Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import print_info, print_error, print_debug, print_warning
+from warrior.WarriorCore import testsuite_utils, common_execution_utils
 from . import exec_type_driver
 
 """This is sequential testcase driver which is used to execute

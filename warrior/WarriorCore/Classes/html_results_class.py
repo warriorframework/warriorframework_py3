@@ -16,12 +16,12 @@ import os
 import json
 import getpass
 import multiprocessing
-import Tools
-from Framework.Utils import xml_Utils, file_Utils, data_Utils
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.print_Utils import print_info
-from Framework.Utils.xml_Utils import getElementWithTagAttribValueMatch
-import WarriorCore.Classes.katana_interface_class as katana_interface_class
+from warrior import Tools
+from warrior.Framework.Utils import xml_Utils, file_Utils, data_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils.xml_Utils import getElementWithTagAttribValueMatch
+import warrior.WarriorCore.Classes.katana_interface_class as katana_interface_class
 
 __author__ = 'Keenan Jabri'
 

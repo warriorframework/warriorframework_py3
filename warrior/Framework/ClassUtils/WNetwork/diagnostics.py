@@ -13,8 +13,8 @@ limitations under the License.
 
 """Warrior Network diagnostics module """
 import re
-from Framework.ClassUtils.WNetwork.base_class import Base
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.ClassUtils.WNetwork.base_class import Base
+from warrior.Framework.Utils.testcase_Utils import pNote
 
 
 class Diag(Base):

@@ -15,9 +15,9 @@ limitations under the License.
 correctness of the xml schema for testcase, testuite, project xml files
 of warrior framework """
 import os
-from WarriorCore.Classes.ironclaw_class import IronClaw
-from Framework.Utils.print_Utils import print_info, print_error
-from Framework.Utils import xml_Utils, file_Utils, testcase_Utils
+from warrior.WarriorCore.Classes.ironclaw_class import IronClaw
+from warrior.Framework.Utils.print_Utils import print_info, print_error
+from warrior.Framework.Utils import xml_Utils, file_Utils, testcase_Utils
 from xml.etree import ElementTree
 
 

@@ -14,9 +14,9 @@ limitations under the License.
 import json
 import os
 
-import Tools
-from Framework.Utils.print_Utils import print_error, print_info, print_warning
-from Framework.Utils import xml_Utils
+from warrior import Tools
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning
+from warrior.Framework.Utils import xml_Utils
 
 try:
     import requests

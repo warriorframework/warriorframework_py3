@@ -13,8 +13,8 @@ limitations under the License.
 
 """ Wapp Driver """
 
-from WarriorCore import kw_driver
-import Actions.WappActions.WappReportingActions
+from warrior.WarriorCore import kw_driver
+import warrior.Actions.WappActions.WappReportingActions
 
 
 def main(keyword, data_repository, args_repository):
@@ -23,6 +23,6 @@ def main(keyword, data_repository, args_repository):
     # Declare a list of packages to be used by this driver,
     # if you want to add more packages import them outside the main function
     # and then add them to the package_list below
-    package_list = [Actions.WappActions.WappReportingActions]
+    package_list = [warrior.Actions.WappActions.WappReportingActions]
 
     return kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)

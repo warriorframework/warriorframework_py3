@@ -15,11 +15,11 @@ limitations under the License.
 
 
 import os
-import  Tools
-from Framework.Utils import file_Utils as file_Utils
-from Framework.Utils import xml_Utils as xml_Utils
-from Framework.Utils.print_Utils import print_info, print_warning, print_error, print_exception
-from Framework.Utils.data_Utils import get_credentials
+from warrior import Tools
+from warrior.Framework.Utils import file_Utils as file_Utils
+from warrior.Framework.Utils import xml_Utils as xml_Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error, print_exception
+from warrior.Framework.Utils.data_Utils import get_credentials
 
 class ExecFilesClass(object):
     """Execution Files class """
@@ -44,7 +44,8 @@ class ExecFilesClass(object):
         """Create execution dir in Warriorspace """
         curr_file_locn = os.path.realpath(__file__)
         war_locn = os.sep.join(curr_file_locn.split(os.sep)[:-3]) + os.sep + "Warrior"
-        warriorspace = os.path.dirname(war_locn) + os.sep + "Warriorspace"
+        #warriorspace = os.path.dirname(war_locn) + os.sep + "Warriorspace"
+        warriorspace = os.getcwd() + os.sep + "Warriorspace"
         #check_create_warriorspace(warriorspace)
         ws_execution = warriorspace + os.sep + "Execution"
 

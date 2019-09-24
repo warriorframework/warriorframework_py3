@@ -17,15 +17,15 @@ of warrior framework """
 
 import os
 import time
-import  Tools
-import  ProductDrivers
 import re
-import WarriorCore.Classes.kw_driver_class as kw_driver_class
-import WarriorCore.Classes.execution_files_class as execution_files_class
-from Framework.Utils.print_Utils import print_info, print_debug, print_error,\
+from warrior import Tools
+from  warrior import ProductDrivers
+import warrior.WarriorCore.Classes.kw_driver_class as kw_driver_class
+import warrior.WarriorCore.Classes.execution_files_class as execution_files_class
+from warrior.Framework.Utils.print_Utils import print_info, print_debug, print_error,\
                                         print_exception, print_warning
-from Framework.Utils import xml_Utils, file_Utils, testcase_Utils
-from WarriorCore import testsuite_utils
+from warrior.Framework.Utils import xml_Utils, file_Utils, testcase_Utils
+from warrior.WarriorCore import testsuite_utils
 try:
     from lxml.etree import parse, XMLSchema, XMLSyntaxError
 except Exception as exception:

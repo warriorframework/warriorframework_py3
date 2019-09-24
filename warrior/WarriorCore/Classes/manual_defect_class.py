@@ -14,9 +14,9 @@ limitations under the License.
 """for uploading jira issues in cli interface"""
 import json
 import os
-from Framework.Utils import file_Utils
-from Framework.Utils.print_Utils import print_error, print_info
-from WarriorCore import defects_driver
+from warrior.Framework.Utils import file_Utils
+from warrior.Framework.Utils.print_Utils import print_error, print_info
+from warrior.WarriorCore import defects_driver
 
 class ManualDefectClass(object):
     """parse files and upload issues to jira"""

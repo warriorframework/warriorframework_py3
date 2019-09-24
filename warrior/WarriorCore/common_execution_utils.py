@@ -17,10 +17,10 @@ import os
 import random
 import json
 
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_warning, print_info, print_error
-from Framework.Utils.data_Utils import get_object_from_datarepository, update_datarepository
-from Framework.Utils.file_Utils import getAbsPath
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_warning, print_info, print_error
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, update_datarepository
+from warrior.Framework.Utils.file_Utils import getAbsPath
 
 """ Module that contains common utilities required for execution """
 

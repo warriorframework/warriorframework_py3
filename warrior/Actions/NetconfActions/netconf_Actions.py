@@ -16,10 +16,10 @@ ymizugaki 2017/07/11
 
 import time
 from xml.dom.minidom import parseString
-import Framework.Utils as Utils
-from Framework.Utils.testcase_Utils import pNote, pSubStep, report_substep_status
-from Framework.ClassUtils.netconf_utils_class import WNetConf
-from Framework.Utils.encryption_utils import decrypt
+from warrior.Framework import Utils
+from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep, report_substep_status
+from warrior.Framework.ClassUtils.netconf_utils_class import WNetConf
+from warrior.Framework.Utils.encryption_utils import decrypt
 
 class NetconfActions(object):
     """NetconfActions class which has methods(keywords)

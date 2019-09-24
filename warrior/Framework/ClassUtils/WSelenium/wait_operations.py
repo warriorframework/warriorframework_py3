@@ -17,7 +17,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 
 
-from Framework.Utils.print_Utils import print_error
+from warrior.Framework.Utils.print_Utils import print_error
 
 BYCLASS = {'ID': By.ID,
            'NAME': By.NAME,

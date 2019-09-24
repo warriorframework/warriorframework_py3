@@ -13,7 +13,7 @@ limitations under the License.
 
 """Warrior Network connectivity module """
 
-from Framework.ClassUtils.WNetwork.base_class import Base
+from warrior.Framework.ClassUtils.WNetwork.base_class import Base
 
 class Connection(Base):
     """Warrior connectivity class """

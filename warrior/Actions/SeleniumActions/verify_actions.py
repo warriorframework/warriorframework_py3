@@ -12,10 +12,10 @@ limitations under the License.
 '''
 
 """ Selenium keywords for Verify Actions """
-from Framework.ClassUtils.WSelenium.verify_operations import VerifyOperations
-from Framework.ClassUtils.json_utils_class import JsonUtils
-from Framework.ClassUtils.WSelenium.element_locator import ElementLocator
-from Framework.Utils.print_Utils import print_error, print_info
+from warrior.Framework.ClassUtils.WSelenium.verify_operations import VerifyOperations
+from warrior.Framework.ClassUtils.json_utils_class import JsonUtils
+from warrior.Framework.ClassUtils.WSelenium.element_locator import ElementLocator
+from warrior.Framework.Utils.print_Utils import print_error, print_info
 try:
     import json
     import os
@@ -23,14 +23,14 @@ try:
     import re
     import getopt
     import datetime
-    import Framework.Utils as Utils
+    from warrior.Framework import Utils
 except ImportWarning:
      raise ImportError
 
-from Framework.Utils import data_Utils
-from Framework.Utils.testcase_Utils import pNote, pSubStep
-from Framework.Utils import xml_Utils
-from Framework.Utils import selenium_Utils
+from warrior.Framework.Utils import data_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep
+from warrior.Framework.Utils import xml_Utils
+from warrior.Framework.Utils import selenium_Utils
 
 
 class verify_actions(object):

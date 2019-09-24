@@ -13,8 +13,8 @@ limitations under the License.
 
 import datetime
 import xml.etree.ElementTree as ET
-from Framework.Utils import xml_Utils, config_Utils
-from Framework.Utils.print_Utils import print_info, print_error, print_warning
+from warrior.Framework.Utils import xml_Utils, config_Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_error, print_warning
 
 ROOT = None
 CURRENT_POINTER = None

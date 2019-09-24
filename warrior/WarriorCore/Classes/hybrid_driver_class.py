@@ -62,13 +62,13 @@ argument in the step the step will be executed on the specified system
 otherwise the step will be executed on the current iterating system.
 """
 
-from Framework.Utils import data_Utils, xml_Utils, config_Utils, \
+from warrior.Framework.Utils import data_Utils, xml_Utils, config_Utils, \
                         testcase_Utils, file_Utils
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.print_Utils import print_debug, print_info
-from WarriorCore import step_driver, common_execution_utils
-import WarriorCore.onerror_driver as onerror_driver
-import WarriorCore.exec_type_driver as exec_type_driver
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import print_debug, print_info
+from warrior.WarriorCore import step_driver, common_execution_utils
+import warrior.WarriorCore.onerror_driver as onerror_driver
+import warrior.WarriorCore.exec_type_driver as exec_type_driver
 
 
 class HybridDriver(object):

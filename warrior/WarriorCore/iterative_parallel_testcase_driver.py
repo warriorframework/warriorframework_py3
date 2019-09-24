@@ -14,11 +14,11 @@ limitations under the License.
 import traceback
 from collections import OrderedDict
 
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_error, print_debug
-from WarriorCore.multiprocessing_utils import create_and_start_process_with_queue, \
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_error, print_debug
+from warrior.WarriorCore.multiprocessing_utils import create_and_start_process_with_queue, \
  get_results_from_queue, update_ts_junit_resultfile
-from WarriorCore import sequential_testcase_driver
+from warrior.WarriorCore import sequential_testcase_driver
 
 """
 This is  iterative parallel testcase driver which is used to execute

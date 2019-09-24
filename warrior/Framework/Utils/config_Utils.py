@@ -12,7 +12,7 @@ limitations under the License.
 '''
 
 import time
-from WarriorCore.Classes import war_print_class 
+from warrior.WarriorCore.Classes import war_print_class 
 
 console_logfile = None
 junit_resultfile = None

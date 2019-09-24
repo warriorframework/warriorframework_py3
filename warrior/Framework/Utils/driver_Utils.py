@@ -20,7 +20,7 @@ It is left here for backward compatibility purposes
 This module will be DEPCRECATE IN THE NEXT RELEASE OF WARRIOR FRAMEWORK"""
 
 
-from WarriorCore import kw_driver
+from warrior.WarriorCore import kw_driver
 
 
 def execute_keyword(keyword, data_repository, args_repository, package_list):

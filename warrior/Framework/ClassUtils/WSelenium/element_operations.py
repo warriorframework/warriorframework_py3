@@ -17,9 +17,9 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 
 
-from Framework.Utils.print_Utils import print_error, print_info, print_exception
-from Framework.Utils.data_Utils import get_object_from_datarepository
-from Framework.ClassUtils.WSelenium.element_locator import ElementLocator
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_exception
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository
+from warrior.Framework.ClassUtils.WSelenium.element_locator import ElementLocator
 
 try:
     from selenium.webdriver.remote.webelement import WebElement

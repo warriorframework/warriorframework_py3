@@ -17,8 +17,8 @@ limitations under the License.
 import os
 import time
 from time import sleep
-from Framework.Utils import testcase_Utils, data_Utils
-from Framework.Utils.print_Utils import print_info, print_error, print_debug, print_exception
+from warrior.Framework.Utils import testcase_Utils, data_Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_error, print_debug, print_exception
 
 class SSHComm(object):
     """SSHComm class which has methods

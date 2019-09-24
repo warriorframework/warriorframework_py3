@@ -22,8 +22,8 @@ import pexpect
 #=====================================================================
 # """ Import Warrior Framework Utilities below this line"""
 #===========================================================================
-# import Framework
-import Framework.Utils as Utils
+# import warrior.Framework
+from warrior.Framework import Utils
 
 #++++++++++++++++++++++++++++++++++++++++
 #WARRIOR KEYWORD TEMPLATE AND RULES

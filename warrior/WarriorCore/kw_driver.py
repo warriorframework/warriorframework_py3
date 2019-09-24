@@ -14,10 +14,10 @@ limitations under the License.
 """Driver utils module which handles gathers the argument
 information about the keywords, executes the keywords and reports the
 keyword status back to the product driver """
-from Framework import Utils
-from WarriorCore.Classes.kw_driver_class import ModuleOperations, KeywordOperations,\
+from warrior.Framework import Utils
+from warrior.WarriorCore.Classes.kw_driver_class import ModuleOperations, KeywordOperations,\
 skip_and_report_status
-from Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils.print_Utils import print_info
 
 def get_package_name_list(package_list):
     """Take a list of package loaders and returns

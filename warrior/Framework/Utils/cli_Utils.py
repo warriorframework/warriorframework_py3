@@ -11,10 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 import os
-from Framework.Utils.print_Utils import print_info, print_warning
-from Framework.ClassUtils import WNetwork, ssh_utils_class
-from WarriorCore.Classes.warmock_class import mocked
-from WarriorCore.Classes.war_cli_class import WarriorCliClass
+from warrior.Framework.Utils.print_Utils import print_info, print_warning
+from warrior.Framework.ClassUtils import WNetwork, ssh_utils_class
+from warrior.WarriorCore.Classes.warmock_class import mocked
+from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 try:
     import pexpect

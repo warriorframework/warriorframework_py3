@@ -12,13 +12,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 import sys
+from os.path import abspath, dirname
 if sys.version_info < (3, 4):
     print("Warrior doesn't support Python version lower than 3.4, now exiting")
     sys.exit(0)
 try:
-    from WarriorCore import warrior_cli_driver
-except:
-    raise
+    from warrior.WarriorCore import warrior_cli_driver
+except ModuleNotFoundError as error:
+    WARRIORDIR = dirname(dirname(abspath(__file__)))
+    sys.path.append(WARRIORDIR)
+    try:
+        from warrior.WarriorCore import warrior_cli_driver
+    except:
+        raise
 
 __description__ = """This is the Warrior executable"""
 

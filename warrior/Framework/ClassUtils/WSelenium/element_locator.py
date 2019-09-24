@@ -14,7 +14,7 @@ limitations under the License.
 """ Selenium element locator library """
 
 
-from Framework.Utils.print_Utils import print_error, print_info, print_exception, \
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_exception, \
     print_debug
 
 try:

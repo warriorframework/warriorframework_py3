@@ -12,8 +12,8 @@ limitations under the License.
 '''
 
 """" CI regression driver """
-from WarriorCore import kw_driver
-import Actions.CiRegressionActions
+from warrior.WarriorCore import kw_driver
+import warrior.Actions.CiRegressionActions
 
 
 def main(keyword, data_repository, args_repository):
@@ -22,6 +22,6 @@ def main(keyword, data_repository, args_repository):
     # Declare a list of packages to be used by this driver,
     # if you want to add more packages import them outside the main function
     # and then add them to the package_list below
-    package_list = [Actions.CiRegressionActions]
+    package_list = [warrior.Actions.CiRegressionActions]
 
     return kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)

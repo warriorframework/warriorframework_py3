@@ -19,10 +19,10 @@ import codecs
 import traceback
 import binascii
 
-from Framework.Utils import file_Utils
-from Framework.Utils.print_Utils import print_exception, print_error, print_warning
-from Framework.Utils.testcase_Utils import pNote
-import Tools
+from warrior.Framework.Utils import file_Utils
+from warrior.Framework.Utils.print_Utils import print_exception, print_error, print_warning
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior import Tools
 
 try:
     MOD = 'Pycryptodome'

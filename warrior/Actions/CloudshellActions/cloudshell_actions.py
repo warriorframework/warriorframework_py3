@@ -12,10 +12,10 @@ limitations under the License.
 '''
 
 """This is the CloudShell Actions module that has all Cloudshell related keywords """
-from Framework.Utils import config_Utils, data_Utils, file_Utils
-from Framework.Utils import testcase_Utils
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.print_Utils import print_exception, print_info
+from warrior.Framework.Utils import config_Utils, data_Utils, file_Utils
+from warrior.Framework.Utils import testcase_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import print_exception, print_info
 import os
 import time
 

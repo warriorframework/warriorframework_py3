@@ -17,9 +17,9 @@ import argparse
 import xml.etree.ElementTree as ET
 import datetime, time
 import os
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_error, print_info
-import WarriorCore.Classes.manual_defect_class as manual_defect_class
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_error, print_info
+import warrior.WarriorCore.Classes.manual_defect_class as manual_defect_class
 
 class WarriorCliClass(object):
     """Handle the command line input for warrior"""
@@ -416,6 +416,12 @@ class WarriorCliClass(object):
         parser.add_argument('-random_tc_execution', action='store_true', default=False,
                             help=":random_tc_execution mode: In this mode, testcases will be "\
                             "executed in random order")
+
+        parser.add_argument('-pythonpath', action='store',
+                            help="Enter absolute dir path of user repositories"\
+                            "to be integrated with Warrior. "\
+                            "Multiple paths can be provided"\
+                            "(separated by a colon)")
 
         namespace = parser.parse_args(arglist)
         #see if the below line is requried

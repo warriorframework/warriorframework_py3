@@ -14,9 +14,9 @@ limitations under the License.
 import os
 import datetime
 
-from Framework.Utils import xml_Utils, config_Utils, datetime_utils
-from Framework.Utils.print_Utils import print_warning
-from WarriorCore.step_driver import add_keyword_result
+from warrior.Framework.Utils import xml_Utils, config_Utils, datetime_utils
+from warrior.Framework.Utils.print_Utils import print_warning
+from warrior.WarriorCore.step_driver import add_keyword_result
 
 
 def get_robot_xml_files(input_list):

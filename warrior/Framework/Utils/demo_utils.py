@@ -12,7 +12,7 @@ limitations under the License.
 '''
 
 import datetime
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.testcase_Utils import pNote
 
 def lab_eqpt_status (orig_date, check_criteria, pass_msg, fail_msg):
     """
