@@ -68,7 +68,7 @@ class IronClaw(object):
 
     def testcase_prerun(self, tc_filepath, check_files_dict=None):
         """Executes prerun of a testcase file """
-        print('\n')
+        print_info('\n')
         print_info('='*40)
         print_debug("Validating Test case xml")
         print_info('='*40)
@@ -93,7 +93,7 @@ class IronClaw(object):
 
     def testsuite_prerun(self, testsuite_filepath, root, check_files_dict=None):
         """Executes prerun of a testsuite file """
-        print('\n')
+        print_info('\n')
         print_info('*'*40)
         print_debug("Validating Test suite xml")
         print_info('*'*40)
@@ -110,11 +110,11 @@ class IronClaw(object):
                                                 os.path.dirname(testsuite_filepath))
                 time.sleep(5)
                 if os.path.isfile(tc_path):
-                    print('\n')
+                    print_info('\n')
                     print_info('tc_path: {0}, Testcase file exists...'.format(tc_path))
                     tc_status = self.testcase_prerun(tc_path, check_files_dict)
                 else:
-                    print('\n')
+                    print_info('\n')
                     tc_status = False
                     print_error('tc_path: {0}, Testcase file does not exist'.format(tc_path))
                     print_info('TC STATUS: {0}'.format('FAILED'))
@@ -124,7 +124,7 @@ class IronClaw(object):
             print_error("Incorrect xml format")
 
         time.sleep(5)
-        print('\n')
+        print_info('\n')
         status = testcase_Utils.convertLogic(testsuite_status)
         print_info('SUITE STATUS: {0}ED'.format(status))
 
@@ -133,7 +133,7 @@ class IronClaw(object):
     def project_prerun(self, project_filepath, root):
         """Executes prerun of a project file """
 
-        print('\n')
+        print_info('\n')
         print_info('+'*40)
         print_debug("Validating Project xml")
         print_info('+'*40)
@@ -147,13 +147,13 @@ class IronClaw(object):
                                                        os.path.dirname(project_filepath))
 
                 if os.path.isfile(testsuite_path):
-                    print('\n')
+                    print_info('\n')
                     print_info("Testsuite_path: {0}, Testsuite"\
                                "file exists...".format(testsuite_path))
                     ts_root = xml_Utils.getRoot(testsuite_path)
                     tsuite_status = self.testsuite_prerun(testsuite_path, ts_root, check_files_dict)
                 else:
-                    print('\n')
+                    print_info('\n')
                     tsuite_status = False
                     print_error('testsuite_path: {0},\
                                 Testsuite file does not exist'.format(testsuite_path))
@@ -164,7 +164,7 @@ class IronClaw(object):
             print_error("Incorrect xml format")
 
         time.sleep(5)
-        print('\n')
+        print_info('\n')
         status = testcase_Utils.convertLogic(project_status)
         print_info('PROJECT STATUS: {0}ED'.format(status))
 
@@ -443,7 +443,7 @@ def get_action_dirlist(driverpath):
 
             return actions_package_list
         else:
-            print(("file {0} does not exist".format(driverpath)))
+            print_info(("file {0} does not exist".format(driverpath)))
             return actions_package_list
     except Exception as exception:
         print_exception(exception)

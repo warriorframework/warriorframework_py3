@@ -183,6 +183,7 @@ class ElementOperations():
 # Private methods
 
     def _stale_element_exception(self, browser, locator, action, **kwargs):
+        """Stale element exception"""
         element = EL.get_element(browser, locator)
         if element is not None:
             action_function = self._get_action_function(action.lower())
@@ -356,6 +357,9 @@ class ElementOperations():
         return status, value
 
     def _get_property(self, element, **kwargs):
+        """
+        get property
+        """
         status = True
         if element is not None:
             attribute_name = kwargs.get('attribute_name')
@@ -372,6 +376,9 @@ class ElementOperations():
         return status
 
     def _check_property(self, element, **kwargs):
+        """
+        check property
+        """
         status = True
         if element is not None:
             attribute_name = kwargs.get('attribute_name')

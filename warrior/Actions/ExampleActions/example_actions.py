@@ -1,3 +1,4 @@
+# pylint: disable=wrong-import-position,invalid-name,import-error
 '''
 Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -55,6 +56,8 @@ class CliActions(object):
 
     """" Default __init__ field must be used when using classes for keywords """
     def __init__(self):
+        """ Constructor
+        """
         self.resultfile = Utils.config_Utils.resultfile
         self.datafile = Utils.config_Utils.datafile
         self.logsdir = Utils.config_Utils.logsdir

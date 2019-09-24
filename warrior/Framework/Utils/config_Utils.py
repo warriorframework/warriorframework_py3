@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 '''
 Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,66 +12,95 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-import time
-from warrior.WarriorCore.Classes import war_print_class 
+from warrior.WarriorCore.Classes import war_print_class
+from warrior.Framework.Utils.print_Utils import print_info, print_error
 
 console_logfile = None
 junit_resultfile = None
 resultfile = None
-datafile= None
+datafile = None
 logsdir = None
 filename = None
 data_repository = None
 logfile = None
-par_data_repository={}
+par_data_repository = {}
 redirect_print = war_print_class.RedirectPrint(console_logfile)
 tc_path = None
 
 def debug_file(console_filepath):
+    """
+    Set debug file
+    """
     global console_logfile
 
     try:
         console_logfile = open(console_filepath, 'a')
         redirect_print.get_file(console_logfile)
     except Exception as e:
-        print("unexpected error %s" % str(e))
+        print_error("unexpected error {}".format(e))
         console_logfile = None
 
 def junit_file(junit_filepath):
+    """
+    Set junitfile
+    """
     global junit_resultfile
     junit_resultfile = junit_filepath
-    
+
 def set_resultfile(filepath):
+    """
+    Set resultfile
+    """
     global resultfile
     resultfile = filepath
-    
+
 def set_datafile(filepath):
+    """
+    Set datafile
+    """
     global datafile
     datafile = filepath
 
 def set_logsdir(filepath):
+    """
+    Set logsdir
+    """
     global logsdir
     logsdir = filepath
 
 def set_logfile(filepath):
+    """
+    Set logfile
+    """
     global logfile
     logfile = filepath
 
 def set_filename(name):
+    """
+    Set filename
+    """
     global filename
     filename = name
-    
-    
+
 def set_datarepository(repository):
+    """
+    Set datarepository
+    """
     global data_repository
     data_repository = repository
 
 
 def set_data_repository_for_parallel(repository):
+    """
+    Set data repository for parallel
+    """
     global par_data_repository
     par_data_repository.update(repository)
-    print(par_data_repository)
+    print_info(par_data_repository)
 
 def set_testcase_path(testcase_file_path):
+    """
+    Set testcase path
+    """
     global tc_path
     tc_path = testcase_file_path

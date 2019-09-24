@@ -66,6 +66,8 @@ def get_abs_path_from_start_dir(relative_path, start_directory, extension=".json
     return file_Utils.getAbsPath(relative_path, start_directory)
 
 def resolve_credentials_for_rest(credentials, element, datafile=None, system_name=None, variable_config="variable_config", var_sub="var_sub"):
+    """resolve credentials
+    """
     if element == "expected_response":
         credentials[element] = resolve_exp_resp_string_as_list(credentials[element])
     if element == "allow_redirects":

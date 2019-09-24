@@ -11,19 +11,19 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-""" Base class for Network package """
 
 class Base(object):
     """This is a Base class.
-    
     This class in inherited in all classes
-    of the Network package. 
-    
-    Inheriting this class avoids the problem of 
-    calling object with **args/**kwargs while 
-    using super method (while invoking 
+    of the Network package.
+    Inheriting this class avoids the problem of
+    calling object with **args/**kwargs while
+    using super method (while invoking
     the methods of the Network package using
-    an instance of Network class) """
-    
+    an instance of Network class)
+    Base class for Network package """
     def __init__(self, *args, **kwargs):
+        """
+        Constructor
+        """
         pass

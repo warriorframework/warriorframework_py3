@@ -102,6 +102,7 @@ class ElementLocator(object):
         return element
 
     def _parse_locator(self, locator):
+        """ parse locator """
         prefix = None
         criteria = None
         locator_parts = locator.partition('=')

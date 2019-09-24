@@ -37,10 +37,12 @@ class ServerHandler(ServerAdapter):
     server = None
 
     def run(self, app):
+        """run server"""
         self.server = make_server(self.host, self.port, app)
         self.server.serve_forever()
 
     def stop(self):
+        """stop server"""
         self.server.shutdown()
 
 class RestServer(object):
@@ -48,6 +50,8 @@ class RestServer(object):
         A Rest server that is powered by the Python Bottle framework
     """
     def __init__(self):
+        """Constructor
+        """
         self.server = None
 
     def verify_param(self, incoming_params, respond_obj):

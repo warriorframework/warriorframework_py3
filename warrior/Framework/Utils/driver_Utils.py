@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name
 '''
 Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +16,8 @@ limitations under the License.
 information about the keywords, executes the keywords and reports the
 keyword status back to the product driver
 
-************* !!!! This is a temporary module that calls kw_driver to execute a keyword !!!!!  ****************
+************* !!!! This is a temporary module that calls kw_driver to
+execute a keyword !!!!!  ****************
 It is left here for backward compatibility purposes
 This module will be DEPCRECATE IN THE NEXT RELEASE OF WARRIOR FRAMEWORK"""
 
@@ -31,5 +33,3 @@ def execute_keyword(keyword, data_repository, args_repository, package_list):
         else searches for independent fucntions matching the keyword name and executes it
     """
     return kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)
-
-    

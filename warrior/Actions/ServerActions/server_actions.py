@@ -17,6 +17,7 @@ Implementation of the Bottle web socket server related keywords
 
 from warrior.Framework import Utils
 from warrior.Framework.ClassUtils.rest_server_class import RestServer
+from warrior.Framework.Utils.print_Utils import print_error
 # Written by Sourav
 # from warrior.Framework.Utils import rest_server
 # from warrior.Framework.Utils.rest_server import b_start_server, b_stop_server, \
@@ -27,13 +28,16 @@ class ServerActions(object):
     Class for Bottle Web socket server
     """
     def __init__(self):
+        """
+        Constructor
+        """
         self.resultfile = Utils.config_Utils.resultfile
         self.datafile = Utils.config_Utils.datafile
         self.logsdir = Utils.config_Utils.logsdir
         self.filename = Utils.config_Utils.filename
         self.logfile = Utils.config_Utils.logfile
         # self.users = [{"user": "admin", "password": "admin", "auth_header":
-        # 'Basic ' + base64.b64encode('admin:admin')}] 
+        # 'Basic ' + base64.b64encode('admin:admin')}]
         # self.jsonobj = JsonUtils()
 
     def start_server(self, system_name):
@@ -61,12 +65,13 @@ class ServerActions(object):
         """
         wdesc = "Closing Bottle web socket server."
         Utils.testcase_Utils.pSubStep(wdesc)
-        server_controller = Utils.data_Utils.get_object_from_datarepository("{}_server_controller".format(system_name))
+        server_controller = Utils.data_Utils.\
+                get_object_from_datarepository("{}_server_controller".format(system_name))
         server_controller.stop()
-        server_thread = Utils.data_Utils.get_object_from_datarepository("{}_server_thread".format(system_name))
-        
+        server_thread = Utils.data_Utils.\
+                get_object_from_datarepository("{}_server_thread".format(system_name))
         if server_thread.is_alive():
-            print("Server doesn't shutdown correctly")
+            print_error("Server doesn't shutdown correctly")
             return False
         else:
             return True

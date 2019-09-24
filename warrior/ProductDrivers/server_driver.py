@@ -24,4 +24,3 @@ def main(keyword, data_repository, args_repository):
     package_list = [warrior.Actions.ServerActions]
 
     return kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)
-

@@ -18,7 +18,6 @@ the keywords of a testcase in sequential order where data_type = custom"""
 
 import traceback
 from . import testcase_steps_execution
-from warrior import Framework
 from warrior.Framework import Utils
 from warrior.Framework.Utils.print_Utils import print_debug, print_error
 
@@ -47,4 +46,3 @@ def main(step_list, data_repository, tc_status, system_name=None):
         testcase_status = False
         print_error('unexpected error {0}'.format(traceback.format_exc()))
     return testcase_status
-    

@@ -29,6 +29,7 @@ class VerifyOperations(object):
         """Verify operations constructor """
 
     def get_page_property(self, browser_instance, value_type=None):
+        """get page property"""
         a = ["current_url", "name", "page_source", "title"]
         return_value = False
         if value_type is not None:
@@ -49,6 +50,7 @@ class VerifyOperations(object):
         return return_value
 
     def verify_alert_is_present(self, browser_instance, action="accept"):
+        """verify alert is present"""
         status = False
         try:
             if action.lower().strip() == "dismiss":

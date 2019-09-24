@@ -11,10 +11,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-""" Keywords related to Network connection operations """
 
 class ConnectionActions(object):
-    """Connection keyword class """
-    
+    """ Keywords related to Network connection operations
+        Connection keyword class
+    """
     def __init__(self):
         """ Constructor """

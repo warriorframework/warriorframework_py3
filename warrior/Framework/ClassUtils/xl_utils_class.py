@@ -17,6 +17,7 @@ write to an xl workbook
 """
 
 from collections import OrderedDict
+from warrior.Framework.Utils.print_Utils import print_error
 
 class Wxl(object):
     """Wxl class has methods required to parse/write
@@ -33,7 +34,7 @@ class Wxl(object):
             import openpyxl
             from openpyxl import load_workbook
         except ImportError:
-            print("openpyxl module is not installed"\
+            print_error("openpyxl module is not installed"\
                        "Please install openpyxl module to"\
                        "perform any activities related to parsing xl sheets")
         else:
@@ -50,8 +51,8 @@ class Wxl(object):
         try:
             wb = self.load(wb_location)
         except Exception as err:
-            print(err)
-            print("Error loading workbook, check if file exists")
+            print_error(err)
+            print_error("Error loading workbook, check if file exists")
         else:
             value = wb
         return value

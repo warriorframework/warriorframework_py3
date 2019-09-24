@@ -1,3 +1,4 @@
+# pylint: disable=invalid-name,import-error
 '''
 Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,14 +31,16 @@ BYCLASS = {'ID': By.ID,
 
 class WaitOperations():
     """Wait operations class"""
-    
     def __init__(self, *args, **kwargs):
         """consructor """
 
     def wait_until_element_is_clickable(self, browser_instance, locator_type, locator,
                                         timeout=5):
+        """wait for element clickable"""
         try:
-            WebDriverWait(browser_instance, int(timeout)).until(EC.element_to_be_clickable((BYCLASS[locator_type.strip().upper()], locator)))
+            WebDriverWait(browser_instance, int(timeout)).\
+                    until(EC.element_to_be_clickable((BYCLASS[locator_type.strip()\
+                    .upper()], locator)))
             status = True
         except KeyError:
             print_error("The given locator_type - '{0}' does not match any of "
@@ -58,6 +61,7 @@ class WaitOperations():
 
     def wait_until_presence_of_element_located(self, browser_instance,
                                                locator_type, locator, timeout=5):
+        """wait until presence of element"""
         try:
             WebDriverWait(browser_instance, int(timeout)).until(EC.presence_of_element_located((BYCLASS[locator_type.strip().upper()], locator)))
             status = True
@@ -80,6 +84,9 @@ class WaitOperations():
 
     def wait_until_presence_of_all_elements_located(self, browser_instance,
                                                     locator_type, locator, timeout=5):
+        """
+        wait until presence of all elements
+        """
         try:
             WebDriverWait(browser_instance, int(timeout)).until(EC.presence_of_all_elements_located((BYCLASS[locator_type.strip().upper()], locator)))
             status = True
@@ -102,6 +109,9 @@ class WaitOperations():
 
     def wait_until_visibilty_is_confirmed(self, browser_instance,
                                                element, timeout=5):
+        """
+        wait for visibility of element
+        """
         try:
             WebDriverWait(browser_instance, int(timeout)).until(EC.visibility_of(element))
             status = True
@@ -116,6 +126,9 @@ class WaitOperations():
     def wait_until_visibility_of_element_located(self, browser_instance,
                                                       locator_type, locator,
                                                       timeout=5):
+        """
+        wait until visibility
+        """
         try:
             WebDriverWait(browser_instance, int(timeout)).until(EC.visibility_of_element_located((BYCLASS[locator_type.strip().upper()], locator)))
             status = True
@@ -137,5 +150,8 @@ class WaitOperations():
         return status
 
     def implicit_wait(self, browser_instance, timeout):
+        """
+        implicit wait
+        """
         browser_instance.implicitly_wait(int(timeout))
         return True
