@@ -12,7 +12,7 @@ limitations under the License.
 '''
 
 
-class Base(object):
+class Base():
     """This is a Base class.
     This class in inherited in all classes
     of the Network package.
@@ -26,4 +26,3 @@ class Base(object):
         """
         Constructor
         """
-        pass

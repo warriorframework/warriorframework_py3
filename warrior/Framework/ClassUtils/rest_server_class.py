@@ -17,6 +17,7 @@ import threading
 from time import sleep
 from warrior.Framework.Utils import data_Utils, file_Utils
 from warrior.Framework.Utils.file_Utils import getAbsPath, getDirName
+from warrior.Framework.Utils.print_Utils import print_info
 import json
 from ast import literal_eval
 import xml.etree.ElementTree as ET
@@ -235,14 +236,17 @@ class RestServer(object):
         if specific_res_list is not None:
             # Cond 1: special request
             def inner_method():
-                print("Content type: " + str(request.content_type))
+                """
+                inner method
+                """
+                print_info("Content type: {}".format(str(request.content_type)))
                 # This is paramaters
-                print("Query: " + str(list(request.query.items())))
+                print_info("Query: {}".format(str(list(request.query.items()))))
                 # This is form data
-                print("Forms: " + str(list(request.forms.items())))
-                print("Body: " + str(request.body.getvalue()))
-                print("Json: " + str(request.json))
-                print("File: " + str(list(request.files.items())))
+                print_info("Forms: {}".format(str(list(request.forms.items()))))
+                print_info("Body: {}".format(str(request.body.getvalue())))
+                print_info("Json: {}".format(str(request.json)))
+                print_info("File: {}".format(str(list(request.files.items()))))
 
                 # Extract request type and values
                 # Look for specific type comparison for value
@@ -299,26 +303,32 @@ class RestServer(object):
             # Cond 2: general request
             # response with general response
             def inner_method():
-                print("Content type: " + str(request.content_type))
+                """
+                inner method
+                """
+                print_info("Content type: {}".format(str(request.content_type)))
                 # This is paramaters
-                print("Query: " + str(list(request.query.items())))
+                print_info("Query: {}".format(str(list(request.query.items()))))
                 # This is form data
-                print("Forms: " + str(list(request.forms.items())))
-                print("Body: " + str(request.body.getvalue()))
-                print("Json: " + str(request.json))
-                print("File: " + str(list(request.files.items())))
+                print_info("Forms: {}".format(str(list(request.forms.items()))))
+                print_info("Body: {}".format(str(request.body.getvalue())))
+                print_info("Json: {}".format(str(request.json)))
+                print_info("File: {}".format(str(list(request.files.items()))))
 
                 return self.form_response(general_res)
         else:
             # Default action
             def inner_method():
+                """
+                inner method
+                """
                 return "Not verifying anything, please check if datafile is correct"
 
-        print("\nBuild a " + method + " route with this route: " + route)
+        print_info("Build a {} route with this route: {}".format(method,route))
         import pprint
-        print("Special request: ")
+        print_info("Special request: ")
         pprint.pprint(specific_res_list)
-        print("General request: ")
+        print_info("General request: ")
         pprint.pprint(general_res)
 
         inner_method.__doc__ = route + "_" + method + " is the method name"

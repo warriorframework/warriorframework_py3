@@ -12,7 +12,7 @@ limitations under the License.
 '''
 
 
-class ConnectionActions(object):
+class ConnectionActions():
     """ Keywords related to Network connection operations
         Connection keyword class
     """
