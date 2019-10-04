@@ -355,7 +355,7 @@ class client(Thread):
                         pNote("Checking notification: "
                               "##{}##".format(notification))
 
-                        xml = etree.fromstring(notification)
+                        xml = etree.fromstring(notification.encode("utf-8"))
                         # Contains list of xpath
                         match, xpath_list = True, waitstr[0].split(",")
                         for xpath in xpath_list:
