@@ -44,7 +44,6 @@ class KafkaActions(object):
             <system name="kafka_server1" type="kafka_producer">
                 <ip>localhost</ip>
                 <kafka_port>9092</kafka_port>
-                <conn_type>kafka</conn_type>
             </system>
         </credentials>
 
@@ -68,17 +67,15 @@ class KafkaActions(object):
         status = True
         if not data_repository.get("kafka_producer", None):
             print_info("creating kafka producer")
-            conn_type = getSystemData(self.datafile, system_name, "conn_type")
             kafka_ip = getSystemData(self.datafile, system_name, "ip")
             kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
             ca_file = getSystemData(self.datafile, system_name, "ssl_cafile")
             key_file = getSystemData(self.datafile, system_name, "ssl_keyfile")
             crl_file = getSystemData(self.datafile, system_name, "ssl_crlfile")
             ciphers = getSystemData(self.datafile, system_name, "ssl_ciphers")
-            if conn_type.lower() != "kafka" or not kafka_ip or not kafka_port:
+            if not kafka_ip or not kafka_port:
                 status = False
-                print_error("conn_type should be 'kafka' in system configuration and ip, \
-                             kafka_port should be provided")
+                print_error("ip, kafka_port should be provided")
                 return status
             self.kafka_obj_producer = WarriorKafkaProducer(bootstrap_servers=\
                                                              [kafka_ip+":"+kafka_port],
@@ -119,7 +116,6 @@ class KafkaActions(object):
             <system name="kafka_server1" type="kafka_consumer">
                 <ip>localhost</ip>
                 <kafka_port>9092</kafka_port>
-                <conn_type>kafka</conn_type>
             </system>
         </credentials>
 
@@ -146,17 +142,15 @@ class KafkaActions(object):
         output_dict = {}
         if not data_repository.get("kafka_consumer", None):
             print_info("creating kafka consumer")
-            conn_type = getSystemData(self.datafile, system_name, "conn_type")
             kafka_ip = getSystemData(self.datafile, system_name, "ip")
             kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
             ca_file = getSystemData(self.datafile, system_name, "ssl_cafile")
             key_file = getSystemData(self.datafile, system_name, "ssl_keyfile")
             crl_file = getSystemData(self.datafile, system_name, "ssl_crlfile")
             ciphers = getSystemData(self.datafile, system_name, "ssl_ciphers")
-            if conn_type.lower() != "kafka" or not kafka_ip or not kafka_port:
+            if not kafka_ip or not kafka_port:
                 status = False
-                print_error("conn_type should be 'kafka' in system configuration and ip, \
-                             kafka_port should be provided")
+                print_error("ip, kafka_port should be provided")
                 return status
             self.kafka_obj_consumer = WarriorKafkaConsumer(bootstrap_servers=\
                                                             [kafka_ip+":"+kafka_port],
