@@ -1,3 +1,4 @@
+import copy
 import os
 from .directory_traversal_utils import get_parent_directory, join_path
 from utils.json_utils import read_json_data
@@ -7,7 +8,7 @@ import subprocess
 class Navigator(object):
 
     def __init__(self):
-        self.git_url = "https://github.com/warriorframework/warriorframework.git"
+        self.git_url = "https://github.com/warriorframework/warriorframework_py3.git"
 
     def get_katana_dir(self):
         """will get katanas main directory"""
@@ -54,14 +55,8 @@ class Navigator(object):
     def get_all_wf_versions(self):
         """Returns a list of all available warrior versions"""
         tags_list = False
-        p = subprocess.Popen(["git", "ls-remote", "--tags", self.git_url], stdout=subprocess.PIPE,
-                                  stderr=subprocess.PIPE)
-        output, errors = p.communicate()
-        if p.returncode != 0:
-            print("-- An Error Occurred -- WarriorFramework versions could not be retrieved")
-            print("-- Output -- {0}".format(output.decode()))
-            print("-- Errors -- {0}".format(errors.decode()))
-        else:
+        output = self._get_versions()
+        if output:
             temp_list = output.decode().strip().split("\n")
             tags_list = set()
             for el in temp_list:
@@ -70,7 +65,30 @@ class Navigator(object):
                     if "^" in temp:
                         temp = temp.split('^')[0]
                     tags_list.add(temp)
+        tags_list.add(self.get_wf_version())
         return tags_list
+
+    def _get_versions(self):
+        """ Get warrior versions by running git commands. """
+        current_directory = os.getcwd()
+        os.chdir(get_parent_directory(self.get_katana_dir()))
+        p1 = subprocess.Popen(["git", "show-ref", "--tags", "-d"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        os.chdir(current_directory)
+        output, errors = p1.communicate()
+        if p1.returncode != 0:
+            print("-- An Error Occurred -- WarriorFramework versions could not be retrieved from "
+                  "local repository")
+            print("-- Output -- {0}".format(output.decode()))
+            print("-- Errors -- {0}".format(errors.decode()))
+            p2 = subprocess.Popen(["git", "ls-remote", "--tags", self.git_url], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            output, errors = p2.communicate()
+            if p2.returncode != 0:
+                print("-- An Error Occurred -- WarriorFramework versions could not be retrieved "
+                      "from remote repository")
+                print("-- Output -- {0}".format(output.decode()))
+                print("-- Errors -- {0}".format(errors.decode()))
+                return False
+        return output
 
     def search_folder_name(self, folder_name, given_dir):
         """searches for folder by name in all subdir until found or bottom level directory"""
@@ -81,7 +99,7 @@ class Navigator(object):
         pass
 
     def get_dir_tree_json(self, start_dir_path, dir_icon=None, file_icon='jstree-file', fl=False,
-                          file_a_attr=None, dir_a_attr=None):
+                          file_a_attr=None, dir_a_attr=None, lazy_loading=False):
         """
         Takes an absolute path to a directory(start_dir_path)  as input and creates a
         json tree having the start_dir as the root.
@@ -118,21 +136,33 @@ class Navigator(object):
                         ]
         }
 
+        if lazy_loading is set to True, then only the first level children are read and updated
+        in the children list
 
         """
         base_name = os.path.basename(start_dir_path)
-        layout = {'text': base_name}
-        layout['data'] = {'path': start_dir_path}
-        layout['li_attr'] = {'data-path': start_dir_path}
-        
+        layout = {'text': base_name, 'data': {'path': start_dir_path},
+                  'li_attr': {'data-path': start_dir_path}}
+
         if not fl:
-            layout["state"] = {"opened" : 'true' }
+            layout["state"] = {"opened": 'true'}
             fl = 'false'
         if os.path.isdir(start_dir_path):
             for x in os.listdir(start_dir_path):
                 try:
-                    layout['a_attr'] = dir_a_attr if dir_a_attr else {}
-                    children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl, file_a_attr=file_a_attr)
+                    if not lazy_loading:
+                        layout['a_attr'] = dir_a_attr if dir_a_attr else {}
+                        children = self.get_dir_tree_json(os.path.join(start_dir_path, x), fl=fl, file_a_attr=file_a_attr, lazy_loading=lazy_loading)
+                    else:
+                        children = {'text': x, 'data': {'path': os.path.join(start_dir_path, x)},
+                                    'li_attr': {'data-path': os.path.join(start_dir_path, x)}}
+                        if os.path.isdir(os.path.join(start_dir_path, x)):
+                            layout['a_attr'] = dir_a_attr if dir_a_attr else {}
+                            children.update({'icon': dir_icon, 'children': True,
+                                             'a_attr': dir_a_attr if dir_a_attr else {}})
+                        else:
+                            children.update({'icon': file_icon,
+                                             'a_attr': file_a_attr if file_a_attr else {}})
                 except IOError:
                     pass
                 except Exception as e:
@@ -145,6 +175,5 @@ class Navigator(object):
         else:
             layout['icon'] = file_icon
             layout['a_attr'] = file_a_attr if file_a_attr else {}
-        #print(layout)
-            
+
         return layout

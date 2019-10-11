@@ -16,5 +16,77 @@
             <onError action="next" value=""/>
             <impact>impact</impact>
         </Testsuite>
+        <Testsuite>
+            <path>invalid/suite/path</path>
+            <Execute ExecType="No"/>
+            <onError action="next" value=""/>
+            <impact>impact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/invalid_path_tests/ts_sequential.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>noimpact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/invalid_path_tests/ts_parallel.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>noimpact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/invalid_path_tests/ts_iter_seq.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>noimpact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/invalid_path_tests/ts_iter_par.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>noimpact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/on_error_goto/ts_with_on_error_goto_sc1.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>impact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/on_error_goto/ts_with_on_error_goto_sc2.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>impact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/random_execution/ts_random_runmode_rmt_at_ts_local_level.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>impact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/random_execution/ts_random_runmode_ruf_at_ts_local_level.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>impact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/random_execution/ts_random_runmode_rup_at_ts_local_level.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>impact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/ts_wrapper_with_debug_positive.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>impact</impact>
+        </Testsuite>
+        <Testsuite>
+            <path>../suites/framework_tests/ts_wrapper_with_debug_negative.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>noimpact</impact>
+        </Testsuite>
     </Testsuites>
 </Project>

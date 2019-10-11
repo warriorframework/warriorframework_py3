@@ -141,16 +141,22 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     kw_resultfile = get_keyword_resultfile(
         data_repository, system_name, step_num, keyword)
     Utils.config_Utils.set_resultfile(kw_resultfile)
+    # print the start of runmode execution
+    if step.find("runmode") is not None and \
+       step.find("runmode").get("attempt") is not None:
+        if step.find("runmode").get("attempt") == 1:
+            print_info("\n----------------- Start of Step Runmode Execution -----------------\n")
+        print_info("KEYWORD ATTEMPT: {0}".format(
+            step.find("runmode").get("attempt")))
     # print keyword to result file
     Utils.testcase_Utils.pKeyword(keyword, driver)
     print_info("step number: {0}".format(step_num))
+    if step.get("loop_id"):
+        print_info("loop id: {0}".format(step.get("loop_id")))
     print_info("Teststep Description: {0}".format(step_description))
 
-    if step.find("runmode") is not None and step.find("runmode").get("attempt") is not None:
-        print_info("keyword attempt: {0}".format(
-            step.find("runmode").get("attempt")))
     if step.find("retry") is not None and step.find("retry").get("attempt") is not None:
-        print_info("keyword attempt: {0}".format(
+        print_info("KEYWORD ATTEMPT: {0}".format(
             step.find("retry").get("attempt")))
     kw_start_time = Utils.datetime_utils.get_current_timestamp()
     print_info("[{0}] Keyword execution starts".format(kw_start_time))
@@ -231,6 +237,12 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
     print_info("Keyword duration= {0}".format(hms))
     print_info("[{0}] Keyword execution completed".format(kw_end_time))
+    # condition to  print the end of runmode execution when all the attempts finish
+    if step.find("runmode") is not None and \
+       step.find("runmode").get("attempt") is not None:
+        if step.find("runmode").get("attempt") == \
+           step.find("runmode").get("runmode_val"):
+            print_info("\n----------------- End of Step Runmode Execution -----------------\n")
 
     impact_dict = {"IMPACT": "Impact", "NOIMPACT": "No Impact"}
     tc_timestamp = data_repository['wt_tc_timestamp']
@@ -238,11 +250,18 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
 
     tc_resultsdir = data_repository['wt_resultsdir']
     tc_name = data_repository['wt_name']
+    #to append keyword name with Setup/Cleanup in testcase report
+    if data_repository['wt_step_type'] != 'step':
+        keyword = data_repository['wt_step_type']+ "--" + keyword
+    if step.get("loop_id"):
+        loop_id = step.get("loop_id") + " | "
+    else:
+        loop_id = ""
 
     add_keyword_result(tc_junit_object, tc_timestamp, step_num, keyword,
                        keyword_status, kw_start_time, kw_duration,
                        kw_resultfile, impact, onerror, step_description,
-                       info=str(args_repository), tc_name=tc_name,
+                       info=str(loop_id) + str(args_repository), tc_name=tc_name,
                        tc_resultsdir=tc_resultsdir)
 
     if parallel is True:

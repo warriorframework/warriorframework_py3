@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<configuration>
+    <registry name="registry">
+        <args name="args"
+              address="index.docker.io"
+              image="diginc/pi-hole"
+              just_image="diginc/pi-hole"
+        />
+    </registry>
+    <host name="host">
+        <args name="args"
+              kube_pod_name = ""
+              kube_port_flag = ""
+              kube_replicas_flag = ""
+              end_prompt="arch"
+              password="arch"
+              flags=" --name pihole_c --publish 53:53/tcp --publish 53:53/udp --publish 67:67/udp --publish 8090:80 --publish 443:443 --volume &quot;${DOCKER_CONFIGS}/pihole/:/etc/pihole/&quot; --volume &quot;${DOCKER_CONFIGS}/dnsmasq.d/:/etc/dnsmasq.d/&quot; --env ServerIP=&quot;${IP}&quot; --restart unless-stopped --cap-add NET_ADMIN"
+              scripts="IP_LOOKUP=&quot;$(ip route get 8.8.8.8 | awk &#39;{ print $NF; exit }&#39;)&quot;;
+IP=&quot;${IP:-$IP_LOOKUP}&quot;;
+DOCKER_CONFIGS=&quot;$(pwd)&quot;;"
+        />
+    </host>
+</configuration>

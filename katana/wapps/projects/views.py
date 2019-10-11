@@ -1,214 +1,122 @@
-"""
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-"""
-
 # -*- coding: utf-8 -*-
-#from __future__ import unicode_literals
-
-# Create your views here.
-
-from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_protect, csrf_exempt
-from django.template.context_processors import csrf
-import os, sys, glob, copy 
-from collections import OrderedDict
-from django.http import HttpResponse, JsonResponse
-from django.template import loader, RequestContext
-from xml.sax.saxutils import escape, unescape
-
-from django.core.serializers import serialize
-from django.db.models.query import QuerySet
-from django.template import Library
-
+from __future__ import unicode_literals
+from django.shortcuts import render
+from django.views import View
+import collections
 import json
-#from katana.utils.navigator_util import get_dir_tree_json
+import os
 import xmltodict
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from utils.directory_traversal_utils import join_path, get_parent_dir_path, get_dir_from_path
+from utils.json_utils import read_json_data, read_xml_get_json
 from utils.navigator_util import Navigator
+from wapps.projects.project_utils.defaults import on_errors, impacts, contexts, runmodes, \
+    executiontypes, runtypes
+from wapps.projects.project_utils.verify_project_file import VerifyProjectFile
 
-navigator = Navigator();
-path_to_src_python_file = navigator.get_katana_dir() + os.sep + "config.json"
-
-def old_index(request):
-    return render(request, 'settings/index.html', {"data": controls.get_location()})
-
-def getEmpty():
-    edata={"Project": 
-            {"Testsuites": 
-            {"Testsuite": 
-                [{"onError": {"@action": "goto", "@value": "3"}, "path": "../../Warriorspace/Suites/Suite1.xml"}, 
-                {"onError": {"@action": "abort"}, "path": "../../Warriorspace/Suites/Suite2.xml"},
-                 {"path": "../../Warriorspace/Suites/Suite3.xml"}, {"onError": {"@action": "next"}, 
-                 "path": "../../Warriorspace/Suites/Suite4.xml"}]}, "Details": {"default_onError": {"@action": "next", "@value": ""}, 
-                 "Title": "Project Title or Description", "Resultsdir": "", "Name": "Project Name", "Engineer": "Engineer"}}}
-    return edata;
+navigator = Navigator()
+CONFIG_FILE = join_path(navigator.get_katana_dir(), "config.json")
+APP_DIR = join_path(navigator.get_katana_dir(), "wapps", "projects")
+STATIC_DIR = join_path(APP_DIR, "static", "projects")
+TEMPLATE = join_path(STATIC_DIR, "base_templates", "Project_Template.xml")
+DROPDOWN_DEFAULTS = read_json_data(join_path(STATIC_DIR, "base_templates", "dropdowns_data.json"))
 
 
-def getJSONProjectData(request):
-    path_to_config_file = navigator.get_katana_dir() + os.sep + "config.json"   
-    x= json.loads(open(path_to_config_file).read());
-    path_to_testcases = x['projdir'];
-    filename = request.GET.get('fname')
-    print("Getting data for ", filename);
+class projectsView(View):
+
+    def get(self, request):
+        """
+        Get Request Method
+        """
+        return render(request, 'projects/projects.html')
+
+
+def get_list_of_suites(request):
+    """
+    Returns a list of suites
+    """
+    config = read_json_data(CONFIG_FILE)
+    return JsonResponse({"data": navigator.get_dir_tree_json(config["projdir"])})
+
+
+def get_file(request):
+
+    """
+    Reads a file, validates it, computes the HTML and returns it as a JSON response
+    """
     try:
-        xml_d = xmltodict.parse(open(filename).read());
-    except:
-        xml_d = getEmpty();
+            file_path = request.GET.get('path')
+            if file_path == "false":
+                file_path = TEMPLATE
+            vcf_obj = VerifyProjectFile(TEMPLATE, file_path)
 
-    j_data = json.loads(json.dumps(xml_d))
-    responseBack = { 'fulljson': j_data , 'fname': filename }
-    return JsonResponse(responseBack)
+            output, data = vcf_obj.verify_file()
 
-## MUST MOVE TO CLASS !!!!
-## List all your projects ...
-##
-def index(request):
-    navigator = Navigator();
-    path_to_config = navigator.get_katana_dir() + os.sep + "config.json"
-    config = json.loads(open(path_to_config).read())
-    fpath = config['projdir']
-    template = loader.get_template("./listAllProjects.html")
-    files = glob.glob(fpath+"*/*.xml")
+            if output["status"]:
+                mid_req = (len(data["Project"]["Requirements"]["Requirement"]) + 1) / 2
+                if file_path == TEMPLATE:
+                    output["filepath"] = read_json_data(CONFIG_FILE)["projdir"]
+                else:
+                    output["filepath"] = get_parent_dir_path(file_path)
+                output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
 
-    tt = navigator.get_dir_tree_json(fpath)
-    tt['state']= { 'opened': True };
-    print(tt)
-
-    fulljsonstring = str(json.loads(json.dumps(tt)));
-    fulljsonstring = fulljsonstring.replace('u"',"'").replace("u'",'"').replace("'",'"');
-    fulljsonstring = fulljsonstring.replace('None','""')
-
-    context = { 
-        'title' : 'List of Projects',   
-        'docSpec': 'projectSpec',
-        'treejs'  : fulljsonstring, 
-        'listOfFiles': files    
-    }
-    context.update(csrf(request))
-    return HttpResponse(template.render(context, request))
+                print(output)
+                output["html_data"] = render_to_string('projects/display_suite.html',
+                                                       {"data": data, "mid_req": mid_req,
+                                                        "defaults": DROPDOWN_DEFAULTS})
+                print(output)
+                return JsonResponse(output)
+            else:
+                print(output)
+                JsonResponse({"status": output["status"], "message": output["message"]})
+    except Exception as e:
+        return JsonResponse({"status": 0,"message":"Exception opening the file"})
 
 
-def getProjectListTree(request):
-    path_to_config_file = navigator.get_katana_dir() + os.sep + "config.json"
-    x= json.loads(open(path_to_config_file).read());
-    fpath = x['projdir'];
-    template = loader.get_template("listAllCases.html")
-    jtree = navigator.get_dir_tree_json(fpath)
-    jtree['state']= { 'opened': True };
-    return JsonResponse({'treejs': jtree })
+def save_file(request):
+    """ This function saves the file in the given path. """
 
-## MUST MOVE TO CLASS !!!!
-## List all your project as editable UI.
-##
-def editProject(request):
+    output = {"status": True, "message": ""}
+    data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
+    print(data["Project"])
+    data["Project"]["Details"] = validate_details_data(data["Project"]["Details"])
+    data["Project"]["Testsuites"]["Testsuite"] = validate_suite_data(data["Project"]["Testsuites"]["Testsuite"])
+    xml_data = xmltodict.unparse(data, pretty=True)
+    directory = request.POST.get("directory")
+    filename = request.POST.get("filename")
+    extension = request.POST.get("extension")
+    print(directory, filename)
+    try:
+        with open(join_path(directory, filename + extension), 'w') as f:
+            f.write(xml_data)
+    except Exception as e:
+        output["status"] = False
+        output["message"] = e
+        print("-- An Error Occurred -- {0}".format(e))
+    return JsonResponse(output)
+
+
+def validate_details_data(data):
     """
-    Set up JSON object for editing a project file. 
+    Validates default_onerror and type tags in details section while saving
     """
-    navigator = Navigator();
-    path_to_config = navigator.get_katana_dir() + os.sep + "config.json"
-    config = json.loads(open(path_to_config).read())
-    fpath = config['projdir']
-
-    template = loader.get_template("./editProject.html")
-    filename = request.GET.get('fname','NEW')
-
-    
-    # Create Mandatory empty object.
-    xml_r = {} ; 
-    xml_r["Project"] = {}
-    xml_r["Project"]["Details"] = {}
-    xml_r["Project"]["Details"]["Name"] = "" # ""
-    xml_r["Project"]["Details"]["Title"] = "" #OrderedDict([('$', '')])
-    xml_r["Project"]["Details"]["Category"] = "" #OrderedDict([('$', '')])
-    xml_r["Project"]["Details"]["State"] = "" #OrderedDict([('$', 'New')])
-    xml_r["Project"]["Details"]["Date"] = "" #OrderedDict([('$', '')])
-    xml_r["Project"]["Details"]["Time"] = "" #OrderedDict([('$', '')])
-    xml_r["Project"]["Details"]["Datatype"] = "" #OrderedDict([('$', '')])
-    xml_r["Project"]["Details"]["Engineer"] = "" #OrderedDict([('$', '')])
-    xml_r["Project"]["Details"]["ResultsDir"] = "" #OrderedDict([('$', '')])
-    xml_r["Project"]["Details"]["default_onError"] = { '@action': '', '@value': ''} #OrderedDict([('$', '')])
-    xml_r["Project"]["Testsuites"] = []
-    xml_r['Project']['filename'] = "" #OrderedDict([('$', filename)]);
-
-    if filename != 'NEW':
-        xlines = open(filename.strip()).read()
-        #xml_d = bf.data(fromstring(xlines)); #
-        xml_d = xmltodict.parse(xlines, dict_constructor=dict);
-
-        # Map the input to the response collector
-        for xstr in ["Name", "Title", "Category", "Date", "Time", "Engineer", \
-            "Datatype", "ResultsDir"]:
-            try:
-                xml_r["Project"]["Details"][xstr]= xml_d["Project"]["Details"][xstr];
-            except: 
-                pass
-
-        try:
-            xml_r['Project']['Testsuites'] = copy.copy(xml_d['Project']['Testsuites']);
-        except:
-            xml_r["Project"]["Testsuites"] = []
-    else:
-        filename = path_to_config + os.sep + "new.xml"
-
-    fulljsonstring = str(json.loads(json.dumps(xml_r['Project'])))
-    print(fulljsonstring);
-    fulljsonstring = fulljsonstring.replace('u"',"'").replace("u'",'"').replace("'",'"');
-    fulljsonstring = fulljsonstring.replace('None','""')
-
-    context = { 
-        'savefilename': os.path.split(filename)[1], 
-        'savefilepath': fpath,
-        'fullpathname': filename, 
-        'myfile': filename,
-        'docSpec': 'projectSpec',
-        'projectName': xml_r["Project"]["Details"]["Name"],
-        'projectTitle': xml_r["Project"]["Details"]["Title"],
-        'projectState': xml_r["Project"]["Details"]["State"],
-        'projectEngineer': xml_r["Project"]["Details"]["Engineer"],
-        'projectCategory': xml_r["Project"]["Details"]["Category"],
-        'projectDate': xml_r["Project"]["Details"]["Date"],
-        'projectTime': xml_r["Project"]["Details"]["Time"],
-        'resultsDir': xml_r["Project"]["Details"]["ResultsDir"],
-        
-        'projectdefault_onError': xml_r["Project"]["Details"]["default_onError"].get('@action'),
-        'projectdefault_onError_goto': xml_r["Project"]["Details"]["default_onError"]['@value'],
-        #'fulljson': xml_r['Project']
-        'fulljson': fulljsonstring,
-        }
-    # 
-    # I have to add json objects for every test suite.
-    # 
-    return HttpResponse(template.render(context, request))
+    if data["default_onError"]["@action"] in on_errors():
+        data["default_onError"]["@action"] = on_errors()[data["default_onError"]["@action"]]
+    return data
 
 
-
-def getProjectDataBack(request):
-    print("Got something back in request");
-    navigator = Navigator();
-    path_to_config = navigator.get_katana_dir() + os.sep + "config.json"
-    config = json.loads(open(path_to_config).read())
-    fpath = config['projdir']
-    fname = request.POST.get('filetosave')
-    ijs = request.POST.get('json')  # This is a json string 
-    print(ijs);
-    #print "--------------TREE----------------"
-    if fname.find(".xml") < 2: fname = fname + ".xml"
-
-    #fd = open(fpath + os.sep + fname+ ".json",'w');
-    #fd.write(ijs);
-    #fd.close();
-    
-    xml = xmltodict.unparse(json.loads(ijs), pretty=True)
-    print("save to ", fpath + os.sep + fname) 
-    fd = open(fpath + os.sep + fname,'w');
-    fd.write(xml);
-    fd.close();
-    return redirect(request.META['HTTP_REFERER'])
+def validate_suite_data(data):
+    """
+    Validates steps of the file before saving
+    """
+    print(data)
+    for ts in range(0, len(data)):
+        if data[ts]["impact"] in impacts():
+            data[ts]["impact"] = impacts()[data[ts]["impact"]]
+        for i in range(0, len(data[ts]["Execute"]["Rule"])):
+            if data[ts]["Execute"]["Rule"][i]["@Else"] in on_errors():
+                data[ts]["Execute"]["Rule"][i]["@Else"] = on_errors()[data[ts]["Execute"]["Rule"][i]["@Else"]]
+        if data[ts]["onError"]["@action"] in on_errors():
+            data[ts]["onError"]["@action"] = on_errors()[data[ts]["onError"]["@action"]]
+    return data

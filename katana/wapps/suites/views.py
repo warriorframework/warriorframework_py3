@@ -1,235 +1,122 @@
-"""
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-
-"""
-
 # -*- coding: utf-8 -*-
-#from __future__ import unicode_literals
-# Create your views here.
-
-from django.shortcuts import render, redirect
-from django.template.context_processors import csrf
-import os, sys, glob, copy 
-from django.http import HttpResponse, JsonResponse
-from django.template import loader
-import xmltodict
+from __future__ import unicode_literals
+from django.shortcuts import render
+from django.views import View
+import collections
 import json
+import os
+import xmltodict
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+from utils.directory_traversal_utils import join_path, get_parent_dir_path, get_dir_from_path
+from utils.json_utils import read_json_data, read_xml_get_json
 from utils.navigator_util import Navigator
+from wapps.suites.suite_utils.defaults import on_errors, impacts, contexts, runmodes, \
+    executiontypes, runtypes
+from wapps.suites.suite_utils.verify_suite_file import VerifySuiteFile
 
-navigator = Navigator();
-
-def old_index(request):
-    return render(request, 'settings/index.html', {"data": controls.get_location()})
-
-
-def getSuiteListTree(request):
-	path_to_config_file = navigator.get_katana_dir() + os.sep + "config.json"
-	x= json.loads(open(path_to_config_file).read());
-	fpath = x['testsuitedir'];
-	template = loader.get_template("listAllSuites.html")
-	jtree = navigator.get_dir_tree_json(fpath)
-	jtree['state']= { 'opened': True };
-	return JsonResponse({'treejs': jtree })
-
-def getJSONSuiteData(request):
-	path_to_config_file = navigator.get_katana_dir() + os.sep + "config.json"   
-	x= json.loads(open(path_to_config_file).read());
-	path_to_testcases = x['testsuitedir'];
-	filename = request.GET.get('fname')
-	print("Getting data for ", filename);
-	try:
-		xml_d = xmltodict.parse(open(filename).read());
-	except:
-		xml_d = getEmpty();
-
-	j_data = json.loads(json.dumps(xml_d))
-	responseBack = { 'fulljson': j_data , 'fname': filename }
-	return JsonResponse(responseBack)
-
-def index(request):
-	navigator = Navigator();
-	path_to_config = navigator.get_katana_dir() + os.sep + "config.json"
-	config = json.loads(open(path_to_config).read())
-	fpath = config['testsuitedir']
-	template = loader.get_template("./listAllSuites.html")
-
-	myfiles = []
-
-	tt = navigator.get_dir_tree_json(fpath)
-	tt['state']= { 'opened': True };
-	
-
-	context = { 
-		'title' : 'List of Suites',	
-		'docSpec': 'SuiteSpec',
-		'myfiles': myfiles, 
-		'basedir': fpath,
-		'treejs'  : tt 
-	}
-	context.update(csrf(request))
-	return HttpResponse(template.render(context, request))
+navigator = Navigator()
+CONFIG_FILE = join_path(navigator.get_katana_dir(), "config.json")
+APP_DIR = join_path(navigator.get_katana_dir(), "wapps", "suites")
+STATIC_DIR = join_path(APP_DIR, "static", "suites")
+TEMPLATE = join_path(STATIC_DIR, "base_templates", "Untitled.xml")
+DROPDOWN_DEFAULTS = read_json_data(join_path(STATIC_DIR, "base_templates", "dropdowns_data.json"))
 
 
-def getEmpty():
-	edata = {"TestSuite": 
-		{"Testcases": 
-			{"Testcase": 
-				[{"impact": "impact",
-				  "Execute": {"@ExecType": "yes", "Rule": {"@Elsevalue": "", "@Condvalue": "", "@Condition": "", "@Else": "next"}},
-				 "InputDataFile": "", "onError": {"@action": "next", "@value": ""}, 
-				 "runmode": {"@type": "Standard", "@value": ""}, "context": "positive", "runtype": "sequential_keywords", "path": "../Cases/.xml"}, 
-				 {"impact": "impact", "Execute": {"@ExecType": "Yes", "Rule": {"@Elsevalue": "", "@Condvalue": "", "@Condition": "", "@Else": "next"}}, 
-				 "InputDataFile": "", "onError": {"@action": "next", "@value": ""}, 
-				 "runmode": {"@type": "Standard", "@value": ""}, "context": "positive", "runtype": "sequential_keywords", "path": "../Cases/tc_disconnect.xml"}]}, 
-				 "Requirements": {"Requirement": ["Requirement-demo-001", "Requirement-demo-002"]}, "Details": {"Name": "Name Here", "Title": "Title", 
-				 "Resultsdir": "", 
-				 "State": "Released", 
-				 "Time": "23:37:23", 
-				 "Date": "03/01/2017", 
-				 "default_onError": {"@action": "next"}, 
-				 "type": {"@exectype": "sequential_testcases", "@Number_Attempts": "", "@Max_Attempts": ""}, "Engineer": "Engineer"}}};
-	return edata;
+class SuitesView(View):
+
+    def get(self, request):
+        """
+        Get Request Method
+        """
+        return render(request, 'suites/suites.html')
 
 
-## MUST MOVE TO CLASS !!!!
-## List all your Suite as editable UI.
-##
-def editSuite(request):
-	"""
-	Set up JSON object for editing a Suite file. 
-	"""
-	navigator = Navigator();
-	path_to_config = navigator.get_katana_dir() + os.sep + "config.json"
-
-	config = json.loads(open(path_to_config).read())
-	fpath = config['testsuitedir']
-
-	template = loader.get_template("./editSuite.html")
-	filename = request.GET.get('fname')
-	print("Asked for ", filename)
-	if filename.find("..") == 0: 
-		filename = fpath + os.sep + filename
-	print("Attempting to read ...", filename) 
+def get_list_of_suites(request):
+    """
+    Returns a list of suites
+    """
+    config = read_json_data(CONFIG_FILE)
+    return JsonResponse({"data": navigator.get_dir_tree_json(config["testsuitedir"])})
 
 
-	xml_r = {}
-	xml_r["TestSuite"] = {}
-	xml_r["TestSuite"]["Details"] = {}
-	xml_r["TestSuite"]["Details"]["Name"] = ""
-	xml_r["TestSuite"]["Details"]["Title"] = ""
-	xml_r["TestSuite"]["Details"]["Engineer"] = ""
-	xml_r["TestSuite"]["Details"]["Date"] = ""
-	xml_r["TestSuite"]["Details"]["Time"] = ""
-	xml_r["TestSuite"]["Details"]["type"] = { }
-	xml_r["TestSuite"]["Details"]["Logsdir"] = ""
-	xml_r["TestSuite"]["Details"]["State"] = "New"
-	xml_r["TestSuite"]["Details"]["Resultsdir"] = ""
-	xml_r["TestSuite"]["Details"]["InputDataFile"] = ""
-	xml_r["TestSuite"]["Details"]["type"]["@exectype"] = "sequential_testcases"
-	xml_r["TestSuite"]["Details"]["onError"] = {}
-	xml_r["TestSuite"]["Details"]["onError"]['@action']= ""
-	xml_r["TestSuite"]["Details"]["onError"]['@value']= ""
+def get_file(request):
+    """
+    Reads a file, validates it, computes the HTML and returns it as a JSON response
+    """
+    try:
 
-	xml_r["TestSuite"]["Testcases"] = { 'Testcase' :[] }
-	
-	if filename.upper() == 'NEW':
-		xml_d = copy.deepcopy(xml_r);
-	else:
-		xlines = open(filename).read()
-		xml_d = xmltodict.parse(xlines, dict_constructor=dict);
-
-	# Map the input to the response collector
-	for xstr in ["Name", "Title", "Category", "Date", "Time", "Engineer", "Datatype", 'Resultsdir', 'InputDataFile']:
-		try: 
-			xml_r["TestSuite"]["Details"][xstr] = copy.copy(xml_d["TestSuite"]["Details"].get(xstr,""))
-		except:
-			pass
-
-	print(xml_d["TestSuite"]['Details'])
-
-
-	try:
-		xml_r['TestSuite']['Testcases'] = copy.deepcopy(xml_d['TestSuite']['Testcases']);
-	except:
-		xml_r["TestSuite"]["Testcases"] =  { 'Testcase': [] }
-
-	try:
-		xml_r["TestSuite"]["Details"]["type"]['@exectype'] = copy.deepcopy(xml_d["TestSuite"]["Details"]["type"]['@exectype']);
-	except:
-		xml_r["TestSuite"]["Details"]["type"]['@exectype'] = "sequential_testcases"
-
-	#xml_r["TestSuite"]["Details"]["default_onError"] = "" 
-
-	fulljsonstring = str(json.loads(json.dumps(xml_r['TestSuite'])));
-	fulljsonstring = fulljsonstring.replace('u"',"'").replace("u'",'"').replace("'",'"');
-	fulljsonstring = fulljsonstring.replace('None','""')
-
-	context = { 
-		'savefilename': "save_" + os.path.split(filename)[1],
-		'savefilepath': os.path.split(filename)[0],
-		'fullpathname': filename,
-		'docSpec': 'projectSpec',
-		'suiteName': xml_r["TestSuite"]["Details"]["Name"],
-		'suiteTitle': xml_r["TestSuite"]["Details"]["Title"],
-		'suiteDatatype': xml_r["TestSuite"]["Details"]["type"]["@exectype"],
-		'suiteEngineer': xml_r["TestSuite"]["Details"]["Engineer"],
-		'suiteLogsdir': xml_r["TestSuite"]["Details"]["Logsdir"],
-		'suiteResultsdir': xml_r["TestSuite"]["Details"]["Resultsdir"],
-		'suiteInputDataFile': xml_r["TestSuite"]["Details"]["InputDataFile"],
-		'suiteEngineer': xml_r["TestSuite"]["Details"]["Engineer"],
-		'suiteDatatype': xml_r["TestSuite"]["Details"]["type"]["@exectype"],
-		'suiteDate': xml_r["TestSuite"]["Details"]["Date"].split()[0],
-		'suiteTime': xml_r["TestSuite"]["Details"]["Time"],
-		'suiteState': xml_r["TestSuite"]["Details"]["State"],
-		#'suiteType': xml_r["TestSuite"]["Details"]["type"],
-		'suitedefault_onError':xml_r["TestSuite"]["Details"]["onError"].get('@action',""),
-		'suitedefault_onError_goto':xml_r["TestSuite"]["Details"]["onError"].get('@value',''),
-		'suiteCases': xml_r['TestSuite']['Testcases'],
-		#'fulljson': xml_r['TestSuite'],
-		'fulljson': fulljsonstring,
-		'suiteResults': "",
-		}
-	# 
-	# I have to add json objects for every test suite.
-	# 
-
-	return HttpResponse(template.render(context, request))
-
-
-#import HTMLParser
+            file_path = request.GET.get('path',)
+            if file_path == "false":
+                file_path = TEMPLATE
+            vcf_obj = VerifySuiteFile(TEMPLATE, file_path)
+            output, data = vcf_obj.verify_file()
+            if output["status"]:
+                mid_req = (len(data["TestSuite"]["Requirements"]["Requirement"]) + 1) / 2
+                if file_path == TEMPLATE:
+                    output["filepath"] = read_json_data(CONFIG_FILE)["testsuitedir"]
+                else:
+                    output["filepath"] = get_parent_dir_path(file_path)
+                output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
+                output["html_data"] = render_to_string('suites/display_suite.html',
+                                                       {"data": data, "mid_req": mid_req,
+                                                        "defaults": DROPDOWN_DEFAULTS})
+                return JsonResponse(output)
+            else:
+                JsonResponse({"status": output["status"], "message": output["message"]})
+    except Exception as e:
+        return JsonResponse({"status": 0,"message":"Exception opening the file"})
 
 
 
-def getSuiteDataBack(request):
-	#print "Got something back in request";
 
-	navigator = Navigator();
-	path_to_config = navigator.get_katana_dir() + os.sep + "config.json"
-	config = json.loads(open(path_to_config).read())
-	fpath = config['testsuitedir']
+def save_file(request):
+    """ This function saves the file in the given path. """
+    output = {"status": True, "message": ""}
+    data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
+    data["TestSuite"]["Details"] = validate_details_data(data["TestSuite"]["Details"])
+    data["TestSuite"]["Testcases"]["Testcase"] = validate_step_data(data["TestSuite"]["Testcases"]["Testcase"])
+    xml_data = xmltodict.unparse(data, pretty=True)
+    directory = request.POST.get("directory")
+    filename = request.POST.get("filename")
+    extension = request.POST.get("extension")
+    try:
+        with open(join_path(directory, filename + extension), 'w') as f:
+            f.write(xml_data)
+    except Exception as e:
+        output["status"] = False
+        output["message"] = e
+        print("-- An Error Occurred -- {0}".format(e))
+    return JsonResponse(output)
 
-	fname = request.POST.get('filetosave')
-	ufpath = request.POST.get('savefilepath')
-	#ijs = request.POST.get(u'json')  # This is a json string 
-	
-	#print "--------------TREE----------------"
-	#xml = request.POST.get(u'Suite') 
-	ijs = request.POST.get('json')  # This is a json string 
-	print(ijs);
-	xml = xmltodict.unparse(json.loads(ijs), pretty=True)
-	
-	#print "---
-	if fname.find(".xml") < 2: fname = fname + ".xml"
-	print("save to ", ufpath + os.sep + fname) 
-	fd = open(fpath + os.sep + fname,'w');
-	fd.write(xml);
-	fd.close();
-	return redirect(request.META['HTTP_REFERER'])
+
+def validate_details_data(data):
+    """
+    Validates default_onerror and type tags in details section while saving
+    """
+    if data["default_onError"]["@action"] in on_errors():
+        data["default_onError"]["@action"] = on_errors()[data["default_onError"]["@action"]]
+    if data["type"]["@exectype"] in executiontypes():
+        data["type"]["@exectype"] = executiontypes()[data["type"]["@exectype"]]
+    return data
+
+
+def validate_step_data(data):
+    """
+    Validates steps of the file before saving
+    """
+    for ts in range(0, len(data)):
+        if data[ts]["impact"] in impacts():
+            data[ts]["impact"] = impacts()[data[ts]["impact"]]
+        if data[ts]["context"] in contexts():
+            data[ts]["context"] = contexts()[data[ts]["context"]]
+        for i in range(0, len(data[ts]["Execute"]["Rule"])):
+            if data[ts]["Execute"]["Rule"][i]["@Else"] in on_errors():
+                data[ts]["Execute"]["Rule"][i]["@Else"] = on_errors()[data[ts]["Execute"]["Rule"][i]["@Else"]]
+        if data[ts]["runtype"] in runtypes():
+            data[ts]["runtype"] = runtypes()[data[ts]["runtype"]]
+        if data[ts]["runmode"]["@type"] in runmodes():
+            data[ts]["runmode"]["@type"] = runmodes()[data[ts]["runmode"]["@type"]]
+        if data[ts]["onError"]["@action"] in on_errors():
+            data[ts]["onError"]["@action"] = on_errors()[data[ts]["onError"]["@action"]]
+    return data

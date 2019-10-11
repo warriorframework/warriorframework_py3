@@ -1,5 +1,33 @@
 var settings = {
 
+    openFileExplorer: {
+
+            logsOrResultsDir: function (relative, $elem) {
+                /* This common function gets filepath from the fileexplorer and ataches it to the correct input field*/
+                $elem = $elem ? $elem : $(this);
+                var $inputElem = $elem.parent().children('input');
+                relative = !!relative;
+                katana.fileExplorerAPI.openFileExplorer("Select a Path", false,
+                    katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value'), false,
+                    function (inputValue){
+                        if (relative) {
+                            var tcPath = katana.$activeTab.find('#main-div').attr("current-file");
+                            inputValue = katana.utils.getRelativeFilepath(tcPath, inputValue, true);
+                        }
+                        $inputElem.val(inputValue);
+                        $inputElem.attr('value', inputValue);
+                        $("#saveButton").removeClass("saved");
+                    },
+                    false)
+            },
+
+            inputDataFile: function () {
+                /* This function calls logsOrResultsDir with relative as true so that relative path is created. */
+                settings.openFileExplorer.logsOrResultsDir(true, $(this));
+            },
+
+        },
+
     closeSetting: function () {
         if (this.parent().find('.saved').length)
             katana.closeSubApp();
@@ -7,14 +35,14 @@ var settings = {
             katana.openDialog('Are you sure you would like to close this page?', 'Confirm', true, katana.closeSubApp);
     },
 
-    encrypetion: {
+    encryption: {
         save: function () {
             var $elem = this;
             $elem.addClass('loading');
-            katana.templateAPI.post.call(katana.$activeTab.find('.to-save'), null, null, null, function (data) {
-                console.log('saved', data);
-                $elem.removeClass('loading').addClass('saved');
-            });
+            katana.templateAPI.post(katana.$activeTab.find('.to-save').attr('post-url'), null,
+                katana.$activeTab.find('.to-save').find('input:not([name="csrfmiddlewaretoken"]),textarea').serializeArray(), function(data){
+                    $elem.removeClass('loading').addClass('saved');
+                }, null);
         }
     },
 
@@ -151,7 +179,7 @@ var settings = {
 
     changeDetection: function () {
         var $elem = this;
-        $elem.on('change', 'input, select', function () {
+        $elem.on('change', 'input, select, textarea', function () {
             $elem.closest('.page-content').find('.saved').removeClass('saved');
         });
     },
@@ -160,7 +188,6 @@ var settings = {
         var $elem = this;
         $elem.removeClass('saved').addClass('loading');
         katana.templateAPI.post.call(katana.$activeTab.find('.to-save'), null, null, katana.toJSON(), function (data) {
-            console.log('saved', data);
             $elem.removeClass('loading').addClass('saved');
         });
     },

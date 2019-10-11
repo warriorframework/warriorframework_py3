@@ -1,0 +1,23 @@
+{% extends "core/base_index.html" %}
+{% block pagecontent %}
+{% if not user.is_authenticated %}
+	{% block logincontent %}
+	{% endblock %}
+{% else %}
+	<div class="nav">
+		<div class="nav-inner">
+			<div class="tab active" uid="launchpad" katana-click="katana.switchTab"><span>Launch Pad</span></div>
+		</div>
+	</div>
+
+	<div class="page" id="launchpad">
+		<div class="side-bar-toggle fa fa-angle-double-left" katana-click="katana.toggleSideBar"></div>
+		<div class="page-content rc-container">
+			{% include 'core/landing_page.html' %}
+		</div>
+	</div>
+
+	<div id="wui-popups"></div>
+	<div id="wui-popup-nav"></div>
+{% endif %}
+{% endblock %}

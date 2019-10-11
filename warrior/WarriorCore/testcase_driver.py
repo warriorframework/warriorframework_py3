@@ -15,12 +15,15 @@ limitations under the License.
 """The test case driver is the driver responsible for execution of a testcase
 It in turn calls the custom_sequential/custom_parallel/iterative_sequential/
 iterative_parallel drivers according to the  data_type and run_type of the testcase"""
+#pylint: disable=wrong-import-position
 
 import sys
 import os
 import time
 import shutil
-import copy
+import ast
+import xml.etree.ElementTree as et
+from json import loads, dumps
 from WarriorCore.defects_driver import DefectsDriver
 from WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
 from WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
@@ -28,8 +31,10 @@ common_execution_utils, framework_detail
 from WarriorCore.Classes import execution_files_class, junit_class, hybrid_driver_class
 import Framework.Utils as Utils
 from Framework.Utils.testcase_Utils import convertLogic
-from Framework.Utils.print_Utils import print_notype, print_info, print_warning, print_error,\
+from Framework.Utils.print_Utils import print_info, print_warning, print_error,\
     print_debug, print_exception
+from Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
+from Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
 import Framework.Utils.email_utils as email
 
 
@@ -43,7 +48,7 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     Utils.config_Utils.set_datarepository(data_repository)
     name = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Name')
     title = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Title')
-    expResults = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath,'Details',
+    expResults = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details',\
                                                          'ExpectedResults')
     category = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Category')
     def_on_error_action = Utils.testcase_Utils.get_defonerror_fromxml_file(testcase_filepath)
@@ -214,48 +219,6 @@ def junit_requirements(testcase_filepath, tc_junit_object, timestamp):
             tc_junit_object.add_requirement(req_id, timestamp)
 
 
-def get_steps_list(testcase_filepath):
-    """Takes the location of any Testcase xml file as input
-    Returns a list of all the step elements present in the Testcase
-
-    :Arguments:
-        1. testcase_filepath    = full path of the Testcase xml file
-    """
-    step_list = []
-    root = Utils.xml_Utils.getRoot(testcase_filepath)
-    Steps = root.find('Steps')
-    if Steps is None:
-        print_warning("Case: '{}' has no Steps/Keywords "
-                      "to be executed".format(testcase_filepath))
-    else:
-        step_list = []
-        new_step_list = Steps.findall('step')
-        # execute step multiple times
-        for _, step in enumerate(new_step_list):
-            runmode, value, _ = common_execution_utils.get_runmode_from_xmlfile(step)
-            retry_type, _, _, retry_value, _ = common_execution_utils.get_retry_from_xmlfile(step)
-            if runmode is not None and value > 0:
-                go_next = len(step_list) + value + 1
-                for i in range(0, value):
-                    copy_step = copy.deepcopy(step)
-                    copy_step.find("runmode").set("value", go_next)
-                    copy_step.find("runmode").set("attempt", i+1)
-                    step_list.append(copy_step)
-            if retry_type is not None and retry_value > 0:
-                go_next = len(step_list) + retry_value + 1
-                if runmode is not None:
-                    get_runmode = step.find('runmode')
-                    step.remove(get_runmode)
-                for i in range(0, retry_value):
-                    copy_step = copy.deepcopy(step)
-                    copy_step.find("retry").set("count", go_next)
-                    copy_step.find("retry").set("attempt", i+1)
-                    step_list.append(copy_step)
-            if retry_type is None and runmode is None:
-                step_list.append(step)
-        return step_list
-
-
 def compute_testcase_status(step_status, tc_status):
     """Compute the status of the testcase based on the step_status and the impact value of the step
 
@@ -271,7 +234,9 @@ def compute_testcase_status(step_status, tc_status):
         return tc_status and step_status
 
 
-def report_testcase_result(tc_status, data_repository):
+#added tag argument to append keyword with step type in
+#summary of failed keywords
+def report_testcase_result(tc_status, data_repository, tag="Steps"):
     """Report the testcase result to the result file
 
     :Arguments:
@@ -296,10 +261,10 @@ def report_testcase_result(tc_status, data_repository):
                 print_info("++++++++++++++++++++++++ Summary of Failed Keywords +++++++++++++++++++"
                            "+++++")
                 print_info("{0:15} {1:45} {2:10}".format('StepNumber', 'KeywordName', 'Status'))
-                print_info("{0:15} {1:45} {2:10}".format(str(step_num), str(kw_name),
+                print_info("{0:15} {1:45} {2:10}".format(str(step_num), tag+"-"+str(kw_name),
                                                          str(kw_status)))
             elif fail_count > 1:
-                print_info("{0:15} {1:45} {2:10}".format(str(step_num), str(kw_name),
+                print_info("{0:15} {1:45} {2:10}".format(str(step_num), tag+"-"+str(kw_name),
                                                          str(kw_status)))
     print_info("=================== END OF TESTCASE ===========================")
 
@@ -366,7 +331,7 @@ def get_system_list(datafile, node_req=False, iter_req=False):
         return system_list
 
 
-def print_testcase_details_to_console(testcase_filepath, data_repository):
+def print_testcase_details_to_console(testcase_filepath, data_repository, steps_tag="Steps"):
     """Prints the testcase details to the console """
     framework_detail.warrior_framework_details()
     print_info("\n===============================  TC-DETAILS  ===================================="
@@ -376,8 +341,12 @@ def print_testcase_details_to_console(testcase_filepath, data_repository):
     print_info("Logs directory: %s" % data_repository['wt_logsdir'])
     print_info("Defects directory: {0}".format(data_repository["wt_defectsdir"]))
     print_info("Datafile: %s" % data_repository['wt_datafile'])
+    #to print testwrapperfile details to console
+    if data_repository['wt_testwrapperfile']:
+        print_info("Testwrapperfile: %s" % data_repository['wt_testwrapperfile'])
     print_info("Expected Results: %s" % data_repository['wt_expResults'])
-    report_testcase_requirements(testcase_filepath)
+    if steps_tag == "Steps":
+        report_testcase_requirements(testcase_filepath)
     print_info("==================================================================================="
                "=============")
     time.sleep(2)
@@ -417,10 +386,98 @@ def check_and_create_defects(tc_status, auto_defects, data_repository, tc_junit_
     elif tc_status == 'EXCEPTION' or tc_status == 'ERROR':
         create_defects(auto_defects, data_repository)
 
+#to execute given steps based on data_type and runtype
+def execute_steps(data_type, runtype, data_repository, step_list, tc_junit_object, iter_ts_sys):
+    """executes steps based on given data_type and runtype"""
+    tc_status = True
+    if data_type.upper() == 'CUSTOM' and \
+        runtype.upper() == 'SEQUENTIAL_KEYWORDS':
+        tc_status = execute_custom(data_type, runtype,\
+                                       custom_sequential_kw_driver,\
+                                       data_repository, step_list)
+    elif data_type.upper() == 'CUSTOM' and \
+                runtype.upper() == 'PARALLEL_KEYWORDS':
+        tc_junit_object.remove_html_obj()
+        data_repository["war_parallel"] = True
+        tc_status = execute_custom(data_type, runtype,\
+                                       custom_parallel_kw_driver,\
+                                       data_repository, step_list)
+    elif data_type.upper() == 'ITERATIVE' and \
+                runtype.upper() == 'SEQUENTIAL_KEYWORDS':
+        print_info("iterative sequential")
+        system_list = get_system_list(data_repository['wt_datafile'],\
+                                          iter_req=True) \
+            if iter_ts_sys is None else [iter_ts_sys]
+            # print len(system_list)
+        if len(system_list) == 0:
+            print_warning("Datatype is iterative but no systems found in "
+                          "input datafile, when Datatype is iterative the "
+                          "InputDataFile should have system(s) to "
+                          "iterate upon")
+            tc_status = False
+        elif len(system_list) > 0:
+            tc_status = iterative_sequential_kw_driver.main(\
+                 step_list, data_repository, tc_status, system_list)
+    elif data_type.upper() == 'ITERATIVE' and \
+                runtype.upper() == 'PARALLEL_KEYWORDS':
+        tc_junit_object.remove_html_obj()
+        data_repository["war_parallel"] = True
+        print_info("iterative parallel")
+        system_list = get_system_list(data_repository['wt_datafile'],\
+                                          iter_req=True) \
+        if iter_ts_sys is None else [iter_ts_sys]
+            # print len(system_list)
+        if len(system_list) == 0:
+            print_warning("DataType is iterative but no systems found in "
+                          "input datafile, when DataType id iterative the "
+                          "InputDataFile should have system(s) to "
+                          "iterate upon")
+            tc_status = False
+        elif len(system_list) > 0:
+            tc_status = iterative_parallel_kw_driver.main(\
+                 step_list, data_repository, tc_status, system_list)
+    elif data_type.upper() == "HYBRID":
+        print_info("Hybrid")
+        system_list, system_node_list = get_system_list(\
+             data_repository['wt_datafile'], node_req=True)
+            # call the hybrid driver here
+        hyb_drv_obj = hybrid_driver_class.HybridDriver(\
+             step_list, data_repository, tc_status, system_list,\
+             system_node_list)
+        tc_status = hyb_drv_obj.execute_hybrid_mode()
+    else:
+        print_warning("unsupported value provided for testcase data_type "\
+                          "or testsuite runtype")
+        tc_status = False
+
+    return tc_status
+
+#get all the details of testwrapperfile like testwrapperfile name, datatype, runtype
+def get_testwrapper_file_details(testcase_filepath, data_repository):
+    """retuns testwrapperfile to use if specified, else returns False"""
+    if 'ow_testwrapperfile' in data_repository:
+        testwrapperfile = data_repository['ow_testwrapperfile']
+    elif 'suite_testwrapper_file' in data_repository:
+        testwrapperfile = data_repository['suite_testwrapper_file']
+    else:
+        if Utils.xml_Utils.nodeExists(testcase_filepath, "TestWrapperFile"):
+            testwrapperfile = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, \
+                'Details', 'TestWrapperFile')
+        else:
+            return [False, False, False, 'abort']
+    abs_cur_dir = os.path.dirname(testcase_filepath)
+    abs_testwrapperfile = Utils.file_Utils.getAbsPath(testwrapperfile, abs_cur_dir)
+    Utils.xml_Utils.getRoot(abs_testwrapperfile)
+    jfile_obj = execution_files_class.ExecFilesClass(abs_testwrapperfile, "tc", None, None)
+    j_data_type = jfile_obj.check_get_datatype(data_repository['wt_datafile'])
+    j_runtype = jfile_obj.check_get_runtype()
+    setup_on_error_action = Utils.testcase_Utils.get_setup_on_error(abs_testwrapperfile)
+    return [abs_testwrapperfile, j_data_type, j_runtype, setup_on_error_action]
+
 
 def execute_testcase(testcase_filepath, data_repository, tc_context,
                      runtype, tc_parallel, queue, auto_defects, suite, jiraproj,
-                     tc_onError_action, iter_ts_sys):
+                     tc_onError_action, iter_ts_sys, steps_tag="Steps"):
     """ Executes the testcase (provided as a xml file)
             - Takes a testcase xml file as input and executes each command in the testcase.
             - Computes the testcase status based on the stepstatus and the impact value of the step
@@ -439,9 +496,11 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_start_time = Utils.datetime_utils.get_current_timestamp()
     tc_timestamp = str(tc_start_time)
     print_info("[{0}] Testcase execution starts".format(tc_start_time))
-
     get_testcase_details(testcase_filepath, data_repository, jiraproj)
-
+    #get testwrapperfile details like testwrapperfile, data_type and runtype
+    testwrapperfile, j_data_type, j_runtype, setup_on_error_action = \
+        get_testwrapper_file_details(testcase_filepath, data_repository)
+    data_repository['wt_testwrapperfile'] = testwrapperfile
     isRobotWrapperCase = check_robot_wrapper_case(testcase_filepath)
 
     # These lines are for creating testcase junit file
@@ -464,11 +523,14 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
         junit_requirements(testcase_filepath, tc_junit_object, tc_timestamp)
         data_repository['wt_ts_timestamp'] = tc_timestamp
     else:
+        tag = "testcase" if steps_tag == "Steps" else steps_tag
         tc_junit_object = data_repository['wt_junit_object']
+        #creates testcase based on tag given Setup/Steps/Cleanup
         tc_junit_object.create_testcase(location="from testsuite", timestamp=tc_timestamp,
                                         ts_timestamp=data_repository['wt_ts_timestamp'],
                                         classname=data_repository['wt_suite_name'],
                                         name=data_repository['wt_name'],
+                                        tag=tag,
                                         testcasefile_path=data_repository['wt_testcase_filepath'])
         from_ts = True
         junit_requirements(testcase_filepath, tc_junit_object, data_repository['wt_ts_timestamp'])
@@ -483,18 +545,26 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_junit_object.add_property("resultsdir", os.path.dirname(data_repository['wt_resultsdir']),
                                  "tc", tc_timestamp)
     tc_junit_object.update_attr("console_logfile", data_repository['wt_console_logfile'],
-                                 "tc", tc_timestamp)
+                                "tc", tc_timestamp)
     tc_junit_object.update_attr("title", data_repository['wt_title'], "tc", tc_timestamp)
 
     data_repository['wt_junit_object'] = tc_junit_object
-    print_testcase_details_to_console(testcase_filepath, data_repository)
+    print_testcase_details_to_console(testcase_filepath, data_repository, steps_tag)
     # Prints the path of result summary file at the beginning of execution
     if data_repository['war_file_type'] == "Case":
         filename = os.path.basename(testcase_filepath)
         html_filepath = os.path.join(data_repository['wt_resultsdir'],
                                      Utils.file_Utils.getNameOnly(filename)) + '.html'
         print_info("HTML result file: {0}".format(html_filepath))
-    step_list = get_steps_list(testcase_filepath)
+    #get the list of steps in the given tag - Setup/Steps/Cleanup
+    step_list = common_execution_utils.get_step_list(testcase_filepath,
+                                                     steps_tag, "step")
+    if not step_list:
+        print_warning("Warning! cannot get steps for execution")
+        tc_status = "ERROR"
+
+    if step_list and not len(step_list):
+        print_warning("step list is empty in {0} block".format(steps_tag))
 
     tc_state = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath,
                                                        'Details', 'State')
@@ -509,79 +579,117 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                       "as part of a Suite. Skipping the case execution and "
                       "it will be marked as 'ERROR'")
         tc_status = "ERROR"
-    else:
-        if data_type.upper() == 'CUSTOM' and \
-         runtype.upper() == 'SEQUENTIAL_KEYWORDS':
-            tc_status = execute_custom(data_type, runtype,
-                                       custom_sequential_kw_driver,
-                                       data_repository, step_list)
-        elif data_type.upper() == 'CUSTOM' and \
-                runtype.upper() == 'PARALLEL_KEYWORDS':
-            tc_junit_object.remove_html_obj()
-            data_repository["war_parallel"] = True
-            Utils.config_Utils.data_repository = data_repository
-            tc_status = execute_custom(data_type, runtype,
-                                       custom_parallel_kw_driver,
-                                       data_repository, step_list)
-        elif data_type.upper() == 'ITERATIVE' and \
-                runtype.upper() == 'SEQUENTIAL_KEYWORDS':
-            print_info("iterative sequential")
-            system_list = get_system_list(data_repository['wt_datafile'],
-                                          iter_req=True) \
-                if iter_ts_sys is None else [iter_ts_sys]
-            # print len(system_list)
-            if len(system_list) == 0:
-                print_warning("Datatype is iterative but no systems found in "
-                              "input datafile, when Datatype is iterative the "
-                              "InputDataFile should have system(s) to "
-                              "iterate upon")
-                tc_status = False
-            elif len(system_list) > 0:
-                tc_status = iterative_sequential_kw_driver.main(
-                 step_list, data_repository, tc_status, system_list)
-        elif data_type.upper() == 'ITERATIVE' and \
-                runtype.upper() == 'PARALLEL_KEYWORDS':
-            tc_junit_object.remove_html_obj()
-            data_repository["war_parallel"] = True
-            Utils.config_Utils.data_repository = data_repository
-            print_info("iterative parallel")
-            system_list = get_system_list(data_repository['wt_datafile'],
-                                          iter_req=True) \
-                if iter_ts_sys is None else [iter_ts_sys]
-            # print len(system_list)
-            if len(system_list) == 0:
-                print_warning("DataType is iterative but no systems found in "
-                              "input datafile, when DataType id iterative the "
-                              "InputDataFile should have system(s) to "
-                              "iterate upon")
-                tc_status = False
-            elif len(system_list) > 0:
-                tc_status = iterative_parallel_kw_driver.main(
-                 step_list, data_repository, tc_status, system_list)
-        elif data_type.upper() == "HYBRID":
-            print_info("Hybrid")
-            system_list, system_node_list = get_system_list(
-             data_repository['wt_datafile'], node_req=True)
-            # call the hybrid driver here
-            hyb_drv_obj = hybrid_driver_class.HybridDriver(
-             step_list, data_repository, tc_status, system_list,
-             system_node_list)
-            tc_status = hyb_drv_obj.execute_hybrid_mode()
+    elif step_list:
+
+        setup_tc_status, cleanup_tc_status = True, True
+        #1.execute setup steps if testwrapperfile is present in testcase
+        #and not from testsuite execution
+        #2.execute setup steps if testwrapperfile is present in testcase
+        #and from testsuite execution and testwrapperfile is not defined in test suite.
+        if (testwrapperfile and not from_ts) or (testwrapperfile and \
+            from_ts and not 'suite_testwrapper_file' in data_repository):
+            setup_step_list = common_execution_utils.get_step_list(testwrapperfile,
+                                                                   "Setup", "step")
+            if not len(setup_step_list):
+                print_warning("step list is empty in {0} block".format("Setup"))
+
+            print_info("****** SETUP STEPS EXECUTION STARTS *******")
+            data_repository['wt_step_type'] = 'setup'
+            #to consider relative paths provided from wrapperfile instead of testcase file
+            original_tc_filepath = data_repository['wt_testcase_filepath']
+            data_repository['wt_testcase_filepath'] = testwrapperfile
+            setup_tc_status = execute_steps(j_data_type, j_runtype, \
+                data_repository, setup_step_list, tc_junit_object, iter_ts_sys)
+            #reset to original testcase filepath
+            data_repository['wt_testcase_filepath'] = original_tc_filepath
+            data_repository['wt_step_type'] = 'step'
+            print_info("setup_tc_status : {0}".format(setup_tc_status))
+            print_info("****** SETUP STEPS EXECUTION ENDS *******")
+
+        if setup_on_error_action == 'next' or \
+            (setup_on_error_action == 'abort' \
+            and isinstance(setup_tc_status, bool) and setup_tc_status):
+            if steps_tag == "Steps":
+                print_info("****** TEST STEPS EXECUTION STARTS *******")
+            data_repository['wt_step_type'] = 'step'
+            tc_status = execute_steps(data_type, runtype, \
+                data_repository, step_list, tc_junit_object, iter_ts_sys)
+            if steps_tag == "Steps":
+                print_info("****** TEST STEPS EXECUTION ENDS *******")
+
         else:
-            print_warning("unsupported value provided for testcase data_type "
-                          "or testsuite runtype")
-            tc_status = False
+            print_error("Test steps are not executed as setup steps failed to execute,"\
+                        "setup status : {0}".format(setup_tc_status))
+            print_error("Steps in cleanup will be executed on besteffort")
+            tc_status = "ERROR"
 
-    if tc_context.upper() == 'NEGATIVE':
-        if all([tc_status != 'EXCEPTION', tc_status != 'ERROR']):
-            print_debug("Test case status is: '{0}', flip status as context is "
-                        "negative".format(tc_status))
-            tc_status = not tc_status
+        if tc_context.upper() == 'NEGATIVE':
+            if all([tc_status != 'EXCEPTION', tc_status != 'ERROR']):
+                print_debug("Test case status is: '{0}', flip status as context is "
+                            "negative".format(tc_status))
+                tc_status = not tc_status
 
-    if tc_status == False and tc_onError_action and tc_onError_action.upper() == 'ABORT_AS_ERROR':
+        #Execute Debug section from testcase tw file upon tc failure
+        if not isinstance(tc_status, bool) or (isinstance(tc_status, bool) and tc_status is False):
+            tc_testwrapperfile = None
+            if Utils.xml_Utils.nodeExists(testcase_filepath, "TestWrapperFile"):
+                tc_testwrapperfile = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, \
+                    'Details', 'TestWrapperFile')
+                abs_cur_dir = os.path.dirname(testcase_filepath)
+                tc_testwrapperfile = Utils.file_Utils.getAbsPath(tc_testwrapperfile, abs_cur_dir)
+
+            tc_debug_step_list = None
+            if tc_testwrapperfile and Utils.xml_Utils.nodeExists(tc_testwrapperfile, "Debug"):
+                tc_debug_step_list = common_execution_utils.get_step_list(tc_testwrapperfile,
+                                                                          "Debug", "step")
+            if tc_debug_step_list:
+                print_info("****** DEBUG STEPS EXECUTION STARTS *******")
+                data_repository['wt_step_type'] = 'debug'
+                original_tc_filepath = data_repository['wt_testcase_filepath']
+                #to consider relative paths provided from wrapperfile instead of testcase file
+                data_repository['wt_testcase_filepath'] = tc_testwrapperfile
+                debug_tc_status = execute_steps(j_data_type, j_runtype, \
+                    data_repository, tc_debug_step_list, tc_junit_object, iter_ts_sys)
+                #reset to original testcase filepath
+                data_repository['wt_testcase_filepath'] = original_tc_filepath
+                data_repository['wt_step_type'] = 'step'
+                print_info("debug_tc_status : {0}".format(debug_tc_status))
+                print_info("****** DEBUG STEPS EXECUTION ENDS *******")
+
+        #1.execute cleanup steps if testwrapperfile is present in testcase
+        #and not from testsuite execution
+        #2.execute cleanup steps if testwrapperfile is present in testcase
+        #and from testsuite execution and testwrapperfile is not defined in test suite.
+        if (testwrapperfile and not from_ts) or (testwrapperfile and \
+            from_ts and not 'suite_testwrapper_file' in data_repository):
+            cleanup_step_list = common_execution_utils.get_step_list(testwrapperfile,
+                                                                     "Cleanup", "step")
+            if not len(cleanup_step_list):
+                print_warning("step list is empty in {0} block".format("Cleanup"))
+            print_info("****** CLEANUP STEPS EXECUTION STARTS *******")
+            data_repository['wt_step_type'] = 'cleanup'
+            original_tc_filepath = data_repository['wt_testcase_filepath']
+            #to consider relative paths provided from wrapperfile instead of testcase file
+            data_repository['wt_testcase_filepath'] = testwrapperfile
+            cleanup_tc_status = execute_steps(j_data_type, j_runtype, \
+                data_repository, cleanup_step_list, tc_junit_object, iter_ts_sys)
+            data_repository['wt_step_type'] = 'step'
+            print_info("cleanup_tc_status : {0}".format(cleanup_tc_status))
+            print_info("****** CLEANUP STEPS EXECUTION ENDS *******")
+
+    if step_list and isinstance(tc_status, bool) and isinstance(cleanup_tc_status, bool) \
+        and tc_status and cleanup_tc_status:
+        tc_status = True
+    #set tc status to WARN if only cleanup fails
+    elif step_list and isinstance(tc_status, bool) and tc_status and cleanup_tc_status != True:
+        print_warning("setting tc status to WARN as cleanup failed")
+        tc_status = "WARN"
+
+    if step_list and tc_status == False and tc_onError_action and tc_onError_action.upper() == 'ABORT_AS_ERROR':
         print_info("Testcase status will be marked as ERROR as onError "
                    "action is set to 'abort_as_error'")
         tc_status = "ERROR"
+
     defectsdir = data_repository['wt_defectsdir']
     check_and_create_defects(tc_status, auto_defects, data_repository, tc_junit_object)
 
@@ -596,7 +704,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_junit_object.update_count("tests", "1", "ts", data_repository['wt_ts_timestamp'])
     tc_junit_object.update_count("tests", "1", "pj", "not appicable")
     tc_junit_object.update_attr("status", str(tc_status), "tc", tc_timestamp)
-    tc_junit_object.update_attr("time", str(tc_duration), "tc", tc_timestamp)    
+    tc_junit_object.update_attr("time", str(tc_duration), "tc", tc_timestamp)
     tc_junit_object.add_testcase_message(tc_timestamp, tc_status)
     if str(tc_status).upper() in ["FALSE", "ERROR", "EXCEPTION"]:
         tc_junit_object.update_attr("defects", defectsdir, "tc", tc_timestamp)
@@ -607,8 +715,54 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                                 "tc", tc_timestamp)
     tc_junit_object.update_attr("logsdir", os.path.dirname(data_repository['wt_logsdir']),
                                 "tc", tc_timestamp)
+    data_file = data_repository["wt_datafile"]
+    system_name = ""
+    try:
+        tree = et.parse(data_file)
+        for elem in tree.iter():
+            if elem.tag == "system":
+                for key, value in elem.items():
+                    if value == "kafka_producer":
+                        system_name = elem.get("name")
+                        break
+    except:
+        pass
+    if system_name:
+        junit_file_obj = data_repository['wt_junit_object']
+        root = junit_file_obj.root
+        suite_details = root.findall("testsuite")[0]
+        test_case_details = suite_details.findall("testcase")[0]
+        print_info("kafka server is presented in Inputdata file..")
+        system_details = _get_system_or_subsystem(data_file, system_name)
+        data = {}
+        for item in system_details.getchildren():
+            if item.tag == "kafka_port":
+                ssh_port = item.text
+                continue
+            if item.tag == "ip":
+                ip_address = item.text
+                continue
+            try:
+                value = ast.literal_eval(item.text)
+            except ValueError:
+                value = item.text
+            data.update({item.tag: value})
 
-    report_testcase_result(tc_status, data_repository)
+        ip_port = ["{}:{}".format(ip_address, ssh_port)]
+        data.update({"bootstrap_servers": ip_port})
+        data.update({"value_serializer": lambda x: dumps(x).encode('utf-8')})
+        try:
+            producer = WarriorKafkaProducer(**data)
+            producer.send_messages('warrior_results', suite_details.items())
+            producer.send_messages('warrior_results', test_case_details.items())
+            print_info("message published to topic: warrior_results {}".format(
+                suite_details.items()))
+            print_info("message published to topic: warrior_results {}".format(
+                test_case_details.items()))
+        except:
+            print_warning("Unable to connect kafka server !!")
+
+    report_testcase_result(tc_status, data_repository, tag=steps_tag)
     if not from_ts:
         tc_junit_object.update_count(tc_status, "1", "pj", "not appicable")
         tc_junit_object.update_count("suites", "1", "pj", "not appicable")
@@ -644,9 +798,10 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                     email_setting = "every_failure"
 
             if email_setting is not None:
-                email.compose_send_email("Test Case: ", data_repository[
-                 'wt_testcase_filepath'], data_repository['wt_logsdir'],
-                 data_repository['wt_resultsdir'], tc_status, email_setting)
+                email.compose_send_email("Test Case: ", data_repository[\
+                 'wt_testcase_filepath'], data_repository['wt_logsdir'],\
+                                         data_repository['wt_resultsdir'], tc_status,
+                                         email_setting)
 
         if not tc_parallel and not data_repository["war_parallel"]:
             if 'wp_results_execdir' in data_repository:

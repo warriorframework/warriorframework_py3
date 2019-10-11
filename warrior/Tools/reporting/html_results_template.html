@@ -44,7 +44,16 @@ var printFormater = {
   },
 
   initAccordian: function() {
+    printFormater.table.find('tr[name="SetupRecord"]').on('click', function() {
+      printFormater.openAccordian.call($(this));
+    });
     printFormater.table.find('tr[name="TestcaseRecord"]').on('click', function() {
+      printFormater.openAccordian.call($(this));
+    });
+    printFormater.table.find('tr[name="DebugRecord"]').on('click', function() {
+      printFormater.openAccordian.call($(this));
+    });
+    printFormater.table.find('tr[name="CleanupRecord"]').on('click', function() {
       printFormater.openAccordian.call($(this));
     });
     $(window).on('keydown', function(e) {
@@ -326,11 +335,11 @@ td[rowspan] {
     display: block;
 }
 
+<!--td block to display results -->
 td {
     display: none;
-    height: 40px;
-    line-height: 40px;
-    white-space: nowrap;
+    height: auto;
+    line-height: 25px;
     text-overflow: ellipsis;
     padding: 0 0px;
     overflow: hidden;
@@ -369,10 +378,11 @@ td[rowspan]:last-child {}
 td {}
 
 td > div {
-    overflow: hidden;
+    overflow: initial;
     position: relative;
     text-overflow: ellipsis;
-    padding: 0 10px;
+    padding: 0 2px;
+    word-break:break-all;
 }
 
 table#t1 {
@@ -419,6 +429,20 @@ tr[name="TestcaseRecord"] {
     /* display: none; */
     cursor: pointer;
 }
+
+tr[name="SetupRecord"] {
+    /* display: none; */
+    cursor: pointer;
+}
+tr[name="DebugRecord"] {
+    /* display: none; */
+    cursor: pointer;
+}
+tr[name="CleanupRecord"] {
+    /* display: none; */
+    cursor: pointer;
+}
+
 tr[name="TestsuiteRecord"] {
     border-bottom: solid 1px #bfbfbf;
 }
@@ -433,6 +457,33 @@ tr[name="TestcaseRecord"].active ~ tr[name="KeywordRecord"] {
 }
 tr[name="TestcaseRecord"].active ~ tr[name="TestcaseRecord"] ~ tr[name="KeywordRecord"] {display: none;}
 tr[name="TestcaseRecord"].removeing ~ tr[name="KeywordRecord"] { -webkit-transform: scaleY(0); transform: scaleY(0); transition: .3s ease;}
+tr[name="SetupRecord"] > td:first-child div {padding-left: 6px;}
+tr[name="SetupRecord"] > td:first-child div:before {content: '^';content: "\f107";padding: 0 5px;font: normal normal normal 14px/1 FontAwesome;font-size: inherit;text-rendering: auto;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
+tr[name="SetupRecord"].active ~ tr[name="KeywordRecord"] {
+    display: flex;
+    background: #2578c1;
+    color: white;
+}
+tr[name="SetupRecord"].active ~ tr[name="SetupRecord"] ~ tr[name="KeywordRecord"] {display: none;}
+tr[name="SetupRecord"].removeing ~ tr[name="KeywordRecord"] { -webkit-transform: scaleY(0); transform: scaleY(0); transition: .3s ease;}
+tr[name="DebugRecord"] > td:first-child div {padding-left: 6px;}
+tr[name="DebugRecord"] > td:first-child div:before {content: '^';content: "\f107";padding: 0 5px;font: normal normal normal 14px/1 FontAwesome;font-size: inherit;text-rendering: auto;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
+tr[name="DebugRecord"].active ~ tr[name="KeywordRecord"] {
+    display: flex;
+    background: #2578c1;
+    color: white;
+}
+tr[name="DebugRecord"].active ~ tr[name="DebugRecord"] ~ tr[name="KeywordRecord"] {display: none;}
+tr[name="DebugRecord"].removeing ~ tr[name="KeywordRecord"] { -webkit-transform: scaleY(0); transform: scaleY(0); transition: .3s ease;}
+tr[name="CleanupRecord"] > td:first-child div {padding-left: 6px;}
+tr[name="CleanupRecord"] > td:first-child div:before {content: '^';content: "\f107";padding: 0 5px;font: normal normal normal 14px/1 FontAwesome;font-size: inherit;text-rendering: auto;-webkit-font-smoothing: antialiased;-moz-osx-font-smoothing: grayscale;}
+tr[name="CleanupRecord"].active ~ tr[name="KeywordRecord"] {
+    display: flex;
+    background: #2578c1;
+    color: white;
+}
+tr[name="CleanupRecord"].active ~ tr[name="CleanupRecord"] ~ tr[name="KeywordRecord"] {display: none;}
+tr[name="CleanupRecord"].removeing ~ tr[name="KeywordRecord"] { -webkit-transform: scaleY(0); transform: scaleY(0); transition: .3s ease;}
 tr.active {
     -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.28);
     -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.28);
@@ -461,6 +512,19 @@ tr[name="TestcaseRecord"].active ~ tr:not([name]) td:not([rowspan]) {
 
 }
 tr[name="TestcaseRecord"].active ~ tr[name="TestcaseRecord"] ~ tr td:not([rowspan]){
+    z-index: inherit;
+    color: inherit;
+}
+
+tr[name="SetupRecord"].active ~ tr[name="SetupRecord"] ~ tr td:not([rowspan]){
+    z-index: inherit;
+    color: inherit;
+}
+tr[name="DebugRecord"].active ~ tr[name="DebugRecord"] ~ tr td:not([rowspan]){
+    z-index: inherit;
+    color: inherit;
+}
+tr[name="CleanupRecord"].active ~ tr[name="CleanupRecord"] ~ tr td:not([rowspan]){
     z-index: inherit;
     color: inherit;
 }
@@ -516,6 +580,35 @@ tr[name="TestcaseRecord"] {
 .filtering tr[name="TestcaseRecord"] > td:first-child div{
     padding-left: 10px;
 }
+
+.filtering tr[name="SetupRecord"] > td:first-child div:before{
+    display: none;
+}
+tr[name="SetupRecord"] {
+    background: white;
+}
+.filtering tr[name="SetupRecord"] > td:first-child div{
+    padding-left: 10px;
+}
+.filtering tr[name="DebugRecord"] > td:first-child div:before{
+    display: none;
+}
+tr[name="DebugRecord"] {
+    background: white;
+}
+.filtering tr[name="DebugRecord"] > td:first-child div{
+    padding-left: 10px;
+}
+.filtering tr[name="CleanupRecord"] > td:first-child div:before{
+    display: none;
+}
+tr[name="CleanupRecord"] {
+    background: white;
+}
+.filtering tr[name="CleanupRecord"] > td:first-child div{
+    padding-left: 10px;
+}
+
 .filterBar {
         width: 100%;
     z-index: 0;

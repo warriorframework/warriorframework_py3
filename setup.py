@@ -14,15 +14,15 @@ limitations under the License.
 from setuptools import setup
 
 PACKAGE_NAME = "warriorframework"
-PACKAGE_VERSION = "4.0.0"
+PACKAGE_VERSION = "4.1.0" 
 
 setup(
     name=PACKAGE_NAME,
     version=PACKAGE_VERSION,
     author="warriorframework org",
     url="https://github.com/warriorframework/warriorframework",
-    install_requires=["pexpect==4.2", "requests==2.9.1", "selenium==3.8.0", 
-                      "lxml==3.3.3", "paramiko==1.16.0", "pysnmp==4.3.2",
-                      "pyvirtualdisplay==0.2.1"]
+    install_requires=["pexpect==4.2", "requests==2.21.0", "selenium==3.8.0",
+                      "lxml==3.3.3", "paramiko==2.4.2", "pysnmp==4.4.9",
+                      "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6"]
 
 )

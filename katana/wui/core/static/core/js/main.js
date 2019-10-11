@@ -1,8 +1,21 @@
+$(document).ready(function () {
+  /* Function exists purely to move back and forth between the new Katana API and old
+     on the framework level. This can deprecated once all apps are moved to new API */
+  var loadUrl = localStorage.getItem('load_url');
+  var $elem = $(document.body).find('[url="' + loadUrl + '"]');
+  localStorage.removeItem("load_url");
+  if (loadUrl){
+    katana.templateAPI.load.call($elem);
+  }
+});
+
 var katana = {
   staticContent: 10,
   $activeTab: null,
   $view: 'null',
   $prevTab: null,
+  intervals_calls: {},
+
 
   initApp: function() {
     katana.loadView();
@@ -79,6 +92,8 @@ var katana = {
       var temp = katana.$view.find('.nav .tab').first();
       var created = temp.clone().insertAfter(temp);
       created.attr('uid', uid).append('<i class="fa fa-times" katana-click="katana.closeTab"></i>');
+      created.attr('wuid', uid);
+      katana.intervals_calls[uid] = {};
       created.find('span').text(uid);
       katana.switchTab.call(created, uid);
       callBack && callBack(newTab.find('.page-content-inner'), created);
@@ -150,7 +165,13 @@ var katana = {
     if (tab.hasClass('active') && !ignore)
       katana.switchTab();
     katana.$view.find('#' + tab.attr('uid')).remove();
+    wuid = tab.attr('wuid');
     tab.remove();
+    localStorage.removeItem('bandwidth_manager');
+    $.each(katana.intervals_calls[wuid], function(i, v){
+        window.clearInterval(katana.intervals_calls[wuid][v]);
+        delete katana.intervals_calls[wuid][v]
+    })
   },
 
   closePocketFields: function() {
@@ -311,7 +332,9 @@ var katana = {
     }
 
   },
-
+  toggleSideBar: function(){
+      this.closest('.page').toggleClass('side-bar-hidden');
+  },
   translate: function(url, container) {
     $.ajaxSetup({
       async: false
@@ -340,21 +363,25 @@ var katana = {
     rcMenu.css({
       'left': event.clientX,
       'top': event.clientY
+//      'left': event.offsetX,
+//      'top': event.offsetY
     }).addClass('active');
-    $(window).one('click contextmenu scroll resize', function() {
+    rcMenu.mouseleave(function(){
       katana.$view.find('.rc-menu.active').remove();
     });
   },
 
   editOrder: function() {
-    var tabContainer = this.closest('.tabs');
-    katana.$view.addClass('edit-mode');
-    tabContainer.sortable({
-      items: "div:not(.complete)"
-    });
-    tabContainer.sortable("option", "disabled", false);
-    tabContainer.append('<div class="complete fa fa-check" katana-click="katana.finishOrder"></div>');
-    katana.$view.find('.rc-menu.active').remove();
+    if (!katana.$view.hasClass('edit-mode')) {
+      var tabContainer = this.closest('.tabs');
+      katana.$view.addClass('edit-mode');
+      tabContainer.sortable({
+        items: "div:not(.complete)"
+      });
+      tabContainer.sortable("option", "disabled", false);
+      tabContainer.append('<div class="complete fa fa-check" katana-click="katana.finishOrder"></div>');
+      katana.$view.find('.rc-menu.active').remove();
+    }
   },
 
 
@@ -419,7 +446,7 @@ var katana = {
       }
     }
   },
-  
+
   openAlert: function(data, callBack_on_accept, callBack_on_dismiss) {
     /*
 	    data = {
@@ -925,17 +952,19 @@ var katana = {
         var $elem = this;
         url = url ? url : $elem ? $elem.attr('url') : '';
         tabTitle = tabTitle ? tabTitle : 'Tab';
-        var jsURL = jsURL ? jsURL.split(',') : $elem.attr('jsurls').split(',');
-        src_elem = $elem != katana.templateAPI ? $elem : katana.$activeTab;
-
-        if (jsURL.length > 0) {
-          jsURL.pop();
-          katana.templateAPI.importJS(jsURL, function() {
-            katana.templateAPI.tabRequst(src_elem, tabTitle, url, limitedStyles, callBack, options);
-          });
-        } else {
-          katana.templateAPI.tabRequst(src_elem, tabTitle, url, limitedStyles, callBack, options);
-        }
+        if ($elem !== katana.templateAPI) {
+          var jsURLString = jsURL ? jsURL.trim() : $elem.attr('jsurls').trim();
+          jsURL = jsURLString === "" ? [] : jsURLString.split(',');
+          if (jsURL.length > 0) {
+            jsURL.pop();
+            katana.templateAPI.importJS(jsURL, function() {
+              katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
+            });
+          } else {
+            katana.templateAPI.tabRequst($elem, tabTitle, url, limitedStyles, callBack, options);
+          }
+        } else
+          katana.templateAPI.tabRequst(katana.$activeTab, tabTitle, url, limitedStyles, callBack, options);
       }
     },
 
@@ -985,6 +1014,35 @@ var katana = {
 
     post: function(url, csrf, toSend, callBack, fallBack, callBackData, fallBackData ) {
       var $elem = this && this != katana.templateAPI ? this : katana.$activeTab;
+      toSend = toSend ? toSend : $elem.find('input:not([name="csrfmiddlewaretoken"])').serializeArray();
+      url = url ? url : $elem.attr('post-url');
+      csrf = csrf ? csrf : $elem.find('.csrf-container > input').val();
+
+      if(url === undefined || url === ""){
+        console.log("Error in post(): No URL found. POST request could not be completed.");
+      } else {
+        $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+            if (!this.crossDomain)
+              xhr.setRequestHeader("X-CSRFToken", csrf);
+          }
+        });
+        $.ajax({
+          url: url,
+          type: "POST",
+          data: {
+            data: toSend
+          }
+        }).done(function(data) {
+          callBack && callBack(data, callBackData);
+        }).fail(function(data) {
+          fallBack && fallBack(data, fallBackData);
+        });
+      }
+    },
+
+    postAsync: function(url, csrf, toSend, callBack, fallBack, callBackData, fallBackData ) {
+      var $elem = this && this != katana.templateAPI ? this : katana.$activeTab;
       var toSend = toSend ? toSend : $elem.find('input:not([name="csrfmiddlewaretoken"])').serializeArray();
       var url = url ? url : $elem.attr('post-url');
       var csrf = csrf ? csrf : $elem.find('.csrf-container > input').val();
@@ -1000,7 +1058,8 @@ var katana = {
         type: "POST",
         data: {
           data: toSend
-        }
+        },
+        async:false
       }).done(function(data) {
         callBack && callBack(data, callBackData);
       }).fail(function(data) {
@@ -1016,20 +1075,24 @@ var katana = {
       url = url ? url : $elem.attr('get-url');
       dataType = dataType ? dataType : 'text';
 
-      // make an ajax get call using the intialized variables,
-      // on sucess the data is sent to success cal back function if one was provided
-      $.ajax({
-        url: url,
-        type: "GET",
-        dataType: dataType,
-        data: {
-          data: toSend
-        },
-      }).done(function(data) {
-        callBack && callBack(data, callBackData);
-      }).fail(function(data) {
-        fallBack && fallBack(data, fallBackData);
-      });
+      if(url === undefined || url === ""){
+        console.log("Error in get(): No URL found. GET request could not be completed.");
+      } else {
+        // make an ajax get call using the intialized variables,
+        // on sucess the data is sent to success cal back function if one was provided
+        $.ajax({
+          url: url,
+          type: "GET",
+          dataType: dataType,
+          data: {
+            data: toSend
+          },
+        }).done(function(data) {
+          callBack && callBack(data, callBackData);
+        }).fail(function(data) {
+          fallBack && fallBack(data, fallBackData);
+        });
+      }
     },
 
     trigger: function(url, callBack) {
@@ -1069,13 +1132,54 @@ var katana = {
 
     jsTreeAPI: {
 
-      createJstree: function($treeElement, jsTreeData){
+      createJstree: function($treeElement, jsTreeData, plugins, plugin_intelligence, lazy_loading,
+                             custom_lazy_ajax_function){
         /*
           API to create jstee in the specified element.
           $treeElement: Element where the jstree data should be displayed.
           jsTreeData: the contents of the jstree to be displayed.
+          plugins: plugins that should be added to jsTree. Eg: sort, search, checkbox etc. Default is sort and search.
+                   Any new plugins would be aded to existing sort, search plugins.
+          plugin_intelligence: The functions that should be associated with given plugins.
+                               Defaults are in place for sort and search. Any new functions for plugins will be added
+                               to the existing sort and search functions.
+          lazy_loading: set to true if data should be lazy loaded. false by default
+          custom_lazy_ajax_function: Custom function to be called while lazy loading. Example usage in UpFileExplorer function.
         */
-        var data = { 'core' : { 'data' : jsTreeData }, "plugins" : [ "sort" , "search"], };
+        lazy_loading = !!lazy_loading;
+        var default_plugins = [ "sort" , "search"];
+        var default_plugin_intelligence = {
+          "sort": function(a, b) {
+              var nodeA = this.get_node(a);
+              var nodeB = this.get_node(b);
+              var lengthA = nodeA.children.length;
+              var lengthB = nodeB.children.length;
+              if ((lengthA === 0 && lengthB === 0) || (lengthA > 0 && lengthB > 0))
+                return this.get_text(a).toLowerCase() > this.get_text(b).toLowerCase() ? 1 : -1;
+              else
+                return lengthA > lengthB ? -1 : 1;
+            }
+        };
+        plugins = Object.assign([], default_plugins, plugins);
+        plugin_intelligence = Object.assign({}, default_plugin_intelligence, plugin_intelligence);
+        var lazy_ajax_original_data = jsTreeData;
+        if (lazy_loading) {
+          lazy_ajax_original_data = {
+            'url' : 'get_file_explorer_data/',
+            'data' : function (node) {
+              return {id : node.id, start_dir: node.data ? node.data.path : false, lazy_loading: lazy_loading}
+            }
+          }
+        }
+        lazy_ajax_original_data = custom_lazy_ajax_function ? custom_lazy_ajax_function : lazy_ajax_original_data;
+        var original_data = {
+          "core" :
+              {
+                'data' : lazy_ajax_original_data
+              },
+          "plugins" : plugins
+        };
+        var data = Object.assign({}, original_data, plugin_intelligence);
         $treeElement.jstree(data);
         $treeElement.jstree().hide_dots();
       },
@@ -1101,15 +1205,10 @@ var katana = {
 
   fileExplorerAPI: {
 
-    init: function() {
-      var $elem = this;
-      var input = $elem.parent().find('input');
-      katana.fileExplorerAPI.openFileExplorer(null, null, null, null, function(str) {
-        input.val(str).trigger('change');
-      });
-    },
-
     openFileExplorer: function(heading, start_directory, csrftoken, parent, callBack_on_accept, callBack_on_dismiss) {
+      /*
+      This function opens the file explorer on screen and populates it with directory data. It is always lazy loaded.
+      */
       if (!heading || heading === "" || heading === undefined) {
         heading = "Select a file"
       }
@@ -1123,7 +1222,8 @@ var katana = {
         $tabContent = parent;
       }
       katana.templateAPI.post('get_file_explorer_data/', csrftoken, {
-          "start_dir": start_directory
+          "start_dir": start_directory,
+          "lazy_loading": true
         },
         function(data) {
           var explorer_modal_html = $($('#file-explorer-template').html());
@@ -1132,23 +1232,7 @@ var katana = {
 
           $(explorer_modal_html).prependTo($tabContent);
           var $directoryData = $tabContent.find('#directory-data');
-          $directoryData.jstree({
-            "core": {
-              "data": [data]
-            },
-            "plugins": ["search", "sort"],
-            "sort": function(a, b) {
-              var nodeA = this.get_node(a);
-              var nodeB = this.get_node(b);
-              var lengthA = nodeA.children.length;
-              var lengthB = nodeB.children.length;
-              if ((lengthA === 0 && lengthB === 0) || (lengthA > 0 && lengthB > 0))
-                return this.get_text(a).toLowerCase() > this.get_text(b).toLowerCase() ? 1 : -1;
-              else
-                return lengthA > lengthB ? -1 : 1;
-            }
-          });
-          $directoryData.jstree().hide_dots();
+          katana.jsTreeAPI.createJstree($directoryData, data, false, false, true);
           $tabContent.find('#explorer-accept').on('click', function() {
             katana.fileExplorerAPI.acceptFileExplorer(callBack_on_accept, parent);
           });
@@ -1191,6 +1275,10 @@ var katana = {
     },
 
     upFileExplorer: function(currentPath, csrftoken, parent) {
+      /*
+      This function is called when in FileExplorer the user navigates to the parent directory. This is always
+      lazy loaded.
+      */
       if (!parent || parent === undefined || parent === "") {
         var $currentPage = katana.$activeTab;
         var $tabContent = $currentPage.find('.page-content-inner');
@@ -1198,7 +1286,8 @@ var katana = {
         $tabContent = parent;
       }
       katana.templateAPI.post('get_file_explorer_data/', csrftoken, {
-          "path": currentPath
+          "path": currentPath,
+          "lazy_loading": true
         },
         function(data) {
 
@@ -1206,22 +1295,17 @@ var katana = {
           $directoryDataDiv.html("");
           $directoryDataDiv.append("<div id='directory-data' class='full-size'></div>");
           var $directoryData = $currentPage.find('#directory-data');
-          $directoryData.jstree({
-            "core": {
-              "data": [data]
-            },
-            "plugins": ["search", "sort"],
-            "sort": function(a, b) {
-              var nodeA = this.get_node(a);
-              var nodeB = this.get_node(b);
-              var lengthA = nodeA.children.length;
-              var lengthB = nodeB.children.length;
-              if ((lengthA === 0 && lengthB === 0) || (lengthA > 0 && lengthB > 0))
-                return this.get_text(a).toLowerCase() > this.get_text(b).toLowerCase() ? 1 : -1;
-              else
-                return lengthA > lengthB ? -1 : 1;
-            }
-          });
+          katana.jsTreeAPI.createJstree($directoryData, data, false, false, true,
+              {
+                'url' : 'get_file_explorer_data/',
+                'data' : function (node) {
+                  var cb_data = { 'id' : node.id, 'start_dir': node.data ? node.data.path : false, lazy_loading: true};
+                  if (!cb_data.start_dir){
+                    cb_data["path"] = data.data.path;
+                  }
+                  return cb_data;
+                }
+              });
           $directoryData.jstree().hide_dots();
           $tabContent.find('#explorer-up').off('click');
           $tabContent.find('#explorer-up').on('click', function() {
@@ -1233,6 +1317,15 @@ var katana = {
   },
 
     utils: {
+
+        sleep: function (milliseconds) {
+            var start = new Date().getTime();
+            for (var i = 0; i < 1e7; i++) {
+                if ((new Date().getTime() - start) > milliseconds) {
+                    break;
+                }
+            }
+        },
 
         getRelativeFilepath: function (basePath, path, basePathIsDir) {
           /* This function gets relative path (out of a given path argument) from a basePath and path */
@@ -1300,6 +1393,66 @@ var katana = {
           }
           return path;
         }
-    }
+    },
+    
+    //USER AUTHENTICATION
+    userAuth: {
+    	
+    	login: function(){
+    		// login a user
+    		console.log('login a user');
+    		
+    		// make a http post and send the username, password to the server
+    		//post: function(url, csrf, toSend, callBack, fallBack, callBackData, fallBackData )
+    		
+    		var elem = $('#warrior_login');
+    		var username = $('#username').val();
+    		var password = $('#password').val();
+    		var data_to_send = JSON.stringify({'username': username, 'password': password, 'action': 'login'})
+    		katana.templateAPI.post.call(elem, null, null, data_to_send, katana.userAuth.loginCallBacks)
+    		
+    	},
+    	logout: function(){
+    		// login a user
+    		var logout = $('#warrior_logout')
+    		katana.templateAPI.get.call(logout, {
+    											'url': '/katana/logout',
+    											'toSend': JSON.stringify({'action': 'logout'}), 
+    											'callBack': katana.userAuth.getLogoutPage
+    											}
+    									)  
+    		
+    	},
+    	loginCallBacks: function(data){
+    		// decide the pages/content to be displayed based on 
+    		// the result of call back
+    		//data = JSON.parse(data);
+    		//window.location = redirect_url;
+    		//katana.templateAPI.get.call(elem, {'url':redirect_url, 'toSend': JSON.stringify({'action': 'redirect_to_home_page'}) , 'callBack': katana.userAuth.getHomePage})
+    		// since since warrior is an spa we can handle login, home, logout screens using a single template and based on the user.is_authenticated value
+    		// client just needs to reload the page and the server will display the necessary values based on the state of user
+    		console.log(data);
+    		var elem = $('#warrior_login');
+    		var auth_status = data['auth_status'];
+    		var msg = data['msg'];
+    		if(auth_status === 1){ window.location.reload();}
+    		else{katana.openAlert({"alert_type": "warning", "heading": "Login failed", "text": msg})};    		
+    		
+    	},    	
+    	getHomePage: function(data){
+    		// on successful authenticaion build the home page for the user
+    		console.log(data);
+    		var warrior_index_view = $('#warrior_index_view');
+    		warrior_index_view.html(data);
+    		katana.setActiveTab();    		
+    	},    	
+    	getLogoutPage: function(data){
+    		// on successful authenticaion build the home page for the user
+    		//var warrior_index_view = $('#warrior_index_view');
+    		//warrior_index_view.html(data);
+    		window.location.reload(true);
 
+    	}
+    	
+    }
 };

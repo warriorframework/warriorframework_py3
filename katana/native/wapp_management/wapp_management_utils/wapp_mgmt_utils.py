@@ -17,9 +17,11 @@ def get_version_list(versions, existing_versions):
     """
     bounds = []
     individual = []
+    errors = False
+    if not existing_versions:
+        return individual, bounds, True
     version_list = [el.strip() for el in versions.split(',') if el.strip() != ""]
     err_msg = "-- An Error Occurred -- {0} is not a valid Warrior version. Valid Warrior versions are: {1}"
-    errors = False
     for el in version_list:
         bound = {}
         if el.startswith(":"):

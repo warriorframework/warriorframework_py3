@@ -1,0 +1,18 @@
+<!-- Modal -->
+<div class="modal fade" id="{% block modal_id %}base_modal{% endblock %}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% block modal_title %}{% endblock %}</h5>
+                {% block modal_header_extra %}{% endblock %}
+            </div>
+            <div class="modal-body">
+            {% block modal_content %}{% endblock %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn primary" data-dismiss="modal">Close</button>
+                {% block modal_footer_extra %}{% endblock %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,123 @@
+<html>
+<head>
+    {% load staticfiles %}
+    <script src="{% static 'oss/jquery-3.3.1.min.js' %}"></script>
+    <script src="{% static 'oss/popper/popper.min.js' %}"></script>
+    <script src="{% static 'oss/bootstrap-4.1.3/js/bootstrap.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'oss/bootstrap-4.1.3/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'oss/fontawesome-5.5.0/css/all.css' %}">
+    <script src="{% static 'oss/js/jstree.min.js' %}"></script>
+    <link rel="icon" href="{% static 'core/images/logo.png' %}" type="image/png">
+    <link rel="stylesheet" href="{% static 'core/css/main_django.css' %}">
+    <!--<link href="https://fonts.googleapis.com/css?family=Lato|Montserrat|Raleway" rel="stylesheet">-->
+    <script src="{% static 'core/js/main_django.js' %}"></script>
+    {% block headcontent %}
+    {% endblock %}
+</head>
+<body>
+{% include "core/components/about_us.html" %}
+<nav class="navbar sticky-top navbar-dark {% block navbar_color_class %}bg-dark{% endblock %}" style="{% block navbar_extra_style %}{% endblock %}">
+    <a class="navbar-brand" href="{% block navbar_title_redirect %}/katana{% endblock %}">
+        {% block navbar_title_logo %}<img src="{% static 'core/images/logo.png' %}" width="30" height="30" class="d-inline-block align-top" alt="">{% endblock %}
+        {% block navbar_title %}WARRIOR{% endblock %}
+    </a>
+    <div class="ml-auto">
+    {% block navbar_settings_menu %}
+    {% endblock %}
+    {% block navbar_info_menu %}
+        <i class="fas fa-info" onclick="$('#about_us_modal').modal('show');"></i>
+    {% endblock %}
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+            <i class="fas fa-user"></i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right">
+            {% if user.is_authenticated %}
+            <button class="dropdown-item" type="button" disabled>Hello, {{ user.first_name|default:user.username }}</button>
+            <button class="dropdown-item" type="button" onclick="location.href='/katana/accounts/profile';">Profile</button>
+            {% if user.is_staff %}
+            <button class="dropdown-item" type="button" onclick="location.href='/admin';">Admin Page</button>
+            {% endif %}
+            <button class="dropdown-item" type="button" onclick="location.href='/katana/logout';">Logout</button>
+            {% else %}
+            <button class="dropdown-item" type="button" disabled>You are not logged in.</button>
+            <button class="dropdown-item" type="button" onclick="location.href='/katana/login';">Login</button>
+            {% endif %}
+        </div>
+    </div>
+    <div style="margin-left: 16px;">
+        {% block navbar_right_logo %}
+        {% endblock %}
+    </div>
+</nav>
+
+<div class="page-content collapsed">
+    {% block sidebar %}
+    <div class="sidebar-content">
+        <div class="sidebar">
+            <div class="container-fluid">
+                <div class="row" onclick="katana.sidebar.openApp($(this))" url="/katana/">
+                    <div class="col-sm-12">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </div>
+                </div>
+                <div class="row" onclick="katana.sidebar.toggleSubMenu($(this))" target="wappsSubMenu">
+                    <div class="col-sm-12">
+                        <i class="fas fa-puzzle-piece"></i>
+                        <span>Wapps</span>
+                        <i class="fas fa-chevron-down toggle-this"></i>
+                    </div>
+                </div>
+                <div class="container-fluid submenu hidden" id="wappsSubMenu">
+                    {% for app in apps %}
+                    <div class="row" onclick="katana.sidebar.openApp($(this))" url="{{ app.data.app.url }}" pure-django="{{ app.data.pure_django }}">
+                        <div class="col-sm-12">
+                            <div class="container-fluid">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <i class="fas fa-{{ app.data.icon }}"></i>
+                                        <span>{{ app.data.app.name }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="row" onclick="location.href='/katana/accounts/profile';">
+                    <div class="col-sm-12">
+                        <i class="fas fa-user"></i>
+                        <span>Account</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="sidebar-toggler">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <i class="fas fa-chevron-right fa-2x" onclick="katana.sidebar.toggleSidebar($(this))"></i>
+                        <i class="fas fa-chevron-left fa-2x" onclick="katana.sidebar.toggleSidebar($(this))"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endblock %}
+    <div class="content">
+        <div class="container-fluid reusable-component">
+            <div class="row">
+                <div class="col-sm-12">
+                    {% block pagecontent %}
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

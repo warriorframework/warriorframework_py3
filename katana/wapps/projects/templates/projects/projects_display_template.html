@@ -1,0 +1,121 @@
+{% load project_filters %}
+<div class="suites-intentional-space-x suites-extra-left-padding" id="suites-steps-template">
+    <div class="suites-internal-section">
+        <div class="suites-step-table-parent">
+            <table class="table table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col" class="col-sm-2">Suite #</th>
+                    <th scope="col" class="col-sm-4">Path</th>
+
+                    <!-- <th scope="col" class="col-sm-1">Run Type</th> -->
+                    <th scope="col" class="col-sm-2">Execute</th>
+                    <!-- <th scope="col" class="col-sm-1">Run Mode</th> -->
+                    <th scope="col" class="col-sm-2">Impact</th>
+                    <!-- <th scope="col" class="col-sm-1">Context</th> -->
+                    <th scope="col" class="col-sm-2">On Error</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for tc in data.Project.Testsuites.Testsuite %}
+
+                <tr katana-click="projects.stepSection.selectStep" key="Testsuite">
+                    <td class="col-sm-2" key="@TS">{{ forloop.counter }}</td>
+                    <td class="col-sm-4" key="path" title={{tc.path}}>{{ tc.path }}</td>
+
+                    {% if tc.Execute %}
+                    <td class="col-sm-2">
+                        <span key="Execute.@ExecType">{{ tc.Execute|get_attribute:"ExecType" }}</span><br>
+                        {% if tc.Execute|get_attribute:"ExecType" == "If" or tc.Execute|get_attribute:"ExecType" == "If Not" %}
+                        {% for rule in tc.Execute.Rule %}
+                        <span key="Execute.Rule">
+                            <br>
+                            Condition = <span key="Execute.Rule.@Condition">{{ rule|get_attribute:"Condition" }}</span>
+                            <br>
+                            Condition Value = <span key="Execute.Rule.@Condvalue">{{ rule|get_attribute:"Condvalue" }}</span>
+                            <br>
+                            Else = <span key="Execute.Rule.@Else">{{ rule|get_attribute:"Else"}}</span>
+                            <br>
+                            Else Value = <span key="Execute.Rule.@Elsevalue">{{ rule|get_attribute:"Elsevalue" }}</span>
+                        </span>
+                        <br>
+                        {% endfor %}
+                        {% endif %}
+                    </td>
+                    {% else %}
+                    <td class="col-sm-2">
+                        <span key="Execute.@ExecType"> Yes</span>
+                    </td>
+                    {% endif %}
+
+                    {% if tc.impact %}
+                    <td class="col-sm-2" key="impact">{{ tc.impact|convert_impacts }}</td>
+                    {% else %}
+                    <td class="col-sm-2" key ="impact"> Impact</td>
+                    {% endif %}
+                    {% if tc.onError %}
+                    <td class="col-sm-2">
+                        <span key="onError.@action"> {{ tc.onError|get_attribute:"action"|convert_on_errors }} </span>
+                        {% if tc.onError|get_attribute:"action"|convert_on_errors == "Go To" %}
+                        <span> = </span>
+                        <span key="onError.@value"> {{ tc.onError|get_attribute:"value" }} </span>
+                        {% endif %}
+                    </td>
+                    {% else %}
+                    <td class="col-sm-2">
+                        <span key="onError.@action"> Next</span>
+                    </td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="suites-step-toolbar">
+            <div katana-click="projects.stepSection.toolbar.editStep" title="Select a Suite to edit it">
+                <i class="fa fa-pencil" aria-hidden="true"></i>
+            </div>
+            <div katana-click="projects.stepSection.toolbar.insertStep" title="Select a Suite to insert above it">
+                <i class="fa fa-reply" aria-hidden="true"></i>
+            </div>
+            <div katana-click="projects.stepSection.toolbar.deleteStep" title="Select a suite or multiple suites to delete it/them">
+                <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </div>
+            <div katana-click="projects.stepSection.toolbar.multiselect" title="Toggle between selecting single and multiple suites">
+                <i class="fa fa-th-list badged" aria-hidden="true" multiselect="on">
+                    <i class="fa fa-check-circle" aria-hidden="true"></i>
+                </i>
+            </div>
+        </div>
+    </div>
+    <script id="step-row-template" type="text/html">
+        <tr katana-click="projects.stepSection.selectStep" key="Testsuite">
+            <td class="col-sm-2" key="@TS"></td>
+            <td class="col-sm-4" key="path"></td>
+
+
+            <td class="col-sm-2">
+                <span key="Execute.@ExecType"></span><br>
+                <span key="Execute.Rule">
+                    <br>
+                    Condition = <span key="Execute.Rule.@Condition"></span>
+                    <br>
+                    Condition Value = <span key="Execute.Rule.@Condvalue"></span>
+                    <br>
+                    Else = <span key="Execute.Rule.@Else"></span>
+                    <br>
+                    Else Value = <span key="Execute.Rule.@Elsevalue"></span>
+                </span>
+                <br>
+            </td>
+
+            <td class="col-sm-2" key="impact"></td>
+            <td class="col-sm-2">
+                <span key="onError.@action"></span>
+                <span> = </span>
+                <span key="onError.@value"></span>
+            </td>
+        </tr>
+    </script>
+</div>

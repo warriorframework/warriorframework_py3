@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<Testcase>
+        <Details>
+            <Name>Untitled</Name>
+            <Title/>
+            <Category/>
+            <State>New</State>
+            <Engineer/>
+            <Date/>
+            <Time/>
+            <default_onError action="next" value=""/>
+            <InputDataFile/>
+            <Datatype>Custom</Datatype>
+            <Logsdir/>
+            <Resultsdir/>
+            <ExpectedResults/>
+        </Details>
+       <Requirements>
+                <Requirement/>
+       </Requirements>
+</Testcase>

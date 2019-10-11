@@ -1,0 +1,30 @@
+{% load staticfiles %}
+
+	<h1>
+		<img src="{% static 'core/images/logo.png' %}" width=30 height=30>
+		WARRIOR
+	</h1>
+	<div class="header-icon-container">
+			<div class="header-icon"><i class="fa fa-info" katana-click onclick="$('#about_us_modal').modal('show');"></i></i></div>
+	</div>
+
+	{% if user.is_authenticated %}
+	<div class="quick-user" katana-click="katana.toggleActiveGlobal" >		
+		<div class="profile-image image" style="background-image: url({{ userData.Base64image }})"></div>
+		<div class="hidden-menu">
+			<ul>
+				{% if user.is_authenticated %}
+				<li>Hello, {{ user.first_name|default:user.username }}</li>
+				<li onclick="location.href='/katana/accounts/profile';">Profile Settings</li>
+				{% if user.is_staff %}
+				<li onclick="location.href='/admin';">Admin Page</li>
+				{% endif %}
+				<li katana-click="katana.userAuth.logout" url="/katana/logout" id="warrior_logout">Logout</li>
+				{% else %}
+				<li>You are not logged in.</li>
+				<li onclick="location.href='/katana/login';">Logout</li>
+				{% endif %}
+			</ul>
+		</div>
+	</div>
+	{% endif %}

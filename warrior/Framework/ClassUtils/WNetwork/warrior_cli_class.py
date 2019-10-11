@@ -31,6 +31,8 @@ from Framework.Utils.list_Utils import get_list_by_separating_strings
 from Framework.Utils.data_Utils import get_object_from_datarepository
 from WarriorCore.Classes.warmock_class import mocked
 from timeit import itertools
+from Framework.Utils.config_Utils import data_repository
+from WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 """ Module for performing CLI operations """
 
@@ -212,6 +214,8 @@ class WarriorCli(object):
             pNote(stepdesc)
             n = 0
             for commands in command_list:
+                if details_dict["logmsg_list"][n] and details_dict["logmsg_list"][n].lower() == "false":
+                    commands = "**************"
                 pNote("Command #{0}\t: {1}".format((n+1), commands))
                 n = n + 1
             intsize = len(command_list)
@@ -223,7 +227,8 @@ class WarriorCli(object):
                 print_info("")
                 print_debug(">>>")
                 command = details_dict["command_list"][i]
-                pNote("Command #{0}\t: {1}".format(str(i+1), command))
+                if not details_dict["logmsg_list"][i] or details_dict["logmsg_list"][i].lower() != "false":
+                    pNote("Command #{0}\t: {1}".format(str(i+1), command))
                 new_obj_session, td_sys, details_dict, session_id = \
                     self._get_obj_session(details_dict, system_name, index=i, sess_id=True)
                 if new_obj_session:
@@ -237,7 +242,8 @@ class WarriorCli(object):
                     resp_session_id = session_id + "_td_response"
 
                     td_resp_dict = self.update_resp_ref_to_repo(details_dict, resp_key_list, i,
-                                                                key, td_resp_dict, resp_session_id)
+                                                                key, td_resp_dict, resp_session_id,
+                                                                result)
 
                     result = (result and rspRes) if "ERROR" not in (result, rspRes) else "ERROR"
                     print_debug("<<<")
@@ -251,11 +257,15 @@ class WarriorCli(object):
                     result = "ERROR"
                     finalresult = "ERROR"
                 finalresult = finalresult and result
+                if details_dict["return_on_fail_list"][i] and (result == "ERROR" or result is False):
+                    if details_dict["return_on_fail_list"][i].lower() == "yes":
+                        pNote("skipping remaining commands, if exists")
+                        break;
             responses_dict[key] = {k: v for d in resp_key_list for k, v in d.items()}
         return finalresult, td_resp_dict
 
     def update_resp_ref_to_repo(self, details_dict, resp_key_list, i,
-                                title_row, td_resp_dict, session_id):
+                                title_row, td_resp_dict, session_id, status=True):
         """
         Updates the response reference in appropriate session_id.
         There are two cases:
@@ -274,11 +284,14 @@ class WarriorCli(object):
                     # title_row value to td_resp_dict
                     td_resp_dict[title_row] = {}
                 # updates td_resp_dict with the key and value
-                temp_resp = {resp: resp_key_list[i][resp]}
+                status = {True: "PASS", False: "FAIL", "ERROR": "ERROR"}.get(status)
+                temp_resp = {resp: resp_key_list[i][resp], resp+"_status": status,
+                             resp+"_command": details_dict["command_list"][i]}
                 td_resp_dict[title_row].update(temp_resp)
-                pNote("Portion of response saved to the data "
-                      "repository with key: '{0}.{1}.{2}' and value: '{3}'"
-                      .format(session_id, title_row, resp, temp_resp[resp]))
+                if not details_dict["logmsg_list"][i] or details_dict["logmsg_list"][i].lower() != "false":
+                    pNote("Portion of response saved to the data "
+                          "repository with key: '{0}.{1}.{2}' and value: '{3}'"
+                          .format(session_id, title_row, resp, temp_resp[resp]))
         except Exception as e:
             print_error("Found exception: {}".format(e))
             print_error("Check if the key list below is not empty and the keys are proper")
@@ -296,9 +309,13 @@ class WarriorCli(object):
             startprompt = kwargs.get('startprompt', ".*")
             endprompt = kwargs.get('endprompt', None)
             cmd_timeout = kwargs.get('cmd_timeout', None)
+            log = kwargs.get('log', "true")
+            sleep_before = kwargs.get('sleep_before', None)
             result, response = self.conn_obj.send_command(command, startprompt,
                                                           endprompt,
-                                                          cmd_timeout)
+                                                          cmd_timeout,
+                                                          sleep_before=sleep_before,
+                                                          log=log)
         return result, response
 
     @staticmethod
@@ -320,6 +337,7 @@ class WarriorCli(object):
         resp_pat_req = details_dict["resp_pat_req_list"][index]
         resp_keys = details_dict["resp_key_list"][index]
         inorder = details_dict["inorder_resp_ref_list"][index]
+        resp_pat_key = details_dict["resp_pat_key_list"][index]
         status = True
         if inorder is not None and inorder.lower().startswith("n"):
             inorder = False
@@ -329,6 +347,7 @@ class WarriorCli(object):
         resp_req = {None: 'y', '': 'y',
                     'no': 'n', 'n': 'n'}.get(str(resp_req).lower(), 'y')
         resp_ref = {None: str(index+1), '': str(index+1)}.get(resp_ref, str(resp_ref))
+        resp_pat_key = {None: str(index + 1), '': str(index + 1)}.get(resp_pat_key, str(resp_pat_key))
         if not resp_req == "n":
             save_msg1 = "User has requested saving response"
             save_msg2 = "Response pattern required by user is : {0}"
@@ -341,10 +360,14 @@ class WarriorCli(object):
                 response = reobj.group(0) if reobj is not None else ""
                 temp_resp_dict = {resp_ref: response}
                 resp_key_list.append(temp_resp_dict)
+                # storing the value and expected output in data repository 
+                resp_key_dict = {resp_pat_key: response}
+                data_repository.update(resp_key_dict)
                 pNote(save_msg1+'.')
                 pNote(save_msg2.format(resp_pat_req))
             elif resp_keys is not None:
                 keys = resp_ref.split(',')
+                resp_pat_list = resp_pat_key.split(',')
                 # get the patterns from pattern entries in testdata file
                 patterns = []
                 # error out if any of the key element can not be retrieved
@@ -376,6 +399,10 @@ class WarriorCli(object):
                         # update resp_key_list with resp_ref keys and
                         # their corresponding matched patterns
                         resp_key_list.append(dict(list(zip(keys, grps))))
+                        # To process multiple pattern values from testdata
+                        for resp, grps in zip(patterns, resp_pat_list):
+                            resp_key_dict = {grps: resp}
+                            data_repository.update(resp_key_dict)
                         pNote(save_msg2.format(pattern))
                     else:
                         print_error("inorder search of patterns in response "
@@ -391,6 +418,12 @@ class WarriorCli(object):
                         presponse = reobj.group(0) if reobj is not None else ""
                         temp_resp_key_list.append(presponse)
                         pNote(save_msg2.format(pattern))
+                        # To process multiple values from testdata
+                        for resp, pattern in zip(resp_pat_list, patterns):
+                            reobj = re.search(pattern, response)
+                            presponse = reobj.group(0) if reobj is not None else ""
+                            resp_key_dict = {resp: presponse}
+                            data_repository.update(resp_key_dict)
                     resp_key_list.append(dict(list(zip(keys, temp_resp_key_list))))
             else:
                 temp_resp_dict = {resp_ref: response}
@@ -564,6 +597,7 @@ class WarriorCli(object):
         resp_ref = details_dict["resp_ref_list"][index]
         resp_req = details_dict["resp_req_list"][index]
         resp_pat_req = details_dict["resp_pat_req_list"][index]
+        resp_pat_key = details_dict["resp_pat_key_list"][index]
         verify_on_list = details_dict["verify_on_list"][index]
         log_list = details_dict["log_list"][index]
         inorder_search = details_dict["inorder_search_list"][index]
@@ -571,14 +605,17 @@ class WarriorCli(object):
         operator = details_dict["operator_list"][index]
         cond_value = details_dict["cond_value_list"][index]
         cond_type = details_dict["cond_type_list"][index]
+        sleeptime_before_match = details_dict["sleeptime_before_match_list"][index]
         unique_log_verify_list = self.get_unique_log_and_verify_list(
             log_list, verify_on_list, system_name)
+        log = details_dict["logmsg_list"][index] or "true"
 
         startprompt = {None: ".*", "": ".*"}.get(startprompt, str(startprompt))
         resp_req = {None: 'y', '': 'y',
                     'no': 'n', 'n': 'n'}.get(str(resp_req).lower(), 'y')
         resp_ref = {None: index+1, '': index+1}.get(resp_ref, str(resp_ref))
         resp_pat_req = {None: ""}.get(resp_pat_req, str(resp_pat_req))
+        resp_pat_key = {None: index + 1, '': index + 1}.get(resp_pat_key, str(resp_pat_key))
         sleeptime = {None: 0, "": 0, "none": 0, False: 0, "false": 0}.get(
             str(sleeptime).lower(), str(sleeptime))
         sleeptime = int(sleeptime)
@@ -588,14 +625,14 @@ class WarriorCli(object):
             inorder_search = True
         else:
             inorder_search = False
-
-        pNote("Startprompt\t: {0}".format(startprompt))
-        pNote("Endprompt\t: {0}".format(endprompt))
-        pNote("Sleeptime\t: {0}".format(sleeptime))
-        pNote("Response required: {0}".format(resp_req))
-        pNote("Response reference: {0}".format(resp_ref))
-        pNote("Response pattern required: {0}".format(resp_pat_req))
-
+        if log is None or log.lower() != "false":
+            pNote("Startprompt\t: {0}".format(startprompt))
+            pNote("Endprompt\t: {0}".format(endprompt))
+            pNote("Sleeptime\t: {0}".format(sleeptime))
+            pNote("Response required: {0}".format(resp_req))
+            pNote("Response reference: {0}".format(resp_ref))
+            pNote("Response pattern required: {0}".format(resp_pat_req))
+            pNote("Response pattern key: {0}".format(resp_pat_key))
         if not command:
             pNote("Received a boolean False or None type instead of a string "
                   "command, Command not provided or Variable substitution for "
@@ -612,12 +649,17 @@ class WarriorCli(object):
             result, response = self._send_cmd(startprompt=startprompt,
                                               endprompt=endprompt,
                                               command=command,
-                                              cmd_timeout=cmd_timeout)
+                                              cmd_timeout=cmd_timeout,
+                                              sleep_before=sleeptime_before_match,
+                                              log=log)
 
         if sleeptime > 0:
-            pNote("Sleep time of '{0} seconds' requested post command "
+            if not WarriorCliClass.mock:
+                pNote("Sleep time of '{0} seconds' requested post command "
                   "execution".format(sleeptime))
-            Utils.datetime_utils.wait_for_timeout(sleeptime)
+                Utils.datetime_utils.wait_for_timeout(sleeptime)
+            else:
+                pNote("Sleep time is skipped because as it is running in mock mode")
 
         try:
             remote_resp_dict = self.get_response_dict(
@@ -640,7 +682,7 @@ class WarriorCli(object):
                     result = Utils.data_Utils.verify_resp_across_sys(
                         verify_text_list, verify_context_list, command,
                         response, varconfigfile, verify_on_list_as_list,
-                        verify_list, remote_resp_dict, endprompt, verify_group)
+                        verify_list, remote_resp_dict, endprompt, verify_group, log)
         command_status = {True: "PASS", False: "FAIL", "ERROR": "ERROR"}.get(
             result)
         pNote("COMMAND STATUS:{0}".format(command_status))
@@ -1221,7 +1263,6 @@ class ParamikoConnect(object):
         try:
             start_time = Utils.datetime_utils.get_current_timestamp()
             pNote("[{0}] Sending Command: {1}".format(start_time, command))
-
             stdin, stdout, stderr = self.target_host.\
                 exec_command(command, get_pty=get_pty)
 
@@ -1548,10 +1589,15 @@ class PexpectConnect(object):
             boolprompt = -1
         if boolprompt == 0:
             start_time = Utils.datetime_utils.get_current_timestamp()
-            pNote("[{0}] Sending Command: {1}".format(start_time, command))
+            if kwargs.get("log", "true") != "false":
+                pNote("[{0}] Sending Command: {1}".format(start_time, command))
             WarriorCli._send_cmd_by_type(self.target_host, command)
             try:
                 while True:
+                    if kwargs.get("sleep_before", None):
+                        pNote("Sleeping for {0} seconds before match" \
+                            .format(kwargs["sleep_before"]))
+                        time.sleep(int(kwargs["sleep_before"]))
                     result = self.target_host.expect([end_prompt,
                                                       self.pexpect.EOF,
                                                       self.pexpect.TIMEOUT]) \
@@ -1592,7 +1638,7 @@ class PexpectConnect(object):
                             tstamp = Utils.datetime_utils.\
                                 get_current_timestamp()
                         cmd_timedout = True
-                        status = "ERROR"  
+                        status = "ERROR"
                         tdelta = Utils.datetime_utils.get_time_delta(tstamp)
                         if int(tdelta) >= 60:
                             msg = "[{0}] Did not find end prompt '{1}' even " \
@@ -1607,8 +1653,14 @@ class PexpectConnect(object):
                 print_exception(exception)
             else:
                 response = self.target_host.before.decode('utf-8')
-                response = response + self.target_host.after.decode('utf-8')
-                pNote("Response:\n{0}\n".format(response))
+                # When the command gets timed out, the pexpect.TIMEOUT exception
+                # will be raised and it is set to the after property of spawn object
+                if self.target_host.after == self.pexpect.TIMEOUT:
+                    pNote("EXCEPTION !! Command Timed Out", 'error')
+                else:
+                    response = response + self.target_host.after.decode('utf-8')
+                if kwargs.get("log", "true") != "false":
+                    pNote("Response:\n{0}\n".format(response))
                 pNote(msg, "debug")
                 if status is True:
                     duration = Utils.datetime_utils.get_time_delta(start_time,

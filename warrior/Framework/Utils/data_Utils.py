@@ -49,6 +49,7 @@ cmd_params = OrderedDict([("command_list", "send"),
                           ("resp_ref_list", "resp_ref"),
                           ("resp_req_list", "resp_req"),
                           ("resp_pat_req_list", "resp_pat_req"),
+                          ("resp_pat_key_list", "resp_pat_key"),
                           ("resp_key_list", "resp_keys"),
                           ("inorder_resp_ref_list", "inorder_resp_ref"),
                           ("log_list", "monitor"),
@@ -58,8 +59,10 @@ cmd_params = OrderedDict([("command_list", "send"),
                           ("operator_list", "operator"),
                           ("cond_value_list", "cond_value"),
                           ("cond_type_list", "cond_type"),
-                          ("repeat_list", "repeat")])
-
+                          ("repeat_list", "repeat"),
+                          ("sleeptime_before_match_list", "sleep_before_match"),
+                          ("return_on_fail_list", "return_on_fail"),
+                          ("logmsg_list", "log")])
 
 def get_nc_request_rpc_string(config_datafile, xmlns, request_type, xmlns_tag):
     """
@@ -224,9 +227,8 @@ def get_credentials(datafile, system_name, myInfo=[], tag_name="system",
                         for child in child_list:
                             cred_value[child.tag] = child.text
                             if 'wtype' in child.attrib:
-                                cred_value[child.tag] = get_actual_cred_value(
-                                                        child.tag, child.text,
-                                                        child.attrib['wtype'], startdir)
+                                cred_value[child.tag] = get_actual_cred_value(child.tag, child.text,
+                                                                              child.attrib['wtype'], startdir)
                     else:
                         cred_value = get_cred_value_from_elem(element, x, startdir)
                 output_dict[x] = cred_value
@@ -330,7 +332,6 @@ def update_datarepository(input_dict):
     data_repository = config_Utils.data_repository
     data_repository.update(input_dict)
 
-
 def get_object_from_datarepository(object_key, verbose=True):
     """ Gets the value for the object with the provided name from data repository.
     object_key contains .(dot) will be treated as nested key """
@@ -366,7 +367,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
         print_info("Resolving testdata details from DB system - "
                    "'{}'".format(testdatafile.get('td_system')))
         db_td_obj = database_utils_class.create_database_connection(
-                        'dataservers', testdatafile.get('td_system'))
+            'dataservers', testdatafile.get('td_system'))
         root = db_td_obj.get_tdblock_as_xmlobj(testdatafile)
 
         # if testdata block in the datafile has separate db system
@@ -375,7 +376,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             print_info("Resolving testdata-global block from DB system - "
                        "'{}'".format(testdatafile.get('global_system')))
             db_tdglobal_obj = database_utils_class.create_database_connection(
-                                'dataservers', testdatafile.get('global_system'))
+                'dataservers', testdatafile.get('global_system'))
             global_obj = db_tdglobal_obj.get_globalblock_as_xmlobj(testdatafile)
             db_tdglobal_obj.close_connection()
         else:
@@ -392,7 +393,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
         print_info("Resolving varconfig details from DB system - "
                    "'{}'".format(varconfigfile.get('var_system')))
         db_var_obj = database_utils_class.create_database_connection(
-                        'dataservers', varconfigfile.get('var_system'))
+            'dataservers', varconfigfile.get('var_system'))
         varconfigfile = db_var_obj.get_varblock_as_xmlobj(varconfigfile)
         db_var_obj.close_connection()
 
@@ -408,17 +409,20 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             start_pat = _get_pattern_list(testdata, global_obj)
             end_pat = _get_pattern_list(testdata, global_obj, pattern="end")
             details_dict = sub_from_env_var(details_dict, start_pat, end_pat)
+            iter_number = get_object_from_datarepository("loop_iter_number")
+            if iter_number is not None:
+                details_dict = sub_from_loop_json(details_dict, iter_number, start_pat, end_pat)
 
             print_info("var_sub:{0}".format(var_sub))
             td_obj = TestData()
             details_dict = td_obj.varsub_varconfig_substitutions(
-                            details_dict, vc_file=None, var_sub=var_sub,
-                            start_pat=start_pat, end_pat=end_pat)
+                details_dict, vc_file=None, var_sub=var_sub, start_pat=start_pat, end_pat=end_pat)
 
             details_dict = td_obj.wdf_substitutions(details_dict, datafile,
                                                     kw_system_name=system_name)
             details_dict = sub_from_env_var(details_dict)
             details_dict = sub_from_data_repo(details_dict)
+            details_dict = sub_from_loop_json(details_dict, iter_number)
 
             td_iter_obj = TestDataIterations()
             details_dict, cmd_loc_list = td_iter_obj.resolve_iteration_patterns(details_dict)
@@ -426,8 +430,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             # List substitution happens after iteration because
             # list sub cannot recognize the + sign in iteration
             cmd_list_substituted, verify_text_substituted = td_obj.list_substitution_precheck(
-                                                                varconfigfile, details_dict,
-                                                                start_pat, end_pat)
+                varconfigfile, details_dict, start_pat, end_pat)
             td_obj.list_substitution(details_dict, varconfigfile, cmd_list_substituted,
                                      verify_text_substituted, start_pat, end_pat)
 
@@ -813,13 +816,14 @@ def get_verify_text_context_as_list(testdata, verify_list):
 def verify_resp_across_sys(match_list, context_list, command,
                            response, varconfigfile=None, verify_on_list=None,
                            verify_list=None, remote_resp_dict=None,
-                           endprompt="", verify_group=None):
+                           endprompt="", verify_group=None, log="true"):
     """ New method to verify response of a command
     sent on one system with the response recieved from
     another system """
 
     msg = ("Verification required for command: '{0}' ".format(command))
-    testcase_Utils.pNote(msg, "debug")
+    if log != "false":
+        testcase_Utils.pNote(msg, "debug")
 
     status = True
     for i in range(0, len(verify_on_list)):
@@ -837,7 +841,7 @@ def verify_resp_across_sys(match_list, context_list, command,
                 data = remote_resp_dict[verify_on_list[i][j]]
                 tmp_status = verify_cmd_response([match_list[i]], [context_list[i]], command,
                                                  data, verify_on_list[i][j], varconfigfile,
-                                                 endprompt, verify_group)
+                                                 endprompt, verify_group, log)
                 status = status and tmp_status
             except KeyError:
                 print_error("Response could not be collected for {0}, hence, "
@@ -851,15 +855,15 @@ def get_no_impact_logic(context_str):
     """Get the silent tag from context
     return silence value and context value"""
     value = {
-              'YES:NOIMPACT': (True, 'YES'),
-              'YES': (False, 'YES'),
-              'Y:NOIMPACT': (True, 'YES'),
-              'Y': (False, 'YES'),
-              'NO:NOIMPACT': (True, 'No'),
-              'NO': (False, 'No'),
-              'N:NOIMPACT': (True, 'No'),
-              'N': (False, 'No'),
-            }.get(context_str.upper(), False)
+        'YES:NOIMPACT': (True, 'YES'),
+        'YES': (False, 'YES'),
+        'Y:NOIMPACT': (True, 'YES'),
+        'Y': (False, 'YES'),
+        'NO:NOIMPACT': (True, 'No'),
+        'NO': (False, 'No'),
+        'N:NOIMPACT': (True, 'No'),
+        'N': (False, 'No'),
+    }.get(context_str.upper(), False)
 
     return value
 
@@ -882,7 +886,7 @@ def convert2type(value, data_type='str'):
 @mocked
 def verify_cmd_response(match_list, context_list, command, response,
                         verify_on_system, varconfigfile=None, endprompt="",
-                        verify_group=None):
+                        verify_group=None, log="true"):
     """Verifies the response with the provided
     match and context list
     """
@@ -948,18 +952,19 @@ def verify_cmd_response(match_list, context_list, command, response,
                                          "would not impact command status")
                 else:
                     result = False
-            if pattern_match is True and found is True:
-                print_info(msg .format(match_list[i], command, verify_on_system,
-                                       "Yes", "verification Passed"))
-            elif pattern_match is True and found is False:
-                print_debug(msg .format(match_list[i], command, verify_on_system,
-                                        "No", "verification Failed"))
-            elif pattern_match is False and found is True:
-                print_debug(msg .format(match_list[i], command, verify_on_system,
-                                        "Yes", "verification Failed"))
-            elif pattern_match is False and found is False:
-                print_info(msg .format(match_list[i], command, verify_on_system,
-                                       "No", "verification Passed"))
+            if log != "false":
+                if pattern_match is True and found is True:
+                    print_info(msg .format(match_list[i], command, verify_on_system,
+                                           "Yes", "verification Passed"))
+                elif pattern_match is True and found is False:
+                    print_debug(msg .format(match_list[i], command, verify_on_system,
+                                            "No", "verification Failed"))
+                elif pattern_match is False and found is True:
+                    print_debug(msg .format(match_list[i], command, verify_on_system,
+                                            "Yes", "verification Failed"))
+                elif pattern_match is False and found is False:
+                    print_info(msg .format(match_list[i], command, verify_on_system,
+                                           "No", "verification Passed"))
         elif context_list[i] and match_list[i] == "":
             noiimpact, found = get_no_impact_logic(context_list[i])
             found = string_Utils.conv_str_to_bool(found)
@@ -975,7 +980,7 @@ def verify_cmd_response(match_list, context_list, command, response,
             verification_text = "verification "
             verification_text += "success" if result else "failed"
             msg = "Response " if found else "No response "
-            msg += "found from command '{0}' on {2} :[{1}]:".format(
+            msg += "found from command '{0}' on {2} :[{1}]:".format(\
                             command, verification_text, verify_on_system)
             testcase_Utils.pNote(msg)
         else:
@@ -1030,8 +1035,12 @@ def verify_data(expected, key, data_type='str', comparison='eq'):
         'gt': lambda x, y: x > y,
         'ge': lambda x, y: x >= y,
         'lt': lambda x, y: x < y,
-        'le': lambda x, y: x <= y
+        'le': lambda x, y: x <= y,
+        're.match': lambda x, y: re.match(y, x),
+        're.search': lambda x, y: re.search(y, x)
     }
+    if comparison == 're.match' or comparison == 're.search':
+        data_type = 'str'
     result, err_msg, exp = validate()
     value = get_object_from_datarepository(key)
     key_err_msg = "In the given key '{0}', '{1}' is not present in data repository"
@@ -1491,29 +1500,6 @@ def verify_inorder_cmd_response(match_list, verify_list, system, command,
     return status
 
 
-def get_cse_script_args_string(datafile, system_name):
-    """Form the argument string for the CSE script from the arguments
-    provided in datafile"""
-    args_string = False
-    tag_value = get_child_tag_value_list(datafile, system_name, ['Arguments'])
-
-    if tag_value is not False:
-        tag_list = tag_value[0]
-        value_list = tag_value[1]
-        script_args_list = []
-        x = len(tag_list)
-        for x in range(0, x):
-            attr = '-' + tag_list[x]
-            value = value_list[x]
-            script_args_list.append(attr)
-            if value is None:
-                value = ''
-            script_args_list.append(value)
-        args_string = ' '.join(script_args_list)
-
-        return args_string
-
-
 def evaluate_tc_argument_value(element):
     """ Splits the value of the attribute value in the argument tag in the TC
     """
@@ -1641,7 +1627,7 @@ def get_filepath_from_system(datafile, system_name, *args):
     return abspath_lst
 
 
-def get_var_by_string_prefix(string):
+def get_var_by_string_prefix(string, iter_number=None):
     """Get value from Environment variable or data repo
     """
     if string.startswith("ENV."):
@@ -1649,10 +1635,15 @@ def get_var_by_string_prefix(string):
     if string.startswith("REPO."):
         keys = string.split('.', 1)
         return get_object_from_datarepository(keys[1])
+    if string.startswith("LOOP."):
+        keys = string.split('.', 1)
+        loop_json = get_object_from_datarepository('loop_json')
+        value = loop_json[iter_number][keys[1]]
+        return str(value)
 
 
 def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
-                                 end_pattern="}", prefix="ENV"):
+                                 end_pattern="}", prefix="ENV", iter_number=None):
     """Takes a key value pair or string (value) as input in raw_value,
         if the value has a pattern matching ${ENV.env_variable_name}.
     Searches for the env_variable_name in the environment and replaces
@@ -1668,7 +1659,7 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
     source could be environment or datarepository for now.
     """
     error_msg1 = ("Could not find any %s variable {0!r} corresponding to {1!r}"
-                  " provided in input data/testdata file.\nWill default to "
+                  " provided in input data/testdata/loopjson file.\nWill default to "
                   "None") % (prefix)
     error_msg2 = ("Unable to substitute %s variable {0!r} corresponding to "
                   "{1!r} provided in input data/testdata file.\nThe value "
@@ -1688,11 +1679,11 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                         if isinstance(raw_value[k], str):
                             raw_value[k] = raw_value[k].replace(
                                 start_pattern+string+end_pattern,
-                                get_var_by_string_prefix(string))
+                                get_var_by_string_prefix(string, iter_number))
                         elif isinstance(raw_value[k], (list, dict)):
                             raw_value[k] = str(raw_value[k]).replace(
-                                    start_pattern+string+end_pattern,
-                                    get_var_by_string_prefix(string))
+                                start_pattern+string+end_pattern,\
+                                get_var_by_string_prefix(string, iter_number))
                             raw_value[k] = ast.literal_eval(raw_value[k])
                         else:
                             print_error("Unsupported format - " +
@@ -1720,7 +1711,7 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                             raw_value[k] = tuc_obj.rem_nonprintable_ctrl_chars(raw_value[k])
                             raw_value[k] = ast.literal_eval(raw_value[k])
                         except Exception as exc:
-                            print_error("Error - " + error_msg2.format(
+                            print_error("Error - " + error_msg2.format(\
                                         string, value, raw_value[k], exc))
     elif isinstance(raw_value, str):
         extracted_var = string_Utils.return_quote(str(raw_value),
@@ -1731,11 +1722,10 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
             for string in extracted_var:
                 try:
                     raw_value = raw_value.replace(start_pattern+string+end_pattern,
-                                                  get_var_by_string_prefix(string))
+                                                  get_var_by_string_prefix(string, iter_number))
                 except KeyError:
                     print_error(error_msg1.format(string, raw_value))
                     raw_value = None
-
     return raw_value
 
 
@@ -1750,6 +1740,11 @@ def sub_from_data_repo(raw_value, start_pattern="${", end_pattern="}"):
     return subst_var_patterns_by_prefix(raw_value, start_pattern, end_pattern,
                                         "REPO")
 
+def sub_from_loop_json(raw_value, iter_number, start_pattern="${", end_pattern="}"):
+    """wrapper function for subst_var_patterns_by_prefix"""
+    return subst_var_patterns_by_prefix(raw_value, start_pattern, end_pattern,
+                                        prefix="LOOP", iter_number=iter_number)
+
 
 def substitute_var_patterns(raw_value, start_pattern="${", end_pattern="}"):
     """substitute variable inside start and end pattern
@@ -1759,7 +1754,7 @@ def substitute_var_patterns(raw_value, start_pattern="${", end_pattern="}"):
                 'REPO': ('data repository', get_object_from_datarepository)}
     error_msg = ("Could not find any {0} variable {1!r} corresponding to {2!r}"
                  " provided in input data/testdata file.\nWill default to None"
-                 )
+                )
     if raw_value is None:
         return raw_value
     elif isinstance(raw_value, str):
@@ -1788,7 +1783,7 @@ def substitute_var_patterns(raw_value, start_pattern="${", end_pattern="}"):
     else:
         print_error("Unsupported format - raw_value should either be a string,"
                     " list or dictionary")
-        print_error("raw_value: #{}# and its type is {}".format(
+        print_error("raw_value: #{}# and its type is {}".format(\
                                     raw_value, type(raw_value)))
     return raw_value
 
@@ -1908,14 +1903,14 @@ def get_nc_config_string(config_datafile, config_name, var_configfile=None):
                 for filepath in filepath_list:
                     if filepath:
                         rel_path = filepath.firstChild.data
-                        abs_filepath = file_Utils.getAbsPath(
+                        abs_filepath = file_Utils.getAbsPath(\
                                         rel_path, os.path.dirname(config_datafile))
                         root = xml_Utils.get_document_root(abs_filepath)
                         config_node = xml_Utils.get_child_with_matching_tag(root, "config")
                         if config_node:
                             configuration = xml_Utils.convert_dom_to_string(config_node)
                             if var_configfile:
-                                configuration = sub_from_varconfigfile(
+                                configuration = sub_from_varconfigfile(\
                                                     configuration, var_configfile)
                             configuration_list.append(configuration)
                         else:
@@ -1924,7 +1919,7 @@ def get_nc_config_string(config_datafile, config_name, var_configfile=None):
 
                 if not filepath_list:
                     testcase_Utils.pNote("neither <config> nor a file containing <config> provided"
-                                         " for the config_data = {0} in config file = {1}".format(
+                                         " for the config_data = {0} in config file = {1}".format(\
                                                             config_name, config_datafile), "error")
                     status = "error"
         else:
@@ -2139,3 +2134,13 @@ def generate_datafile(lists_of_systems, output_dir, filename):
             fd.write(xml_Utils.convert_element_to_string(root))
             result.append(output_file)
     return result
+
+
+def set_gnmi_cert_params(p_dic):
+    """
+    Set the data params for GNMI
+    """
+    ca_crt = p_dic['ca_crt']
+    client_crt = p_dic['client_crt']
+    client_key = p_dic['client_key']
+    return ca_crt, client_crt, client_key

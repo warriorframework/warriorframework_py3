@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+<TestSuite>
+	<Details>
+		<Name>TS_microservices_host_operations</Name>
+		<Title>TS Docker or Kubernetes Operations</Title>
+		<Engineer>Satya</Engineer>
+		<Date>07/09/2018</Date>
+		<Time>13:52:26</Time>
+		<type exectype="sequential_testcases"/>
+		<default_onError action="next"/>
+		<Resultsdir/>
+	</Details>
+	<Requirements>
+		<Requirement></Requirement>
+	</Requirements>
+	<Testcases>
+		<Testcase>
+			<path>../../testcases/TC_microservices_host_docker_operations.xml</path>
+			<context>positive</context>
+			<runtype>sequential_keywords</runtype>
+			<onError action="abort"/>
+			<impact>impact</impact>
+			<Execute ExecType="If">
+				<Rule Condition="host.deployment_environment" Condvalue="docker"></Rule>
+			</Execute>
+		</Testcase>
+		<Testcase>
+			<path>../../testcases/TC_microservices_host_kubernetes_operations.xml</path>
+			<context>positive</context>
+			<runtype>sequential_keywords</runtype>
+			<onError action="abort"/>
+			<impact>impact</impact>
+			<Execute ExecType="If">
+				<Rule Condition="host.deployment_environment" Condvalue="kubernetes"></Rule>
+			</Execute>
+		</Testcase>
+    </Testcases>
+</TestSuite>

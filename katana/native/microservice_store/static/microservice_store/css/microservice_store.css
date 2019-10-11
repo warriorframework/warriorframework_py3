@@ -1,0 +1,401 @@
+.microservice.main{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.microservice.head{
+    width: 100%;
+    height: 6%;
+    position: relative;
+    background: #f5f5f6;
+    border-bottom: 2px solid grey;
+    #min-height: 50px;
+}
+
+.microservice.title_text{
+    padding-top: 15px;
+    padding-left: 1%;
+    color: #696969;
+    font-size: 18px;
+    #font-weight: bold;
+    height: 100%;
+    #width: 100%;
+    #line-height: 100%;
+    float: left;
+    #display: inline;
+}
+
+.microservice.save{
+    margin-top: 2px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+    margin-right: 1%;
+    #color: #696969;
+    color: white;
+    font-size: 16px;
+    float: right;
+    background-color: #4c4c4c;
+    border: 1px groove rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+.microservice.load{
+    margin-top: 2px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+    margin-right: 1%;
+    #color: #696969;
+    color: white;
+    font-size: 16px;
+    float: right;
+    background-color: #4c4c4c;
+    border: 1px groove rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.microservice.deploy{
+    margin-top: 2px;
+    padding-right: 10px;
+    padding-left: 10px;
+    padding-top: 13px;
+    padding-bottom: 13px;
+    margin-right: 1%;
+    #color: #696969;
+    color: white;
+    font-size: 16px;
+    float: right;
+    background-color: #4c4c4c;
+    border: 1px groove rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+}
+
+.microservice.deploy:hover{
+    color: white;
+    background-color: #247dba;
+}
+
+.microservice.body{
+    width: 100%;
+    height: 94%;
+    display: flex;
+    flex-direction: column;
+}
+
+.microservice-operations{
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+    flex: 0 0 auto;
+}
+
+.microservice.right_panel::-webkit-scrollbar{
+    width: 10px;
+}
+
+.microservice.right_panel::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2);
+}
+
+.microservice.right_panel::-webkit-scrollbar-thumb:window-inactive {
+	background: rgba(0, 0, 0, 0.2);
+}
+
+.microservice.left_panel{
+    width: 15%;
+    height: 100%;
+    border-right: 1px solid #ececed;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.microservice.right_panel{
+    width: 85%;
+    height: 100%;
+    overflow: auto;
+}
+
+.microservice.options div:first-child{
+    padding-bottom: 5px;
+    border-bottom: 1px solid #ececed;
+    cursor: default;
+    padding-left: 20px;
+}
+
+.microservice.options div{
+    color: #696969;
+    padding-top: 10px;
+    padding-bottom: 5px;
+    padding-left: 40px;
+    padding-right: 20px;
+    cursor: pointer;
+    margin-top: 2px;
+    display: block;
+    height: 35px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 16px;
+}
+
+.microservice.options div:hover{
+    border-right: 5px solid #247dba;
+    margin-right: -1px;
+    background-color: #ececed;
+}
+
+.microservice.options div:first-child:hover{
+    border-right: 1px solid #ececed;
+    margin-right: none;
+    background-color: #ffffff;
+}
+
+.microservice.options div.selected{
+    color: #247dba;
+    border-right: 5px solid #247dba;
+    margin-right: -1px;
+    background-color: #f0f0f0;
+}
+
+.microservice.options{
+    margin: 0;
+    padding: 0;
+}
+
+.microservice.section{
+    display: none;
+    margin-left: 30px;
+    margin-top: 20px;
+    color: #696969;
+    height: 100%;
+}
+
+.microservice input{
+    border-radius: 5px;
+    display: block;
+    width: 300px;
+    #border: none !important;
+    background: transparent;
+    #border-bottom: 1px solid #dcdcdc !important;
+}
+
+.microservice select{
+    border-radius: 5px;
+    display: block;
+    width: 300px;
+    #border: none !important;
+    background: transparent;
+    #border-bottom: 1px solid #dcdcdc !important;
+}
+
+table.microservice tr:nth-child(2) .form-group {
+    margin-top: 2.4rem;
+}
+
+.form-group {
+    position: relative;
+    margin-top: 1rem;
+}
+
+.form-control-placeholder {
+    position: absolute;
+    top: -5px;
+    padding: 0 0 0 5px;
+    transition: all 200ms;
+    opacity: 0.9;
+    font-size: 13px;
+}
+
+.form-control{
+    font-size: 13px;
+    color: #333;
+}
+
+.form-control:focus + .form-control-placeholder{
+    font-size: 16px;
+    transform: translate3d(0, -180%, 0);
+    opacity: 1;
+    color: #247dba;
+    padding: 0 0 0 0;
+}
+
+.form-control:valid + .form-control-placeholder {
+    font-size: 16px;
+    transform: translate3d(0, -180%, 0);
+    opacity: 1;
+    padding: 0 0 0 0;
+}
+
+.options-group {
+    position: relative;
+    #margin-top: 1rem;
+    height: 75px !important;
+    background: transparent;
+}
+
+.options-control-placeholder {
+    position: absolute;
+    #top: -5px;
+    #transition: all 200ms;
+    #opacity: 0.9;
+    #font-size: 13px;
+    margin-top: 0px !important;
+    display: inline;
+    #z-index: 99;
+    top: -50px;
+}
+
+input.options-control{
+    font-size: 13px;
+    color: #333;
+    margin-top: 10px;
+    border-radius: 0px;
+    border: none;
+    margin-left: 10px;
+    border-bottom: 1px solid #dcdcdc !important;
+}
+
+.options-control:focus{
+    border-bottom: 1px solid #247dba !important;
+}
+
+.microservice label{
+}
+
+.microservice-console{
+    width: 100%;
+    flex: 1 1 auto;
+    height: calc(50% - 37px);
+    overflow: auto;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-right: 0.5px solid grey;
+    border-top: 0.5px solid grey;
+    border-bottom: 0.5px solid grey;
+    border-left: 15px solid transparent;
+}
+
+.microservice-console::-webkit-scrollbar{
+    width: 10px;
+}
+
+.microservice-console::-webkit-scrollbar-thumb {
+    background: rgba(128,128,128,0.8);
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+}
+
+.microservice-console::-webkit-scrollbar-thumb:window-inactive {
+	background: rgba(128,128,128,0.4);
+}
+
+
+.microservice-tools button{
+    font-size: 11px;
+    width: 50px;
+    height: 29px;
+    cursor: pointer;
+    background: transparent;
+    color: white;
+    border: none;
+    margin-top: 2.5px;
+}
+
+.microservice-tools button:hover{
+    #background-color: #247dba;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 3px;
+}
+
+.microservice-tools{
+    height: 36px;
+    border-bottom: 0.5px solid grey;
+    border-top: 0.5px solid grey;
+    background: rgba(0, 0, 0, 0.8);
+    #position: relative;
+    text-align: right;
+    cursor: ns-resize;
+    flex: 0 0 auto;
+}
+
+.microservice-tools.console-title{
+    display: block;
+    float: left;
+    margin-left: 15px;
+    background: transparent;
+    color: white;
+    border: none;
+    font-size: 16px;
+    #font-weight: bold;
+    line-height: 35px;
+}
+
+table.microservice{
+    border-radius: 5px;
+    color: #696969;
+    padding-top: 10px;
+    margin-bottom: 30px;
+    width: 900px;
+}
+
+table.microservice tr.flag:last-child{
+    border-bottom: 1px solid #ececed;
+}
+
+table.microservice tr.flag{
+    height: 60px;
+    line-height: 60px;
+    border-left: 1px solid #ececed;
+    border-right: 1px solid #ececed;
+    cursor: pointer;
+}
+
+table.microservice tr.flag.head{
+    height: 50px;
+    line-height: 50px;
+    border: 1px solid #ececed;
+}
+
+table.microservice tr.flag:nth-child(even){
+    background: #ffffff;
+}
+
+table.microservice tr:first-child{
+    font-weight: bold;
+    border-bottom: 1px solid grey;
+    height: 30px;
+}
+
+table.microservice td{
+    #width: 350px;
+    text-align: left;
+}
+
+.microservice.host_details input{
+    width: 150px;
+    border-radius: 3px;
+    border: none;
+    border: 1px solid #dcdcdc !important;
+}
+
+.microservice.registry_details input{
+    width: 150px;
+    border-radius: 3px;
+    border: none;
+    border: 1px solid #dcdcdc !important;
+}
+
+table.microservice td span{
+    text-overflow: ellipsis;
+}
+
+.microservice.flag.textarea,
+.microservice.scripts.textarea{
+    color: #696969;
+    font-size: 14px;
+}

@@ -24,11 +24,13 @@ urlpatterns = [
     url(r'^katana/settings/', include('native.settings.urls')),
     url(r'^katana/wapp_management/', include('native.wapp_management.urls')),
     url(r'^katana/wappstore/', include('native.wappstore.urls')),
-    url(r'^katana/wdf/', include('wapps.wdf_edit.urls')),
-    url(r'^katana/projects/', include('wapps.projects.urls')),
-    url(r'^katana/suites/', include('wapps.suites.urls')),
-    url(r'^katana/cases/', include('wapps.cases.urls')),
-    url(r'^katana/execution/', include('wapps.execution.urls')),
+    url(r'^katana/microservice_store/', include('native.microservice_store.urls')),
     url(r'^katana/assembler/', include('wapps.assembler.urls')),
     url(r'^katana/cli_data/', include('wapps.cli_data.urls')),
+    url(r'^katana/suites/', include('wapps.suites.urls')),
+    url(r'^katana/cases/', include('wapps.cases.urls')),
+    url(r'^katana/wdf/', include('wapps.wdf_edit.urls')),
+    url(r'^katana/execution/', include('wapps.execution.urls')),
+    url(r'^katana/projects/', include('wapps.projects.urls')),
+    url(r'^katana/testwrapper/', include('wapps.testwrapper.urls'))
 ]

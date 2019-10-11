@@ -11,6 +11,14 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
+from . import settings_logging
+import wui.core.core_utils.core_settings as core_settings
+try:
+    import ldap
+    from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion, GroupOfNamesType
+except Exception as err:
+    print("Please install django auth ldap to authenticate against ldap")
+    print("Error while importing django auth ldap: \n", err)
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -26,6 +34,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -36,17 +45,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'wui.administration',
+    'wui.users',
     'wui.core',
     'native.wapp_management',
     'native.wappstore',
     'native.settings',
-    'wapps.projects',
-    'wapps.suites',
+    'native.microservice_store',
     'wapps.cases',
-    'wapps.execution',
-    'wapps.wdf_edit',
-    'wapps.assembler',
+    'wapps.suites',
     'wapps.cli_data',
+    'wapps.assembler',
+    'wapps.wdf_edit',
+    'wapps.execution',
+    'wapps.projects',
+    'wapps.testwrapper',
 ]
 
 MIDDLEWARE = [
@@ -57,6 +71,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'wui.users.middleware.UserExpiryMiddleware',
+    'wui.users.middleware.LoginRequiredMiddleware',
 ]
 
 ROOT_URLCONF = 'wui.urls'
@@ -64,7 +80,9 @@ ROOT_URLCONF = 'wui.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(BASE_DIR, 'wui', 'administration', 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -79,6 +97,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'wui.wsgi.application'
 
+# Django Rest Framework
+# https://www.django-rest-framework.org/api-guide/settings/
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+        'wui.users.rest_addons.IsNotExpiredPermission',
+    ),
+}
+
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
@@ -88,6 +119,59 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+# Authentication settings
+AUTH_USER_MODEL = 'users.User'
+LOGIN_URL = '/katana/login'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+MULTI_USER_SUPPORT = False
+USER_HOME_DIR_TEMPLATE = None
+
+# Logging
+settings_logging.BASE_DIR = BASE_DIR
+settings_logging.DEBUG = DEBUG
+LOGGING = settings_logging.get_log_config()
+
+# LDAP Settings (if available)
+CONFIG_FILE = os.path.join(BASE_DIR, 'wui', 'config.ini')
+
+
+try:
+    LOGGING['loggers']['django_auth_ldap'] = {
+        "level": "DEBUG",
+        "handlers": ["django_file", "console"],
+    }
+    ldap_settings = core_settings.LDAPSettings(CONFIG_FILE)
+    for config, value in ldap_settings.configs.items():
+        locals()[config.upper()] = value
+    if ldap_settings.enabled and not ldap_settings.errors:
+        AUTHENTICATION_BACKENDS = AUTHENTICATION_BACKENDS + ('django_auth_ldap.backend.LDAPBackend',)
+    if ldap_settings.errors:
+        print("Errors encountered during import of LDAP settings from", CONFIG_FILE)
+        print("Errors are:")
+        for k, v in ldap_settings.errors.items():
+            print("LDAP Attribute", k, "is", v)
+except Exception as ex:
+    print("Unexpected failure to import LDAP settings from", CONFIG_FILE)
+    print("Error encountered:\n", ex)
+
+
+#Mail Servers
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+try:
+    email_settings = core_settings.EMAILSettings(CONFIG_FILE)
+    for config, value in email_settings.configs.items():
+        locals()[config.upper()] = value
+except Exception as ex:
+    print("Unexpected failure to import Email settings from", CONFIG_FILE)
+    print("Error encountered:\n", ex)
+
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -106,6 +190,11 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+
+
+##
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/

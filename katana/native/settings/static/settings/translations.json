@@ -136,6 +136,11 @@
       "key": "engineer",
       "toolTip": "All testcase created/modified in this session will be tagged with this Engineer name",
       "translateTo": "Name of Engineer"
+    },
+    {
+      "key": "testwrapper",
+      "toolTip": "The testwrapper directory is where the XML files created by this application are stored.",
+      "translateTo": "Location of TestWrapper Files"
     }
   ]
 }

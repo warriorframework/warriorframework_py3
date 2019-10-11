@@ -42,6 +42,7 @@ CMD_PARAMS = OrderedDict([("command_list", "send"),
                           ("resp_ref_list", "resp_ref"),
                           ("resp_req_list", "resp_req"),
                           ("resp_pat_req_list", "resp_pat_req"),
+                          ("resp_pat_key_list", "resp_pat_key"),
                           ("resp_key_list", "resp_keys"),
                           ("inorder_resp_ref_list", "inorder_resp_ref"),
                           ("log_list", "monitor"),
@@ -52,6 +53,9 @@ CMD_PARAMS = OrderedDict([("command_list", "send"),
                           ("operator_list", "operator"),
                           ("cond_value_list", "cond_value"),
                           ("cond_type_list", "cond_type"),
+                          ("sleeptime_before_match_list", "sleep_before_match"),
+                          ("return_on_fail_list", "return_on_fail"),
+                          ("logmsg_list", "log"),
                           ("repeat_list", "repeat")])  # keep this in the last
 
 

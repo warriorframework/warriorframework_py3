@@ -15,11 +15,14 @@ import os
 import time
 import traceback
 import shutil
+from xml.etree import ElementTree
 import copy
 import glob
+from . import testcase_driver
 from . import sequential_testcase_driver
 from . import parallel_testcase_driver
 from WarriorCore.Classes import execution_files_class, junit_class
+from WarriorCore.Classes.jira_rest_class import Jira
 from WarriorCore.Classes.iterative_testsuite_class import IterativeTestsuite
 from WarriorCore import testsuite_utils, common_execution_utils
 import Framework.Utils as Utils
@@ -66,10 +69,19 @@ def get_suite_details(testsuite_filepath, data_repository, from_project,
     suite_name = Utils.xml_Utils.getChildTextbyParentTag(testsuite_filepath, 'Details', 'Name')
     suite_title = Utils.xml_Utils.getChildTextbyParentTag(testsuite_filepath, 'Details', 'Title')
     suite_exectype = testsuite_utils.get_exectype_from_xmlfile(testsuite_filepath)
+    suite_random_exec = Utils.xml_Utils.getChildTextbyParentTag(
+        testsuite_filepath, 'Details', 'random_tc_Execution')
     def_on_error_action = Utils.testcase_Utils.get_defonerror_fromxml_file(testsuite_filepath)
     def_on_error_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
                                                                       'Details',
                                                                       'default_onError', 'value')
+
+    if suite_random_exec:
+        if suite_random_exec.lower() == "true":
+            suite_random_exec = True
+        else:
+            suite_random_exec = False
+
     filename = os.path.basename(testsuite_filepath)
     nameonly = Utils.file_Utils.getNameOnly(filename)
     operating_system = sys.platform
@@ -127,6 +139,7 @@ def get_suite_details(testsuite_filepath, data_repository, from_project,
     suite_repository['junit_resultfile'] = junit_resultfile
     suite_repository['ws_results_execdir'] = ws_results_execdir
     suite_repository['ws_logs_execdir'] = ws_logs_execdir
+    suite_repository['suite_random_exec'] = suite_random_exec
     if data_file is not False:
         suite_repository['data_file'] = data_file
 
@@ -145,106 +158,6 @@ def report_suite_requirements(suite_repository, testsuite_filepath):
             ts_junit_object.add_requirement(req_id, suite_repository["wt_ts_timestamp"])
 
 
-def get_testcase_list(testsuite_filepath):
-    """Takes the location of any Testsuite xml file as input
-    Returns a list of all the Tescase elements present in the Testsuite
-
-    Arguments:
-    1. testsuite_filepath    = full path of the Testsuite xml file
-    """
-
-    testcase_list = []
-    root = Utils.xml_Utils.getRoot(testsuite_filepath)
-    testcases = root.find('Testcases')
-    if testcases is None:
-        print_info('Testsuite is empty: tag <Testcases> not found in the input Testsuite xml file ')
-    else:
-        new_testcase_list = []
-        orig_testcase_list = testcases.findall('Testcase')
-        for orig_tc in orig_testcase_list:
-            orig_tc_path = orig_tc.find('path').text
-            if '*' not in orig_tc_path:
-                new_testcase_list.append(orig_tc)
-            # When the file path has asterisk(*), get the Warrior XML testcase
-            # files matching the given pattern
-            else:
-                orig_tc_abspath = Utils.file_Utils.getAbsPath(
-                    orig_tc_path, os.path.dirname(testsuite_filepath))
-                print_info("Provided testcase path: '{}' has asterisk(*) in "
-                           "it. All the Warrior testcase XML files matching "
-                           "the given pattern will be executed.".format(orig_tc_abspath))
-                # Get all the files matching the pattern and sort them by name
-                all_files = sorted(glob.glob(orig_tc_abspath))
-                # Get XML files
-                xml_files = [fl for fl in all_files if fl.endswith('.xml')]
-                tc_files = []
-                # Get Warrior testcase XML files
-                for xml_file in xml_files:
-                    root = Utils.xml_Utils.getRoot(xml_file)
-                    if root.tag.upper() == "TESTCASE":
-                        tc_files.append(xml_file)
-                # Copy the XML object and set the filepath as path value for
-                # all the files matching the pattern
-                if tc_files:
-                    for tc_file in tc_files:
-                        new_tc = copy.deepcopy(orig_tc)
-                        new_tc.find('path').text = tc_file
-                        new_testcase_list.append(new_tc)
-                        print_info("Testcase: '{}' added to the execution "
-                                   "list ".format(tc_file))
-                else:
-                    print_warning("Asterisk(*) pattern match failed for '{}' due "
-                                  "to at least one of the following reasons:\n"
-                                  "1. No files matched the given pattern\n"
-                                  "2. Invalid testcase path is given\n"
-                                  "3. No testcase XMLs are available\n"
-                                  "Given path will be used for the Warrior "
-                                  "execution.".format(orig_tc_abspath))
-                    new_testcase_list.append(orig_tc)
-
-        # execute tc multiple times
-        for tc in new_testcase_list:
-            runmode, value, _ = common_execution_utils.get_runmode_from_xmlfile(tc)
-            retry_type, _, _, retry_value, _ = common_execution_utils.get_retry_from_xmlfile(tc)
-            if runmode is not None and value > 0:
-                # more than one step in step list, insert new step
-                if len(new_testcase_list) > 0:
-                    go_next = len(testcase_list) + value + 1
-                    for i in range(0, value):
-                        copy_tc = copy.deepcopy(tc)
-                        copy_tc.find("runmode").set("value", go_next)
-                        copy_tc.find("runmode").set("attempt", i+1)
-                        testcase_list.append(copy_tc)
-                # only one step in step list, append new step
-                else:
-                    for i in range(0, value):
-                        copy_tc = copy.deepcopy(tc)
-                        copy_tc.find("runmode").set("attempt", i+1)
-                        testcase_list.append(tc)
-            if retry_type is not None and retry_value > 0:
-                if len(new_testcase_list) > 1:
-                    go_next = len(testcase_list) + retry_value + 1
-                    if runmode is not None:
-                        get_runmode = tc.find('runmode')
-                        tc.remove(get_runmode)
-                    for i in range(0, retry_value):
-                        copy_tc = copy.deepcopy(tc)
-                        copy_tc.find("retry").set("count", go_next)
-                        copy_tc.find("retry").set("attempt", i+1)
-                        testcase_list.append(copy_tc)
-                else:
-                    if runmode is not None:
-                        get_runmode = tc.find('runmode')
-                        tc.remove(get_runmode)
-                    for i in range(0, retry_value):
-                        copy_tc = copy.deepcopy(tc)
-                        copy_tc.find("retry").set("attempt", i+1)
-                        testcase_list.append(copy_tc)
-            if retry_type is None and runmode is None:
-                testcase_list.append(tc)
-        return testcase_list
-
-
 def report_testsuite_result(suite_repository, suite_status):
     """Reports the result of the testsuite executed
     Arguments:
@@ -258,21 +171,45 @@ def report_testsuite_result(suite_repository, suite_status):
                     'ERROR': 'FAIL'}.get(str(suite_status).upper())
     print_info("Testsuite:{0}  STATUS:{1}".format(suite_repository['suite_name'], suite_status))
     testsuite_utils.pSuite_report_suite_result(suite_resultfile)
-    print_info("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END OF TEST SUITE $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
+    print_info("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END OF TEST SUITE $$$$$$$$$$$$$$$$$$$$$$"
+               "$$$$$$$$$$$$$$$$$$$$$$$$")
     return suite_status
 
 
 def print_suite_details_to_console(suite_repository, testsuite_filepath, junit_resultfile):
     """Prints the testsuite details to console """
 
-    print_info("\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  TESTSUITE-DETAILS  $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
-
+    print_info("\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  TESTSUITE-DETAILS  "
+               "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
     print_info("Executing testsuite '{0}'".format(suite_repository['suite_name'].strip()))
     print_info("Title: {0}".format(suite_repository['suite_title'].strip()))
     print_info("Results directory: %s" % suite_repository['suite_execution_dir'])
     report_suite_requirements(suite_repository, testsuite_filepath)
     time.sleep(3)
 
+#get the details of testwrapperfile, data_type, runtype from test suite xml
+def get_testwrapper_file_details(testsuite_filepath, data_repository):
+    """retuns testwrapperfile to use if specified, else returns False"""
+    if 'ow_testwrapperfile' in 'data_repository':
+        testwrapperfile = data_repository['ow_testwrapperfile']
+
+    else:
+        if Utils.xml_Utils.nodeExists(testsuite_filepath, "TestWrapperFile"):
+            testwrapperfile = Utils.xml_Utils.getChildTextbyParentTag\
+                (testsuite_filepath, 'Details', 'TestWrapperFile')
+        else:
+            return [False, False, False, 'abort']
+    abs_cur_dir = os.path.dirname(testsuite_filepath)
+    abs_testwrapperfile = Utils.file_Utils.getAbsPath(testwrapperfile, abs_cur_dir)
+    Utils.xml_Utils.getRoot(abs_testwrapperfile)
+    jfile_obj = execution_files_class.ExecFilesClass(abs_testwrapperfile, "ts", None, None)
+    if not data_repository.get('suite_data_file', False):
+        print_error("Input data file must be specified in test suite global details section")
+        exit(0)
+    j_data_type = jfile_obj.check_get_datatype(data_repository['suite_data_file'])
+    j_runtype = jfile_obj.check_get_runtype()
+    setup_on_error_action = Utils.testcase_Utils.get_setup_on_error(abs_testwrapperfile)
+    return [abs_testwrapperfile, j_data_type, j_runtype, setup_on_error_action]
 
 def execute_testsuite(testsuite_filepath, data_repository, from_project,
                       auto_defects, jiraproj, res_startdir, logs_startdir,
@@ -292,12 +229,47 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                               execution directory will be created (results for the testsuite will
                               be stored in the  testsuite execution directory.)
     """
+    testsuite_status_list = []
     suite_start_time = Utils.datetime_utils.get_current_timestamp()
     print_info("[{0}] Testsuite execution starts".format(suite_start_time))
     initialize_suite_fields(data_repository)
     suite_repository = get_suite_details(testsuite_filepath, data_repository,
                                          from_project, res_startdir, logs_startdir)
-    testcase_list = get_testcase_list(testsuite_filepath)
+
+    if data_repository.get("random_tc_execution", False) or suite_repository['suite_random_exec']:
+        print_info("Executing test cases in suite in random order")
+        randomize = True
+    else:
+        randomize = False
+
+    testcase_list = common_execution_utils.get_step_list(testsuite_filepath,
+                                                         "Testcases", "Testcase",
+                                                         randomize=randomize)
+    for testcase in testcase_list:
+        jiraids = testsuite_utils.get_jiraids_from_xmlfile(testcase)
+        if not jiraids:
+            continue
+        jira = Jira(jiraproj)
+        skip = False
+        for jiraid in jiraids:
+            status = jira.get_jira_issue_status(jiraid)
+            if status is False:
+                print_warning("Cannot get status of jira issue {},"
+                              " This issue is not considered for testcase"
+                              " skip validation".format(jiraid))
+                continue
+            if (status not in ["Resolved", "Closed"]):
+                skip = True
+                break
+        if skip:
+            tc_path = testsuite_utils.get_path_from_xmlfile(testcase)
+            print_info("Associated jira ids : {} are not Resolved or Closed,"
+                       " Skipping testcase >>>> {}".format(jiraids, tc_path))
+            exec_node = testcase.find("Execute")
+            if not exec_node:
+                exec_node = ElementTree.SubElement(testcase, "Execute")
+            exec_node.set("ExecType", 'no')
+            
     execution_type = suite_repository['suite_exectype'].upper()
     no_of_tests = str(len(testcase_list))
 
@@ -373,105 +345,224 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         html_filepath = os.path.join(suite_repository['suite_execution_dir'],
                                      Utils.file_Utils.getNameOnly(filename))+'.html'
         print_info("HTML result file: {0}".format(html_filepath))
-
     if not from_project:
         data_repository["war_parallel"] = False
 
-    if execution_type.upper() == 'PARALLEL_TESTCASES':
-        ts_junit_object.remove_html_obj()
-        data_repository["war_parallel"] = True
-        Utils.config_Utils.data_repository = data_repository
-        print_info("Executing testcases in parallel")
-        test_suite_status = parallel_testcase_driver.main(testcase_list, suite_repository,
-                                                          data_repository, from_project,
-                                                          tc_parallel=True,
-                                                          auto_defects=auto_defects)
+    root = Utils.xml_Utils.getRoot(testsuite_filepath)
+    suite_global_xml = root.find('Details')
+    runmode, value, _ = common_execution_utils.get_runmode_from_xmlfile(suite_global_xml)
 
-    elif execution_type.upper() == 'SEQUENTIAL_TESTCASES':
-        print_info("Executing testccases sequentially")
-        test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
-                                                            data_repository, from_project,
-                                                            auto_defects=auto_defects)
+    #get testwrapperfile details
+    testwrapperfile, j_data_type, j_runtype, setup_on_error_action = \
+        get_testwrapper_file_details(testsuite_filepath, data_repository)
+    setup_tc_status, cleanup_tc_status = True, True
+    #execute setup steps defined in testwrapper file if testwrapperfile is present
+    if testwrapperfile:
+        print_info("*****************TESTWRAPPER SETUP EXECUTION START*********************")
+        data_repository['suite_testwrapper_file'] = testwrapperfile
+        data_repository['wt_data_type'] = j_data_type
+        setup_tc_status, data_repository = testcase_driver.execute_testcase(testwrapperfile,\
+                                            data_repository, tc_context='POSITIVE',\
+                                            runtype=j_runtype,\
+                                            tc_parallel=None, queue=None,\
+                                            auto_defects=auto_defects, suite=None,\
+                                            jiraproj=None, tc_onError_action='ABORT_AS_ERROR',\
+                                            iter_ts_sys=None, steps_tag='Setup')
+        print_info("*****************TESTWRAPPER SETUP EXECUTION END**********************")
+    if setup_on_error_action == 'next' or \
+        (setup_on_error_action == 'abort' and setup_tc_status == True):
+        if execution_type.upper() == 'PARALLEL_TESTCASES':
+            ts_junit_object.remove_html_obj()
+            data_repository["war_parallel"] = True
+            print_info("Executing testcases in parallel")
+            test_suite_status = parallel_testcase_driver.main(testcase_list, suite_repository,
+                                                              data_repository, from_project,
+                                                              tc_parallel=True,
+                                                              auto_defects=auto_defects)
 
-    elif execution_type.upper() == 'RUN_UNTIL_FAIL':
-        execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
-                                                                       'Details',
-                                                                       'type', 'Max_Attempts')
-        print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
-        i = 0
-        while i < int(execution_value):
-            i += 1
-            print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
-            test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
-                                                                data_repository, from_project,
-                                                                auto_defects=auto_defects)
-            test_count = i * len(testcase_list)
-            testsuite_utils.pSuite_update_suite_tests(str(test_count))
-            if str(test_suite_status).upper() == "FALSE" or\
-               str(test_suite_status).upper() == "ERROR":
-                break
+        elif execution_type.upper() == 'SEQUENTIAL_TESTCASES':
+            if runmode is None:
+                print_info("Executing testcases sequentially")
+                test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
+                                                                    data_repository, from_project,
+                                                                    auto_defects=auto_defects)
 
-    elif execution_type.upper() == 'RUN_UNTIL_PASS':
-        execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
-                                                                       'Details',
-                                                                       'type', 'Max_Attempts')
-        print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
-        i = 0
-        while i < int(execution_value):
-            i += 1
-            print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
-            test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
-                                                                data_repository, from_project,
-                                                                auto_defects=auto_defects)
-            test_count = i * len(testcase_list)
-            testsuite_utils.pSuite_update_suite_tests(str(test_count))
-            if str(test_suite_status).upper() == "TRUE":
-                break
+            elif runmode.upper() == "RUF":
+                print_info("Execution type: {0}, Attempts: {1}".format(runmode, value))
+                i = 0
+                while i < int(value):
+                    i += 1
+                    print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
+                    test_suite_status = sequential_testcase_driver.main(testcase_list,
+                                                                        suite_repository,
+                                                                        data_repository,
+                                                                        from_project,
+                                                                        auto_defects=auto_defects)
+                    test_count = i * len(testcase_list)
+                    testsuite_status_list.append(test_suite_status)
+                    testsuite_utils.pSuite_update_suite_tests(str(test_count))
+                    if str(test_suite_status).upper() == "FALSE" or\
+                       str(test_suite_status).upper() == "ERROR":
+                        break
 
-    elif execution_type.upper() == 'RUN_MULTIPLE':
-        execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
-                                                                        'Details', 'type',
-                                                                        'Number_Attempts')
-        print_info("Execution type: {0}, Max Attempts: {1}".format(execution_type, execution_value))
+            elif runmode.upper() == "RUP":
+                print_info("Execution type: {0}, Attempts: {1}".format(runmode, value))
+                i = 0
+                while i < int(value):
+                    i += 1
+                    print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
+                    test_suite_status = sequential_testcase_driver.main(testcase_list,
+                                                                        suite_repository,
+                                                                        data_repository,
+                                                                        from_project,
+                                                                        auto_defects=auto_defects)
+                    test_count = i * len(testcase_list)
+                    testsuite_status_list.append(test_suite_status)
+                    testsuite_utils.pSuite_update_suite_tests(str(test_count))
+                    if str(test_suite_status).upper() == "TRUE":
+                        break
 
-        i = 0
-        while i < int(execution_value):
-            i += 1
-            print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
-            # We aren't actually summing each test result here...
-            test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
-                                                                data_repository, from_project,
-                                                                auto_defects=auto_defects)
+            elif runmode.upper() == "RMT":
+                print_info("Execution type: {0}, Attempts: {1}".format(runmode, value))
+                i = 0
+                while i < int(value):
+                    i += 1
+                    print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
+                    # We aren't actually summing each test result here...
+                    test_suite_status = sequential_testcase_driver.main(testcase_list,
+                                                                        suite_repository,
+                                                                        data_repository,
+                                                                        from_project,
+                                                                        auto_defects=auto_defects)
+                    testsuite_status_list.append(test_suite_status)
+        # The below runmode part is not modified/removed to preserve backward compatibility
+        elif execution_type.upper() == 'RUN_UNTIL_FAIL' and runmode is None:
+            execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
+                                                                           'Details',
+                                                                           'type', 'Max_Attempts')
+            execution_value = 1 if execution_value == "" else execution_value
+            print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
+            i = 0
+            while i < int(execution_value):
+                i += 1
+                print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
+                test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
+                                                                    data_repository, from_project,
+                                                                    auto_defects=auto_defects)
+                test_count = i * len(testcase_list)
+                testsuite_utils.pSuite_update_suite_tests(str(test_count))
+                if str(test_suite_status).upper() == "FALSE" or\
+                   str(test_suite_status).upper() == "ERROR":
+                    break
 
-    elif execution_type.upper() == "ITERATIVE_SEQUENTIAL":
-        # if execution type is iterative sequential call WarriorCore.Classes.iterative_testsuite
-        # class and execute the testcases in iterative sequential fashion on the systems
-        print_info("Iterative sequential suite")
+        elif execution_type.upper() == 'RUN_UNTIL_PASS' and runmode is None:
+            execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
+                                                                           'Details',
+                                                                           'type', 'Max_Attempts')
+            execution_value = 1 if execution_value == "" else execution_value
+            print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
+            i = 0
+            while i < int(execution_value):
+                i += 1
+                print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
+                test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
+                                                                    data_repository, from_project,
+                                                                    auto_defects=auto_defects)
+                test_count = i * len(testcase_list)
+                testsuite_utils.pSuite_update_suite_tests(str(test_count))
+                if str(test_suite_status).upper() == "TRUE":
+                    break
 
-        iter_seq_ts_obj = IterativeTestsuite(testcase_list, suite_repository,
-                                             data_repository, from_project,
-                                             auto_defects)
-        test_suite_status = iter_seq_ts_obj.execute_iterative_sequential()
+        elif execution_type.upper() == 'RUN_MULTIPLE' and runmode is None:
+            execution_value = Utils.xml_Utils.getChildAttributebyParentTag(testsuite_filepath,
+                                                                           'Details', 'type',
+                                                                           'Number_Attempts')
+            execution_value = 1 if execution_value == "" else execution_value
+            print_info("Execution type: {0}, Attempts: {1}".format(execution_type, execution_value))
+            i = 0
+            while i < int(execution_value):
+                i += 1
+                print_debug("\n\n<======= ATTEMPT: {0} ======>".format(i))
+                # We aren't actually summing each test result here...
+                test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
+                                                                    data_repository, from_project,
+                                                                    auto_defects=auto_defects)
+        elif execution_type.upper() == "ITERATIVE_SEQUENTIAL":
+            # if execution type is iterative sequential call WarriorCore.Classes.iterative_testsuite
+            # class and execute the testcases in iterative sequential fashion on the systems
+            print_info("Iterative sequential suite")
 
-    elif execution_type.upper() == "ITERATIVE_PARALLEL":
-        # if execution type is iterative parallel call WarriorCore.Classes.iterative_testsuite
-        # class and execute the testcases in iterative parallel fashion on the systems
-        ts_junit_object.remove_html_obj()
-        print_info("Iterative parallel suite")
-        data_repository["war_parallel"] = True
-        Utils.config_Utils.data_repository = data_repository
-        iter_seq_ts_obj = IterativeTestsuite(testcase_list, suite_repository,
-                                             data_repository, from_project, auto_defects)
+            iter_seq_ts_obj = IterativeTestsuite(testcase_list, suite_repository,
+                                                 data_repository, from_project,
+                                                 auto_defects)
+            test_suite_status = iter_seq_ts_obj.execute_iterative_sequential()
 
-        test_suite_status = iter_seq_ts_obj.execute_iterative_parallel()
+        elif execution_type.upper() == "ITERATIVE_PARALLEL":
+            # if execution type is iterative parallel call WarriorCore.Classes.iterative_testsuite
+            # class and execute the testcases in iterative parallel fashion on the systems
+            ts_junit_object.remove_html_obj()
+            print_info("Iterative parallel suite")
+            data_repository["war_parallel"] = True
+            iter_seq_ts_obj = IterativeTestsuite(testcase_list, suite_repository,
+                                                 data_repository, from_project, auto_defects)
+
+            test_suite_status = iter_seq_ts_obj.execute_iterative_parallel()
+
+        else:
+            print_error("unexpected suite_type received...aborting execution")
+            test_suite_status = False
+
+        if runmode is not None:
+            test_suite_status = common_execution_utils.compute_runmode_status(testsuite_status_list,
+                                                                              runmode,
+                                                                              suite_global_xml)
 
     else:
-        print_error("unexpected suite_type received...aborting execution")
-        test_suite_status = False
+        print_error("Test cases in suite are not executed as setup failed to execute,"\
+                    "setup status : {0}".format(setup_tc_status))
+        print_error("Steps in cleanup will be executed on besteffort")
+        test_suite_status = "ERROR"
 
+    #Execute Debug section from suite tw file upon test suite failure
+    if not isinstance(test_suite_status, bool) or (isinstance(test_suite_status, bool) \
+                                                          and test_suite_status is False):
+        if testwrapperfile and Utils.xml_Utils.nodeExists(testwrapperfile, "Debug"):
+            print_info("*****************SUITE TESTWRAPPER DEBUG EXECUTION START"
+                       "*********************")
+            data_repository['wt_data_type'] = j_data_type
+            debug_tc_status, data_repository = testcase_driver.execute_testcase(testwrapperfile,\
+                                                         data_repository, tc_context='POSITIVE',\
+                                                         runtype=j_runtype,\
+                                                         tc_parallel=None, queue=None,\
+                                                         auto_defects=auto_defects, suite=None,\
+                                                         jiraproj=None, tc_onError_action=None,\
+                                                         iter_ts_sys=None, steps_tag='Debug')
+            print_info("*****************SUITE TESTWRAPPER DEBUG EXECUTION END"
+                       "*********************")
+
+    #execute cleanup steps defined in testwrapper file if testwrapperfile is present
+    if testwrapperfile:
+        print_info("*****************TESTWRAPPER CLEANUP EXECUTION START*********************")
+        data_repository['wt_data_type'] = j_data_type
+        cleanup_tc_status, data_repository = testcase_driver.execute_testcase(testwrapperfile,\
+                                                          data_repository, tc_context='POSITIVE',\
+                                                          runtype=j_runtype,\
+                                                          tc_parallel=None, queue=None,\
+                                                          auto_defects=auto_defects, suite=None,\
+                                                          jiraproj=None, tc_onError_action=None,\
+                                                          iter_ts_sys=None, steps_tag='Cleanup')
+        print_info("*****************TESTWRAPPER CLEANUP EXECUTION END*********************")
     print_info("\n")
     suite_end_time = Utils.datetime_utils.get_current_timestamp()
     print_info("[{0}] Testsuite execution completed".format(suite_end_time))
+
+    if test_suite_status == True and cleanup_tc_status == True:
+        test_suite_status = True
+    #set status to WARN if only cleanup fails
+    elif test_suite_status == True and cleanup_tc_status != True:
+        print_warning("setting test suite status to WARN as cleanup failed")
+        test_suite_status = 'WARN'
+
     suite_duration = Utils.datetime_utils.get_time_delta(suite_start_time)
     hms = Utils.datetime_utils.get_hms_for_seconds(suite_duration)
     print_info("Testsuite duration= {0}".format(hms))

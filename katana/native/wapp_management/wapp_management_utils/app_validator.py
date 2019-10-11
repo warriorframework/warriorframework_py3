@@ -10,39 +10,53 @@ from utils.navigator_util import Navigator
 class AppValidator:
 
     def __init__(self, filepath):
+        """
+        :param filepath: Path to the root directory of the app being installed
+
+        self.navigator: Navigator() onject
+        self.app_name: Name of the actual app directory.
+        self.path_to_app: Path to the actual app directory
+        self.wf_config_file: Path to the app's wf_config file
+        self.urls_inclusions: List of ursl that need o be included in main urls.py
+        self.mandatory_fields: Mandatory fields necessary in wf_config.json
+        self.wapp_data: All data in the wf_config.json file
+        self.django_based: True indicates that this app uses new Katana API. False indicates that
+                           app still uses the old Katana API
+        """
         self.navigator = Navigator()
         self.app_name = get_sub_folders(join_path(filepath, "warriorframework_py3", "katana", "wapps"))[0]
         self.path_to_app = join_path(filepath, "warriorframework_py3", "katana", "wapps", self.app_name)
         self.wf_config_file = join_path(self.path_to_app, "wf_config.json")
         self.urls_inclusions = []
         self.mandatory_fields = ["app", "version", "warrior-compatibility", "warrior-incompatibility"]
+        self.wapp_data = read_json_data(self.wf_config_file)
+        self.django_based = False if "pure_django" not in self.wapp_data or not self.wapp_data["pure_django"] else True
 
     def is_valid(self):
         output = {"status": True, "message": ""}
         if os.path.exists(self.wf_config_file):
-            data = read_json_data(self.wf_config_file)
-            if data is not None:
+            if self.wapp_data is not None:
                 for field in self.mandatory_fields:
-                    if output["status"] and field not in data:
+                    if output["status"] and field not in self.wapp_data:
                         output["status"] = False
                         output["message"] = "wf_config.json is not in the correct format."
                         print("-- An Error Occurred -- {0}".format(output["message"]))
 
                 if output["status"]:
-                    output = self.__verify_app_details(data["app"])
+                    output = self.__verify_app_details(self.wapp_data["app"])
 
                 # validate version compatibility
                 if output["status"]:
-                    output = self.__is_compatible(data)
+                    output = self.__is_compatible(self.wapp_data)
 
                 # validate databases if any
-                if output["status"] and "database" in data:
-                    if isinstance(data["database"], list):
-                        for db_details in data["database"]:
+                if output["status"] and "database" in self.wapp_data:
+                    if isinstance(self.wapp_data["database"], list):
+                        for db_details in self.wapp_data["database"]:
                             if output["status"]:
                                 output = self.__verify_db_details(db_details)
                     else:
-                        output = self.__verify_db_details(data["database"])
+                        output = self.__verify_db_details(self.wapp_data["database"])
             else:
                 output["status"] = False
                 output["message"] = "wf_config.json is not in the correct format."
@@ -135,9 +149,12 @@ class AppValidator:
                                                                  self.app_name),
                                                        re.compile("\.js$"))
                     path_to_js = join_path(self.path_to_app, "static", self.app_name, "js")
-                    for sub_file in subs_files:
-                        if not sub_file.startswith(path_to_js):
+                    if not self.django_based:
+                        # Validates JS structure only if app uses old Katana API
+                        list_of_files = ", ".join([x for x in subs_files if not x.startswith(path_to_js)])
+                        if list_of_files:
                             output["status"] = False
-                            output["message"] = "A .js file cannot be outside the 'js' folder."
+                            output["message"] = "A .js file cannot be outside the 'js' folder. " \
+                                                "List of files in non-compliance: {0}".format(list_of_files)
                             print("-- An Error Occurred -- {0}".format(output["message"]))
         return output

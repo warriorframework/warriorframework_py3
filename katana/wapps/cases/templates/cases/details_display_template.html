@@ -1,0 +1,79 @@
+{% load cases_filters %}
+<div class="cases-intentional-space-x" id="cases-display-template">
+    <div class="cases-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <th scope="row">Name</th>
+                <td key="Name">{{ data.Testcase.Details.Name }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Title</th>
+                <td key="Title">{{ data.Testcase.Details.Title }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Category</th>
+                <td key="Category">{{ data.Testcase.Details.Category }}</td>
+            </tr>
+            <tr>
+                <th scope="row">State</th>
+                <td key="State">{{ data.Testcase.Details.State }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Engineer</th>
+                <td key="Engineer">{{ data.Testcase.Details.Engineer }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Date</th>
+                <td key="Date">{{ data.Testcase.Details.Date }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Time</th>
+                <td key="Time">{{ data.Testcase.Details.Time }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="cases-internal-space">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <th scope="row">On Error (Default)</th>
+                <td key="default_onError.@action">{{ data.Testcase.Details.default_onError|get_attribute:"action"|convert_on_errors }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Go To Step (If Applicable)</th>
+                <td key="default_onError.@value">
+                    {% if data.Testcase.Details.default_onError|get_attribute:"action"|convert_on_errors == "Go To" %}
+                        {{ data.Testcase.Details.default_onError|get_attribute:"value" }}
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th scope="row">Input Data File</th>
+                <td key="InputDataFile">{{ data.Testcase.Details.InputDataFile }}</td>
+            </tr>
+            <tr>
+                <th scope="row">TestWrapper File</th>
+                <td key="TestWrapperFile">{{ data.Testcase.Details.TestWrapperFile }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Data Type</th>
+                <td key="Datatype">{{ data.Testcase.Details.Datatype }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Logs Directory</th>
+                <td key="Logsdir">{{ data.Testcase.Details.Logsdir }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Results Directory</th>
+                <td key="Resultsdir">{{ data.Testcase.Details.Resultsdir }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Expected Results</th>
+                <td key="ExpectedResults">{{ data.Testcase.Details.ExpectedResults }}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,202 @@
+<body>
+<div >
+    <div class="cases-header">
+        <div>
+            <h4 class="cases-header-title"><i class="fa fa-list-alt" aria-hidden="true"></i>&nbsp;Details</h4>
+        </div>
+        <div><i class="fa fa-chevron-circle-up white" katana-click="setupcases.header.toggleContents" collapsed="false" aria-hidden="true" title="Show/Hide the Details section"></i></div>
+        <div><i class="fa fa-pencil white" aria-hidden="true" katana-click="setupcases.header.editDetails" title="Edit Details"></i></div>
+        <div></div>
+    </div>
+    <div class="cases-left-top-block" id="detail-block">
+        {% include 'testwrapper/details_display_template.html' %}
+    </div>
+
+    <div class="cases-header">
+        <div>
+            <h4 class="cases-header-title"><i class="fa fa-star" aria-hidden="true"></i>&nbsp;Setup Steps</h4>
+        </div>
+        <div><i class="fa fa-chevron-circle-up white" katana-click="setupcases.header.toggleContents" collapsed="false" aria-hidden="true" title="Show/Hide the Steps section"></i></div>
+        <div><i class="fa fa-plus-circle white" aria-hidden="true" katana-click="setupcases.header.newStep" title="Add new Step"></i></div>
+        <div></div>
+    </div>
+
+    <div class="cases-right-step-block" id="step-block">
+        {% include 'testwrapper/steps_display_template.html' %}
+    </div>
+
+    <!--cleanup -->
+    <div class="cases-header">
+        <div>
+            <h4 class="cases-header-title"><i class="fa fa-star" aria-hidden="true"></i>&nbsp;Cleanup Steps</h4>
+        </div>
+        <div><i class="fa fa-chevron-circle-up white" katana-click="cleanupcases.header.toggleContents" collapsed="false" aria-hidden="true" title="Show/Hide the Steps section"></i></div>
+        <div><i class="fa fa-plus-circle white" aria-hidden="true" katana-click="cleanupcases.header.newStep" title="Add new Step"></i></div>
+        <div></div>
+    </div>
+
+    <div class="cases-right-step-block" id="step-block-cleanup">
+        {% include 'testwrapper/cleanup_steps_display_template.html' %}
+    </div>
+    <!--cleanup ends-->
+
+    <!--debug -->
+    <div class="cases-header">
+        <div>
+            <h4 class="cases-header-title"><i class="fa fa-star" aria-hidden="true"></i>&nbsp;Debug Steps</h4>
+        </div>
+        <div><i class="fa fa-chevron-circle-up white" katana-click="debugcases.header.toggleContents" collapsed="false" aria-hidden="true" title="Show/Hide the Steps section"></i></div>
+        <div><i class="fa fa-plus-circle white" aria-hidden="true" katana-click="debugcases.header.newStep" title="Add new Step"></i></div>
+        <div></div>
+    </div>
+
+    <div class="cases-right-step-block" id="step-block-debug">
+        {% include 'testwrapper/debug_steps_display_template.html' %}
+    </div>
+    <!--debug ends-->
+    <div class="cases-side-drawer-open" style="display: none;">
+        <div class="cases-drawer-open-header" id="hiddingfirst">
+            <div></div>
+            <div>
+                <div class="cases-header-title">New Step</div>
+            </div>
+            <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="setupcases.drawer.open.saveContents" title="Save"></i></div>
+            <div><i class="fa fa-times white" aria-hidden="true" katana-click="setupcases.drawer.open.discardContents" title="Discard contents and close"></i></div>
+        </div>
+
+        <div class="cases-drawer-open-header" id="editfirst">
+            <div></div>
+            <div>
+                <div class="cases-header-title">Edit Step</div>
+            </div>
+            <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="setupcases.drawer.open.saveContents" title="Save"></i></div>
+            <div><i class="fa fa-times white" aria-hidden="true" katana-click="setupcases.drawer.open.discardContents" title="Discard contents and close"></i></div>
+        </div>
+
+        <!--Edit Details Data Starts Here-->
+        <div class="cases-drawer-open-header" id="editDetails">
+            <div></div>
+            <div>
+                <div class="cases-header-title">Edit Details</div>
+            </div>
+            <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="setupcases.drawer.open.saveContents" title="Save"></i></div>
+            <div><i class="fa fa-times white" aria-hidden="true" katana-click="setupcases.drawer.open.discardContents" title="Discard contents and close"></i></div>
+        </div>
+        <!--Edit Details Data Ends Here-->
+        <!--cleanup -->
+
+        <div class="cases-drawer-open-header" id="hiddingsecond">
+            <div></div>
+            <div>
+                <div class="cases-header-title">
+                    <h4>New Step</h4>
+                </div>
+            </div>
+            <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="cleanupcases.drawer.open.saveContents" title="Savee"></i></div>
+            <div><i class="fa fa-times white" aria-hidden="true" katana-click="cleanupcases.drawer.open.discardContents" title="Discard contentse and closee"></i></div>
+        </div>
+
+        <div class="cases-drawer-open-header" id="editsecond">
+            <div></div>
+            <div>
+                <div class="cases-header-title">
+                    <h4>Edit Step</h4>
+                </div>
+            </div>
+            <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="cleanupcases.drawer.open.saveContents" title="Savee"></i></div>
+            <div><i class="fa fa-times white" aria-hidden="true" katana-click="cleanupcases.drawer.open.discardContents" title="Discard contentse and closee"></i></div>
+        </div>
+        <!--cleanup ends-->
+
+        <!--debug -->
+
+        <div class="cases-drawer-open-header" id="hiddingthird">
+            <div></div>
+            <div>
+                <div class="cases-header-title">
+                    <h4>New Step</h4>
+                </div>
+            </div>
+            <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="debugcases.drawer.open.saveContents" title="Savee"></i></div>
+            <div><i class="fa fa-times white" aria-hidden="true" katana-click="debugcases.drawer.open.discardContents" title="Discard contentse and closee"></i></div>
+        </div>
+
+        <div class="cases-drawer-open-header" id="editthird">
+            <div></div>
+            <div>
+                <div class="cases-header-title">
+                    <h4>Edit Step</h4>
+                </div>
+            </div>
+            <div><i class="fa fa-floppy-o white" aria-hidden="true" katana-click="debugcases.drawer.open.saveContents" title="Savee"></i></div>
+            <div><i class="fa fa-times white" aria-hidden="true" katana-click="debugcases.drawer.open.discardContents" title="Discard contentse and closee"></i></div>
+        </div>
+        <!--debug ends-->
+
+        <div class="cases-drawer-open-body">
+            <div class="sidebar">
+                <div title="Details">
+                    <i class="fa fa-list-alt sidebar-badged" aria-hidden="true" ref="editDetails"></i>
+                </div>
+                <div title="Requirement">
+                    <i class="fa fa-tags sidebar-badged" aria-hidden="true" ref="newReq"></i>
+                </div>
+                <div class="cases-icon-bg-color" title="Step">
+                    <i class="fa fa-star sidebar-badged" aria-hidden="true" ref="newStep"></i>
+                </div>
+            </div>
+            <div class="content" style="overflow: auto">
+                {% include 'testwrapper/details_template.html' %}
+                {% include 'testwrapper/requirements_template.html' %}
+                {% include 'testwrapper/steps_template.html' %}
+            </div>
+        </div>
+        <!--clean up-->
+        <div class="cases-drawer-open-body">
+            <div class="sidebar">
+                <div title="Details">
+                    <i class="fa fa-list-alt sidebar-badged" aria-hidden="true" ref="editDetails"></i>
+                </div>
+                <div title="Requirement">
+                    <i class="fa fa-tags sidebar-badged" aria-hidden="true" ref="newReq"></i>
+                </div>
+                <div class="cases-icon-bg-color" title="Step">
+                    <i class="fa fa-star sidebar-badged" aria-hidden="true" ref="newStep"></i>
+                </div>
+            </div>
+            <div class="content" style="overflow: auto">
+                {% include 'testwrapper/cleanup_details_template.html' %}
+                {% include 'testwrapper/cleanup_steps_template.html' %}
+            </div>
+        </div>
+        <!--clean up ends-->
+
+        <!--debug-->
+        <div class="cases-drawer-open-body">
+            <div class="sidebar">
+                <div title="Details">
+                    <i class="fa fa-list-alt sidebar-badged" aria-hidden="true" ref="editDetails"></i>
+                </div>
+                <div title="Requirement">
+                    <i class="fa fa-tags sidebar-badged" aria-hidden="true" ref="newReq"></i>
+                </div>
+                <div class="cases-icon-bg-color" title="Step">
+                    <i class="fa fa-star sidebar-badged" aria-hidden="true" ref="newStep"></i>
+                </div>
+            </div>
+            <div class="content" style="overflow: auto">
+                {% include 'testwrapper/debug_details_template.html' %}
+                {% include 'testwrapper/debug_steps_template.html' %}
+            </div>
+        </div>
+        <!--debug ends-->
+    </div>
+
+    <div class="cases-side-drawer-closed">
+        <div katana-click="setupcases.header.editDetails" title="Edit Details">
+            <i class="fa fa-list-alt sidebar-badged" aria-hidden="true"></i>
+        </div>
+
+    </div>
+</div>
+</body>

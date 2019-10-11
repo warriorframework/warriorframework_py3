@@ -1,0 +1,179 @@
+{% load cases_filters %}
+<div class="cases-intentional-space" id="details_drawer_template" style="display: none;">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Name<span>*</span></label>
+            </div>
+            <div class="field col-sm-9">
+                <input key="Name" title="Name of the Case" validation-check="cases.validations.checkIfEmpty">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Title<span>*</span></label>
+            </div>
+            <div class="field col-sm-9">
+                <input key="Title" title="Title of the Case" validation-check="cases.validations.checkIfEmpty">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Category</label>
+            </div>
+            <div class="col-sm-9">
+                <input key="Category" title="Category of the Case">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">State</label>
+            </div>
+            <div class="col-sm-9">
+                <input key="State" list="states" title="State of the Case">
+                <datalist id="states">
+                    {% for value in defaults.details.states %}
+                    <option value="{{value}}"></option>
+                    {% endfor %}
+                </datalist>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Engineer<span>*</span></label>
+            </div>
+            <div class="field col-sm-9">
+                <input key="Engineer" title="Name of the Engineer who developed this Case" validation-check="cases.validations.checkIfEmpty">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Date</label>
+            </div>
+            <div class="col-sm-9">
+                <input key="Date" disabled title="Last modified date">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Time</label>
+            </div>
+            <div class="col-sm-9">
+                <input key="Time" disabled title="Last modified time">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">On Error (Default)</label>
+            </div>
+            <div class="col-sm-9">
+                <select key="default_onError.@action" katana-change="cases.detailsEditor.updateDefaultOnError" title="Default on error action">
+                    {% for value in defaults.details.default_on_errors %}
+                    <option>{{value}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        {% if data.Testcase.Details.default_onError|get_attribute:"action"|convert_on_errors != "Go To" %}
+        <div class="row">
+        {% else %}
+        <div class="row" style="display:none;">
+        {% endif %}
+            <div class="col-sm-3">
+                <label class="cases-label"></label>
+            </div>
+            <div class="col-sm-9">
+                <div class="container-fluid">
+                     <div class="row">
+                         <div class="col-sm-4 cases-arg-label">
+                             <label class="cases-label">Go To Step<span>*</span></label>
+                        </div>
+                        <div class="field col-sm-8">
+                            <input key="default_onError.@value" title="Go to this step on error" validation-check="cases.validations.checkIfEmptyOrNaN" display-parent="true">
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Input Data File</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="cases-input-div">
+                    <input key="InputDataFile" title="Relative path to the Input Data File">
+                </div>
+                <div class="cases-icon-input-div">
+                    <i class="fa fa-folder-open" aria-hidden="true" katana-click="cases.drawer.openFileExplorer.inputDataFile" title="Open File Explorer"></i>
+                    &nbsp;
+                    <i class="fa fa-external-link-square" aria-hidden="true" katana-click="cases.drawer.openDatafile" title="View File"></i>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">TestWrapper File</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="cases-input-div">
+                    <input key="TestWrapperFile" title="Relative path to the Test Wrapper File">
+                </div>
+                <div class="cases-icon-input-div">
+                    <i class="fa fa-folder-open" aria-hidden="true" katana-click="cases.drawer.openFileExplorer.testWrapperFile" title="Open File Explorer"></i>
+                    &nbsp;
+                    <i class="fa fa-external-link-square" aria-hidden="true" katana-click="cases.drawer.openDatafile" title="View File"></i>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Data Type<span>*</span></label>
+            </div>
+            <div class="col-sm-9">
+                <select key="Datatype" katana-change="cases.detailsEditor.updateIterationTypeStepTmpl" title="Data Type of the testcase">
+                    {% for value in defaults.details.datatypes %}
+                    <option>{{value}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Logs Directory</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="cases-input-div">
+                    <input key="Logsdir" title="Absolute path to the Logs directory">
+                </div>
+                <div class="cases-icon-input-div">
+                    <i class="fa fa-folder-open" aria-hidden="true" katana-click="cases.drawer.openFileExplorer.logsOrResultsDir" title="Open File Explorer"></i>
+                    &nbsp;
+                    <i class="fa fa-external-link-square cases-hidden-element" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Results Directory</label>
+            </div>
+            <div class="col-sm-9">
+                <div class="cases-input-div">
+                    <input key="Resultsdir" title="Absolute path to the Results directory">
+                </div>
+                <div class="cases-icon-input-div">
+                    <i class="fa fa-folder-open" aria-hidden="true" katana-click="cases.drawer.openFileExplorer.logsOrResultsDir" title="Open File Explorer"></i>
+                    &nbsp;
+                    <i class="fa fa-external-link-square cases-hidden-element" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="cases-label">Expected Results</label>
+            </div>
+            <div class="col-sm-9">
+                <input key="ExpectedResults" title="Results expected out of this Case">
+            </div>
+        </div>
+    </div>
+</div>

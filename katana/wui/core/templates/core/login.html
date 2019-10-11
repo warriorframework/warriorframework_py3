@@ -1,0 +1,26 @@
+{% extends "core/unified_index.html" %}
+
+{% block logincontent %}
+
+<div class="login-form" id="warrior_login">
+	<div class="title">Login</div>
+	<div class="fields">
+		<form  method="post" action="{% url 'login' %}">
+			{% csrf_token %}
+			<div class="field">
+				<label>{{ form.username.label_tag }}</label>
+				<input name="username">
+			</div>
+			<div class="field">
+				<label>{{ form.password.label_tag }}</label>
+				<input name="password" type="password">
+			</div>
+			<input type="submit" value="Login" />
+			<input type="hidden" name="next" value="{{ next }}" />
+		</form>
+	</div>
+	{% if form.errors %}
+	<p class="text-center">Invalid username and password combination. Please try again.</p>
+	{% endif %}
+</div>
+{% endblock %}

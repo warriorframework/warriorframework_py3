@@ -1,0 +1,145 @@
+{% load project_filters %}
+<div class="suites-intentional-space" id="steps_drawer_template" style="display: none;" key="Testsuite">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="suites-label">Suite Number</label>
+            </div>
+            <div class="col-sm-9">
+                <input disabled title="Suite number" key="@TS">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="suites-label">Suite Path<span>*</span></label>
+            </div>
+            <div class="field col-sm-9">
+                <div class="suites-input-div">
+                    <input key="path" title="Relative path to the Suite" validation-check="projects.validations.checkIfEmpty">
+                </div>
+                <div class="suites-icon-input-div">
+                    <i class="fa fa-folder-open" aria-hidden="true" katana-click="projects.drawer.openFileExplorer.inputDataFile" title="Open File Explorer"></i>
+                    &nbsp;
+                    <i class="fa fa-external-link-square" aria-hidden="true" katana-click="projects.drawer.openCaseFile" title="View File"></i>
+                </div>
+            </div>
+        </div>
+
+
+
+       
+         <div class="row">
+            <div class="col-sm-3">
+                <label class="suites-label">Execute</label>
+            </div>
+            <div class="col-sm-9">
+                <select key="Execute.@ExecType" katana-change="projects.stepEditor.updateRules"
+                        current-value="{{defaults.cases.execute_types.0}}" title="State if this Step should be Executed">
+                    {% for exec_type in defaults.cases.execute_types %}
+                    <option>{{ exec_type }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+         <div class="row" style="display: none;">
+            <div class="col-sm-3">
+                <label class="suites-label"></label>
+            </div>
+            <div class="col-sm-9">
+                <div class="container-fluid" id="rule-template" style="display: none;">
+                     <div class="row">
+                         <div class="col-sm-4 suites-arg-label">
+                             <label class="suites-label">Condition<span>*</span></label>
+                        </div>
+                        <div class="field col-sm-8">
+                            <input key="Execute.Rule.@Condition" title="Provide a condition for the Step's execution"
+                                   validation-check="projects.validations.checkIfEmpty" display-parent="true">
+                        </div>
+                     </div>
+                    <div class="row">
+                         <div class="col-sm-4 suites-arg-label">
+                            <label class="suites-label">Condition Value<span>*</span></label>
+                        </div>
+                        <div class="field col-sm-8">
+                            <input key="Execute.Rule.@Condvalue" title="Provide a value for the condition above"
+                                   validation-check="projects.validations.checkIfEmpty" display-parent="true">
+                        </div>
+                    </div>
+                    <div class="row">
+                         <div class="col-sm-4 suites-arg-label">
+                            <label class="suites-label">Else<span>*</span></label>
+                        </div>
+                        <div class="col-sm-8">
+                            <select key="Execute.Rule.@Else" katana-change="projects.stepEditor.updateRuleElseValue"
+                                    title="Provide a way to handle STep execution in case of the Condition above not being met">
+                                {% for exec_else in defaults.cases.execute_elses %}
+                                <option>{{ exec_else }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                     </div>
+                    <div class="row" style="display: none;">
+                         <div class="col-sm-4 suites-arg-label">
+                            <label class="suites-label">Else Value<span>*</span></label>
+                        </div>
+                        <div class="field col-sm-8">
+                            <input key="Execute.Rule.@Elsevalue" title="Go to step number"
+                                   validation-check="projects.validations.checkIfEmptyOrNaN" display-parent="true">
+                        </div>
+                     </div>
+                    <hr>
+                 </div>
+            </div>
+        </div>
+
+
+         <div class="row">
+            <div class="col-sm-3">
+                <label class="suites-label">Impact</label>
+            </div>
+            <div class="col-sm-9">
+                <select key="impact" title="State whether the result of this step impacts the entire Case">
+                    {% for impact in defaults.cases.impacts %}
+                    <option>{{ impact }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3">
+                <label class="suites-label">On Error</label>
+            </div>
+            <div class="col-sm-9">
+                <select key="onError.@action" katana-change="projects.stepEditor.updateOnErrorValue"
+                        title="State the on error mechanism for this step">
+                    {% for error in defaults.cases.on_errors %}
+                    <option>{{ error }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+
+         <div class="row" style="display: none;">
+            <div class="col-sm-3">
+                <label class="suites-label"></label>
+            </div>
+            <div class="col-sm-9">
+                <div class="container-fluid" id="on-error-value-template">
+                     <div class="row">
+                         <div class="col-sm-4 suites-arg-label">
+                             <label class="suites-label">Go To Step<span>*</span></label>
+                        </div>
+                        <div class="field col-sm-8">
+                            <input key="onError.@value" title="Go to step number"
+                                   validation-check="projects.validations.checkIfEmptyOrNaN" display-parent="true">
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
