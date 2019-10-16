@@ -12,14 +12,14 @@ limitations under the License.
 '''
 
 """
-This module has class and methods required to parse from and 
+This module has class and methods required to parse from and
 write to an xl workbook
 """
 
 from collections import OrderedDict
 from warrior.Framework.Utils.print_Utils import print_error
 
-class Wxl(object):
+class Wxl():
     """Wxl class has methods required to parse/write
     from/to xl sheet"""
 
@@ -41,10 +41,10 @@ class Wxl(object):
             self.openpyxl = openpyxl
             self.load = load_workbook
 
-            
+
     def load_workbook(self, wb_location):
         """
-        Load an existing xl workbook 
+        Load an existing xl workbook
         """
 
         value = None
@@ -66,14 +66,12 @@ class Wxl(object):
                 cell_id = str(cell.column) + str(cell.row)
                 row_val_dict[cell_id] = cell.value
         return row_val_dict
-    
-    
+
 
     def get_row_for_value(self, worksheet, value, col, row_range):
         """
-        Takes a value, column and row_range as input and returns the 
-        row_num that has the matching value, returns None if no match
-        found
+        Takes a value, column and row_range as input and returns the
+        row_num that has the matching value, returns None if no match found
         """
         found = False
         for row in worksheet.iter_rows(row_range):
@@ -82,16 +80,10 @@ class Wxl(object):
                 if found: break
                 cell_value = cell.value
                 if str(cell_value) == value:
-                    return_value = str(cell.row)                    
-                    found = True 
+                    return_value = str(cell.row)
+                    found = True
                 else:
                     return_value = None
-                    
-        
+
+
         return return_value
-
-
-
-
-
-                
