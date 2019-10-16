@@ -1,5 +1,19 @@
 #!/usr/bin/python
 
+'''
+Copyright 2017, Fujitsu Network Communications, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+'''
+
+
 """
 This script add the user repository name according to the drivers in Testcase file
 This script requires arguments to run
@@ -157,6 +171,9 @@ class addRepoinStepSection():
         print("all_kw_repos_names", self.all_kw_repos_names)
 
         def get_immediate_subdirectories_in_output_dir(self):
+            """
+            this function will finds the sub dirs present in the output directory
+            """
             try:
                 current_wkdir = os.getcwd()
                 print("current working directory is", current_wkdir)
@@ -247,6 +264,9 @@ class addRepoinStepSection():
         self.add_repo_in_step()
 
 class Verify_Import_Statements():
+    """
+    This class will verify the imports present user repo
+    """
 
     def __init__(self, user_repo_path):
         self.user_repo_path = user_repo_path
@@ -491,8 +511,7 @@ args = parser.parse_args()
 imp_url = args.imp_url
 imp_output_dir = args.imp_output_dir
 user_repo_path = args.imp_user_repo_path
-import pdb
-pdb.set_trace()
+
 
 warrior_repo = args.add_repo_warrior_url
 keyword_repos = args.add_repo_keyword_url
@@ -501,6 +520,9 @@ add_repo_kw_repos_path = args.add_repo_kw_repos_path
 add_repo_output = args.add_repo_output_dir
 
 class pre_requirements():
+    """
+    This class is the stating of the tools
+    """
 
     def __init__(self, warrior_repo=None, keyword_repos=None, add_repo_output=None, imp_url=None,
                  user_repo_path=None, imp_output_dir=None, add_repo_war_repos_path=None,
@@ -532,6 +554,9 @@ class pre_requirements():
         return bool_found
 
     def check_git_status(self):
+        """
+        this function is for checking the status of the git
+        """
         try:
             null = open("/dev/null", "w")
             sp_output = subprocess.Popen("git", stdout=subprocess.PIPE,
@@ -680,6 +705,9 @@ class pre_requirements():
             sys.exit()
 
     def add_repo_in_step_starts(self):
+        """
+        this function is the starting of the adding repo under xml files
+        """
 
         print("Got user repo urls. proceeding further!!")
         print("Provided warroir repository link is ", self.warrior_repo)
@@ -732,8 +760,7 @@ class pre_requirements():
             print("got url as argument ..proceeding further ")
 
         elif self.user_repo_path:
-            import pdb
-            pdb.set_trace()
+
             print("got user_repo_path as argument ..proceeding further ")
             verify = Verify_Import_Statements(self.user_repo_path)
             if self.imp_output_dir:
@@ -894,8 +921,7 @@ if (imp_url and imp_output_dir) or (user_repo_path and imp_output_dir) or (imp_u
 
 elif (warrior_repo and keyword_repos and add_repo_output) or (warrior_repo and keyword_repos):
     print("Performing operation on Add Repo in StepSection")
-    import pdb
-    pdb.set_trace()
+
     START_HERE = pre_requirements(str(args.add_repo_warrior_url), str(args.add_repo_keyword_url),
                                   add_repo_output, imp_url, user_repo_path, imp_output_dir,
                                   add_repo_war_repos_path, add_repo_kw_repos_path)
