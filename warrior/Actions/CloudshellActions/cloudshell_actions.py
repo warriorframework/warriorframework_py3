@@ -15,7 +15,7 @@ limitations under the License.
 from warrior.Framework.Utils import config_Utils, data_Utils, file_Utils
 from warrior.Framework.Utils import testcase_Utils
 from warrior.Framework.Utils.testcase_Utils import pNote
-from warrior.Framework.Utils.print_Utils import print_exception, print_info
+from warrior.Framework.Utils.print_Utils import print_exception, print_info, print_error
 import os
 import time
 
@@ -399,6 +399,21 @@ class CloudShellActions(object):
         #Before entering try block to activate the topology,
         #check whether Reservation status is Started. If status is not Started,
         #then wait for time_out seconds before activating.
+
+        # Check for Conflicts
+        reservation_status = cloud_shell.GetReservationDetails(cs_res_id).ReservationDescription
+        if reservation_status.Conflicts:
+            conflicts_suggested_end_times = []
+            for conflicted_resource in reservation_status.Conflicts:
+                planned_end_time = conflicted_resource.ConflictPlannedEndTime
+                if planned_end_time not in conflicts_suggested_end_times:
+                    conflicts_suggested_end_times.append(planned_end_time)
+            # End the Reservation
+            cloud_shell.EndReservation(cs_res_id)
+            print_error("Conflicts Found, Planned end time for resources inside is:\n{}".format("\n".join(
+                conflicts_suggested_end_times)))
+            status = False
+            return status
 
         reservation_status = cloud_shell.GetReservationDetails(cs_res_id).ReservationDescription.Status
         sec = 0
