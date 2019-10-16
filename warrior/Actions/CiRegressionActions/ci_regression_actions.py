@@ -13,9 +13,9 @@ limitations under the License.
 import os
 import time
 from io import IOBase
-from Framework import Utils
-from Framework.Utils import data_Utils, file_Utils, datetime_utils
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework import Utils
+from warrior.Framework.Utils import data_Utils, file_Utils, datetime_utils
+from warrior.Framework.Utils.testcase_Utils import pNote
 
 
 class CIregressionActions(object):

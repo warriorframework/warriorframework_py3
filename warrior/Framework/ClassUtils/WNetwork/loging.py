@@ -21,8 +21,8 @@ import time
 import sys
 import os
 
-from Framework.ClassUtils.WNetwork.base_class import Base
-from Framework.Utils.print_Utils import print_exception, print_error, \
+from warrior.Framework.ClassUtils.WNetwork.base_class import Base
+from warrior.Framework.Utils.print_Utils import print_exception, print_error, \
  print_info, print_warning
 
 try:

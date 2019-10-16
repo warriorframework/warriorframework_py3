@@ -18,10 +18,10 @@ import copy
 import traceback
 import glob
 
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_info, print_error, print_warning
-from WarriorCore.Classes import execution_files_class, junit_class
-from WarriorCore import common_execution_utils, sequential_testsuite_driver, \
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_error, print_warning
+from warrior.WarriorCore.Classes import execution_files_class, junit_class
+from warrior.WarriorCore import common_execution_utils, sequential_testsuite_driver, \
  parallel_testsuite_driver
 
 

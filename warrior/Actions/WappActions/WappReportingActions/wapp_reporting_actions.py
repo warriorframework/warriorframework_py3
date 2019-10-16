@@ -13,9 +13,9 @@ limitations under the License.
 
 import datetime
 import multiprocessing
-from Framework.Utils import config_Utils
-from WarriorCore.Classes.warmock_class import mockready
-from Framework.Utils.data_Utils import get_object_from_datarepository, get_credentials
+from warrior.Framework.Utils import config_Utils
+from warrior.WarriorCore.Classes.warmock_class import mockready
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, get_credentials
 
 
 class CWPluginActions(object):

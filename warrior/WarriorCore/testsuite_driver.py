@@ -21,12 +21,12 @@ import glob
 from . import testcase_driver
 from . import sequential_testcase_driver
 from . import parallel_testcase_driver
-from WarriorCore.Classes import execution_files_class, junit_class
-from WarriorCore.Classes.jira_rest_class import Jira
-from WarriorCore.Classes.iterative_testsuite_class import IterativeTestsuite
-from WarriorCore import testsuite_utils, common_execution_utils
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_info, print_debug, print_warning, print_error
+from warrior.WarriorCore.Classes import execution_files_class, junit_class
+from warrior.WarriorCore.Classes.jira_rest_class import Jira
+from warrior.WarriorCore.Classes.iterative_testsuite_class import IterativeTestsuite
+from warrior.WarriorCore import testsuite_utils, common_execution_utils
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_debug, print_warning, print_error
 """Test suite driver module to execute a collection of testcases """
 
 #===============================================================================

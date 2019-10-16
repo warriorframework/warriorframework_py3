@@ -15,9 +15,9 @@ limitations under the License.
 import os
 import xml.etree.ElementTree as ET
 
-import Tools
-from Framework.Utils import xml_Utils
-from Framework.Utils.print_Utils import print_warning, print_info
+from warrior import Tools
+from warrior.Framework.Utils import xml_Utils
+from warrior.Framework.Utils.print_Utils import print_warning, print_info
 
 
 def create_database_connection(server_type="resultservers", dbsystem=None):

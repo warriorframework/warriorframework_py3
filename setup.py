@@ -11,18 +11,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from setuptools import setup
+from setuptools import setup, find_packages
 
 PACKAGE_NAME = "warriorframework"
-PACKAGE_VERSION = "4.1.0" 
+PACKAGE_VERSION = "4.1.0"
 
 setup(
     name=PACKAGE_NAME,
     version=PACKAGE_VERSION,
     author="warriorframework org",
-    url="https://github.com/warriorframework/warriorframework",
+    scripts=['warrior/Warrior'],
+    packages=find_packages(),
+    package_data={'':['**/*', '*']},
+    include_package_data=True,
+    url="https://github.com/warriorframework/warriorframework_py3",
     install_requires=["pexpect==4.2", "requests==2.21.0", "selenium==3.8.0",
-                      "lxml==3.3.3", "paramiko==2.4.2", "pysnmp==4.4.9",
+                      "lxml==4.4.1", "paramiko==2.4.2", "pysnmp==4.4.9",
                       "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6"]
 
 )

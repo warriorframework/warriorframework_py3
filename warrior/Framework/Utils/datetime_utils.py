@@ -14,7 +14,7 @@ limitations under the License.
 
 import datetime
 import time
-from Framework.Utils.print_Utils import print_without_logging, print_error, print_warning
+from warrior.Framework.Utils.print_Utils import print_without_logging, print_error, print_warning
 
 
 def wait_for_timeout(wait_time, unit="SECONDS", notify_count=4):

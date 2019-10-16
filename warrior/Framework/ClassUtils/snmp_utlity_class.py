@@ -17,7 +17,7 @@ limitations under the License.
 import os
 import re, sys, time
 from time import sleep
-from Framework.Utils import testcase_Utils, data_Utils, config_Utils
+from warrior.Framework.Utils import testcase_Utils, data_Utils, config_Utils
 import threading
 try:
     from pysnmp.entity.rfc3413.oneliner import cmdgen, ntforg

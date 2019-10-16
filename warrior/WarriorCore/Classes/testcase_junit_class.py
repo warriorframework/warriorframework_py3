@@ -64,6 +64,9 @@ class TestcaseJunit(object):
         return elem
 
     def add_keyword_result(self, name, status):
+        """
+        add keyword result
+        """
         self.testcase.append(self.create_element("keyword", {"name":name, "status":status}))
 
     def add_requirement(self, requirement):
@@ -91,9 +94,15 @@ class TestcaseJunit(object):
         self.testsuite.set('time', str(time))
 
     def update_timestamp(self, timestamp):
+        """
+        update timestamp
+        """
         self.testsuite.set("timestamp", str(timestamp))
 
     def add_property(self, name, value):
+        """
+        add property
+        """
         for node in self.root.iter():
             if node.tag == "testsuite":
                 node.find('properties').append(self.create_element(name="property", attr={"name":name, "value":value}))

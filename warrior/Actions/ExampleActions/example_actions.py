@@ -1,3 +1,5 @@
+# pylint: disable=wrong-import-position,invalid-name,import-error
+# pylint: disable=pointless-string-statement
 '''
 Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -22,8 +24,8 @@ import pexpect
 #=====================================================================
 # """ Import Warrior Framework Utilities below this line"""
 #===========================================================================
-# import Framework
-import Framework.Utils as Utils
+# import warrior.Framework
+from warrior.Framework import Utils
 
 #++++++++++++++++++++++++++++++++++++++++
 #WARRIOR KEYWORD TEMPLATE AND RULES
@@ -55,6 +57,8 @@ class CliActions(object):
 
     """" Default __init__ field must be used when using classes for keywords """
     def __init__(self):
+        """ Constructor
+        """
         self.resultfile = Utils.config_Utils.resultfile
         self.datafile = Utils.config_Utils.datafile
         self.logsdir = Utils.config_Utils.logsdir

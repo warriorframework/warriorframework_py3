@@ -15,12 +15,12 @@ limitations under the License.
 import json
 import os
 import xml.etree.ElementTree as ET
-from Framework.Utils import xml_Utils
-from Framework.Utils import data_Utils
-from Framework.Utils import config_Utils
-from Framework.ClassUtils.WSelenium.browser_mgmt import BrowserManagement
-from Framework.Utils.print_Utils import print_error, print_info
-from Framework.Utils import file_Utils as file_Utils
+from warrior.Framework.Utils import xml_Utils
+from warrior.Framework.Utils import data_Utils
+from warrior.Framework.Utils import config_Utils
+from warrior.Framework.ClassUtils.WSelenium.browser_mgmt import BrowserManagement
+from warrior.Framework.Utils.print_Utils import print_error, print_info
+from warrior.Framework.Utils import file_Utils as file_Utils
 
 
 def evaluate_argument_value(xpath_or_tagname, datafile):

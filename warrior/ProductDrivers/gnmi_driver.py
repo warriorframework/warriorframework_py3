@@ -13,8 +13,8 @@ limitations under the License.
 
 """ gnmi driver """
 
-from WarriorCore import kw_driver
-import Actions.GnmiActions
+from warrior.WarriorCore import kw_driver
+import warrior.Actions.GnmiActions
 
 def main(keyword, data_repository, args_repository):
     """Import all actions related to gnmi driver and call the driver Utils
@@ -23,5 +23,5 @@ def main(keyword, data_repository, args_repository):
     # Declare a list of packages to be used by this driver,
     # if you want to add more packages import them outside the main function
     # and then add them to the package_list below
-    package_list = [Actions.GnmiActions]
+    package_list = [warrior.Actions.GnmiActions]
     return kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)

@@ -11,9 +11,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 import os
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.print_Utils import print_info, print_warning
-from WarriorCore.Classes.war_cli_class import WarriorCliClass as WarCli
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import print_info, print_warning
+from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass as WarCli
 # For function/method that only be mocked in trialmode (not sim mode), put name here
 VERIFY_ONLY = ["verify_cmd_response", "verify_inorder_cmd_response"]
 
@@ -52,7 +52,7 @@ def mocked(func):
         """
         if func.__name__ == "get_command_details_from_testdata":
             if WarCli.sim and args[0] is not None and args[0] != "":
-                from Framework.Utils.data_Utils import cmd_params
+                from warrior.Framework.Utils.data_Utils import cmd_params
                 cmd_params.update({"sim_response_list": "simresp"})
                 get_response_file(args[0])
             return func(*args, **kwargs)
@@ -135,7 +135,7 @@ def get_response_file(testdatafile):
     """
         Build the response dict with response tag name and response text
     """
-    from Framework.Utils.xml_Utils import getRoot, getElementListWithSpecificXpath
+    from warrior.Framework.Utils.xml_Utils import getRoot, getElementListWithSpecificXpath
     tmp_list = getElementListWithSpecificXpath(testdatafile, "./global/response_file")
     response_file = tmp_list[0].text if tmp_list != [] else ""
     response_dict = {}
@@ -346,9 +346,9 @@ class MockUtils(object):
             """
                 Trialmode only: it prints the verify text instead of doing actual verification
             """
-            from Framework.Utils import string_Utils
-            from Framework.Utils.data_Utils import get_no_impact_logic
-            from Framework.Utils import testcase_Utils
+            from warrior.Framework.Utils import string_Utils
+            from warrior.Framework.Utils.data_Utils import get_no_impact_logic
+            from warrior.Framework.Utils import testcase_Utils
 
             if varconfigfile and varconfigfile is not None:
                 match_list = string_Utils.sub_from_varconfig(varconfigfile, match_list)

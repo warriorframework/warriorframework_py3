@@ -13,7 +13,7 @@ limitations under the License.
 
 """ selenium verify operations library"""
 
-from Framework.Utils.print_Utils import print_error, print_info, print_debug, print_exception
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_debug, print_exception
 from selenium.webdriver.support import expected_conditions as EC
 
 
@@ -29,6 +29,7 @@ class VerifyOperations(object):
         """Verify operations constructor """
 
     def get_page_property(self, browser_instance, value_type=None):
+        """get page property"""
         a = ["current_url", "name", "page_source", "title"]
         return_value = False
         if value_type is not None:
@@ -49,6 +50,7 @@ class VerifyOperations(object):
         return return_value
 
     def verify_alert_is_present(self, browser_instance, action="accept"):
+        """verify alert is present"""
         status = False
         try:
             if action.lower().strip() == "dismiss":

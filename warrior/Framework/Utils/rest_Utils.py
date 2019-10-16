@@ -17,16 +17,16 @@ import os
 import re
 import sys
 
-from Framework.ClassUtils.configuration_element_class import \
+from warrior.Framework.ClassUtils.configuration_element_class import \
     ConfigurationElement
-from Framework.Utils import file_Utils
-from Framework.Utils.dict_Utils import convert_string_to_dict
-from Framework.Utils.file_Utils import get_extension_from_path
-from Framework.Utils.string_Utils import get_list_from_varconfigfile, \
+from warrior.Framework.Utils import file_Utils
+from warrior.Framework.Utils.dict_Utils import convert_string_to_dict
+from warrior.Framework.Utils.file_Utils import get_extension_from_path
+from warrior.Framework.Utils.string_Utils import get_list_from_varconfigfile, \
     sub_from_varconfigfile, sub_from_varsub, sub_from_wdf
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.testcase_Utils import pNote
 
-from Framework.ClassUtils.testdata_class import TestDataIterations, TestData
+from warrior.Framework.ClassUtils.testdata_class import TestDataIterations, TestData
 
 
 def remove_invalid_req_args(credentials_dict, invalid_args):
@@ -66,6 +66,8 @@ def get_abs_path_from_start_dir(relative_path, start_directory, extension=".json
     return file_Utils.getAbsPath(relative_path, start_directory)
 
 def resolve_credentials_for_rest(credentials, element, datafile=None, system_name=None, variable_config="variable_config", var_sub="var_sub"):
+    """resolve credentials
+    """
     if element == "expected_response":
         credentials[element] = resolve_exp_resp_string_as_list(credentials[element])
     if element == "allow_redirects":

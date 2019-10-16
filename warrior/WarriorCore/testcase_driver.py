@@ -24,18 +24,18 @@ import shutil
 import ast
 import xml.etree.ElementTree as et
 from json import loads, dumps
-from WarriorCore.defects_driver import DefectsDriver
-from WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
-from WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
+from warrior.WarriorCore.defects_driver import DefectsDriver
+from warrior.WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
+from warrior.WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
 common_execution_utils, framework_detail
-from WarriorCore.Classes import execution_files_class, junit_class, hybrid_driver_class
-import Framework.Utils as Utils
-from Framework.Utils.testcase_Utils import convertLogic
-from Framework.Utils.print_Utils import print_info, print_warning, print_error,\
+from warrior.WarriorCore.Classes import execution_files_class, junit_class, hybrid_driver_class
+from warrior.Framework import Utils
+from warrior.Framework.Utils.testcase_Utils import convertLogic
+from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error,\
     print_debug, print_exception
-from Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
-from Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
-import Framework.Utils.email_utils as email
+from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
+from warrior.Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
+import warrior.Framework.Utils.email_utils as email
 
 
 def get_testcase_details(testcase_filepath, data_repository, jiraproj):

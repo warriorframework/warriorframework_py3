@@ -28,7 +28,7 @@ from lxml import etree
 from datetime import datetime
 import paramiko
 
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.testcase_Utils import pNote
 
 BUF_SIZE = 65536
 POLL_INTERVAL = 0.1

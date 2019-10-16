@@ -13,7 +13,7 @@ limitations under the License.
 
 import sys
 import traceback
-from WarriorCore.Classes.war_print_class import print_main
+from warrior.WarriorCore.Classes.war_print_class import print_main
 
 """
 Warrior Frameworks print library

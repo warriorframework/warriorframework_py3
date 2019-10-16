@@ -14,7 +14,7 @@ limitations under the License.
 """Module that contains methods for testcase results related operations """
 #pylint: disable=wrong-import-position
 #pylint: disable=pointless-string-statement
-from WarriorCore.Classes import testcase_utils_class
+from warrior.WarriorCore.Classes import testcase_utils_class
 TCOBJ = testcase_utils_class.TestcaseUtils()
 
 """ ##################################################################################### """

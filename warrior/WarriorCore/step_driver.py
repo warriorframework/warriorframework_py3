@@ -15,12 +15,11 @@ limitations under the License.
 # step driver module
 
 import traceback
-from WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
-import Framework.Utils as Utils
-from Framework.Utils import file_Utils
-from Framework.Utils.print_Utils import print_info, print_debug, print_error, print_exception
-from WarriorCore.Classes.war_cli_class import WarriorCliClass
-
+from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
+from warrior.Framework import Utils
+from warrior.Framework.Utils import file_Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_debug, print_error, print_exception
+from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 def get_arguments(step):
     """ For a step in the testcase xml file gets the list of all
@@ -49,7 +48,7 @@ def get_arguments(step):
 
 
 def send_keyword_to_productdriver(driver_name, plugin_name, keyword,
-                                  data_repository, args_repository):
+                                  data_repository, args_repository, repo_name):
     """send the keyword to corresponding product driver for execution"""
     step_num = data_repository["step_num"]
     # driver_call = 'ProductDrivers.{0}'.format(driver_name)
@@ -58,7 +57,8 @@ def send_keyword_to_productdriver(driver_name, plugin_name, keyword,
             import_name = ".".join(["plugins", plugin_name, "bin",
                                     plugin_name[:-7]+'_driver'])
         else:
-            import_name = "ProductDrivers.{0}".format(driver_name)
+            #import_name = "user_repo.ProductDrivers.{0}".format(driver_name)
+            import_name = "{0}.ProductDrivers.{1}".format(repo_name, driver_name)
         driver_call = __import__(import_name, fromlist=[driver_name])
     except Exception:
         trcback = print_exception(Exception)
@@ -119,6 +119,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     driver = step.get('Driver')
     plugin = step.get('Plugin')
     keyword = step.get('Keyword')
+    repo_name = step.get('Repo') or 'warrior'
     context = Utils.testcase_Utils.get_context_from_xmlfile(step)
     step_impact = Utils.testcase_Utils.get_impact_from_xmlfile(step)
     step_description = Utils.testcase_Utils.get_description_from_xmlfile(step)
@@ -169,7 +170,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
 
     # Executing keyword
     send_keyword_to_productdriver(
-        driver, plugin, keyword, data_repository, args_repository)
+        driver, plugin, keyword, data_repository, args_repository, repo_name)
     keyword_status = data_repository['step-%s_status' % step_num]
     Utils.testcase_Utils.update_step_num(str(step_num))
     if context.upper() == 'NEGATIVE' and type(keyword_status) == bool:

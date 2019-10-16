@@ -15,12 +15,12 @@ limitations under the License.
 interaction of Warrior framework with jira rest api and other related actions."""
 
 import os
-import Tools
 import json
 import time
-from WarriorCore.Classes.jira_rest_class import Jira
-from Framework.Utils.print_Utils import print_error, print_info, print_warning
-from Framework.Utils import xml_Utils, file_Utils
+from warrior import Tools
+from warrior.WarriorCore.Classes.jira_rest_class import Jira
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning
+from warrior.Framework.Utils import xml_Utils, file_Utils
 
 class DefectsDriver(object):
     """ Defects Driver Class """

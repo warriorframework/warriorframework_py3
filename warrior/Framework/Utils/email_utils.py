@@ -20,11 +20,11 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from xml.etree import ElementTree as ET
-import Tools
-from Framework.Utils.print_Utils import print_debug, print_info
-from Framework.Utils import file_Utils
-from Framework.Utils.testcase_Utils import pNote
-from WarriorCore.Classes.execution_summary_class import ExecutionSummary
+from warrior import Tools
+from warrior.Framework.Utils.print_Utils import print_debug, print_info
+from warrior.Framework.Utils import file_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.WarriorCore.Classes.execution_summary_class import ExecutionSummary
 
 
 def set_params_send_email(addsubject, data_repository, files, mail_on):

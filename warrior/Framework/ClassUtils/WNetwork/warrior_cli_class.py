@@ -18,21 +18,21 @@ import time
 import subprocess
 import getpass
 import xml.etree.ElementTree as ET
-import Tools
 import ast
 from distutils.version import LooseVersion
-from Framework import Utils
-from Framework.Utils.print_Utils import print_info, print_debug,\
+from warrior import Tools
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_debug,\
  print_warning, print_exception, print_error, print_without_logging
-from Framework.Utils.testcase_Utils import pNote
-from Framework.ClassUtils import database_utils_class
-from Framework.ClassUtils.WNetwork.loging import ThreadedLog
-from Framework.Utils.list_Utils import get_list_by_separating_strings
-from Framework.Utils.data_Utils import get_object_from_datarepository
-from WarriorCore.Classes.warmock_class import mocked
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.ClassUtils import database_utils_class
+from warrior.Framework.ClassUtils.WNetwork.loging import ThreadedLog
+from warrior.Framework.Utils.list_Utils import get_list_by_separating_strings
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository
+from warrior.WarriorCore.Classes.warmock_class import mocked
 from timeit import itertools
-from Framework.Utils.config_Utils import data_repository
-from WarriorCore.Classes.war_cli_class import WarriorCliClass
+from warrior.Framework.Utils.config_Utils import data_repository
+from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 """ Module for performing CLI operations """
 

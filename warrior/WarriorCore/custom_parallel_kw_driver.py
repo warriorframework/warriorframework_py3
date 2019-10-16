@@ -16,16 +16,16 @@ limitations under the License.
 """This is custom parallel keyword driver which is used to execute
 the keywords of a testcase in parallel where data_type = custom"""
 
-import WarriorCore.step_driver as step_driver
+import warrior.WarriorCore.step_driver as step_driver
 import traceback
 from collections import OrderedDict
 
 
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_debug, print_error
-from WarriorCore.multiprocessing_utils import create_and_start_process_with_queue, \
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_debug, print_error
+from warrior.WarriorCore.multiprocessing_utils import create_and_start_process_with_queue, \
 get_results_from_queue, update_tc_junit_resultfile
-from Framework.Utils import testcase_Utils
+from warrior.Framework.Utils import testcase_Utils
 
 def execute_custom_parallel(step_list, data_repository, tc_status, system_name):
     """Takes a list of steps as input and executes them in parallel by

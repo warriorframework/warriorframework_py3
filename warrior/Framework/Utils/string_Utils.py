@@ -13,8 +13,8 @@ limitations under the License.
 
 """This is the library to hold all api's related to string operations """
 
-from Framework.ClassUtils.configuration_element_class import ConfigurationElement
-from Framework.Utils.print_Utils import print_info, print_error, print_exception
+from warrior.Framework.ClassUtils.configuration_element_class import ConfigurationElement
+from warrior.Framework.Utils.print_Utils import print_info, print_error, print_exception
 
 import re
 import difflib
@@ -116,7 +116,7 @@ def sub_from_wdf(datafile, string_list, td_sys_list=None, kw_system_name=None):
     substitute the patterns $wdf{} in the command/verify parameters
     with the values form the datafile
     """
-    from Framework.Utils.data_Utils import getSystemData
+    from warrior.Framework.Utils.data_Utils import getSystemData
     newstring_list = []
     for i in range(0, len(string_list)):
         string = string_list[i]

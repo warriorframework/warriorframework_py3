@@ -29,10 +29,10 @@ Once/Polling/Stream
 """
 
 import os, re, sys
-import Framework.Utils as Utils
-from Framework.Utils import testcase_Utils, config_Utils, data_Utils, file_Utils
-from Framework.Utils.print_Utils import print_info
-from Framework.ClassUtils.gnmi_utils_class import gnmi
+from warrior.Framework import Utils
+from warrior.Framework.Utils import testcase_Utils, config_Utils, data_Utils, file_Utils
+from warrior.Framework.Utils.print_Utils import print_info
+from warrior.Framework.ClassUtils.gnmi_utils_class import gnmi
 from time import sleep
 
 class gnmiactions(object):

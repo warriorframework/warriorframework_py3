@@ -12,16 +12,16 @@ limitations under the License.
 '''
 
 """ Selenium keywords for Element Locator Actions """
-from Framework.ClassUtils.WSelenium.element_locator import ElementLocator
+from warrior.Framework.ClassUtils.WSelenium.element_locator import ElementLocator
 try:
-    import Framework.Utils as Utils
+    from warrior.Framework import Utils
 except ImportWarning:
     raise ImportError
 
-from Framework.Utils import xml_Utils
-from Framework.Utils import data_Utils
-from Framework.Utils import selenium_Utils
-from Framework.Utils.testcase_Utils import pNote,pSubStep
+from warrior.Framework.Utils import xml_Utils
+from warrior.Framework.Utils import data_Utils
+from warrior.Framework.Utils import selenium_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote,pSubStep
 
 
 class elementlocator_actions(object):

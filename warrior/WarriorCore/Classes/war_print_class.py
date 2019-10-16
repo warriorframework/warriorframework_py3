@@ -41,7 +41,7 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     else:
         sys.stdout.write(print_string + '\n')
     sys.stdout.flush()
-    from Framework.Utils.testcase_Utils import TCOBJ
+    from warrior.Framework.Utils.testcase_Utils import TCOBJ
     if TCOBJ.pnote is False:
         TCOBJ.p_note_level(message, print_type)
     return print_string
