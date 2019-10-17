@@ -85,7 +85,7 @@ def print_info(message, *args):
     print_type = "-I-"
     if len(args) > 0:
         for arg in args:
-            message += arg + ", "
+            message += str(arg) + ", "
     color_message = None
     
 
