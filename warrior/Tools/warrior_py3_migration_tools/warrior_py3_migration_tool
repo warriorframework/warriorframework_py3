@@ -169,7 +169,7 @@ class addRepoinStepSection():
         '''
         In this function finding the repo name of respective drivers
         '''
-        path = os.getcwd()
+        path = self.add_repo_output
         driver_repo_dict = {}
 
         for driver in self.drivers:
@@ -694,7 +694,7 @@ class pre_requirements():
                     for repo_kw in repos_paths:
                         rep = repo_kw.split("/")[-1]
                         os.system("cp -r {} {}".format(repo_kw, self.add_repo_output))
-                        elem = self.add_repo_output+"/"+rep
+                        elem = str(self.add_repo_output)+"/"+str(rep)
                         list_of_keywords.append(elem)
                     self.add_repo_kw_repos_path = list_of_keywords
                 except Exception as err:
@@ -721,7 +721,7 @@ class pre_requirements():
                         for repo_kw in repos_paths:
                             rep = repo_kw.split("/")[-1]
                             os.system("cp -r {} {}".format(repo_kw, self.add_repo_output))
-                            keywrd = self.add_repo_output+"/"+rep
+                            keywrd = str(self.add_repo_output)+"/"+str(rep)
                             key_repo_path.append(keywrd)
                         self.add_repo_kw_repos_path = key_repo_path
 
