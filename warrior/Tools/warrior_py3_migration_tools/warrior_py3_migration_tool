@@ -291,10 +291,12 @@ class addRepoinStepSection():
                 if os.path.exists(os.path.join( self.add_repo_output, kw_repo_name)):
                     timestamp = time.time()
                     new_directory_name = "{}_{}".format(kw_repo_name, int(timestamp))
-                    self.add_repo_output = os.path.join(self.add_repo_output, new_directory_name)
-                    os.mkdir(self.add_repo_output)
+                    new_path = os.path.join(self.add_repo_output, new_directory_name)
+                    os.mkdir(new_path)
                     all_kw_dirs.append(u_r_l)
-                gitimpo.Git(self.add_repo_output).clone(u_r_l)
+                    gitimpo.Git(new_path).clone(u_r_l)
+                else:
+                    gitimpo.Git(self.add_repo_output).clone(u_r_l)
                 print_info("successfully cloned Warror Keyword repo", u_r_l)
                 i = i+1
             print_info("successfully cloned Keywords repository(s)!!")
@@ -523,15 +525,27 @@ class Verify_Import_Statements():
                                                     root + "/" + file)
                                                 os.system(af)
 
-                            elif fline.startswith("WarriorCore"):
-                                if "\r" in fline:
-                                    fline = fline[:-2]
+                            elif "WarriorCore" in fline:
+                                if fline.startswith("WarriorCore"):
+                                    if "\r" in fline:
+                                        fline = fline[:-2]
+                                    else:
+                                        fline = fline[:-1]
+                                    ffline = re.sub("WarriorCore", "warrior.WarriorCore", fline, 1)
+                                    a = """sed -i 's/{}/{}/g' {}""".format(
+                                        fline, ffline, root + "/" + file)
+                                    os.system(a)
                                 else:
-                                    fline = fline[:-1]
-                                ffline = re.sub("WarriorCore", "warrior.WarriorCore", fline, 1)
-                                a = """sed -i 's/{}/{}/g' {}""".format(
-                                    fline, ffline, root + "/" + file)
-                                os.system(a)
+                                    if "\r" in fline:
+                                        fline = fline[:-2]
+                                    else:
+                                        fline = fline[:-1]
+                                    ffline = re.sub("WarriorCore", "warrior.WarriorCore", fline, 1)
+                                    a = """sed -i 's/{}/{}/g' {}""".format(
+                                        fline, ffline, root + "/" + file)
+                                    os.system(a)
+
+
         else:
             print_info("path not found")
 
@@ -815,6 +829,10 @@ class pre_requirements():
         elif self.user_repo_path:
 
             print_info("got user_repo_path as argument ..proceeding further ")
+            path = self.user_repo_path.split("/")[-1]
+            if re.match("[\d+]", path):
+                print("repository  name is starting with digit.. change and try again  ")
+                sys.exit()
             verify = Verify_Import_Statements(self.user_repo_path)
             if self.imp_output_dir:
                 if os.path.exists(self.imp_output_dir):
@@ -865,6 +883,17 @@ class pre_requirements():
                     print_info("Not able to install the package {}".format("GitPython"))
                 import git
                 path = self.imp_url.split("/")[-1].split(".")[0]
+                pattern = r'(\d+)'
+                match = re.match(pattern, path)
+                match_flag = False
+                import pdb
+                pdb.set_trace()
+                if match:
+                    existing_name= path
+                    mod_path = path.split(match.group(1))[-1]
+                    match_flag = True
+                    path = mod_path
+
                 user_dir_path_flag = False
                 if self.imp_output_dir:
                     self.user_repo_path = self.imp_output_dir
@@ -886,6 +915,9 @@ class pre_requirements():
                     self.user_repo_path = os.path.join(CURRENT_WORKING_DIRECTORY, path)
                 print_info("cloning the user provided url")
                 git.Git(os.getcwd()).clone(self.imp_url)
+                if match_flag:
+                    os.system("mv {}/ {}".format(existing_name, mod_path))
+
                 if not self.user_repo_path.endswith(path):
                     self.user_repo_path = os.path.join(self.user_repo_path, path)
 
