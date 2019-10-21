@@ -886,8 +886,6 @@ class pre_requirements():
                 pattern = r'(\d+)'
                 match = re.match(pattern, path)
                 match_flag = False
-                import pdb
-                pdb.set_trace()
                 if match:
                     existing_name= path
                     mod_path = path.split(match.group(1))[-1]
