@@ -267,13 +267,18 @@ class addRepoinStepSection():
         try:
             print_info(" warrior repo is ", self.warrior_repo)
             print_info("cloning Warror/warroirspace repository. Please wait....")
+            war_repo_name  = self.warrior_repo.split("/")[-1].split(".")[0]
+            if os.path.exists(os.path.join( self.add_repo_output, war_repo_name)):
+                timestamp = time.time()
+                new_directory_name = "{}_{}".format(war_repo_name, int(timestamp))
+                self.add_repo_output = os.path.join(self.add_repo_output, new_directory_name)
+                os.mkdir(self.add_repo_output)
             gitimpo.Git(self.add_repo_output).clone(self.warrior_repo)
             print_info("successfully cloned Warror/warroirspace repository")
             print_info("cloning Keywords repositories")
 
             list_kw_urls = self.keyword_repos.split(" ")
             all_kw_dirs = []
-
             i = 0
             for _ in list_kw_urls:
                 kw_url = list_kw_urls[i]
@@ -281,7 +286,14 @@ class addRepoinStepSection():
                 # repo_name = kw_url.split("/")[-1].split(".")[0]
                 print_info("cloning the warrior Keyword repo. Please wait....")
                 print_info("clong repo is ", u_r_l)
-                all_kw_dirs.append(u_r_l)
+
+                kw_repo_name = u_r_l.split("/")[-1].split(".")[0]
+                if os.path.exists(os.path.join( self.add_repo_output, kw_repo_name)):
+                    timestamp = time.time()
+                    new_directory_name = "{}_{}".format(kw_repo_name, int(timestamp))
+                    self.add_repo_output = os.path.join(self.add_repo_output, new_directory_name)
+                    os.mkdir(self.add_repo_output)
+                    all_kw_dirs.append(u_r_l)
                 gitimpo.Git(self.add_repo_output).clone(u_r_l)
                 print_info("successfully cloned Warror Keyword repo", u_r_l)
                 i = i+1
