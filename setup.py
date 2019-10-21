@@ -35,8 +35,8 @@ setup(
     },
     classifiers=[
 		'Development Status :: 5 - Production/Stable',
-                'License :: OSI Approved :: Apache Software License',
-                'Programming Language :: Python :: 3.6',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python :: 3.6',
     ],
     install_requires=["pexpect==4.2", "requests==2.21.0", "selenium==3.8.0",
                       "lxml==4.4.1", "paramiko==2.4.2", "pysnmp==4.4.9",
