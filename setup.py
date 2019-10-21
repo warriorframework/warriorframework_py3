@@ -19,15 +19,29 @@ PACKAGE_VERSION = "4.1.0"
 setup(
     name=PACKAGE_NAME,
     version=PACKAGE_VERSION,
-    author="warriorframework org",
+    author="warriorteam",
+    author_email='frameworkwarrior@gmail.com',
     scripts=['warrior/Warrior',
              'warrior/Tools/warrior_py3_migration_tools/warrior_py3_migration_tool'],
     packages=find_packages(),
     package_data={'':['**/*', '*']},
     include_package_data=True,
+    long_description=open('module.txt').read(),
+    description="Warrior Framework is an open source Automation Framework",
     url="https://github.com/warriorframework/warriorframework_py3",
+    project_urls={
+        "Documentation": "http://warriorframework.org/",
+        "Source Code": "https://github.com/warriorframework/warriorframework_py3",
+    },
+    classifiers=[
+		'Development Status :: 5 - Production/Stable',
+                'License :: OSI Approved :: Apache Software License',
+                'Programming Language :: Python :: 3.6',
+    ],
     install_requires=["pexpect==4.2", "requests==2.21.0", "selenium==3.8.0",
                       "lxml==4.4.1", "paramiko==2.4.2", "pysnmp==4.4.9",
-                      "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6"]
+                      "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6",
+                      "cloudshell-automation-api==9.3.0.175525",
+                      "pycryptodome==3.6.1"]
 
 )

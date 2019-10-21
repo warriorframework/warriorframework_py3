@@ -1,133 +1,109 @@
 Release: Ninja
-Version: warrior-3.7.0
+Version: warrior-4.1.0
 
 ===================
 1: Release details
 ===================
 This is release Ninja of Warrior Test Automation Framework
 
-
-
 -------------------------------
 1.1: List of available releases
 -------------------------------
-
-1. Ninja = warrior-3.1.0 to current
-
-
+1. Ninja = warrior-4.1.0
 
 ==================
 2. Version Details
 ==================
-You are on Release Ninja, Version warrior-3.7.0 of Warrior Framework.
-Procedure to get a specific version is available in section-3 of this document.
+You are on Release Ninja, Version warrior-4.1.0 of Warrior Framework.
 
+Warrior-4.1.0 python3 release supports the presence of keyword libraries and test cases outside Warrior install base by updating PYTHONPATH.
+warrior-4.1.0 is also released as pip installable pacakge.
+The pre-requiste for installing pip module is python 3.6 version and above.
 
 
 +++++++++++++++++++++++++++++++++
 2.1. Change log for this release
 +++++++++++++++++++++++++++++++++
+
+All features and bugs from python2 warrior framework have been ported to python3 warrior framework.
 -------------
 New Features:
 -------------
-
-[WAR-954] - Katana: As a katana user it would be helpful if system/subsystem names are available in a drop down while creating a testcase
-[WAR-991] - Implement "wtag=" with datatype support at the framework level so that it does not interfere with "tag=" feature at the keyword level
-[WAR-1074] - Selenium Kws: Investigate running selenium testcases in headless mode
-[WAR-1097] - Support for * in path to loop through all project and suite files under directory
-[WAR-1445] - Iteration by test block not working for list
-[WAR-1568] - As a user, I want test description in my result file for each step.
-[WAR-1585] - Katana : HTML Result summary - Table header & Defect icon hides in lower screen resolution.
-[WAR-1630] - Unable to know whether the pattern match is failed due to software or an expected failure from the script
----------
-Bugfixes:
----------
-
-[WAR-1548] - Selenium: open browser code does not account for default values of arguments
-[WAR-1580] - multiple response patterns fails with mixed single and multiple response patterns
-[WAR-1583] - Incorrect Results printed on Console window for iterative Parallel TC
-[WAR-1591] - WebUI interface for DCN is failing
-[WAR-1609] - As a user, commit id is not working in the label part of Warhorn
-[WAR-1680] - Using context as negative in connect_netconf keyword is giving EXCEPTION error.
+[WAR-2238] - Warrior framework as pip installable module
+[WAR-2244] - Warrior Migration Script to Python3 - Testcases and Keywords Repo
+[WAR-2232] - Debug Section Support in the Wrapper File.
+[WAR-2213] - Support to run the testcase in the Random Order.
+[WAR-2174] - Looping Support in the Warrior Framework
+[WAR-2154] - Kakfa Keywords for Test Automation
+[WAR-2056] - Keyword to log Custom Messages.
+[WAR-1927]  -GNMI Support in Warrior Framework
+[WAR-2028] - Keywords to get current timestamp and time delta
+[WAR-2055] - store_in_repo keyword enchanced to store nested in json file
 
 
 =================================================
-3. Procedure to get a specific version of Warrior
+3. Procedure to install pip module
 =================================================
+
+1.Latest version warriorframework from PyPI server
+    pip install warriorframework
+
+2.Specfic Version warriorframework from PyPI Server
+    pip install warriorframework==4.1.0
+
+3. Uninstall warriorframework
+    pip uninstall warriorframework
+
+=============================================================
+4. Procedure to get a specific version of Warrior from github
+==============================================================
 
 1. Clone warriorframework
 
-$ git clone https://github.com/warriorframework/warriorframework.git
+	$ git clone https://github.com/warriorframework/warriorframework_py3.git
 
-2. go to warriorframework directory
+2. Goto warriorframework directory
 
-$cd warriorframework
+	$cd warriorframework
 
 3. To check the list of versions available, execute "git tag --list" command
 
-$ git tag --list
-warior-3.1.0
-warior-3.1.1
-warior-3.2.0
-warior-3.3.0
-$
+	$ git tag --list
+	warior-4.1.0
+
 
 3. To Check the current version you are at, execute "git branch" command
 
-$ git branch
-* master
-$
-
-- * indicates the active version.
-- In the above example master is the active version.
-- If the active version is master it means you are not using a standard release version of warrior framework and hence it may
-not be a stable tested version.
+	$ git branch
+		* master
+		- * indicates the active version.
+		- In the above example master is the active version.
+		- If the active version is master it means you are not using a standard release version of warrior framework and hence it may
+		  not be a stable tested version.
 
 4. To switch to a specific version from master, execute 'git checkout <version_name>' command.
 
-$ git checkout warrior-3.3.0
-Note: checking out 'warrior-3.3.0'.
+	$ git checkout warrior-4.1.0
+		Note: checking out 'warrior-4.1.0'.
 
-You are in 'detached HEAD' state. You can look around, make experimental
-changes and commit them, and you can discard any commits you make in this
-state without impacting any branches by performing another checkout.
+		You are in 'detached HEAD' state. You can look around, make experimental
+		changes and commit them, and you can discard any commits you make in this
+		state without impacting any branches by performing another checkout.
 
-If you want to create a new branch to retain commits you create, you may
-do so (now or later) by using -b with the checkout command again. Example:
+		If you want to create a new branch to retain commits you create, you may
+		do so (now or later) by using -b with the checkout command again. Example:
 
-git checkout -b <new-branch-name>
+		git checkout -b <new-branch-name>
 
-HEAD is now at 146313d... reduce command timeout, wait after timeout=60
-$
+		HEAD is now at 146313d... reduce command timeout, wait after timeout=60
+
 
 5. Execute git branch command to verify the active version.
 
-$ git branch
-* (HEAD detached at warrior-3.3.0)
-master
-$
+	$ git branch
+		* (HEAD detached at warrior-4.1.0)
+		master
+		- * indicates the active version.
 
-- * indicates the active version.
 
-6. Switch from one version to another (current=warrior-3.3.0, switch to warrior-3.2.0)
 
-$ git checkout warrior-3.2.0
-Previous HEAD position was 146313d... reduce command timeout, wait after timeout=60
-HEAD is now at ecb6373... WAR-180, handle nd prompt on timeout
-$
-$ git branch
-* (HEAD detached at warrior-3.2.0)
-master
-$
-
-7. Switch to master branch again.
-
-$ git checkout master
-Previous HEAD position was ecb6373... WAR-180, handle nd prompt on timeout
-Switched to branch 'master'
-Your branch is up-to-date with 'origin/master'.
-$
-$
-$ git branch
-* master
-$

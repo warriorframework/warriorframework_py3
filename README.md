@@ -10,8 +10,8 @@ Get VirtualBox [here](https://www.virtualbox.org/wiki/Downloads)<br/>
 Get Linux Image [here](https://www.ubuntu.com/download/desktop?)<br/>
 Follow these [Instructions](https://www.lifewire.com/run-ubuntu-within-windows-virtualbox-2202098) to get a Virtual Machine set up on your system
 
-###### Python 3.4+ &amp; pip
-Follow this [tutorial](http://thelazylog.com/install-python-as-local-user-on-linux/) to get the Python you need. Just replace the python version in the tutorial to 3.5.0
+###### Python 3.6+ &amp; pip
+Follow this [tutorial](http://thelazylog.com/install-python-as-local-user-on-linux/) to get the Python you need.
 
 ###### django
 [Instructions](https://docs.djangoproject.com/en/2.0/faq/install/#faq-python-version-support) for Django Installation
@@ -29,6 +29,10 @@ pexpect<br/>
 requests<br/>
 selenium<br/>
 pysnmp<br/>
+kafka-python<br/>
+pyvirtualdisplay<br/>
+pycryptodome<br/>
+paramiko<br/>
 lxml<br/>
 xlrd<br/>
 cloudshell-automation-api<br/>
@@ -48,6 +52,8 @@ We strongly recommend getting the latest released version.
 
 Output:
 
+`warrior-4.1.0`<br/>
+`warrior-4.1.0-beta`<br/>
 `warrior-4.0.0-beta`<br/>
 `warrior-3.4.0`<br/>
 `warrior-3.3.0` <br/>
@@ -64,11 +70,11 @@ Output:
 `If the active version is master it means you are not using a standard release version of warriorframework and hence it may not be a stable tested version.`<br/>
 
 ###### Get A Specific Version from master
-`git checkout warrior-3.4.0`
+`git checkout warrior-4.1.0`
 
 Output:
 
-`Note: checking out 'warrior-3.4.0'.`
+`Note: checking out 'warrior-4.1.0'.`
 
 `You are in 'detached HEAD' state. You can look around, make experimental changes and commit them, and you can discard any commits you make in this state without impacting any branches by performing another checkout.`
 
@@ -76,48 +82,25 @@ Output:
 
 `git checkout -b new_branch_name`
 
-`HEAD is now at 2bba292... Merge pull request #234 from warriorframework/release-warrior-3.4.0`
+`HEAD is now at 2bba292... Merge pull request #234 from warriorframework/release-warrior-4.1.0`
 
 ###### Verify the Active Version. <br/>
 `git branch`
 
 Output:
 
-`\* (HEAD detached at warrior-3.4.0)` <br/>
+`\* (HEAD detached at warrior-4.1.0)` <br/>
 `master` <br/>
 
 `\* indicates the active version.`
 
 ###### Switch Versions (Eg: current=warrior-3.4.0, switch to warrior-4.0.0-beta) <br/>
 
-`git checkout warrior-4.0.0-beta`
+`git checkout warrior-4.1.0`
 
 Output:
 
-`Previous HEAD position was 2bba292... Merge pull request #234 from warriorframework/release-warrior-3.4.0`<br/>
+`Previous HEAD position was 2bba292... Merge pull request #234 from warriorframework/release-warrior-4.1.0`<br/>
 `HEAD is now at b3bad2e... Update version.txt`
 
 
-##### Running WarriorFramework Locally
-
-Once, you have WarriorFramework on your system, cd into the katana directory:
-
-`cd warriorframework_py3/katana`
-
-Then, run the command to kickstart the server:
-
-`python Katana.py runserver`
-
-Make sure that your are using the correct Python. The command above will start the server on port 8000 by default. If you want to start the server on a different port (say, 5000), you can modify the command above to this:
-
-`python Katana.py runserver 0.0.0.0:5000`
-
-Then, open up a browser and type in the following as a URL:
-
-`localhost:8000/katana/`
-
-If you are usng a different port (say, 5000), change the url above to use that port:
-
-`localhost:5000/katana/`
-
-WarriorFramework is now up and running.
