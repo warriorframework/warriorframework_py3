@@ -502,7 +502,6 @@ class CommonActions(object):
                     script_status = False
                     step_status_message = "{0} status {1}".\
                             format(session_td_key.replace('_result', ''), session_td_value)
-                    print_error(step_status_message)
 
             if script_status is False and '_td_response' in session_td_key:
                 for title_td_key, title_td_value in session_td_value.items():
@@ -520,7 +519,7 @@ class CommonActions(object):
                                     failure_reason = "{0} Failed".format(splitted_command[0])
                                     if str(splitted_command[0]) == "None":
                                         failure_reason = "Unable to get command failure details"
-                                print_error(failure_reason)
+
 
         output_dict = {"script_status": script_status, \
                        "step_status_message" : step_status_message, \
