@@ -537,7 +537,7 @@ class Verify_Import_Statements():
 
 #Argparser to add command line argumets
 parser = argparse.ArgumentParser()
-parser.add_argument('--imp_url', "-iu", type=str, help="git/bitbucket repo cloning url")
+parser.add_argument('--imp_url', "-iu", type=str, help="git/bitbucket keyword repository cloning url only")
 parser.add_argument('--imp_output_dir', "-iod", type=str, help="to store the output directory ")
 parser.add_argument('--imp_user_repo_path', "-iurp", type=str,
                     help="user repo name including absolute path")
@@ -992,5 +992,5 @@ elif (add_repo_war_repos_path and add_repo_kw_repos_path and add_repo_output) or
     START_HERE.add_repo_in_step_repos()
 else:
     print_info("To run this script Arguments Requried")
-    print_info('To know the syntax of argument to be use this command "python migration_tool.py --help"')
+    print_info('To know the syntax of argument to be use this command "python warrior_py3_migration_tools --help"')
     sys.exit()
