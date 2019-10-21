@@ -510,7 +510,6 @@ class CommonActions(object):
                         if '_status' not in command_key and '_command' not in command_key:
                             command = title_td_value.get(command_key+"_command", None)
                             status = title_td_value.get(command_key+"_status", None)
-                            print_error("status is {}".format(status))
                             if status is not None and status != "PASS":
                                 script_status = False
                                 splitted_command = command.split(":")
