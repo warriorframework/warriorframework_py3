@@ -385,7 +385,10 @@ class Verify_Import_Statements():
                         for fline in file_lines:
                             if fline.startswith("class"):
                                 break
-                            if fline[:-1] == "import Framework.Utils as Utils" or re.search(
+                            if (fline.startswith("import")  or fline.startswith("from")) and "*" in fline :
+                                print_info("Not found  statement {} in user repo or warrior and file name {}".
+                                           format(fline.strip(), file))
+                            elif fline[:-1] == "import Framework.Utils as Utils" or re.search(
                                     r"\s*import Framework.Utils as Utils", fline[:-1]):
                                 fline = fline[:-1]
                                 impo = "sed -i 's/import Framework.Utils as Utils/import " \
