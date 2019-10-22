@@ -120,6 +120,8 @@ class addRepoinStepSection():
         self.add_repo_output = add_repo_output
         self.add_repo_war_repos_path = add_repo_war_repos_path
         self.add_repo_kw_repos_path = add_repo_kw_repos_path
+        self.numbers_dict = {"1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six",
+                             "7": "seven", "8": "eight", "9": "nine"}
 
     def add_repo_in_step(self):
         '''
@@ -259,25 +261,26 @@ class addRepoinStepSection():
             print_info(" warrior repo is ", self.warrior_repo)
             print_info("cloning Warror/warroirspace repository. Please wait....")
             war_repo_name  = self.warrior_repo.split("/")[-1].split(".")[0]
-            pattern3 = r'(\d+)'
+            pattern3 = r'(\d)'
             match3 = re.match(pattern3, war_repo_name)
             match_flag3 = False
             if match3:
                 existing_name = war_repo_name
-                mod_path = war_repo_name.split(match3.group(1))[-1]
+                mod_path = "{}{}".format(self.numbers_dict[match3.group(1)], war_repo_name.split(match3.group(1))[-1])
                 match_flag3 = True
                 war_repo_name = mod_path
             self.warr_repo_name = os.path.join(os.getcwd(), war_repo_name)
             if os.path.exists(os.path.join( self.add_repo_output, war_repo_name)):
                 timestamp = time.time()
                 new_directory_name = "{}_{}".format(war_repo_name, int(timestamp))
-                pattern = r'(\d+)'
-                match = re.match(pattern, new_directory_name)
-                match_flag = False
-                if match:
+                pattern = r'(\d)'
+                match7 = re.match(pattern, new_directory_name)
+                match_flag7 = False
+                if match7:
                     existing_name = new_directory_name
-                    mod_path = new_directory_name.split(match.group(1))[-1]
-                    match_flag = True
+                    mod_path = "{}{}".format(self.numbers_dict[match7.group(1)], new_directory_name.split(
+                        match7.group(1))[-1])
+                    match_flag7 = True
                     new_directory_name = mod_path
                 self.add_repo_output = os.path.join(self.add_repo_output, new_directory_name)
                 os.mkdir(self.add_repo_output)
@@ -299,12 +302,13 @@ class addRepoinStepSection():
                 kw_repo_name = u_r_l.split("/")[-1].split(".")[0]
                 gitimpo.Git(self.add_repo_output).clone(u_r_l)
 
-                pattern4 = r'(\d+)'
+                pattern4 = r'(\d)'
                 match4 = re.match(pattern4, kw_repo_name)
                 match_flag4 = False
                 if match4:
                     existing_name = kw_repo_name
-                    mod_path = kw_repo_name.split(match4.group(1))[-1]
+                    mod_path = "{}{}".format(self.numbers_dict[match4.group(1)],
+                                             kw_repo_name.split(match4.group(1))[-1])
                     match_flag4 = True
                     kw_repo_name = mod_path
                 if os.path.exists(os.path.join( self.add_repo_output, kw_repo_name)):
@@ -317,18 +321,17 @@ class addRepoinStepSection():
                         os.system("mv {}/ {}".format(existing_name, new_directory_name))
                         os.chdir(os.path.join(os.getcwd(), new_directory_name))
 
-                        pattern5 = r'(\d+)'
+                        pattern5 = r'(\d)'
                         match5 = re.match(pattern5, os.path.split(os.path.join(os.getcwd(), existing_name))[-1])
                         match_flag5 = False
                         if match5:
                             new_directory_name = existing_name
-                            mod_path = new_directory_name.split(match5.group(1))[-1]
+                            mod_path = "{}{}".format(self.numbers_dict[match5.group(1)],
+                                                     new_directory_name.split(match5.group(1))[-1])
                             match_flag5 = True
 
                         if match_flag5:
                             os.system("mv {}/ {}".format(existing_name, mod_path))
-
-
 
                 else:
                     if match_flag4:
@@ -356,6 +359,8 @@ class Verify_Import_Statements():
         This init function will accept the parameters 
         """
         self.user_repo_path = user_repo_path
+        self.numbers_dict = {"1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six",
+                        "7": "seven", "8": "eight", "9": "nine"}
 
     def check_for_statement_is_available_in_user_repo(self, line, user_repo_path):
         """
@@ -640,6 +645,8 @@ class pre_requirements():
         self.imp_url = imp_url
         self.user_repo_path = user_repo_path
         self.imp_output_dir = imp_output_dir
+        self.numbers_dict = {"1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six",
+                             "7": "seven", "8": "eight", "9": "nine"}
 
     def check_packages(self, str_package):
         """ Checks if the specified python package is installed.
@@ -868,10 +875,6 @@ class pre_requirements():
         elif self.user_repo_path:
 
             print_info("got user_repo_path as argument ..proceeding further ")
-            path = self.user_repo_path.split("/")[-1]
-            if re.match("[\d+]", path):
-                print("repository  name is starting with digit.. change and try again  ")
-                sys.exit()
             verify = Verify_Import_Statements(self.user_repo_path)
             if self.imp_output_dir:
                 if os.path.exists(self.imp_output_dir):
@@ -921,13 +924,14 @@ class pre_requirements():
                     print_info("Not able to install the package {}".format("GitPython"))
                 import git
                 path = self.imp_url.split("/")[-1].split(".")[0]
-                pattern = r'(\d+)'
-                match = re.match(pattern, path)
-                match_flag = False
-                if match:
+
+                pattern = r'(\d)'
+                match9 = re.match(pattern, path)
+                match_flag9 = False
+                if match9:
                     existing_name= path
-                    mod_path = path.split(match.group(1))[-1]
-                    match_flag = True
+                    mod_path = "{}{}".format(self.numbers_dict[match9.group(1)], path.split(match9.group(1))[-1])
+                    match_flag9 = True
                     path = mod_path
 
                 user_dir_path_flag = False
@@ -951,7 +955,7 @@ class pre_requirements():
                     self.user_repo_path = os.path.join(CURRENT_WORKING_DIRECTORY, path)
                 print_info("cloning the user provided url")
                 git.Git(os.getcwd()).clone(self.imp_url)
-                if match_flag:
+                if match_flag9:
                     os.system("mv {}/ {}".format(existing_name, mod_path))
 
                 if not self.user_repo_path.endswith(path):
