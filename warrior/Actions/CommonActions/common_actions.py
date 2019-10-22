@@ -499,8 +499,10 @@ class CommonActions(object):
         for session_td_key, session_td_value in data_repository.items():
             if session_td_key.startswith('step') and session_td_key.endswith('_result'):
                 if session_td_value != "PASS" and session_td_value.lower() != "skipped":
-                    script_status = False
-                    step_status_message = "{0} status {1}".\
+                    step_impact = data_repository.get(session_td_key.replace('_result', '_impact'))
+                    if(step_impact.upper() == "IMPACT"):
+                        script_status = False
+                        step_status_message = "{0} status {1}".\
                             format(session_td_key.replace('_result', ''), session_td_value)
 
             if script_status is False and '_td_response' in session_td_key:
