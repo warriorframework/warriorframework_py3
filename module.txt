@@ -15,8 +15,8 @@ Requires:
 	   pysnmp==4.4.9
 	   pyvirtualdisplay==0.2.1
 	   kafka-python==1.4.6
-       pycryptodome==3.6.1
-       cloudshell-automation-api==9.3.0.175525
+	   pycryptodome==3.6.1
+	   cloudshell-automation-api==9.3.0.175525
 
 
 Command Line Usage:
