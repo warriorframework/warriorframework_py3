@@ -1,4 +1,4 @@
-Name        : warriorframework                       
+Name        : warriorframework
 Version     : warrior-4.1.0
 Release     : Ninja
 Build Date  : Wed Oct 23 00:22:38 CDT 2019
