@@ -19,12 +19,12 @@ import platform
 import urllib.request, urllib.error, urllib.parse
 from subprocess import check_output, CalledProcessError
 from distutils.version import LooseVersion
-from Framework.Utils.datetime_utils import get_current_timestamp
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.print_Utils import print_error, print_info, print_debug, print_exception,\
+from warrior.Framework.Utils.datetime_utils import get_current_timestamp
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_debug, print_exception,\
     print_warning
-from Framework.Utils.data_Utils import get_object_from_datarepository
-from Framework.Utils.file_Utils import fileExists
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository
+from warrior.Framework.Utils.file_Utils import fileExists
 
 try:
     from selenium import webdriver

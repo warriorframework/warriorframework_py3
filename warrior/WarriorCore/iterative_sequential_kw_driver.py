@@ -18,8 +18,8 @@ the keywords of a testcase in sequential order, where data_type = iterative"""
 
 import traceback
 from . import testcase_steps_execution
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_debug, print_error
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_debug, print_error
 
 def compute_system_resultfile(kw_resultfile_list, resultsdir, system_name):
     """Takes a list of steps as input and executes them in sequential

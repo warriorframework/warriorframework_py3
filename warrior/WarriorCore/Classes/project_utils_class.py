@@ -55,6 +55,9 @@ class ProjectUtils(object):
         return elem
 
     def add_property(self, name, value):
+        """
+        add property
+        """
         for node in self.root.iter():
             if node.tag == "properties":
                 node.append(self.create_element(name="property",attr={"name":name, "value":value}))

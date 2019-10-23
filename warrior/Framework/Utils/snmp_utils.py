@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-from Framework.Utils import testcase_Utils
+from warrior.Framework.Utils import testcase_Utils
 try:
     from pysnmp.smi import builder, view, compiler, rfc1902, error
 except ImportError:

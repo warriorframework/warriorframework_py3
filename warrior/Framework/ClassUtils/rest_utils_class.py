@@ -19,12 +19,12 @@ import os
 import os.path
 import json as JSON
 from xml.dom.minidom import parseString
-from Framework.Utils.testcase_Utils import pNote
-import Framework.Utils as Utils
-from Framework.ClassUtils.json_utils_class import JsonUtils
-from Framework.Utils.print_Utils import print_error
-from Framework.Utils import string_Utils
-from Framework.Utils import data_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework import Utils
+from warrior.Framework.ClassUtils.json_utils_class import JsonUtils
+from warrior.Framework.Utils.print_Utils import print_error
+from warrior.Framework.Utils import string_Utils
+from warrior.Framework.Utils import data_Utils
 
 
 class WRest(object):

@@ -14,10 +14,10 @@ limitations under the License.
 """Module that handles the actions to be performed for
 conditional execution of a step in Testcase/Suite/Project """
 
-from Framework.Utils.data_Utils import get_object_from_datarepository, verify_data
-from Framework.Utils.print_Utils import print_error, print_info
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, verify_data
+from warrior.Framework.Utils.print_Utils import print_error, print_info
 from .Classes.argument_datatype_class import ArgumentDatatype
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.testcase_Utils import pNote
 
 MATH_OPERATION = {
     "ge": lambda data_repo_var, exec_cond_var: data_repo_var >= exec_cond_var,

@@ -64,9 +64,9 @@ So the case executions will take place in parallel on all the systems at the sam
 """
 
 
-from Framework.Utils import  data_Utils
-from Framework.Utils.testcase_Utils import pNote
-from WarriorCore import sequential_testcase_driver, iterative_parallel_testcase_driver
+from warrior.Framework.Utils import  data_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.WarriorCore import sequential_testcase_driver, iterative_parallel_testcase_driver
 
 class IterativeTestsuite(object):
     """

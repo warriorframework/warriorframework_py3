@@ -1,4 +1,16 @@
 #!/usr/bin/env python
+'''
+Copyright 2017, Fujitsu Network Communications, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+'''
 "Makes working with XML feel like you are working with JSON"
 """
 Copyright (C) 2012 Martin Blech and individual contributors.
@@ -45,10 +57,16 @@ __license__ = 'MIT'
 
 
 class ParsingInterrupted(Exception):
+    """
+    ParsingInterrupted
+    """
     pass
 
 
 class _DictSAXHandler(object):
+    """
+    DictSAXHandler
+    """
     def __init__(self,
                  item_depth=0,
                  item_callback=lambda *args: True,
@@ -63,6 +81,7 @@ class _DictSAXHandler(object):
                  namespace_separator=':',
                  namespaces=None,
                  force_list=None):
+        """Constructor"""
         self.path = []
         self.stack = []
         self.data = []
@@ -82,6 +101,9 @@ class _DictSAXHandler(object):
         self.force_list = force_list
 
     def _build_name(self, full_name):
+        """
+        build name
+        """
         if not self.namespaces:
             return full_name
         i = full_name.rfind(self.namespace_separator)
@@ -95,11 +117,17 @@ class _DictSAXHandler(object):
             return self.namespace_separator.join((short_namespace, name))
 
     def _attrs_to_dict(self, attrs):
+        """
+        attrs to dict
+        """
         if isinstance(attrs, dict):
             return attrs
         return self.dict_constructor(list(zip(attrs[0::2], attrs[1::2])))
 
     def startElement(self, full_name, attrs):
+        """
+        start element
+        """
         name = self._build_name(full_name)
         attrs = self._attrs_to_dict(attrs)
         self.path.append((name, attrs or None))
@@ -122,6 +150,9 @@ class _DictSAXHandler(object):
             self.data = []
 
     def endElement(self, full_name):
+        """
+        end element
+        """
         name = self._build_name(full_name)
         if len(self.path) == self.item_depth:
             item = self.item
@@ -153,12 +184,18 @@ class _DictSAXHandler(object):
         self.path.pop()
 
     def characters(self, data):
+        """
+        characters
+        """
         if not self.data:
             self.data = [data]
         else:
             self.data.append(data)
 
     def push_data(self, item, key, data):
+        """
+        push data
+        """
         if self.postprocessor is not None:
             result = self.postprocessor(self.path, key, data)
             if result is None:
@@ -180,6 +217,9 @@ class _DictSAXHandler(object):
         return item
 
     def _should_force_list(self, key, value):
+        """
+        should force list
+        """
         if not self.force_list:
             return False
         try:
@@ -329,6 +369,9 @@ def _emit(key, value, content_handler,
           newl='\n',
           indent='\t',
           full_document=True):
+    """
+    emit
+    """
     if preprocessor is not None:
         result = preprocessor(key, value)
         if result is None:

@@ -14,8 +14,8 @@ limitations under the License.
 """This is the library which holds api's related to operations on csv files"""
 import csv
 import json
-from Framework.Utils import data_Utils, xml_Utils, file_Utils
-from Framework.Utils.print_Utils import print_exception, print_info
+from warrior.Framework.Utils import data_Utils, xml_Utils, file_Utils
+from warrior.Framework.Utils.print_Utils import print_exception, print_info
 import os
 from collections import OrderedDict
 try:

@@ -19,8 +19,8 @@ limitations under the License.
 import xml.etree.ElementTree as ElementTree
 import re
 import decimal
-from Framework.Utils.print_Utils import print_error
-import Framework.Utils as Utils
+from warrior.Framework.Utils.print_Utils import print_error
+from warrior.Framework import Utils
 
 class ConfigurationElement(object):
     """

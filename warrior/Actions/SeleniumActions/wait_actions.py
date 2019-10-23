@@ -12,9 +12,9 @@ limitations under the License.
 '''
 
 """ Selenium keywords for Wait Actions """
-from Framework.ClassUtils.WSelenium.element_locator import ElementLocator
-from Framework.ClassUtils.WSelenium.wait_operations import WaitOperations
-from Framework.ClassUtils.json_utils_class import JsonUtils
+from warrior.Framework.ClassUtils.WSelenium.element_locator import ElementLocator
+from warrior.Framework.ClassUtils.WSelenium.wait_operations import WaitOperations
+from warrior.Framework.ClassUtils.json_utils_class import JsonUtils
 try:
     import json
     import os
@@ -22,14 +22,14 @@ try:
     import re
     import getopt
     import datetime
-    import Framework.Utils as Utils
+    from warrior.Framework import Utils
 except ImportWarning:
      raise ImportError
 
-from Framework.Utils import data_Utils
-from Framework.Utils.testcase_Utils import pNote, pSubStep
-from Framework.Utils import xml_Utils
-from Framework.Utils import selenium_Utils
+from warrior.Framework.Utils import data_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep
+from warrior.Framework.Utils import xml_Utils
+from warrior.Framework.Utils import selenium_Utils
 
 class wait_actions(object):
     """This class has the functionality to wait till an event has happened on

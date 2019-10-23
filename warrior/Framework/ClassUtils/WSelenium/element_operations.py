@@ -17,9 +17,9 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 
 
-from Framework.Utils.print_Utils import print_error, print_info, print_exception
-from Framework.Utils.data_Utils import get_object_from_datarepository
-from Framework.ClassUtils.WSelenium.element_locator import ElementLocator
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_exception
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository
+from warrior.Framework.ClassUtils.WSelenium.element_locator import ElementLocator
 
 try:
     from selenium.webdriver.remote.webelement import WebElement
@@ -183,6 +183,7 @@ class ElementOperations():
 # Private methods
 
     def _stale_element_exception(self, browser, locator, action, **kwargs):
+        """Stale element exception"""
         element = EL.get_element(browser, locator)
         if element is not None:
             action_function = self._get_action_function(action.lower())
@@ -356,6 +357,9 @@ class ElementOperations():
         return status, value
 
     def _get_property(self, element, **kwargs):
+        """
+        get property
+        """
         status = True
         if element is not None:
             attribute_name = kwargs.get('attribute_name')
@@ -372,6 +376,9 @@ class ElementOperations():
         return status
 
     def _check_property(self, element, **kwargs):
+        """
+        check property
+        """
         status = True
         if element is not None:
             attribute_name = kwargs.get('attribute_name')

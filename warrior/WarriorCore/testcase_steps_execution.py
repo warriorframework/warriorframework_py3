@@ -12,14 +12,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 import traceback
-import WarriorCore.step_driver as step_driver
-import WarriorCore.onerror_driver as onerror_driver
-import WarriorCore.exec_type_driver as exec_type_driver
-import Framework.Utils as Utils
-from WarriorCore import common_execution_utils
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.print_Utils import print_info, print_warning, print_error, print_normal
-from Framework.Utils.datetime_utils import wait_for_timeout
+import warrior.WarriorCore.step_driver as step_driver
+import warrior.WarriorCore.onerror_driver as onerror_driver
+import warrior.WarriorCore.exec_type_driver as exec_type_driver
+from warrior.Framework import Utils
+from warrior.WarriorCore import common_execution_utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error, print_normal
+from warrior.Framework.Utils.datetime_utils import wait_for_timeout
 
 """This module is used for sequential execution of testcase steps """
 

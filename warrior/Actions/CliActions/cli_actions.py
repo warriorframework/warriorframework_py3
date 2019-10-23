@@ -10,15 +10,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
-import Framework.Utils as Utils
-from Framework.Utils import cli_Utils
-from Framework.Utils.print_Utils import print_warning
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.data_Utils import getSystemData, get_session_id, get_credentials
-from Framework.Utils.encryption_utils import decrypt
-from WarriorCore.Classes.warmock_class import mockready
-from WarriorCore.Classes.war_cli_class import WarriorCliClass
-from Framework.ClassUtils.WNetwork.warrior_cli_class import WarriorCli
+from warrior.Framework import Utils
+from warrior.Framework.Utils import cli_Utils
+from warrior.Framework.Utils.print_Utils import print_warning
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.data_Utils import getSystemData, get_session_id, get_credentials
+from warrior.Framework.Utils.encryption_utils import decrypt
+from warrior.WarriorCore.Classes.warmock_class import mockready
+from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
+from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class import WarriorCli
 """This is the cli_actions module that has all cli related keywords """
 
 
@@ -361,10 +361,10 @@ class CliActions(object):
                     result = True
                 else:
                     if credentials['conn_type'] == "SSH_NESTED":
-                        from Framework.ClassUtils.WNetwork.warrior_cli_class import ParamikoConnect
+                        from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class import ParamikoConnect
                         wc_obj.conn_obj = ParamikoConnect(credentials)
                     else:
-                        from Framework.ClassUtils.WNetwork.warrior_cli_class import PexpectConnect
+                        from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class import PexpectConnect
                         wc_obj.conn_obj = PexpectConnect(credentials)
                     wc_obj.conn_obj.connect_ssh()
 
@@ -521,7 +521,7 @@ class CliActions(object):
                     output_dict[session_id + "_td_response"] = {}
                     result = True
                 else:
-                    from Framework.ClassUtils.WNetwork.warrior_cli_class import PexpectConnect
+                    from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class import PexpectConnect
                     wc_obj.conn_obj = PexpectConnect(credentials)
                     wc_obj.conn_obj.connect_telnet()
 

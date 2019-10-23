@@ -14,9 +14,9 @@ limitations under the License.
 """Warrior Network File operations module """
 
 import re
-from Framework.ClassUtils.WNetwork.base_class import Base
-from Framework.Utils import cli_Utils, file_Utils
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.ClassUtils.WNetwork.base_class import Base
+from warrior.Framework.Utils import cli_Utils, file_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
 
 
 class FileOps(Base):

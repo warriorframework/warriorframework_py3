@@ -13,8 +13,8 @@ limitations under the License.
 
 """ Keywords related to Network Diagnostics operations """
 
-import Framework.Utils as Utils
-from Framework.ClassUtils.WNetwork.diagnostics import Diag
+from warrior.Framework import Utils
+from warrior.Framework.ClassUtils.WNetwork.diagnostics import Diag
 class DiagActions(object):
     """Diagnostics keyword class """
 

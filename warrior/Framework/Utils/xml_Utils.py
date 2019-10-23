@@ -24,7 +24,7 @@ import os.path
 from xml.dom import minidom
 from xml.etree import ElementTree
 from xml.etree.ElementTree import tostring
-from Framework.OSS import xmltodict
+from warrior.Framework.OSS import xmltodict
 from .print_Utils import print_debug, print_info, print_error, print_warning, print_exception
 from collections import OrderedDict
 
@@ -856,7 +856,7 @@ def compare_xml(xml1, xml2, output_file=False, sorted_json=True,
             output file path or diff_output depends on output_file value
     """
     try:
-        from Framework.ClassUtils.json_utils_class import JsonUtils
+        from warrior.Framework.ClassUtils.json_utils_class import JsonUtils
         if remove_namespaces:
             xml1 = removenms(xml1)
             xml2 = removenms(xml2)

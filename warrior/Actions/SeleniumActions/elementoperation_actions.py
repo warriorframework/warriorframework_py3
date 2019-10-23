@@ -12,19 +12,19 @@ limitations under the License.
 '''
 
 """ Selenium keywords for Element Operation Actions """
-from Framework.ClassUtils.WSelenium.element_operations import ElementOperations
-from Framework.ClassUtils.json_utils_class import JsonUtils
-from Framework.Utils.list_Utils import get_list_comma_sep_string
+from warrior.Framework.ClassUtils.WSelenium.element_operations import ElementOperations
+from warrior.Framework.ClassUtils.json_utils_class import JsonUtils
+from warrior.Framework.Utils.list_Utils import get_list_comma_sep_string
 
 try:
-    import Framework.Utils as Utils
+    from warrior.Framework import Utils
 except ImportWarning:
     raise ImportError
 
-from Framework.Utils import data_Utils
-from Framework.Utils import selenium_Utils
-from Framework.Utils.testcase_Utils import pNote,pSubStep
-from Framework.Utils import xml_Utils
+from warrior.Framework.Utils import data_Utils
+from warrior.Framework.Utils import selenium_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote,pSubStep
+from warrior.Framework.Utils import xml_Utils
 
 class elementoperation_actions(object):
     """This is a class that deals with all 'element' (HTML element) related

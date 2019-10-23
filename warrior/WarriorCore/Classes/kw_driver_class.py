@@ -12,11 +12,11 @@ limitations under the License.
 '''
 import inspect
 import traceback
-import Framework.Utils as Utils
-from Framework.Utils import data_Utils
-from Framework.Utils.print_Utils import print_info, print_error, print_exception
-from Framework.Utils.testcase_Utils import pNote_level
-from WarriorCore.Classes.war_cli_class import WarriorCliClass
+from warrior.Framework import Utils
+from warrior.Framework.Utils import data_Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_error, print_exception
+from warrior.Framework.Utils.testcase_Utils import pNote_level
+from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 """Driver utils module which handles gathers the argument
 information about the keywords, executes the keywords and reports the
 keyword status back to the product driver """

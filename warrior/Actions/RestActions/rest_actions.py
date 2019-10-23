@@ -14,12 +14,12 @@ limitations under the License.
 import os
 import re
 import json
-import Framework.Utils as Utils
-from Framework.Utils.file_Utils import getAbsPath
-from Framework.Utils import config_Utils, file_Utils, print_Utils
-from Framework.Utils.data_Utils import get_object_from_datarepository
-from Framework.ClassUtils.rest_utils_class import WRest
-from Framework.Utils.testcase_Utils import pNote, pSubStep, \
+from warrior.Framework import Utils
+from warrior.Framework.Utils.file_Utils import getAbsPath
+from warrior.Framework.Utils import config_Utils, file_Utils, print_Utils
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository
+from warrior.Framework.ClassUtils.rest_utils_class import WRest
+from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep, \
     report_substep_status
 # pylint: disable-msg=too-many-arguments
 

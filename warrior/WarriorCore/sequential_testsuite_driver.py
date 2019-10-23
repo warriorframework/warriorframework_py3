@@ -16,13 +16,13 @@ import os
 import time
 import traceback
 
-from Framework import Utils
-from WarriorCore import testsuite_utils, common_execution_utils
-from Framework.Utils.print_Utils import print_info, print_error, print_debug, print_warning
-from WarriorCore import exec_type_driver
-import WarriorCore.testsuite_driver as testsuite_driver
-import WarriorCore.onerror_driver as onerror_driver
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework import Utils
+from warrior.WarriorCore import testsuite_utils, common_execution_utils
+from warrior.Framework.Utils.print_Utils import print_info, print_error, print_debug, print_warning
+from warrior.WarriorCore import exec_type_driver
+import warrior.WarriorCore.testsuite_driver as testsuite_driver
+import warrior.WarriorCore.onerror_driver as onerror_driver
+from warrior.Framework.Utils.testcase_Utils import pNote
 
 """This is sequential suite driver which is used to execute
 the suites of a project in sequential order"""

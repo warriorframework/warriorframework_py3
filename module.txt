@@ -1,0 +1,32 @@
+Warrior Framework is an open source automation framework designed to enable anyone to automate their testing,
+processes, and repetitive tasks by simplifying the complex process of building an automation infrastructure. 
+As a keyword and data driven framework, Warrior’s infrastructure is built to maximize on re-usability of  built in keywords.
+
+Install:
+   pip install warriorframework
+
+Requires:   
+    Python 3.6 and above 
+	   pexpect==4.2
+	   requests==2.21.0
+	   selenium==3.8.0
+	   lxml==4.4.1
+	   paramiko==2.4.2
+	   pysnmp==4.4.9
+	   pyvirtualdisplay==0.2.1
+	   kafka-python==1.4.6
+	   pycryptodome==3.6.1
+	   cloudshell-automation-api==9.3.0.175525
+
+
+Command Line Usage:
+        Warrior -h
+
+Links:
+      Documentation: http://warriorframework.org/
+
+      License      : http://www.apache.org/licenses/LICENSE-2.0
+
+      Source       : https://github.com/warriorframework/warriorframework_py3
+
+

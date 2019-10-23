@@ -13,8 +13,8 @@ limitations under the License.
 
 """ Keywords related to File operations """
 
-import Framework.Utils as Utils
-from Framework.ClassUtils.WNetwork.file_ops import FileOps
+from warrior.Framework import Utils
+from warrior.Framework.ClassUtils.WNetwork.file_ops import FileOps
 class FileOpsActions(object):
     """File operations keyword class """
 

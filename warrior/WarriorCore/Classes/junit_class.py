@@ -14,11 +14,11 @@ limitations under the License.
 
 import xml.etree.ElementTree as ET
 import os
-import  Tools
-from Framework.Utils.print_Utils import print_info
-from Framework.Utils import file_Utils
-from WarriorCore.Classes.html_results_class import WarriorHtmlResults
-from WarriorCore.Classes.execution_summary_class import ExecutionSummary
+from warrior import Tools
+from warrior.Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils import file_Utils
+from warrior.WarriorCore.Classes.html_results_class import WarriorHtmlResults
+from warrior.WarriorCore.Classes.execution_summary_class import ExecutionSummary
 
 
 class Junit(object):

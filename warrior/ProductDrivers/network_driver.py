@@ -11,18 +11,18 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-"""" Network driver """
-from WarriorCore import kw_driver
-import Actions.NetworkActions.Diagnostics
-import Actions.NetworkActions.FileOps
+from warrior.WarriorCore import kw_driver
+import warrior.Actions.NetworkActions.Diagnostics
+import warrior.Actions.NetworkActions.FileOps
 
 def main(keyword, data_repository, args_repository):
-    """Import all actions related to network driver and call
-    the driver Utils to execute a keyword """
+    """ Network driver
+        Import all actions related to network driver and call
+        the driver Utils to execute a keyword """
     # Declare a list of packages to be used by this driver,
     # if you want to add more packages import them outside the main function
     # and then add them to the package_list below
-    package_list = [Actions.NetworkActions.Diagnostics,
-                    Actions.NetworkActions.FileOps]
+    package_list = [warrior.Actions.NetworkActions.Diagnostics,
+                    warrior.Actions.NetworkActions.FileOps]
 
     return kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)

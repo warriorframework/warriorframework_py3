@@ -12,8 +12,8 @@ limitations under the License.
 '''
 
 """" robot_wrapper driver """
-from WarriorCore import kw_driver
-from plugins.robot_wrapper_plugin.bin import actions
+from warrior.WarriorCore import kw_driver
+from warrior.plugins.robot_wrapper_plugin.bin import actions
 
 
 def main(keyword, data_repository, args_repository):

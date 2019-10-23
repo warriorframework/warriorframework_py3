@@ -17,12 +17,12 @@ import json
 import urllib.request, urllib.error, urllib.parse
 import os
 
-import Framework.Utils as Utils
-from Framework.Utils.testcase_Utils import pNote, pSubStep
-from Framework.Utils.data_Utils import getSystemData, get_credentials
-from Framework.Utils.print_Utils import print_info, print_warning,\
+from warrior.Framework import Utils
+from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep
+from warrior.Framework.Utils.data_Utils import getSystemData, get_credentials
+from warrior.Framework.Utils.print_Utils import print_info, print_warning,\
 print_error, print_debug, print_exception
-from Framework.Utils import file_Utils as file_Utils
+from warrior.Framework.Utils import file_Utils as file_Utils
 
 
 class DemoActions(object):

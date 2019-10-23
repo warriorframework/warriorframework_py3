@@ -13,7 +13,7 @@ limitations under the License.
 
 import json
 
-from Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.testcase_Utils import pNote
 
 
 def convert_string_to_dict(element, key_value_pair_sep=";", key_value_sep="="):

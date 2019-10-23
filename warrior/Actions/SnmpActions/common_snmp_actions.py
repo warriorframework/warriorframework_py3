@@ -18,10 +18,10 @@ SNMP v3 Trap and Inform support added.
 """
 import os, re, ast
 import socket
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_exception
-from Framework.ClassUtils.snmp_utlity_class import WSnmp as ws
-from Framework.Utils import testcase_Utils, config_Utils, data_Utils, snmp_utils
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_exception
+from warrior.Framework.ClassUtils.snmp_utlity_class import WSnmp as ws
+from warrior.Framework.Utils import testcase_Utils, config_Utils, data_Utils, snmp_utils
 from threading import Thread
 from time import sleep
 try:

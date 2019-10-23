@@ -18,11 +18,11 @@ import traceback
 from collections import OrderedDict
 
 from . import testcase_driver
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_error, print_debug
-from WarriorCore.multiprocessing_utils import create_and_start_process_with_queue, \
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_error, print_debug
+from warrior.WarriorCore.multiprocessing_utils import create_and_start_process_with_queue, \
  get_results_from_queue, update_ts_junit_resultfile
-from WarriorCore import testsuite_utils
+from warrior.WarriorCore import testsuite_utils
 
 
 """This is  parallel testcase driver which is used to execute

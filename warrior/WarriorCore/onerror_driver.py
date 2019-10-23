@@ -12,9 +12,9 @@ See the License for the specific language governing permissions and
 limitations under the License.
 """
 
-import Framework.Utils as Utils
-from Framework.Utils.print_Utils import print_info, print_warning
-from WarriorCore.Classes.war_cli_class import WarriorCliClass
+from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_warning
+from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 """
 onerror driver handles all the failures in Warrior framework

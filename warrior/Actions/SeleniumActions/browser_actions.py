@@ -15,17 +15,17 @@ limitations under the License.
 
 import os
 from urllib.parse import urlparse
-from Framework.ClassUtils.WSelenium.browser_mgmt import BrowserManagement
-from Actions.SeleniumActions.verify_actions import verify_actions
-from Actions.SeleniumActions.elementlocator_actions import elementlocator_actions
+from warrior.Framework.ClassUtils.WSelenium.browser_mgmt import BrowserManagement
+from warrior.Actions.SeleniumActions.verify_actions import verify_actions
+from warrior.Actions.SeleniumActions.elementlocator_actions import elementlocator_actions
 
-import Framework.Utils as Utils
-from Framework.Utils import selenium_Utils
-from Framework.Utils import data_Utils
-from Framework.Utils import xml_Utils
-from Framework.Utils.testcase_Utils import pNote, pSubStep
-from Framework.ClassUtils.json_utils_class import JsonUtils
-from Framework.Utils.rest_Utils import remove_invalid_req_args
+from warrior.Framework import Utils
+from warrior.Framework.Utils import selenium_Utils
+from warrior.Framework.Utils import data_Utils
+from warrior.Framework.Utils import xml_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep
+from warrior.Framework.ClassUtils.json_utils_class import JsonUtils
+from warrior.Framework.Utils.rest_Utils import remove_invalid_req_args
 
 
 class browser_actions(object):

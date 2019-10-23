@@ -13,8 +13,8 @@ limitations under the License.
 '''
 
 """" file driver """
-from WarriorCore import kw_driver
-import Actions.KafkaActions
+from warrior.WarriorCore import kw_driver
+import warrior.Actions.KafkaActions
 
 
 def main(keyword, data_repository, args_repository):
@@ -23,7 +23,7 @@ def main(keyword, data_repository, args_repository):
     # Declare a list of packages to be used by this driver,
     # if you want to add more packages import them outside the main function
     # and then add them to the package_list below
-    package_list = [Actions.KafkaActions]
+    package_list = [warrior.Actions.KafkaActions]
 
     return kw_driver.execute_keyword(keyword, data_repository, args_repository,
                                      package_list)

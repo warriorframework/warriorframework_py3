@@ -15,11 +15,11 @@ limitations under the License.
 
 
 import os
-import  Tools
-from Framework.Utils import file_Utils as file_Utils
-from Framework.Utils import xml_Utils as xml_Utils
-from Framework.Utils.print_Utils import print_info, print_warning, print_error, print_exception
-from Framework.Utils.data_Utils import get_credentials
+from warrior import Tools
+from warrior.Framework.Utils import file_Utils as file_Utils
+from warrior.Framework.Utils import xml_Utils as xml_Utils
+from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error, print_exception
+from warrior.Framework.Utils.data_Utils import get_credentials
 
 class ExecFilesClass(object):
     """Execution Files class """
@@ -42,9 +42,10 @@ class ExecFilesClass(object):
 
     def create_ws_execution(self):
         """Create execution dir in Warriorspace """
-        curr_file_locn = os.path.realpath(__file__)
-        war_locn = os.sep.join(curr_file_locn.split(os.sep)[:-3]) + os.sep + "Warrior"
-        warriorspace = os.path.dirname(war_locn) + os.sep + "Warriorspace"
+        #curr_file_locn = os.path.realpath(__file__)
+        #war_locn = os.sep.join(curr_file_locn.split(os.sep)[:-3]) + os.sep + "Warrior"
+        #warriorspace = os.path.dirname(war_locn) + os.sep + "Warriorspace"
+        warriorspace = os.path.expanduser("~") + os.sep + "Warriorspace"
         #check_create_warriorspace(warriorspace)
         ws_execution = warriorspace + os.sep + "Execution"
 
@@ -120,16 +121,16 @@ class ExecFilesClass(object):
             results_location = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                                  'Details', 'Resultsdir')
             #get default logs and results directory
-            default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'        
+            default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml' 
             default_logsdir = get_credentials(default_xml, 'def_dir',['Logsdir'], 'Setting')
             default_resultsdir = get_credentials(default_xml, 'def_dir',['Resultsdir'], 'Setting')
             #use the default directory if user didn't define it in test case/test suite/project
-            if results_location is None or results_location is False :
-                if default_resultsdir['Resultsdir'] is not None :
+            if results_location is None or results_location is False:
+                if default_resultsdir['Resultsdir'] is not None:
                     results_location = default_resultsdir['Resultsdir']
-            
-            if logs_location is None or logs_location is False :
-                if default_logsdir['Logsdir'] is not None :
+ 
+            if logs_location is None or logs_location is False:
+                if default_logsdir['Logsdir'] is not None:
                     logs_location = default_logsdir['Logsdir']
 
             if logs_location is None or logs_location is False\

@@ -20,17 +20,17 @@ import operator as op
 from collections import OrderedDict
 from io import IOBase
 
-from Framework.Utils import xml_Utils, string_Utils, testcase_Utils, config_Utils, file_Utils
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.print_Utils import (print_info, print_warning, print_error,
+from warrior.Framework.Utils import xml_Utils, string_Utils, testcase_Utils, config_Utils, file_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import (print_info, print_warning, print_error,
                                          print_debug, print_exception)
-from Framework.ClassUtils.testdata_class import TestData, TestDataIterations
-from Framework.Utils.xml_Utils import get_attributevalue_from_directchildnode as av_fromdc
-from Framework.Utils.string_Utils import sub_from_varconfigfile
-from Framework.ClassUtils import database_utils_class
-from WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
-from WarriorCore.Classes.warmock_class import mocked
-from WarriorCore.Classes.testcase_utils_class import TestcaseUtils
+from warrior.Framework.ClassUtils.testdata_class import TestData, TestDataIterations
+from warrior.Framework.Utils.xml_Utils import get_attributevalue_from_directchildnode as av_fromdc
+from warrior.Framework.Utils.string_Utils import sub_from_varconfigfile
+from warrior.Framework.ClassUtils import database_utils_class
+from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
+from warrior.WarriorCore.Classes.warmock_class import mocked
+from warrior.WarriorCore.Classes.testcase_utils_class import TestcaseUtils
 
 cmd_params = OrderedDict([("command_list", "send"),
                           ("sys_list", "sys"),

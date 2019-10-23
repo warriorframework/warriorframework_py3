@@ -14,8 +14,8 @@ limitations under the License.
 """API for json related operations """
 import json
 import re
-from Framework.Utils.print_Utils import print_info, print_exception, print_error, print_warning
-from Framework.Utils.testcase_Utils import pNote,pSubStep
+from warrior.Framework.Utils.print_Utils import print_info, print_exception, print_error, print_warning
+from warrior.Framework.Utils.testcase_Utils import pNote,pSubStep
 import difflib
 
 class JsonUtils(object):

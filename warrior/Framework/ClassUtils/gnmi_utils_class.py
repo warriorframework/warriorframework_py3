@@ -17,8 +17,8 @@ gnmi Utils class
 """
 
 import json, re
-from Framework.Utils import testcase_Utils, data_Utils, config_Utils, cli_Utils, file_Utils
-from Framework.ClassUtils.json_utils_class import JsonUtils as JU
+from warrior.Framework.Utils import testcase_Utils, data_Utils, config_Utils, cli_Utils, file_Utils
+from warrior.Framework.ClassUtils.json_utils_class import JsonUtils as JU
 from time import sleep
 
 

@@ -18,12 +18,12 @@ import os
 import traceback
 from collections import OrderedDict
 
-import Framework.Utils as Utils
-import WarriorCore.testsuite_driver as testsuite_driver
-from Framework.Utils.print_Utils import print_error, print_debug
-from WarriorCore.multiprocessing_utils import create_and_start_process_with_queue, \
+from warrior.Framework import Utils
+import warrior.WarriorCore.testsuite_driver as testsuite_driver
+from warrior.Framework.Utils.print_Utils import print_error, print_debug
+from warrior.WarriorCore.multiprocessing_utils import create_and_start_process_with_queue, \
  get_results_from_queue, update_pj_junit_resultfile
-from WarriorCore import testsuite_utils
+from warrior.WarriorCore import testsuite_utils
 
 
 def execute_parallel_testsuites(testsuite_list, project_repository, data_repository,

@@ -25,13 +25,13 @@ import inspect
 import re
 import traceback
 
-from Framework.Utils.print_Utils import  print_info, print_debug, print_warning,\
+from warrior.Framework.Utils.print_Utils import  print_info, print_debug, print_warning,\
 print_error, print_exception, print_sub, print_notype, print_without_logging
-import Framework.Utils.config_Utils as config_Utils 
+from warrior.Framework.Utils import config_Utils 
 
-#import Framework.Utils.file_Utils as file_Utils
-#import Framework.Utils.config_Utils as config_Utils
-#import Framework.Utils.xml_Utils as xml_Utils
+#import warrior.Framework.Utils.file_Utils as file_Utils
+#import warrior.Framework.Utils.config_Utils as config_Utils
+#import warrior.Framework.Utils.xml_Utils as xml_Utils
 
 class TestcaseUtils(object):
     """testcase utils class"""
@@ -57,12 +57,12 @@ class TestcaseUtils(object):
     def file_utils(self):
         """
         """
-        import Framework.Utils.file_Utils as file_utils
+        import warrior.Framework.Utils.file_Utils as file_utils
         return file_utils
     def xml_utils(self):
         """
         """
-        import Framework.Utils.xml_Utils as xml_utils
+        import warrior.Framework.Utils.xml_Utils as xml_utils
         return xml_utils
 
     def print_output(self):
@@ -78,7 +78,7 @@ class TestcaseUtils(object):
         """
 
         try:
-            import Framework.Utils.config_Utils as config_Utils
+            import warrior.Framework.Utils.config_Utils as config_Utils
             resultfile = config_Utils.resultfile
             tree = ET.ElementTree(self.root)
             tree.write(resultfile)
@@ -411,7 +411,7 @@ class TestcaseUtils(object):
         :Returns:
             None
         """
-        from WarriorCore.Classes.war_cli_class import WarriorCliClass
+        from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
         if WarriorCliClass.mock:
             if str(status).upper() == 'TRUE' or str(status).upper() == 'FALSE':
                 status = 'RAN'

@@ -18,11 +18,11 @@ import re
 from xml.etree import ElementTree
 from collections import OrderedDict
 
-from Framework.Utils import xml_Utils, string_Utils
-from Framework.Utils.testcase_Utils import pNote
-from Framework.Utils.print_Utils import print_error, print_exception,\
+from warrior.Framework.Utils import xml_Utils, string_Utils
+from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import print_error, print_exception,\
 print_debug, print_warning
-from Framework.ClassUtils.configuration_element_class import ConfigurationElement
+from warrior.Framework.ClassUtils.configuration_element_class import ConfigurationElement
 
 # Always keep 'repeat_list' as a last key for CMD_PARAMS dictionary
 CMD_PARAMS = OrderedDict([("command_list", "send"),
