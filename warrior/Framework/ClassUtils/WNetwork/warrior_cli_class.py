@@ -236,13 +236,13 @@ class WarriorCli(object):
                     result, response = new_obj_session._send_command_retrials(
                         details_dict, index=i, result=result,
                         response=response, system_name=td_sys)
-                    rspRes, resp_key_list = new_obj_session._get_response_dict(
+                    rspRes, resp_key_list, match_flag, response_pattern = new_obj_session._get_response_dict(
                         details_dict, i, response, resp_key_list)
                     resp_session_id = session_id + "_td_response"
 
                     td_resp_dict = self.update_resp_ref_to_repo(details_dict, resp_key_list, i,
                                                                 key, td_resp_dict, resp_session_id,
-                                                                result)
+                                                                result, match_flag, response_pattern)
 
                     result = (result and rspRes) if "ERROR" not in (result, rspRes) else "ERROR"
                     print_debug("<<<")
@@ -264,7 +264,8 @@ class WarriorCli(object):
         return finalresult, td_resp_dict
 
     def update_resp_ref_to_repo(self, details_dict, resp_key_list, i,
-                                title_row, td_resp_dict, session_id, status=True):
+                                title_row, td_resp_dict, session_id, status=True, match_flag = True,
+                                response_pattern = None):
         """
         Updates the response reference in appropriate session_id.
         There are two cases:
@@ -273,6 +274,15 @@ class WarriorCli(object):
             2. The user gives the system and session name in both testcase and testdata file,
             then it takes testdata as priority and updates on testdata's session id
         """
+
+        if not match_flag:
+            td_resp_dict = get_object_from_datarepository(str(session_id))
+            status = {True: "PASS", False: "FAIL", "ERROR": "ERROR"}.get(status)
+            for element in details_dict["resp_key_list"][0]:
+                if isinstance(element, ET.Element):
+                    resp = element.tag
+            temp_resp = {resp: response_pattern, resp + "_status": status, resp + "_command": details_dict["command_list"][i]}
+            td_resp_dict[title_row]=temp_resp
 
         try:
             for resp in list(resp_key_list[i].keys()):
@@ -338,6 +348,8 @@ class WarriorCli(object):
         inorder = details_dict["inorder_resp_ref_list"][index]
         resp_pat_key = details_dict["resp_pat_key_list"][index]
         status = True
+        match_flag = True
+        response_pattern = ""
         if inorder is not None and inorder.lower().startswith("n"):
             inorder = False
         else:
@@ -409,6 +421,8 @@ class WarriorCli(object):
                         print_error("Expected: '{}'".format(pattern))
                         print_error("But Found: '{}'".format(response))
                         status = False
+                        match_flag = False
+                        response_pattern = "Actual output: {} but expected pattern: {}".format(response, pattern)
                 else:
                     temp_resp_key_list = []
                     pNote(save_msg1+' separately.')
@@ -430,7 +444,7 @@ class WarriorCli(object):
         else:
             temp_resp_dict = {resp_ref: ""}
             resp_key_list.append(temp_resp_dict)
-        return status, resp_key_list
+        return status, resp_key_list, match_flag, response_pattern
 
     @staticmethod
     def start_threads(started_thread_for_system, thread_instance_list,
