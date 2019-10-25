@@ -524,8 +524,9 @@ class CommonActions(object):
                                     else:
                                         if "Expected pattern not found" in response:
                                             failure_reason = "{} Failed : reason {}".format(splitted_command[0],
-                                                                                            response)
-                                        failure_reason = "{0} Failed".format(splitted_command[0])
+                                                                                           response)
+                                        else:
+                                            failure_reason = "{0} Failed".format(splitted_command[0])
 
 
         if failure_reason is None and script_status is False:
@@ -533,5 +534,6 @@ class CommonActions(object):
         output_dict = {"script_status": script_status, \
                        "step_status_message" : step_status_message, \
                        "failure_reason" : failure_reason}
+        print(output_dict)
         status = True
         return status, output_dict
