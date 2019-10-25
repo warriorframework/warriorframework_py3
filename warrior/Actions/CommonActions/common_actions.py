@@ -534,6 +534,5 @@ class CommonActions(object):
         output_dict = {"script_status": script_status, \
                        "step_status_message" : step_status_message, \
                        "failure_reason" : failure_reason}
-        print(output_dict)
         status = True
         return status, output_dict
