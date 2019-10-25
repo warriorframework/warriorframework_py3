@@ -422,7 +422,7 @@ class WarriorCli(object):
                         print_error("But Found: '{}'".format(response))
                         status = False
                         match_flag = False
-                        response_pattern = "Actual output: {} but expected pattern: {}".format(response, pattern)
+                        response_pattern = "Expected pattern not found:  {}".format(pattern)
                 else:
                     temp_resp_key_list = []
                     pNote(save_msg1+' separately.')

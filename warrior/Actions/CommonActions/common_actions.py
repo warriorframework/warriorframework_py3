@@ -522,10 +522,14 @@ class CommonActions(object):
                                             "wctrl:x" or splitted_command[0] == ";":
                                         failure_reason = "Communication Failure with device"
                                     else:
-                                         failure_reason = response
+                                        if "Expected pattern not found" in response:
+                                            failure_reason = "{} Failed : reason {}".format(splitted_command[0],
+                                                                                            response)
+                                        failure_reason = "{0} Failed".format(splitted_command[0])
 
-        if failure_reason is None :
-            failure_reason = "unable to get the failure reason"
+
+        if failure_reason is None and script_status is False:
+            failure_reason = "db_backup script execution failed"
         output_dict = {"script_status": script_status, \
                        "step_status_message" : step_status_message, \
                        "failure_reason" : failure_reason}
