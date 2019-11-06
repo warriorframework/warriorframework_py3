@@ -1,5 +1,5 @@
 from os import sep, path
-
+import re
 from utils.directory_traversal_utils import get_dir_from_path, join_path, get_abs_path, create_dir, \
     delete_dir, get_parent_directory
 from utils.file_utils import copy_dir, readlines_from_file, write_to_file
@@ -97,6 +97,17 @@ class Uninstaller:
         return output
 
     def __remove_app_from_settings(self):
+        fd = open(self.settings_file)
+        file_data = fd.read()
+        pattern = "(INSTALLED_APPS\s*\=\s*\[\s*[\\n]*\s*\\'django.contrib.admin\\')\,\s*\\'wapps.{}\\'".format(
+            self.app_name)
+        match1 = re.search(pattern, file_data)
+        if match1:
+            file_data = file_data.replace(match1.group(), match1.group(1))
+            fd.close()
+            fd_new = open(self.settings_file, "w")
+            fd_new.write(file_data)
+            fd_new.close()
         data = readlines_from_file(self.settings_file)
         sf_data = []
         for line in data:

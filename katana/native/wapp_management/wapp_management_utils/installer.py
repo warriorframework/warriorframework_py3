@@ -1,4 +1,5 @@
 import os
+import re
 from utils.directory_traversal_utils import join_path, get_dir_from_path, get_sub_folders, \
     delete_dir
 from utils.file_utils import copy_dir, readlines_from_file, write_to_file
@@ -125,8 +126,18 @@ class Installer:
         settings_data = ""
         for line in sf_data:
             settings_data += line
-
         output = write_to_file(self.settings_file, settings_data)
+        fd = open(self.settings_file)
+        file_data = fd.read()
+        pattern = "INSTALLED_APPS\s*\=\s*\[\s*[\\n]*\s*\\'django.contrib.admin\\'"
+        match1 = re.search(pattern, file_data)
+        if match1:
+            required_string = "{}, 'wapps.{}'".format(match1.group(), self.app_name)
+            file_data = file_data.replace(match1.group(), required_string)
+            fd.close()
+            fd_new = open(self.settings_file, "w")
+            fd_new.write(file_data)
+            fd_new.close()
         return output
 
     def __revert_installation(self):
