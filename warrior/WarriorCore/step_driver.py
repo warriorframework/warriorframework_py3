@@ -40,8 +40,9 @@ def get_arguments(step):
                     arg_value = argument.text
                 if "${ENV." in arg_value:
                     arg_value = Utils.data_Utils.sub_from_env_var(arg_value)
-                if "${REPO." in arg_value:
-                    arg_value = Utils.data_Utils.sub_from_data_repo(arg_value)
+                if arg_value:
+                    if "${REPO." in arg_value:
+                        arg_value = Utils.data_Utils.sub_from_data_repo(arg_value)
                 arg_datatype_object.arg_name = arg_name
                 arg_datatype_object.arg_value = arg_value
                 value = arg_datatype_object.convert_arg_to_datatype()
