@@ -80,7 +80,10 @@ class WRest(object):
         """
         pNote("Perform a http get", "info")
         try:
-            response = self.req.get(url, params=params, auth=auth, **kwargs)
+            if auth == (False, False,):
+                response = self.req.get(url, params=params, **kwargs)
+            else:
+                response = self.req.get(url, params=params, auth=auth, **kwargs)
         except Exception as e:
             status, response = self.catch_expection_return_error(e, url)
         else:
