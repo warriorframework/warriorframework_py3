@@ -1687,6 +1687,8 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                                                                                              iter_number))
                             except KeyError:
                                 print_error(error_msg1.format(string, raw_value))
+                                if "${REPO" in raw_value:
+                                    update_datarepository({"args_repo_flag": True})
                                 raw_value = None
                         elif isinstance(raw_value[k], (list, dict)):
                             try:
@@ -1696,6 +1698,8 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                                 raw_value[k] = ast.literal_eval(raw_value[k])
                             except KeyError:
                                 print_error(error_msg1.format(string, raw_value))
+                                if "${REPO" in raw_value:
+                                    update_datarepository({"args_repo_flag": True})
                                 raw_value = None
                         else:
                             print_error("Unsupported format - " +
@@ -1737,6 +1741,8 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                                                   get_var_by_string_prefix(string, iter_number))
                 except KeyError:
                     print_error(error_msg1.format(string, raw_value))
+                    if "${REPO" in raw_value :
+                        update_datarepository({"args_repo_flag": True})
                     raw_value = None
     return raw_value
 

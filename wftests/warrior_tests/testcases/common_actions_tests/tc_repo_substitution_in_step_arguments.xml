@@ -82,7 +82,7 @@
                         <Description></Description>
                         <Execute ExecType="Yes"/>
                         <context>positive</context>
-                        <impact>impact</impact>
+                        <impact>noimpact</impact>
                 </step>
 
         </Steps>
