@@ -1,0 +1,12 @@
+<data>
+	<global>
+		<command_params>
+		</command_params>
+		<verifications>
+		</verifications>
+	</global>
+    <testdata execute="yes" title ="t1" >
+            <command send="ls NonExistTitleDir" end="\$" verify="v1" />
+        <v1 found="yes" search="No such file or directory" />
+    </testdata>
+</data>

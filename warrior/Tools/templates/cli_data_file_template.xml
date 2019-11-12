@@ -1,0 +1,11 @@
+<credentials>
+    <system name="system1">
+		    <ip>hostname</ip>
+		    <conn_type>ssh</conn_type>
+			<ssh_port>22</ssh_port>
+			<username />
+			<password />
+			<prompt>\$</prompt>
+			<testdata></testdata>
+    </system>
+</credentials>
