@@ -68,7 +68,7 @@ class GetDriversActions:
         for pkg in list_of_pkgs:
             temp = pkg.split(".")
             path = self.warrior_dir
-            for i in range(0, len(temp)):
+            for i in range(1, len(temp)):
                 path = join_path(path, temp[i])
             package_list.append(path)
         return package_list
