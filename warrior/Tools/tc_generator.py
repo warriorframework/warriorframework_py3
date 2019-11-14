@@ -21,15 +21,17 @@ class Warrior_execution_setup_files:
         self.current_working_directory = os.getcwd()
         print("current working directory is {}".format(self.current_working_directory))
         self.template_path = os.path.join(self.current_working_directory, "templates")
-        self.input_data_file = "{}_{}".format(self.tc_name, "id_file.xml")
-        self.tc_file = "{}_{}".format(self.tc_name, "tc_file.xml")
-        self.td_file = "{}_{}".format(self.tc_name, "td_file.xml")
+        self.input_data_file = "id_{}_file.xml".format(self.tc_name)
+        self.tc_file = "tc_{}_file.xml".format(self.tc_name)
+        self.td_file = "td_{}_file.xml".format(self.tc_name)
 
     def setup_warrior_structure(self):
         self.ws_directory = "Warriorspace"
         self.testcases_dir = "Warriorspace/Testcases"
         self.data_files_dir = "Warriorspace/Datafiles"
         self.config_files_dir = "Warriorspace/Configfiles"
+        self.project_files_dir = "Warriorspace/Projects"
+        self.testsuite_files_dir = "Warriorspace/Testsuites"
 
         os.chdir(self.current_working_directory)
         if not os.path.exists(self.ws_directory):
@@ -40,6 +42,10 @@ class Warrior_execution_setup_files:
             os.mkdir(self.data_files_dir)
         if not os.path.exists(self.config_files_dir):
             os.mkdir(self.config_files_dir)
+        if not os.path.exists(self.testsuite_files_dir):
+            os.mkdir(self.testsuite_files_dir)
+        if not os.path.exists(self.project_files_dir):
+            os.mkdir(self.project_files_dir)
 
     def replace_values_in_input_data_xml_tags(self):
         tree = et.parse(self.input_data_file_path)

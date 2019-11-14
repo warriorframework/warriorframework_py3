@@ -7,5 +7,6 @@
 			<password />
 			<prompt>\$</prompt>
 			<testdata></testdata>
+			<dip_port/>
     </system>
 </credentials>
