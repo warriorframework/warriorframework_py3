@@ -61,7 +61,10 @@ class WRest(object):
         """
         pNote("Perform a http post", "info")
         try:
-            response = self.req.post(url, data=data, auth=auth, **kwargs)
+            if auth ==(False, False,):
+                response = self.req.post(url, data=data, **kwargs)
+            else:
+                response = self.req.post(url, data=data, auth=auth, **kwargs)
         except Exception as e:
             status, response = self.catch_expection_return_error(e, url)
         else:
@@ -80,7 +83,10 @@ class WRest(object):
         """
         pNote("Perform a http get", "info")
         try:
-            response = self.req.get(url, params=params, auth=auth, **kwargs)
+            if auth == (False, False,):
+                response = self.req.get(url, params=params, **kwargs)
+            else:
+                response = self.req.get(url, params=params, auth=auth, **kwargs)
         except Exception as e:
             status, response = self.catch_expection_return_error(e, url)
         else:
@@ -99,7 +105,10 @@ class WRest(object):
         """
         pNote("Perform a http put", "info")
         try:
-            response = self.req.put(url, data=data, auth=auth, **kwargs)
+            if auth == (False, False,):
+                response = self.req.put(url, data=data, **kwargs)
+            else:
+                response = self.req.put(url, data=data, auth=auth, **kwargs)
         except Exception as e:
             status, response = self.catch_expection_return_error(e, url)
         else:
@@ -118,7 +127,10 @@ class WRest(object):
         """
         pNote("Perform a http patch", "info")
         try:
-            response = self.req.patch(url, data=data, auth=auth, **kwargs)
+            if auth == (False, False, ):
+                response = self.req.patch(url, data=data, **kwargs)
+            else:
+                response = self.req.patch(url, data=data, auth=auth, **kwargs)
         except Exception as e:
             status, response = self.catch_expection_return_error(e, url)
         else:
@@ -137,7 +149,10 @@ class WRest(object):
         """
         pNote("Perform a http delete", "info")
         try:
-            response = self.req.delete(url, auth=auth, **kwargs)
+            if auth == (False, False):
+                response = self.req.delete(url,**kwargs)
+            else:
+                response = self.req.delete(url, auth=auth, **kwargs)
         except Exception as e:
             status, response = self.catch_expection_return_error(e, url)
         else:
@@ -156,7 +171,10 @@ class WRest(object):
         """
         pNote("Perform a http options", "info")
         try:
-            response = self.req.options(url, auth=auth, **kwargs)
+            if auth== (False, False,):
+                response = self.req.options(url, **kwargs)
+            else:
+                response = self.req.options(url, auth=auth, **kwargs)
         except Exception as e:
             status, response = self.catch_expection_return_error(e, url)
         else:
@@ -175,7 +193,10 @@ class WRest(object):
         """
         pNote("Perform a http head", "info")
         try:
-            response = self.req.head(url, auth=auth, **kwargs)
+            if auth == (False, False,):
+                response = self.req.head(url, **kwargs)
+            else:
+                response = self.req.head(url, auth=auth, **kwargs)
         except Exception as e:
             status, response = self.catch_expection_return_error(e, url)
         else:
