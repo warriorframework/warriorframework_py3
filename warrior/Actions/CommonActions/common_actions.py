@@ -15,6 +15,7 @@ limitations under the License.
 
 import json
 import os
+import time
 
 import Framework.Utils as Utils
 from Framework.Utils.print_Utils import print_info, print_error
@@ -394,7 +395,7 @@ class CommonActions(object):
         """
         wdesc = "To get the current timestamp in the format of yyyy-mm-dd hh:mm:ss"
         Utils.testcase_Utils.pNote(wdesc)
-        currentdate = datetime_utils.get_current_timestamp()
+        currentdate = str(int(time.time()))
         print_info("current timestamp : {0}".format(currentdate))
         output_dict = {current_time: currentdate}
         status = True
@@ -424,7 +425,9 @@ class CommonActions(object):
         start_time = Utils.data_Utils.get_object_from_datarepository(start_time)
         if end_time:
             end_time = Utils.data_Utils.get_object_from_datarepository(end_time)
-        time_delta = datetime_utils.get_time_delta(start_time=start_time, end_time=end_time)
+        else:
+            end_time = int(time.time())
+        time_delta = end_time - int(start_time)
         print_info("delta between given timestamps : {0} seconds".format(time_delta))
         output_dict = {time_diff: time_delta}
         status = True
