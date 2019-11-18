@@ -265,6 +265,12 @@ def warrior_execute_entry(*args, **kwargs):
         dbsystem:
         livehtmllocn:
     """
+    if sys.argv[1] == "gen":
+        print("initializing tc generatorr tool !!")
+        import  os
+        os.system("python /home/terralogic/2242_git/warriorframework_py3/warrior/Tools/tc_generator {}".format(" ".join(sys.argv[2:])))
+        sys.exit()
+
     if not kwargs:
         # Launch from terminal/cli exeuction
         filepath, cli_args, overwrite = main(sys.argv[1:])
