@@ -14,9 +14,13 @@ parser.add_argument('-tc','--tc_name', help="Name of the the test case ", requir
 parser.add_argument('--ip', help="Ip address of the device", required=True)
 parser.add_argument("-u", '--username', help="username of the device ", required=True)
 parser.add_argument("-p",'--password', help="password of the device ", required=True)
+parser.add_argument("-sp", '--ssh_port', help="ssh port of the device ", required=True)
+parser.add_argument("-dp", '--dip_port', help="dip port of the device ", required=True)
 parser.add_argument("-v","--verbose", action="store_true", help="To display the debug messages ")
 parser.add_argument("-w",'--with_repo_structure', action='store_true',
                     help="to store the generated output files in warriorspace format")
+
+
 args = parser.parse_args()
 
 if args.verbose:
@@ -108,7 +112,18 @@ class Warrior_Execution_Setup_Files:
             ip_address[i].text = args.ip
         if args.with_repo_structure:
             self.td_file = self.get_relative_path(self.test_data_file_path)
-        tree.find('.//testdata').text = self.td_file
+        td_files = tree.findall("system/subsystem/testdata")
+        for i in range(len(td_files)):
+            td_files[i].text = self.td_file
+        sub_systems = tree.findall("system/subsystem")
+        for i in range(len(sub_systems)):
+            if sub_systems[i].get("name") == "CLI":
+                sub_systems[i].find("ssh_port").text = args.ssh_port
+            if sub_systems[i].get("name") == "DIP":
+                sub_systems[i].find("ssh_port").text = args.dip_port
+
+        for i in range(len(td_files)):
+            td_files[i].text = self.td_file
         tree.write(self.input_data_file_path)
 
     def replace_values_in_test_case_xml_tags(self):
