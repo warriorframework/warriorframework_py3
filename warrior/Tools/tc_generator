@@ -101,16 +101,30 @@ class Warrior_Execution_Setup_Files:
         tree.find('.//password').text = args.password
         tree.find('.//ip').text = args.ip
         if args.with_repo_structure:
-            self.td_file = os.path.join(self.current_working_directory, self.config_files_dir, self.td_file)
+            self.td_file = self.get_relative_path(self.test_data_file_path)
         tree.find('.//testdata').text = self.td_file
         tree.write(self.input_data_file_path)
 
     def replace_values_in_test_case_xml_tags(self):
         tree = et.parse(self.test_case_file_path)
         if args.with_repo_structure:
-            self.input_data_file = os.path.join(self.current_working_directory, self.data_files_dir, self.input_data_file)
+            self.input_data_file = self.get_relative_path(self.input_data_file_path)
         tree.find('.//InputDataFile').text = self.input_data_file
         tree.write(self.test_case_file_path)
+
+    def get_relative_path(self, path):
+        if "Warriorspace" in path:
+            splitted_paths = path.split("Warriorspace")[-1]
+            directories = splitted_paths.split("/")
+            relative_path =  ""
+            for directory in directories:
+                if len(directory) > 0 and ".xml" not in directory:
+                    relative_path += "../"
+            for directory in directories:
+                if len(directory) > 0:
+                    relative_path += "{}/".format(directory)
+        return relative_path[:-1]
+
 
     def generate_cli_files(self, with_repo_structure=False):
 

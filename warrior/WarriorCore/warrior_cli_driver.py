@@ -267,7 +267,7 @@ def warrior_execute_entry(*args, **kwargs):
     """
     if sys.argv[1] == "gen":
         print("initializing tc generatorr tool !!")
-        import  os
+        import os
         os.system("tc_generator {}".format(" ".join(sys.argv[2:])))
         sys.exit()
 
