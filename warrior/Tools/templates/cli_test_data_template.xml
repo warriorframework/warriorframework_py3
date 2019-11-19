@@ -9,4 +9,13 @@
             <command send="ls NonExistTitleDir" end="\$" verify="v1" />
         <v1 found="yes" search="No such file or directory" />
     </testdata>
+
+	<testdata title="show_software_version" execute="yes">
+        	<command end=">" send="show sw-version"/>
+    </testdata>
+
+    <testdata title="set_hal_level" execute="yes">
+        <command  end="$" start=".*" send="/usr/local/fnc/dip/dip_verbosity set hal 3"/>
+    </testdata>
+
 </data>

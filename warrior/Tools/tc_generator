@@ -97,9 +97,15 @@ class Warrior_Execution_Setup_Files:
 
     def replace_values_in_input_data_xml_tags(self):
         tree = et.parse(self.input_data_file_path)
-        tree.find('.//username').text = args.username
-        tree.find('.//password').text = args.password
-        tree.find('.//ip').text = args.ip
+        usernames = tree.findall("system/subsystem/username")
+        for i in range(len(usernames)):
+            usernames[i].text = args.username
+        passwords = tree.findall("system/subsystem/password")
+        for i in range(len(passwords)):
+            passwords[i].text = args.password
+        ip_address = tree.findall("system/subsystem/ip")
+        for i in range(len(ip_address)):
+            ip_address[i].text = args.ip
         if args.with_repo_structure:
             self.td_file = self.get_relative_path(self.test_data_file_path)
         tree.find('.//testdata').text = self.td_file

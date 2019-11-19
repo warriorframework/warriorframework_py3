@@ -15,36 +15,47 @@
 		<Requirement>ssh-disconnect-001</Requirement>
 	</Requirements>
 	<Steps>
-		<step Driver="cli_driver" Keyword="connect_ssh" TS="1">
-			<Arguments>
-				<argument name="system_name" value="system1"/>
-			</Arguments>
-			<onError action="next"/>
-			<Description>connect_ssh</Description>
-			<Execute ExecType="Yes"/>
-			<context>positive</context>
-			<impact>impact</impact>
-		</step>
-		<step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="2">
-			<Arguments>
-				<argument name="system_name" value="system1"/>
-				<argument name="title"   value="t1"/>
-			</Arguments>
-			<onError action="next"/>
-			<Description></Description>
-			<Execute ExecType="Yes"/>
-			<context>positive</context>
-			<impact>impact</impact>
-		</step>
-		<step Driver="cli_driver" Keyword="disconnect" TS="3">
-			<Arguments>
-				<argument name="system_name" value="system1"/>
-			</Arguments>
-			<onError action="next"/>
-			<Description>disconnect</Description>
-			<Execute ExecType="Yes"/>
-			<context>positive</context>
-			<impact>impact</impact>
-		</step>
+		<step Driver="cli_driver" Keyword="connect" TS="1">
+                        <Arguments>
+                                <argument name="system_name" value="NE1[CLI]"/>
+                        </Arguments>
+                        <onError action="abort"/>
+                        <Description>connect</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+		<step Driver="cli_driver" Keyword="connect" TS="2">
+                        <Arguments>
+                                <argument name="system_name" value="NE1[DIP]"/>
+                        </Arguments>
+                        <onError action="abort"/>
+                        <Description>connect</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+            <step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="3">
+                        <Arguments>
+                                <argument name="system_name" value="NE1[CLI]"/>
+                                <argument name="title" value="show_software_version"/>
+                        </Arguments>
+                        <onError action="abort"/>
+                        <Description>connect</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+            <step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="4">
+                        <Arguments>
+                                <argument name="system_name" value="NE1[DIP]"/>
+                                <argument name="title" value="set_hal_level"/>
+                        </Arguments>
+                        <onError action="next"/>
+                        <Description>Inject pm limits count using DIP command</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
 	</Steps>
 </Testcase>
