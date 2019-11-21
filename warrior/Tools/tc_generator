@@ -116,6 +116,8 @@ class Warrior_Execution_Setup_Files:
         td_files = tree.findall("system/subsystem/testdata")
         for i in range(len(td_files)):
             td_files[i].text = self.td_file
+        if args.with_repo_structure:
+            self.vc_file = self.get_relative_path(self.var_conf_file_path)
         vc_files = tree.findall("system/subsystem/variable_config")
         for i in range(len(vc_files)):
             vc_files[i].text = self.vc_file
