@@ -10,7 +10,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
-
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = "warriorframework"
@@ -22,6 +21,7 @@ setup(
     author="warriorteam",
     author_email='frameworkwarrior@gmail.com',
     scripts=['warrior/Warrior',
+             'katana/manage.py',
              'warrior/Tools/warrior_py3_migration_tools/warrior_py3_migration_tool'],
     packages=find_packages(),
     package_data={'':['**/*', '*']},
@@ -41,6 +41,7 @@ setup(
                       "lxml==4.4.1", "paramiko==2.4.2", "pysnmp==4.4.9",
                       "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6",
                       "cloudshell-automation-api==9.3.0.175525",
-                      "pycryptodome==3.6.1"]
+                      "pycryptodome==3.6.1", "Django==2.2.7", "xmltodict==0.12.0",
+                      "djangorestframework==3.10.3",]
 
 )

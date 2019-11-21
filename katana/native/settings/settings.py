@@ -8,10 +8,10 @@ import subprocess
 from threading import Timer
 import xml.etree.ElementTree as xml_controler
 from distutils.version import LooseVersion
-from utils.directory_traversal_utils import join_path
-from utils.json_utils import read_xml_get_json
-from utils.navigator_util import Navigator
-from wui.core.apps import validate_config_json
+from katana.utils.directory_traversal_utils import join_path
+from katana.utils.json_utils import read_xml_get_json
+from katana.utils.navigator_util import Navigator
+from katana.wui.core.apps import validate_config_json
 try:
     import xmltodict
 except ImportError:
@@ -22,7 +22,7 @@ class Settings:
 
     def __init__(self):
         self.navigator = Navigator()
-        self.static_dir = join_path(self.navigator.get_katana_dir(), "native", "settings", "static", "settings")
+        self.static_dir = join_path(self.navigator.get_katana_dir(), "katana.native", "settings", "static", "settings")
 
     def get_location(self):
         pass

@@ -9,7 +9,7 @@ from django.views import View
 
 class WappStoreView(View):
 
-    template = 'wappstore/wappstore.html'
+    template = 'katana.wappstore/katana.wappstore.html'
 
     def get(self, request):
         """

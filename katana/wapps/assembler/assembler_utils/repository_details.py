@@ -1,7 +1,7 @@
 import copy
 import os
 import re
-from utils.directory_traversal_utils import get_paths_of_subfiles, get_dir_from_path, delete_dir
+from katana.utils.directory_traversal_utils import get_paths_of_subfiles, get_dir_from_path, delete_dir
 
 
 class RepositoryDetails:

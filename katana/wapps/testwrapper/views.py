@@ -8,12 +8,12 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views import View
-from utils.directory_traversal_utils import join_path, get_dir_from_path, get_parent_dir_path
-from utils.json_utils import read_json_data
-from utils.navigator_util import Navigator
-from wapps.testwrapper.testwrapper_utils.defaults import impacts, on_errors, runmodes, iteration_types, contexts
-from wapps.testwrapper.testwrapper_utils.get_drivers import GetDriversActions
-from wapps.testwrapper.testwrapper_utils.verify_testwrapper_file import VerifyTestWrapperFile
+from katana.utils.directory_traversal_utils import join_path, get_dir_from_path, get_parent_dir_path
+from katana.utils.json_utils import read_json_data
+from katana.utils.navigator_util import Navigator
+from katana.wapps.testwrapper.testwrapper_utils.defaults import impacts, on_errors, runmodes, iteration_types, contexts
+from katana.wapps.testwrapper.testwrapper_utils.get_drivers import GetDriversActions
+from katana.wapps.testwrapper.testwrapper_utils.verify_testwrapper_file import VerifyTestWrapperFile
 
 navigator = Navigator()
 CONFIG_FILE = join_path(navigator.get_katana_dir(), "config.json")

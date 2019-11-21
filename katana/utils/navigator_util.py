@@ -1,7 +1,7 @@
 import copy
 import os
 from .directory_traversal_utils import get_parent_directory, join_path
-from utils.json_utils import read_json_data
+from katana.utils.json_utils import read_json_data
 import subprocess
 
 

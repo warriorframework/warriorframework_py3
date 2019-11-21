@@ -8,12 +8,12 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.views import View
-from utils.directory_traversal_utils import join_path, get_dir_from_path, get_parent_dir_path
-from utils.json_utils import read_json_data
-from utils.navigator_util import Navigator
-from wapps.cases.cases_utils.defaults import impacts, on_errors, runmodes, iteration_types, contexts
-from wapps.cases.cases_utils.get_drivers import GetDriversActions
-from wapps.cases.cases_utils.verify_case_file import VerifyCaseFile
+from katana.utils.directory_traversal_utils import join_path, get_dir_from_path, get_parent_dir_path
+from katana.utils.json_utils import read_json_data
+from katana.utils.navigator_util import Navigator
+from katana.wapps.cases.cases_utils.defaults import impacts, on_errors, runmodes, iteration_types, contexts
+from katana.wapps.cases.cases_utils.get_drivers import GetDriversActions
+from katana.wapps.cases.cases_utils.verify_case_file import VerifyCaseFile
 
 navigator = Navigator()
 CONFIG_FILE = join_path(navigator.get_katana_dir(), "config.json")
@@ -106,9 +106,11 @@ def save_file(request):
     data["Testcase"]["Details"] = validate_details_data(data["Testcase"]["Details"])
     data["Testcase"]["Steps"]["step"] = validate_step_data(data["Testcase"]["Steps"]["step"])
     xml_data = xmltodict.unparse(data, pretty=True)
-    directory = request.POST.get("directory")
+    # directory = request.POST.get("directory")
+    directory = os.getcwd() + '/Warriorspace/Testcases'
     filename = request.POST.get("filename")
     extension = request.POST.get("extension")
+
     try:
         with open(join_path(directory, filename + extension), 'w') as f:
             f.write(xml_data)

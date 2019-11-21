@@ -22,11 +22,11 @@ from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.forms import PasswordChangeForm
 import json
 import os
-from utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
-from utils.json_utils import read_json_data
-from utils.navigator_util import Navigator
-from wui.core.apps import AppInformation
-from wui.users.views import PublicView
+from katana.utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
+from katana.utils.json_utils import read_json_data
+from katana.utils.navigator_util import Navigator
+from katana.wui.core.apps import AppInformation
+from katana.wui.users.views import PublicView
 from .core_utils.core_settings import FileSettings, LDAPSettings, Restart, EMAILSettings
 
 try:
@@ -97,7 +97,8 @@ class getFileExplorerData(View):
 
         if start_dir == "false":
             get_children_only = False
-            start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
+            #start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
+            start_dir = join_path(os.getcwd(), "Warriorspace")
 
         if "path" in request.GET:
             get_children_only = False

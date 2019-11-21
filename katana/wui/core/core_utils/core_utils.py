@@ -1,6 +1,6 @@
 import os
 from collections import OrderedDict
-from utils.directory_traversal_utils import get_abs_path, join_path
+from katana.utils.directory_traversal_utils import get_abs_path, join_path
 
 
 def get_app_path_from_name(app_name, config_file, base_directory):
@@ -73,7 +73,8 @@ def validate_config_json(json_data, warrior_dir):
         if "pythonsrcdir" not in json_data or json_data["pythonsrcdir"] == "" \
         else json_data["pythonsrcdir"]
 
-    warrior_dir = ordered_json["pythonsrcdir"]
+    # warrior_dir = ordered_json["pythonsrcdir"]
+    warrior_dir = os.getcwd() 
     ref = OrderedDict([("xmldir", "Testcases"),
                        ('testsuitedir', 'Suites'),
                        ('projdir', 'Projects'),

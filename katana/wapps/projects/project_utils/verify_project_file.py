@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from datetime import datetime
-from utils.json_utils import read_xml_get_json
-from utils.navigator_util import Navigator
+from katana.utils.json_utils import read_xml_get_json
+from katana.utils.navigator_util import Navigator
 
 
 class VerifyProjectFile:

@@ -8,12 +8,12 @@ import os
 import xmltodict
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from utils.directory_traversal_utils import join_path, get_parent_dir_path, get_dir_from_path
-from utils.json_utils import read_json_data, read_xml_get_json
-from utils.navigator_util import Navigator
-from wapps.projects.project_utils.defaults import on_errors, impacts, contexts, runmodes, \
+from katana.utils.directory_traversal_utils import join_path, get_parent_dir_path, get_dir_from_path
+from katana.utils.json_utils import read_json_data, read_xml_get_json
+from katana.utils.navigator_util import Navigator
+from katana.wapps.projects.project_utils.defaults import on_errors, impacts, contexts, runmodes, \
     executiontypes, runtypes
-from wapps.projects.project_utils.verify_project_file import VerifyProjectFile
+from katana.wapps.projects.project_utils.verify_project_file import VerifyProjectFile
 
 navigator = Navigator()
 CONFIG_FILE = join_path(navigator.get_katana_dir(), "config.json")
