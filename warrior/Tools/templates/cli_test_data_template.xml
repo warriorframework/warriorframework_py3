@@ -3,11 +3,13 @@
 		<command_params>
 		</command_params>
 		<verifications>
+            <v1 found="no" search="error" />
 		</verifications>
 	</global>
-    <testdata execute="yes" title ="t1" >
-            <command send="ls NonExistTitleDir" end="\$" verify="v1" />
-        <v1 found="yes" search="No such file or directory" />
+
+    <testdata execute="yes" title ="execute_id_command" >
+            <command send="id" end=">" verify="v1" />
+        <v1 found="yes" search="ok" />
     </testdata>
 
 	<testdata title="show_software_version" execute="yes">
@@ -15,7 +17,7 @@
     </testdata>
 
     <testdata title="set_hal_level" execute="yes">
-        <command  end="$" start=".*" send="/usr/local/fnc/dip/dip_verbosity set hal 3"/>
+        <command  end="$" start=".*" send="/usr/local/fnc/dip/dip_verbosity set hal ${hal_level.value}"/>
     </testdata>
 
 </data>

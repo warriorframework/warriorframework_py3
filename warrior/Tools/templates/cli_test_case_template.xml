@@ -57,5 +57,26 @@
                         <context>positive</context>
                         <impact>impact</impact>
                 </step>
+            <step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="4">
+                        <Arguments>
+                                <argument name="system_name" value="NE1[CLI]" />
+                                <argument name="title" value="execute_id_command" />
+                        </Arguments>
+                        <onError action="abort" />
+                        <Description>connect</Description>
+                        <Execute ExecType="Yes" />
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+            <step Driver="cli_driver" Keyword="disconnect" TS="1">
+                        <Arguments>
+                                <argument name="system_name" value="NE1[CLI]"/>
+                        </Arguments>
+                        <onError action="abort"/>
+                        <Description>connect</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
 	</Steps>
 </Testcase>
