@@ -106,8 +106,7 @@ def save_file(request):
     data["Testcase"]["Details"] = validate_details_data(data["Testcase"]["Details"])
     data["Testcase"]["Steps"]["step"] = validate_step_data(data["Testcase"]["Steps"]["step"])
     xml_data = xmltodict.unparse(data, pretty=True)
-    # directory = request.POST.get("directory")
-    directory = os.getcwd() + '/Warriorspace/Testcases'
+    directory = request.POST.get("directory")
     filename = request.POST.get("filename")
     extension = request.POST.get("extension")
 
