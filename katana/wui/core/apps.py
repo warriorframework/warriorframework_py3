@@ -16,28 +16,15 @@ class CoreConfig(AppConfig):
     name = 'katana.wui.core'
     verbose_name = "Core Katana"
 
-    def copy(self, src):
-        dir_lis=[x[0] for x in os.walk(src)]
-        for fol in dir_lis:
-            path= 'Warriorspace'+fol.split('Warriorspace')[1]
-            if not os.path.exists(path):
-                os.mkdir(path)
-            lis_dir = os.listdir(fol)
-            for fileordir in lis_dir:
-                if os.path.isfile(fol+'/'+fileordir) and not os.path.exists(path+'/'+fileordir):
-                    shutil.copyfile(fol+'/'+fileordir, path+'/'+fileordir)
-
     def ready(self):
         """
         The ready function is trigger only on events like server start up and server reload
         """
         # print "***************You are in Core Katana App Config Class***************"
         nav_obj = Navigator()
-        env_path = "/".join(os.environ['_'].split("/")[:-2])
-        source_warriorspace = env_path + '/lib/python3.6/site-packages/warrior/Warriorspace'
-        self.copy(source_warriorspace)
+
         base_directory = nav_obj.get_katana_dir()
-        warrior_dir = nav_obj.get_warrior_dir()
+        #warrior_dir = nav_obj.get_warrior_dir()
         config_file_name = "wf_config.json"
         config_json_file = join_path(base_directory, "config.json")
         settings_file_path = get_abs_path(join_path("wui", "settings.py"), base_directory)
@@ -52,8 +39,7 @@ class CoreConfig(AppConfig):
                                              'config_file_name': config_file_name,
                                              'available_apps': available_apps,
                                              'settings_apps': settings_apps})
-
-        ordered_json = validate_config_json(read_json_data(config_json_file), warrior_dir)
+        ordered_json = validate_config_json(read_json_data(config_json_file), read_json_data(config_json_file)['pythonsrcdir'])
         with open(config_json_file, "w") as f:
             f.write(json.dumps(ordered_json, indent=4))
 

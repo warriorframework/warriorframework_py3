@@ -97,8 +97,7 @@ class getFileExplorerData(View):
 
         if start_dir == "false":
             get_children_only = False
-            #start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
-            start_dir = join_path(os.getcwd(), "Warriorspace")
+            start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
 
         if "path" in request.GET:
             get_children_only = False
