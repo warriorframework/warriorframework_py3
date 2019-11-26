@@ -14,7 +14,7 @@ parser.add_argument('-tc','--tc_name', help="Name of the the test case ", requir
 parser.add_argument('--ip', help="Ip address of the device", required=True)
 parser.add_argument("-u", '--username', help="username of the device ", required=True)
 parser.add_argument("-p",'--password', help="password of the device ", required=True)
-parser.add_argument("-sp", '--ssh_port', help="ssh port of the device ", required=True)
+parser.add_argument("-cp", '--cli_port', help="ssh port of the device ", required=True)
 parser.add_argument("-dp", '--dip_port', help="dip port of the device ", required=True)
 parser.add_argument("-v","--verbose", action="store_true", help="To display the debug messages ")
 parser.add_argument("-w",'--with_repo_structure', action='store_true',
@@ -58,7 +58,7 @@ class Warrior_Execution_Setup_Files:
         self.ws_directory = "Warriorspace"
         self.testcases_dir = "Warriorspace/Testcases"
         self.data_files_dir = "Warriorspace/Datafiles"
-        self.config_files_dir = "Warriorspace/Configfiles"
+        self.config_files_dir = "Warriorspace/Config_files"
         self.project_files_dir = "Warriorspace/Projects"
         self.testsuite_files_dir = "Warriorspace/Testsuites"
 
@@ -130,7 +130,7 @@ class Warrior_Execution_Setup_Files:
         sub_systems = tree.findall("system/subsystem")
         for i in range(len(sub_systems)):
             if sub_systems[i].get("name") == "CLI":
-                sub_systems[i].find("ssh_port").text = args.ssh_port
+                sub_systems[i].find("ssh_port").text = args.cli_port
             if sub_systems[i].get("name") == "DIP":
                 sub_systems[i].find("ssh_port").text = args.dip_port
 
