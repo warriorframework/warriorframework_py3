@@ -422,6 +422,8 @@ class WarriorCliClass(object):
                             "to be integrated with Warrior. "\
                             "Multiple paths can be provided"\
                             "(separated by a colon)")
+        parser.add_argument('-tc_gen', action='store', help="generate the sample cli/netconf/snmp testcase based on "
+                                                           "user provide type")
 
         namespace = parser.parse_args(arglist)
         #see if the below line is requried

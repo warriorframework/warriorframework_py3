@@ -39,8 +39,16 @@ class Warrior_Execution_Setup_Files:
         self.current_working_directory = os.getcwd()
         self.log.debug("current working directory is {}".format(self.current_working_directory))
         site_home_path = os.path.split(site.__file__)[0]
-        site_packages_path = "site-packages/warrior/Tools/templates"
+        site_packages_path = "site-packages/warrior/Tools/tc_generator/templates"
         self.template_path = os.path.join(site_home_path, site_packages_path)
+        import pdb
+        pdb.set_trace()
+        if os.path.exists(self.template_path):
+            pass
+        else:
+            tc_generator_dir_path = "Tools/tc_generator/templates"
+            self.template_path = os.path.join(self.current_working_directory, tc_generator_dir_path)
+
         #self.template_path = os.path.join(self.current_working_directory, "templates")
         self.input_data_file = "id_{}.xml".format(self.tc_name)
         self.tc_file = "{}.xml".format(self.tc_name)
@@ -150,11 +158,12 @@ class Warrior_Execution_Setup_Files:
                     relative_path += "{}/".format(directory)
         return relative_path[:-1]
 
-
     def generate_cli_files(self, with_repo_structure=False):
+        import pdb
+        pdb.set_trace()
 
         if args.type == "cli":
-            if os.path.exists(self.template_path):
+            #if os.path.exists(self.template_path):
                 if with_repo_structure:
 
                     os.system("cp {} {}".format(os.path.join(self.template_path, "cli_data_file_template.xml"),
@@ -222,8 +231,8 @@ class Warrior_Execution_Setup_Files:
                     self.replace_values_in_input_data_xml_tags()
                     self.replace_values_in_test_case_xml_tags()
                     print("Run line  command is : Warrior {}".format(self.test_case_file_path))
-            else:
-                self.log.error("please install warrior as package pip install warriorframework to fix this error")
+            # else:
+            #     self.log.error("please install warrior as package pip install warriorframework to fix this error")
                 # self.log.info("please install warrior as package pip install warriorframework to fix this error")
 
 obj = Warrior_Execution_Setup_Files()

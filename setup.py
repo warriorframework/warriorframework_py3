@@ -23,7 +23,7 @@ setup(
     author_email='frameworkwarrior@gmail.com',
     scripts=['warrior/Warrior',
              'warrior/Tools/warrior_py3_migration_tools/warrior_py3_migration_tool',
-             'warrior/Tools/tc_generator',],
+             'warrior/Tools/tc_generator/tc_generator',],
     packages=find_packages(),
     package_data={'':['**/*', '*']},
     include_package_data=True,

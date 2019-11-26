@@ -13,23 +13,33 @@ limitations under the License.
 
 try:
     # Framework related import
+    import site
     import os
+
     print("import os was successful")
     import shutil
+
     print("import shutil was successful")
     import warrior.Framework.Utils.email_utils as email
+
     print("import email was successful")
     from warrior.Framework import Utils
+
     print("import Utils was successful")
     from warrior.Framework.Utils.print_Utils import print_error, print_info
+
     print("import print_Utils was successful")
     from warrior.WarriorCore import testcase_driver, testsuite_driver, project_driver
+
     print("import testcase_driver, testsuite_driver, project_driver were successful")
     from warrior.WarriorCore import ironclaw_driver, framework_detail
+
     print("import ironclaw_driver, framework_detail were successful")
     from warrior.WarriorCore.Classes.jira_rest_class import Jira
+
     print("import jira_rest_class was successful")
     from warrior.Framework.ClassUtils import database_utils_class
+
     print("import database_utils_class was successful")
 except:
     print("\033[1;31m*********************************************")
@@ -50,6 +60,7 @@ import warrior.Framework.Utils.encryption_utils as Encrypt
 from warrior.WarriorCore.Classes import war_cli_class
 
 """Handle all the cli command, new functions may be added later"""
+
 
 def update_jira_by_id(jiraproj, jiraid, exec_dir, status):
     """ If jiraid is provided, upload the log and result file to jira """
@@ -78,6 +89,7 @@ def update_jira_by_id(jiraproj, jiraid, exec_dir, status):
     else:
         print_info("jiraid not provided, will not update jira issue")
 
+
 def add_live_table_divs(livehtmllocn, file_list):
     """
     add the divs for the live html table
@@ -102,6 +114,7 @@ def add_live_table_divs(livehtmllocn, file_list):
             xml_Utils.write_tree_to_file(root, livehtmllocn)
         elif isinstance(livehtmllocn, multiprocessing.managers.DictProxy):
             livehtmllocn["html_result"] = xml_Utils.convert_element_to_string(root)
+
 
 def file_execution(cli_args, abs_filepath, default_repo):
     """
@@ -148,6 +161,7 @@ def file_execution(cli_args, abs_filepath, default_repo):
 
     return result
 
+
 def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
     """
         Process the parameter list and prepare environment for file_execution
@@ -157,7 +171,7 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
 
     status = True
 
-    iter_count = 0 ## this iter is used for live html results
+    iter_count = 0  ## this iter is used for live html results
     for parameter in parameter_list:
         default_repo = {}
         result = False
@@ -176,10 +190,10 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
                 else:
                     default_repo.update({'db_obj': False})
 
-                #pdate livehtmllocn to default repo
+                # pdate livehtmllocn to default repo
                 if livehtmllocn or livehtmlobj is not None:
                     live_html_dict = {}
-                    live_html_dict['livehtmllocn'] =\
+                    live_html_dict['livehtmllocn'] = \
                         livehtmllocn if livehtmlobj is None else livehtmlobj
                     live_html_dict['iter'] = iter_count
 
@@ -188,8 +202,8 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
                         add_live_table_divs(livehtmllocn, parameter_list)
                     elif iter_count == 0 and livehtmlobj is not None:
                         add_live_table_divs(livehtmlobj, parameter_list)
-                
-                #Adding user repo's to pythonpath
+
+                # Adding user repo's to pythonpath
                 path_list = []
                 if default_repo.get("pythonpath", False):
                     path_list = default_repo.get("pythonpath").split(":")
@@ -252,6 +266,7 @@ def execution(parameter_list, cli_args, overwrite, livehtmlobj):
 
     return status
 
+
 def warrior_execute_entry(*args, **kwargs):
     """
         main method
@@ -265,11 +280,21 @@ def warrior_execute_entry(*args, **kwargs):
         dbsystem:
         livehtmllocn:
     """
-    if sys.argv[1] == "gen":
-        print("initializing tc generatorr tool !!")
-        import os
-        os.system("tc_generator {}".format(" ".join(sys.argv[2:])))
-        sys.exit()
+    if sys.argv[1] == "tc_gen":
+        print("initializing tc generator tool !!")
+
+        site_home_path = os.path.split(site.__file__)[0]
+        site_packages_path = "site-packages/warrior/Tools/tc_generator/templates"
+        template_path = os.path.join(site_home_path, site_packages_path)
+        if os.path.exists(template_path):
+            os.system("tc_generator {}".format(" ".join(sys.argv[2:])))
+            sys.exit()
+        else:
+            current_working_directory = os.getcwd()
+            tc_generator_dir_path = "Tools/tc_generator"
+            tc_generator_path = os.path.join(current_working_directory, tc_generator_dir_path)
+            os.system("python {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
+            sys.exit()
 
     if not kwargs:
         # Launch from terminal/cli exeuction
@@ -291,7 +316,9 @@ def warrior_execute_entry(*args, **kwargs):
         print_info("DONE 1")
         sys.exit(1)
 
+
 """Handle all the cli command, new functions may be added later"""
+
 
 def decide_runcat_actions(w_cli_obj, namespace):
     """Decide the actions to be taken for runcat tag """
@@ -371,13 +398,13 @@ def decide_overwrite_var(namespace):
             namespace.datafile = os.getcwd() + os.sep + namespace.datafile
         overwrite['ow_datafile'] = namespace.datafile
 
-    #namespace for wrapperfile
+    # namespace for wrapperfile
     if namespace.wrapperfile:
         if namespace.wrapperfile[0] != os.sep:
             namespace.wrapperfile = os.getcwd() + os.sep + namespace.wrapperfile
         overwrite['ow_testwrapperfile'] = namespace.wrapperfile
 
-    #namespace for random tc execution
+    # namespace for random tc execution
     if namespace.random_tc_execution:
         overwrite['random_tc_execution'] = namespace.random_tc_execution
 
@@ -494,8 +521,8 @@ def decide_action(w_cli_obj, namespace):
         if status:
             # sends secret key and encrypted text password for decryption
             message = Encrypt.decrypt(namespace.decrypt[0], encoded_key)
-            print_info("The decrypted text for '{0}' is: {1}".\
-                format(namespace.decrypt[0], message))
+            print_info("The decrypted text for '{0}' is: {1}". \
+                       format(namespace.decrypt[0], message))
             exit(0)
         else:
             print_error("Decrypted text could not be generated.")
@@ -528,11 +555,13 @@ def decide_action(w_cli_obj, namespace):
 
     return (filepath, namespace, overwrite)
 
+
 def main(args):
     """init a Warrior Cli Class object, parse its arguments and run it"""
     w_cli_obj = war_cli_class.WarriorCliClass()
     parsed_args = w_cli_obj.parser(args)
     return decide_action(w_cli_obj, parsed_args)
+
 
 if __name__ == "__main__":
     print(re.match(r"[g-z]", input("Enter: ")))
