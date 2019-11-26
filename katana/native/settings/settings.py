@@ -13,7 +13,6 @@ from katana.utils.json_utils import read_xml_get_json
 from katana.utils.navigator_util import Navigator
 from katana.utils.json_utils import read_json_data
 from katana.wui.core.apps import validate_config_json
-from manage import pipmode
 try:
     import xmltodict
 except ImportError:
@@ -55,7 +54,7 @@ class Settings:
         if request.method == 'POST':
             w_settings_data = {'Setting': {'Logsdir': '', 'Resultsdir': '', '@name': ''}}
             returned_json = json.loads(request.POST.get('data'))
-            if pipmode():
+            if os.environ["pipmode"]=='True':
                 if os.path.isdir(returned_json[0]['pythonsrcdir']):
                     if os.path.split(returned_json[0]['pythonsrcdir'])[-1]=='Warriorspace' or os.path.split(returned_json[0]['pythonsrcdir'])[-2]=='Warriorspace':
                         returned_json[0]['pythonsrcdir']= returned_json[0]['pythonsrcdir']
@@ -76,7 +75,7 @@ class Settings:
             for k, v in list(w_settings_data['Setting'].items()):
                 w_settings_data['Setting'][k] = returned_json[0][k]
                 del returned_json[0][k]
-            if pipmode():
+            if os.environ["pipmode"]=='True':
                 for key, value in returned_json[0].items():
                     if key in ref.keys() and returned_json[0]['pythonsrcdir'] != "" and returned_json[0][key]=="":
                         returned_json[0][key] = returned_json[0]['pythonsrcdir']+'/'+ ref[key]
@@ -92,7 +91,7 @@ class Settings:
         else:
             with open(json_file, 'r') as f:
                 json_data = json.load(f)
-            if pipmode():
+            if os.environ["pipmode"]=='True':
                 pythonsrcdir = read_json_data(json_file)['pythonsrcdir']
             else:
                 pythonsrcdir = self.navigator.get_warrior_dir()

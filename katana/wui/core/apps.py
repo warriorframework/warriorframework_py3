@@ -9,7 +9,6 @@ from katana.wui.core.core_utils.app_info_class import AppInformation
 from katana.wui.core.core_utils.apps_class import Apps
 from katana.wui.core.core_utils.core_index_class_utils import CoreIndex
 from katana.wui.core.core_utils.core_utils import validate_config_json
-from manage import pipmode
 import os
 import shutil
 
@@ -41,7 +40,7 @@ class CoreConfig(AppConfig):
                                              'config_file_name': config_file_name,
                                              'available_apps': available_apps,
                                              'settings_apps': settings_apps})
-        if pipmode():
+        if os.environ["pipmode"]=="True":
             pythonsrcdir = read_json_data(config_json_file)['pythonsrcdir']
         else:
             pythonsrcdir = warrior_dir

@@ -1,7 +1,6 @@
 import os
 from collections import OrderedDict
 from katana.utils.directory_traversal_utils import get_abs_path, join_path
-from manage import pipmode
 
 def get_app_path_from_name(app_name, config_file, base_directory):
     """
@@ -68,7 +67,7 @@ def validate_config_json(json_data, warrior_dir):
         ordered_json["engineer"] = ""
     else:
         ordered_json["engineer"] = json_data["engineer"]
-    if pipmode():
+    if os.environ["pipmode"]=='True':
         ordered_json["pythonsrcdir"] = warrior_dir
     else:
         ordered_json["pythonsrcdir"] = warrior_dir[:-1] \
@@ -83,7 +82,7 @@ def validate_config_json(json_data, warrior_dir):
                        ('idfdir', 'Data'),
                        ('testdata', 'Config_files'),
                        ('testwrapper', 'wrapper_files')])
-    if pipmode():
+    if os.environ["pipmode"]=='True':
         if warrior_dir=="":
             for key, value in list(ref.items()):
                  ordered_json[key] = ""

@@ -3,18 +3,6 @@ import os
 import sys
 from os.path import abspath, dirname
 
-def pipmode():
-    try:
-        import katana
-        return True
-    except:
-        WARRIORDIR = dirname(dirname(abspath(__file__)))
-        sys.path.append(WARRIORDIR)
-        try:
-            import katana
-            return False
-        except:
-            raise
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "katana.wui.settings")
     try:
@@ -34,12 +22,14 @@ if __name__ == "__main__":
         raise
     try:
         import katana
+        os.environ["pipmode"]= "True"
     #except ModuleNotFoundError as error:
     except:
         WARRIORDIR = dirname(dirname(abspath(__file__)))
         sys.path.append(WARRIORDIR)
         try:
             import katana
+            os.environ["pipmode"]= "False"
         except:
             raise
     execute_from_command_line(sys.argv)
