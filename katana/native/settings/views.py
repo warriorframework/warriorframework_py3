@@ -16,7 +16,7 @@ limitations under the License.
 
 import os
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from native.settings.settings import Settings
 from utils.navigator_util import Navigator
 
@@ -52,3 +52,13 @@ def prerequisites_handler(request):
 
 def install_prerequisite(request):
     return JsonResponse(controls.prereq_installation_handler(request))
+
+def validate_input_repo(request):
+    path=request.POST.get('path')
+    if os.path.exists(str(path)):
+        return HttpResponse(1)
+    else:
+        return HttpResponse(0)
+
+def myajaxtestview(request):
+    return HttpResponse(request.POST['text'])

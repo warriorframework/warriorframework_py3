@@ -1,7 +1,10 @@
-import os
+import os,sys
+import re
+import json
 from collections import OrderedDict
 from utils.directory_traversal_utils import get_abs_path, join_path
-
+from utils.navigator_util import Navigator
+from utils.directory_traversal_utils import join_path
 
 def get_app_path_from_name(app_name, config_file, base_directory):
     """
@@ -24,7 +27,8 @@ def get_app_path_from_name(app_name, config_file, base_directory):
 
     app_config_file_rel_path += config_file
 
-    app_config_file_path = get_abs_path(app_config_file_rel_path, base_directory)
+    app_config_file_path = get_abs_path(
+        app_config_file_rel_path, base_directory)
 
     return app_config_file_path
 
@@ -63,23 +67,64 @@ def validate_config_json(json_data, warrior_dir):
 
     :return: Ordered Dictionary containing validated config.json data
     """
+   
     ordered_json = OrderedDict()
     if "engineer" not in json_data:
         ordered_json["engineer"] = ""
     else:
-        ordered_json["engineer"] = json_data["engineer"]
+        ordered_json["engineer"] = "Warrior_user"
 
+    for key in json_data:
+        pattern = r'userreposdir*[0-9a-zA-Z]*'
+        result = re.match(pattern, str(key))
+        if result:
+            path = json_data[key]
+            reponame = key
+            if reponame:
+                if reponame == "userreposdir":
+                    if reponame not in json_data:
+                        ordered_json[reponame] = ""
+                    else:
+                        ordered_json[reponame] = warrior_dir[:-1]
+                else:
+                    ordered_json[reponame] = json_data[reponame]
+                    ordered_json[reponame] = path
+                # json_file_path = Navigator().get_katana_dir()
+                # json_path = json_file_path+"native/settings/static/settings/translations.json"
+
+                # with open(json_path, "r") as fd:
+                #     j_data = json.load(fd)
+
+                # found = False
+                # for dict_item in j_data["data"]:
+                #     if reponame == dict_item["key"]:
+                #         found = True
+                # if not found:
+                #     j_data["data"].append({
+                #           "key": reponame,
+                #           "toolTip": "current location of the user repos dir",
+                #           "translateTo": ""
+                #         })
+
+                #     with open(json_path, "w") as fdw:
+                #         j_data = json.dump(j_data, fdw, indent=4)
+
+            else:
+                ordered_json[reponame] = ""
     ordered_json["pythonsrcdir"] = warrior_dir[:-1] \
         if "pythonsrcdir" not in json_data or json_data["pythonsrcdir"] == "" \
         else json_data["pythonsrcdir"]
 
+
     warrior_dir = ordered_json["pythonsrcdir"]
+
     ref = OrderedDict([("xmldir", "Testcases"),
-                       ('testsuitedir', 'Suites'),
-                       ('projdir', 'Projects'),
-                       ('idfdir', 'Data'),
-                       ('testdata', 'Config_files'),
-                       ('testwrapper', 'wrapper_files')])
+                   ('testsuitedir', 'Suites'),
+                   ('projdir', 'Projects'),
+                   ('idfdir', 'Data'),
+                   ('testdata', 'Config_files'),
+                   ('testwrapper', 'wrapper_files'),])
+    ref.update(ordered_json)
 
     for key, value in list(ref.items()):
         if key not in json_data or json_data[key] == "":
@@ -98,3 +143,4 @@ def validate_config_json(json_data, warrior_dir):
         ordered_json["pythonpath"] = json_data["pythonpath"]
 
     return ordered_json
+

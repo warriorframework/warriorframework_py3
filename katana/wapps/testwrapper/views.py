@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 import collections
 import json
-
+import re
 import os
 import xmltodict
 from django.http import JsonResponse
 from django.shortcuts import render
+from collections import OrderedDict
 from django.template.loader import render_to_string
 from django.views import View
 from utils.directory_traversal_utils import join_path, get_dir_from_path, get_parent_dir_path
@@ -14,6 +15,7 @@ from utils.navigator_util import Navigator
 from wapps.testwrapper.testwrapper_utils.defaults import impacts, on_errors, runmodes, iteration_types, contexts
 from wapps.testwrapper.testwrapper_utils.get_drivers import GetDriversActions
 from wapps.testwrapper.testwrapper_utils.verify_testwrapper_file import VerifyTestWrapperFile
+
 
 navigator = Navigator()
 CONFIG_FILE = join_path(navigator.get_katana_dir(), "config.json")
@@ -52,17 +54,27 @@ def get_file(request):
             vcf_obj = VerifyTestWrapperFile(TEMPLATE, file_path)
             output, data = vcf_obj.verify_file()
             if output["status"]:
+                repo_dirs = navigator.get_user_repos_dir()
+                repo_dict = {}
 
-                da_obj = GetDriversActions(navigator.get_warrior_dir()[:-1])
-                if file_path == TEMPLATE:
-                    output["filepath"] = read_json_data(CONFIG_FILE)["testwrapper"]
-                else:
-                    output["filepath"] = get_parent_dir_path(file_path)
-                output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
-                output["drivers"] = da_obj.get_all_actions()
+                for repo in repo_dirs:
+                    repo_dict[repo] = {}
+
+                    repo_path = repo_dirs[str(repo)]
+                    da_obj = GetDriversActions(repo_path)
+                    if file_path == TEMPLATE:
+                        output["filepath"] = read_json_data(CONFIG_FILE)["testwrapper"]
+                    else:
+                        output["filepath"] = get_parent_dir_path(file_path)
+                    output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
+                    output["user_repos"] = repo_dirs
+
+                    repo_dict[repo] = da_obj.get_all_actions()
+                output["drivers"] = repo_dict
                 output["html_data"] = render_to_string('testwrapper/display_case.html', {"data": data,
                                                                                    "defaults": DROPDOWN_DEFAULTS,
-                                                                                   "drivers": output["drivers"]})
+                                                                                   "drivers": output["drivers"],
+                                                                                         "user_repos":repo_dirs})
                 return JsonResponse(output)
             else:
                 JsonResponse({"status": output["status"], "message": output["message"]})

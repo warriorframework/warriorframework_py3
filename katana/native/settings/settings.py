@@ -69,6 +69,8 @@ class Settings:
                 json_data = json.load(f)
             data = {'fromXml': xmltodict.parse(def_dir_string).get('Setting'),
                     'fromJson': validate_config_json(json_data, self.navigator.get_warrior_dir())}
+
+
             return data
 
     def profile_setting_handler(self, request):

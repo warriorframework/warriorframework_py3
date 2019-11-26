@@ -61,14 +61,18 @@ class GetDriversActions:
         list_of_pkgs = []
         package_list = []
         for line in data:
-            if line.strip().startswith('package_list'):
+            if line.strip().startswith('package_list') and line.strip().endswith(']'):
                 temp = line.split("[")[1].strip()[:-1]
+                list_of_pkgs = [x.strip() for x in temp.split(",")]
+                break
+            elif not line.strip().startswith('package_list') and line.strip().endswith(']'):
+                temp = line.strip()[:-1]
                 list_of_pkgs = [x.strip() for x in temp.split(",")]
                 break
         for pkg in list_of_pkgs:
             temp = pkg.split(".")
             path = self.warrior_dir
-            for i in range(0, len(temp)):
+            for i in range(1, len(temp)):
                 path = join_path(path, temp[i])
             package_list.append(path)
         return package_list
@@ -84,7 +88,7 @@ class GetDriversActions:
         keyword_block = ""
         for line in data:
             if not start:
-                if line.strip().lower().startswith("wdesc"):
+                if line.strip().lower().startswith("wdesc "):
                     keyword_block += line
                 if line.strip().startswith("def "):
                     if "__init__" not in line:
@@ -100,7 +104,6 @@ class GetDriversActions:
                 elif line.strip().startswith('"""'):
                     comment_start = True
         kw_blocks.extend([keyword_block] if keyword_block != "" else [])
-
         for block in kw_blocks:
             actions.update({self.__get_kw_name(block): {
                 "wdesc": self.__get_wdesc(block),
@@ -109,6 +112,7 @@ class GetDriversActions:
                 "signature": self.__get_signature(block)
                 }
             })
+
         return actions
 
     @staticmethod
@@ -129,6 +133,8 @@ class GetDriversActions:
         wdesc = ""
         if lines[-1].strip().lower().startswith("wdesc"):
             wdesc = lines[-1].strip().split("=")[1].strip().strip('"')
+        else:
+            wdesc = "No data found Actions"
         return wdesc
 
     @staticmethod
@@ -148,6 +154,8 @@ class GetDriversActions:
                     comments = comments.strip("\n").strip('"""')
                     comments += "\n"
                     break
+            else:
+                comments = "No comments found in Actions"
         return comments
 
     def __get_arguments(self, kw_block):

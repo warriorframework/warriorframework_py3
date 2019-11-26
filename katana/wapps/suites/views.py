@@ -75,6 +75,8 @@ def save_file(request):
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
     data["TestSuite"]["Details"] = validate_details_data(data["TestSuite"]["Details"])
+    if not data["TestSuite"]["Details"]["TestWrapperFile"]:
+        data["TestSuite"]["Details"].pop('TestWrapperFile')
     data["TestSuite"]["Testcases"]["Testcase"] = validate_step_data(data["TestSuite"]["Testcases"]["Testcase"])
     xml_data = xmltodict.unparse(data, pretty=True)
     directory = request.POST.get("directory")

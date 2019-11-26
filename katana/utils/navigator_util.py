@@ -1,5 +1,7 @@
 import copy
 import os
+import re
+import json
 from .directory_traversal_utils import get_parent_directory, join_path
 from utils.json_utils import read_json_data
 import subprocess
@@ -19,6 +21,25 @@ class Navigator(object):
         """will get warriors main directory"""
         warrior_dir = get_parent_directory(os.path.abspath(__file__), 3) + os.sep + 'warrior' + os.sep
         return warrior_dir
+
+    def get_user_repos_dir(self):
+        """will get warriors main directory"""
+        user_repos_dir = {}
+        CONFIG_FILE = join_path(self.get_katana_dir(), "config.json")
+        warrior_dir = self.get_warrior_dir()[:-1]
+        user_repos_dir["warrior"] = warrior_dir
+
+        with open(CONFIG_FILE) as fd:
+                    json_data = json.load(fd)
+                    for key in json_data:
+                        pattern = r'userreposdir*[0-9a-zA-Z]*'
+                        result = re.match(pattern, str(key))
+                        if result:
+                            key_values = json_data[key].split('/')[-1]
+                            check_dir = next(os.walk(json_data[key]))[1]
+                            if "ProductDrivers" and "Actions" in check_dir:
+                                user_repos_dir[key_values] = json_data[key]
+        return user_repos_dir
 
     def get_engineer_name(self):
         """

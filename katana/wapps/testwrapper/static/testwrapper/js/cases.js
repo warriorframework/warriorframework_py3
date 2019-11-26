@@ -3,6 +3,7 @@ var setupcases = {
     mappings: {
         newStep: {
             drivers: false, //stores all drivers and actions' information
+            repos: false, //stores all the repos and actions information
             title:  "New Step" //drawer title for when new step is being edited
         },
         newReq: {
@@ -322,7 +323,6 @@ var setupcases = {
 
     landing: {
         init: function(){
-            console.log("i am in landing function")
             /* This function get the list of testcase files, displays them, and
             attaches click event on each testcase file */
             $.ajax({
@@ -341,11 +341,11 @@ var setupcases = {
                             data: {"path": data["node"]["li_attr"]["data-path"]}
                         }).done(function(data){
                             if(data.status){
-                                setupcases.invert();
+                               setupcases.invert();
                                 katana.$activeTab.find('#main-div').attr("current-file", data.filepath);
-                                katana.$activeTab.find('.tool-bar').find('.title').html(data.filename);
+                                 katana.$activeTab.find('.tool-bar').find('.title').html(data.filename);
                                 katana.$activeTab.find('#main-div').html(data.html_data);
-                                setupcases.mappings.newStep.drivers = data.drivers;
+                                 setupcases.mappings.newStep.drivers = data.drivers;
                             } else {
                                 katana.openAlert({"alert_type": "danger",
                                     "heading": "Could not open file",
@@ -374,7 +374,6 @@ var setupcases = {
                     katana.$activeTab.find('.tool-bar').find('.title').html(data.filename);
                     katana.$activeTab.find('#main-div').html(data.html_data);
                     setupcases.mappings.newStep.drivers = data.drivers;
-                    cleanupcases.mappings.newStep.drivers = data.drivers;
                 } else {
                     katana.openAlert({"alert_type": "danger",
                         "heading": "Could not open file",
@@ -1042,22 +1041,32 @@ var setupcases = {
     },
 
     stepEditor: {
+        getDrivers: function ($elem, driverName) {
+            /* This function internally calls the getArgumentsEtc function for updating related fields on driver change */
+            $elem = $elem ? $elem : $(this);
+            driverName = driverName ? driverName : "";
+            var repoName = $elem.val();
+            var $driverRow = $elem.closest('.row').next();
+            $driverRow.find('input').attr("value", driverName).val(driverName);
+            $elem.attr("value", repoName);
+            $driverRow.find('#drivers').html("");
+            for (driver in setupcases.mappings.newStep.drivers[repoName]) {
+                        $driverRow.find('#drivers').append('<option>' + driver + '</option>');
+                    }
+                },
+
         getKeywords: function ($elem, kwName) {
             /* This function internally calls the getArgumentsEtc function for updating related fields on driver change */
             $elem = $elem ? $elem : $(this);
             kwName = kwName ? kwName : "";
             var driverName = $elem.val();
+            var $repoRow = $elem.closest('.row').prev();
             var $kwRow = $elem.closest('.row').next();
+            var repo = $repoRow.find('input').attr("value");
             $kwRow.find('input').attr("value", kwName).val(kwName);
             $kwRow.find('#keywords').html("");
-            console.log(setupcases.mappings.newStep.drivers);
-            console.log(driverName)
-            if (driverName in setupcases.mappings.newStep.drivers) {
-                for (var key in setupcases.mappings.newStep.drivers[driverName].actions){
-                    if (setupcases.mappings.newStep.drivers[driverName].actions.hasOwnProperty(key)){
-                        $kwRow.find('#keywords').append('<option>' + key + '</option>');
-                    }
-                }
+            for (keyword in setupcases.mappings.newStep.drivers[repo][driverName].actions){
+                $kwRow.find('#keywords').append('<option>' + keyword + '</option>');
             }
             setupcases.stepEditor.getArgumentsEtc($kwRow.find('input'));
         },
@@ -1068,11 +1077,13 @@ var setupcases = {
             $elem = $elem ? $elem : $(this);
             var kwName = $elem.val();
             var driverName = $elem.closest('.row').prev().find('input').val();
+            $DriverRow = $elem.closest('.row').prev();
+            Repo=$DriverRow.closest('.row').prev().find('input').attr("value");
             data = data ? data : false;
 
-            if (driverName in setupcases.mappings.newStep.drivers) {
-                if (kwName in setupcases.mappings.newStep.drivers[driverName].actions) {
-                    data = setupcases.mappings.newStep.drivers[driverName].actions[kwName]
+            if (driverName in setupcases.mappings.newStep.drivers[Repo]) {
+                if (kwName in setupcases.mappings.newStep.drivers[Repo][driverName].actions) {
+                    data = setupcases.mappings.newStep.drivers[Repo][driverName].actions[kwName]
                 }
             }
 
@@ -1214,6 +1225,7 @@ var cleanupcases = {
     mappings: {
         newStep: {
             drivers: false, //stores all drivers and actions' information
+            repos:false, //stores all the repos and actions information
             title:  "New Step" //drawer title for when new step is being edited
         },
         newReq: {
@@ -1543,12 +1555,10 @@ var cleanupcases = {
                             data: {"path": data["node"]["li_attr"]["data-path"]}
                         }).done(function(data){
                             if(data.status){
-                                console.log("landing")
                                 cleanupcases.invert();
                                 katana.$activeTab.find('#main-div').attr("current-file", data.filepath);
                                 katana.$activeTab.find('.tool-bar').find('.title').html(data.filename);
                                 katana.$activeTab.find('#main-div').html(data.html_data);
-                                console.log(Data.drivers)
                                 cleanupcases.mappings.newStep.drivers = data.drivers;
                             } else {
                                 katana.openAlert({"alert_type": "danger",
@@ -1573,12 +1583,10 @@ var cleanupcases = {
                 data: {"path": false}
             }).done(function(data){
                 if(data.status){
-                    console.log("openNewFile")
                     cleanupcases.invert();
                     katana.$activeTab.find('#main-div').attr("current-file", data.filepath);
                     katana.$activeTab.find('.tool-bar').find('.title').html(data.filename);
                     katana.$activeTab.find('#main-div').html(data.html_data);
-                    console.log(data.drivers)
                     cleanupcases.mappings.newStep.drivers = data.drivers;
                 } else {
                     katana.openAlert({"alert_type": "danger",
@@ -1816,7 +1824,6 @@ var cleanupcases = {
                document.getElementById("editsecond").style.display="block";
 
                document.getElementById("editDetails").style.display="none";
-                console.log("editStep")
                 /* This function opens the step in the step editor and replaces the existing step when saved */
                 var $elem = $(this);
                 var $tbodyElem = katana.$activeTab.find('#step-block-cleanup').find('tbody');
@@ -2031,9 +2038,7 @@ var cleanupcases = {
             }
         }
         $container = cleanupcases._addExecuteBlock($container, data);
-        console.log("exec ends")
         $container = cleanupcases._addArgumentsEtcBlock($container, data);
-        console.log("loop ends")
         return $container
     },
 
@@ -2066,10 +2071,7 @@ var cleanupcases = {
     _addArgumentsEtcBlock: function ($container, data) {
         /* This function generates the arguments block (side-drawer) out of an HTML block and json data.
         This function should not be called independently */
-        console.log("enable")
-        console.log($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val())
         cleanupcases.stepEditor.getKeywords($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val());
-        console.log("enable done")
         var $allArgs = $container.find('[key="Arguments.argument"]');
         for (var i=0 ; i<$allArgs.length; i++) {
             var currentArg = $($allArgs[i]).find('.cases-label').text();
@@ -2080,7 +2082,6 @@ var cleanupcases = {
                 }
             }
         }
-        console.log("enable ends")
         return $container;
     },
 
@@ -2249,22 +2250,33 @@ var cleanupcases = {
     },
 
     stepEditor: {
+        getDrivers: function ($elem, driverName) {
+            /* This function internally calls the getArgumentsEtc function for updating related fields on driver change */
+            $elem = $elem ? $elem : $(this);
+            driverName = driverName ? driverName : "";
+            var repoName = $elem.val();
+            var $driverRow = $elem.closest('.row').next();
+            $driverRow.find('input').attr("value", driverName).val(driverName);
+            $elem.attr("value", repoName);
+            $driverRow.find('#drivers').html("");
+            for (driver in cases.mappings.newStep.drivers[repoName]) {
+                        $driverRow.find('#drivers').append('<option>' + driver + '</option>');
+                    }
+                },
+
         getKeywords: function ($elem, kwName) {
             /* This function internally calls the getArgumentsEtc function for updating related fields on driver change */
             $elem = $elem ? $elem : $(this);
 
             kwName = kwName ? kwName : "";
             var driverName = $elem.val();
+            var $repoRow = $elem.closest('.row').prev();
             var $kwRow = $elem.closest('.row').next();
+            var repo = $repoRow.find('input').attr("value");
             $kwRow.find('input').attr("value", kwName).val(kwName);
             $kwRow.find('#keywords').html("");
-            console.log(cleanupcases.mappings.newStep.drivers)
-            if (driverName != "") {
-                for (var key in cleanupcases.mappings.newStep.drivers[driverName].actions){
-                    if (cleanupcases.mappings.newStep.drivers[driverName].actions.hasOwnProperty(key)){
-                        $kwRow.find('#keywords').append('<option>' + key + '</option>');
-                    }
-                }
+            for (keyword in cleanupcases.mappings.newStep.drivers[repo][driverName].actions){
+                $kwRow.find('#keywords').append('<option>' + keyword + '</option>');
             }
             cleanupcases.stepEditor.getArgumentsEtc($kwRow.find('input'));
         },
@@ -2275,11 +2287,13 @@ var cleanupcases = {
             $elem = $elem ? $elem : $(this);
             var kwName = $elem.val();
             var driverName = $elem.closest('.row').prev().find('input').val();
+            $DriverRow = $elem.closest('.row').prev();
+            Repo=$DriverRow.closest('.row').prev().find('input').attr("value");
             data = data ? data : false;
 
-            if (driverName != "") {
-                if (kwName in cleanupcases.mappings.newStep.drivers[driverName].actions) {
-                    data = cleanupcases.mappings.newStep.drivers[driverName].actions[kwName]
+            if (driverName in cleanupcases.mappings.newStep.drivers[Repo]) {
+                if (kwName in cleanupcases.mappings.newStep.drivers[Repo][driverName].actions) {
+                    data = cleanupcases.mappings.newStep.drivers[Repo][driverName].actions[kwName]
                 }
             }
 
@@ -2421,6 +2435,7 @@ var debugcases = {
     mappings: {
         newStep: {
             drivers: false, //stores all drivers and actions' information
+            repos:false, //stores all the repos and actions information
             title:  "New Step" //drawer title for when new step is being edited
         },
         newReq: {
@@ -2750,12 +2765,10 @@ var debugcases = {
                             data: {"path": data["node"]["li_attr"]["data-path"]}
                         }).done(function(data){
                             if(data.status){
-                                console.log("landing")
                                 debugcases.invert();
                                 katana.$activeTab.find('#main-div').attr("current-file", data.filepath);
                                 katana.$activeTab.find('.tool-bar').find('.title').html(data.filename);
                                 katana.$activeTab.find('#main-div').html(data.html_data);
-                                console.log(Data.drivers)
                                 debugcases.mappings.newStep.drivers = data.drivers;
                             } else {
                                 katana.openAlert({"alert_type": "danger",
@@ -2780,12 +2793,10 @@ var debugcases = {
                 data: {"path": false}
             }).done(function(data){
                 if(data.status){
-                    console.log("openNewFile")
                     debugcases.invert();
                     katana.$activeTab.find('#main-div').attr("current-file", data.filepath);
                     katana.$activeTab.find('.tool-bar').find('.title').html(data.filename);
                     katana.$activeTab.find('#main-div').html(data.html_data);
-                    console.log(data.drivers)
                     debugcases.mappings.newStep.drivers = data.drivers;
                 } else {
                     katana.openAlert({"alert_type": "danger",
@@ -3024,7 +3035,6 @@ var debugcases = {
                document.getElementById("editthird").style.display="block";
 
                document.getElementById("editDetails").style.display="none";
-                console.log("editStep")
                 /* This function opens the step in the step editor and replaces the existing step when saved */
                 var $elem = $(this);
                 var $tbodyElem = katana.$activeTab.find('#step-block-debug').find('tbody');
@@ -3239,9 +3249,7 @@ var debugcases = {
             }
         }
         $container = debugcases._addExecuteBlock($container, data);
-        console.log("exec ends")
         $container = debugcases._addArgumentsEtcBlock($container, data);
-        console.log("loop ends")
         return $container
     },
 
@@ -3274,10 +3282,7 @@ var debugcases = {
     _addArgumentsEtcBlock: function ($container, data) {
         /* This function generates the arguments block (side-drawer) out of an HTML block and json data.
         This function should not be called independently */
-        console.log("enable")
-        console.log($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val())
         debugcases.stepEditor.getKeywords($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val());
-        console.log("enable done")
         var $allArgs = $container.find('[key="Arguments.argument"]');
         for (var i=0 ; i<$allArgs.length; i++) {
             var currentArg = $($allArgs[i]).find('.cases-label').text();
@@ -3288,7 +3293,6 @@ var debugcases = {
                 }
             }
         }
-        console.log("enable ends")
         return $container;
     },
 
@@ -3457,22 +3461,33 @@ var debugcases = {
     },
 
     stepEditor: {
+        getDrivers: function ($elem, driverName) {
+            /* This function internally calls the getArgumentsEtc function for updating related fields on driver change */
+            $elem = $elem ? $elem : $(this);
+            driverName = driverName ? driverName : "";
+            var repoName = $elem.val();
+            var $driverRow = $elem.closest('.row').next();
+            $driverRow.find('input').attr("value", driverName).val(driverName);
+            $elem.attr("value", repoName);
+            $driverRow.find('#drivers').html("");
+            for (driver in cases.mappings.newStep.drivers[repoName]) {
+                        $driverRow.find('#drivers').append('<option>' + driver + '</option>');
+                    }
+                },
+
         getKeywords: function ($elem, kwName) {
             /* This function internally calls the getArgumentsEtc function for updating related fields on driver change */
             $elem = $elem ? $elem : $(this);
 
             kwName = kwName ? kwName : "";
             var driverName = $elem.val();
+            var $repoRow = $elem.closest('.row').prev();
             var $kwRow = $elem.closest('.row').next();
+            var repo = $repoRow.find('input').attr("value");
             $kwRow.find('input').attr("value", kwName).val(kwName);
             $kwRow.find('#keywords').html("");
-            console.log(debugcases.mappings.newStep.drivers)
-            if (driverName != "") {
-                for (var key in debugcases.mappings.newStep.drivers[driverName].actions){
-                    if (debugcases.mappings.newStep.drivers[driverName].actions.hasOwnProperty(key)){
-                        $kwRow.find('#keywords').append('<option>' + key + '</option>');
-                    }
-                }
+             for (keyword in debugcases.mappings.newStep.drivers[repo][driverName].actions){
+                $kwRow.find('#keywords').append('<option>' + keyword + '</option>');
             }
             debugcases.stepEditor.getArgumentsEtc($kwRow.find('input'));
         },
@@ -3483,11 +3498,13 @@ var debugcases = {
             $elem = $elem ? $elem : $(this);
             var kwName = $elem.val();
             var driverName = $elem.closest('.row').prev().find('input').val();
+            $DriverRow = $elem.closest('.row').prev();
+            Repo=$DriverRow.closest('.row').prev().find('input').attr("value");
             data = data ? data : false;
 
-            if (driverName != "") {
-                if (kwName in debugcases.mappings.newStep.drivers[driverName].actions) {
-                    data = debugcases.mappings.newStep.drivers[driverName].actions[kwName]
+            if (driverName in debugcases.mappings.newStep.drivers[Repo]) {
+                if (kwName in debugcases.mappings.newStep.drivers[Repo][driverName].actions) {
+                    data = debugcases.mappings.newStep.drivers[Repo][driverName].actions[kwName]
                 }
             }
 
