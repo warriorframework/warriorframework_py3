@@ -9,8 +9,10 @@ from katana.wui.core.core_utils.app_info_class import AppInformation
 from katana.wui.core.core_utils.apps_class import Apps
 from katana.wui.core.core_utils.core_index_class_utils import CoreIndex
 from katana.wui.core.core_utils.core_utils import validate_config_json
+from manage import pipmode
 import os
 import shutil
+
 
 class CoreConfig(AppConfig):
     name = 'katana.wui.core'
@@ -24,7 +26,7 @@ class CoreConfig(AppConfig):
         nav_obj = Navigator()
 
         base_directory = nav_obj.get_katana_dir()
-        #warrior_dir = nav_obj.get_warrior_dir()
+        warrior_dir = nav_obj.get_warrior_dir()
         config_file_name = "wf_config.json"
         config_json_file = join_path(base_directory, "config.json")
         settings_file_path = get_abs_path(join_path("wui", "settings.py"), base_directory)
@@ -39,7 +41,11 @@ class CoreConfig(AppConfig):
                                              'config_file_name': config_file_name,
                                              'available_apps': available_apps,
                                              'settings_apps': settings_apps})
-        ordered_json = validate_config_json(read_json_data(config_json_file), read_json_data(config_json_file)['pythonsrcdir'])
+        if pipmode():
+            pythonsrcdir = read_json_data(config_json_file)['pythonsrcdir']
+        else:
+            pythonsrcdir = warrior_dir
+        ordered_json = validate_config_json(read_json_data(config_json_file), pythonsrcdir)
         with open(config_json_file, "w") as f:
             f.write(json.dumps(ordered_json, indent=4))
 
