@@ -531,9 +531,6 @@ class CommonActions(object):
                                                                                                response)
                                             else:
                                                 failure_reason = "{0} Failed".format(splitted_command[0])
-                                    else:
-                                        failure_reason = "Command execution failed .." \
-                                                         " so db_db_backup script execution failed"
 
         if failure_reason is None and script_status is False:
             failure_reason = "db_backup script execution failed"
