@@ -520,17 +520,17 @@ class CommonActions(object):
                                 response = title_td_value.get(command_key,None)
                                 if status is not None and status != "PASS":
                                     script_status = False
-                                    if command is not None:
-                                        splitted_command = command.split(":")
-                                        if splitted_command[0] == "3" or splitted_command[0] == \
-                                                "wctrl:x" or splitted_command[0] == ";":
-                                            failure_reason = "Communication Failure with device"
+                                    splitted_command = command.split(":")
+                                    if splitted_command[0] == "3" or splitted_command[0] == \
+                                            "wctrl:x" or splitted_command[0] == ";":
+                                        failure_reason = "Communication Failure with device"
+                                    else:
+                                        if "Expected pattern not found" in response:
+                                            failure_reason = "{} Failed : reason {}".format(splitted_command[0],
+                                                                                           response)
                                         else:
-                                            if "Expected pattern not found" in response:
-                                                failure_reason = "{} Failed : reason {}".format(splitted_command[0],
-                                                                                               response)
-                                            else:
-                                                failure_reason = "{0} Failed".format(splitted_command[0])
+                                            failure_reason = "{0} Failed".format(splitted_command[0])
+
 
         if failure_reason is None and script_status is False:
             failure_reason = "db_backup script execution failed"
