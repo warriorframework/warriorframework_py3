@@ -1,7 +1,6 @@
 window.inc = 0;
 window.current_context="";
 window.$preipf="";
-window.Is_Valid=null;
 window.nul_flag=0;
 var settings = {
 
@@ -189,6 +188,25 @@ var settings = {
         });
     },
 
+     validatedir: function(paths) {
+        $.ajax({
+                headers: {
+                    'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
+                },
+                type: 'POST',
+                url: 'settings/validate_repo/',
+                data: {"paths": JSON.stringify(paths)}
+            }).done(function(data){
+                if(data==1){
+                nul_flag=1;
+                }
+                else{
+                nul_flag=0;
+                }
+            });
+             return nul_flag;
+   },
+
     save: function () {
         nul_flag=0;
         var $elem = this;
@@ -198,39 +216,32 @@ var settings = {
         var ipfarray=[];
         ipfarray[0]=$ippref=$("#get_count_of_ip").find("input"+"[key=userreposdir]").val();
         if (inc){
-
         var ipfarray = $("input[category='repo']")
               .map(function(){return $(this).val();}).get();
     }
-
-    for(var j=0; j<ipfarray.length;j++){
-        if(ipfarray[j].trim() == ""){
-        nul_flag=1;
-        break;
-        }
-       }
-
     function find_duplicate_in_array(ipfarray) {
             var object = {};
             var result = [];
-
             ipfarray.forEach(function (item) {
               if(!object[item])
                   object[item] = 0;
                 object[item] += 1;
             })
-
             for (var prop in object) {
                if(object[prop] >= 2) {
                    result.push(prop);
                }
             }
-
             return result;
-
         }
     fresult = find_duplicate_in_array(ipfarray);
-    if(nul_flag || fresult.length){
+    null_flag = settings.validatedir(ipfarray);
+    console.log("fresult:",fresult.length);
+    console.log("null_flag:",null_flag);
+    console.log("null_flag:",typeof(null_flag));
+    console.log("fresult:",typeof(fresult.length));
+    if(null_flag || fresult.length){
+        console.log("inside if condition..!")
         ipfarray.forEach(function (i) {
             $ippreff=$("#get_count_of_ip").find("input[value='"+i+"']");
             $ippreff.css({"border-color":"#dcdcdc"});
@@ -243,8 +254,8 @@ var settings = {
 
           katana.openAlert({
             "alert_type": "danger",
-            "heading": "Path Error",
-            "text": "Duplicate paths are not allowed, and paths can not be empty",
+            "heading": "Invalid Repo path(s)",
+            "text": "It seems like the entered Repo path may be empty or not valid.",
             "show_cancel_btn": false
         });
     
@@ -371,96 +382,23 @@ var settings = {
     inc =$('#get_count_of_ip input').length;
     inc -= 13;
     inc += 1;
-    if(inc == 1){
-    $inputpath=$(this).next().val();
-    dirresult=settings.validatedir($inputpath);
-    if(dirresult == true){
-    $(this).next().css({"border-color":" #dcdcdc"});
     $(".incrementfnc").append("<div katana-click='settings.onselect' class='field'><input category='repo' key="+"userreposdir"+inc+" type='text' {% if v %} value='' {% endif %} placeholder=''><div class='file-explorer-launcher' katana-click='settings.openFileExplorer.logsOrResultsDir'></div>");
     $("#saveButton").removeClass("saved");
-    }
-    else{
-
-    $(this).next().css({"border-color":"red"});
-    katana.openAlert({
-        "alert_type": "danger",
-        "heading": "Invalid Path",
-        "text": "It seems like the entered Repo path is not valid.",
-        "show_cancel_btn": false
-    });
-    }
-    }
-    else if(inc>1){
-         prev = inc-1;
-         prekey = '"userreposdir'+prev+'"';
-         $preipf=$("#get_count_of_ip").find("input"+"[key="+prekey+"]");
-         $preipfval=$("#get_count_of_ip").find("input"+"[key="+prekey+"]").val();
-         dirresult=settings.validatedir($preipfval);
-          if(dirresult == true){
-              $(this).next().css({"border-color":" #dcdcdc"});
-              $preipf.css({"border-color":"#dcdcdc"});
-              $(".incrementfnc").append("<div katana-click='settings.onselect' class='field'><input category='repo' key="+"userreposdir"+inc+" type='text' {% if v %} value='' {% endif %} placeholder=''><div class='file-explorer-launcher' katana-click='settings.openFileExplorer.logsOrResultsDir'></div>");
-              $("#saveButton").removeClass("saved");
-          }
-         else{
-
-                $preipf.css({"border-color":"red"});
-                katana.openAlert({
-                    "alert_type": "danger",
-                    "heading": "Invalid Path",
-                    "text": "It seems like the entered Repo path may empty or not valid.",
-                    "show_cancel_btn": false
-                });
-         }
-
-    }
-
-   },
-
-   validatedir: function(path) {
-        $.ajax({
-                headers: {
-                    'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
-                },
-                type: 'POST',
-                url: 'settings/validate_repo/',
-                data: {"path": path}
-            }).done(function(data){
-
-                Is_Valid=data;
-
-            });
-            return Is_Valid;
-
    },
 
    set_context:function(context){
    current_context=context;
    },
 
-
    removerepo: function(){
     fieldname=$(this).attr("key");
     inputfd = current_context.parent().remove();
     inputfd.remove();
-    settings.remove_path_from_list();
     $("#saveButton").removeClass("saved");
     $("#removebtn").find(".fa-minus-circle").remove();
-
    },
 
-   remove_path_from_list:function(){
-    $.ajax({
-        headers: {
-            'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
-        },
-        type: 'POST',
-        url: 'settings/remove_path_from_repo/',
-        data: { }
-    });
-   },
-
-onselect:function(){
+  onselect:function(){
       elem=$(this).children();
       field=$(this).children().attr("key");
       settings.set_context(elem);
@@ -469,8 +407,8 @@ onselect:function(){
       $("#saveButton").removeClass("saved");
 },
 
-deselect: function(){
+  deselect: function(){
       $("#removebtn").find(".fa-minus-circle").remove();
-},
+ },
 
 };
