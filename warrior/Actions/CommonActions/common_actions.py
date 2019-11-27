@@ -520,7 +520,7 @@ class CommonActions(object):
                                 response = title_td_value.get(command_key,None)
                                 if status is not None and status != "PASS":
                                     script_status = False
-                                    if command is None:
+                                    if command is not None:
                                         splitted_command = command.split(":")
                                         if splitted_command[0] == "3" or splitted_command[0] == \
                                                 "wctrl:x" or splitted_command[0] == ";":
