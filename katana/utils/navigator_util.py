@@ -34,7 +34,7 @@ class Navigator(object):
                     for key in json_data:
                         pattern = r'userreposdir*[0-9a-zA-Z]*'
                         result = re.match(pattern, str(key))
-                        if result:
+                        if result and os.path.exists(json_data[key]):
                             key_values = json_data[key].split('/')[-1]
                             check_dir = next(os.walk(json_data[key]))[1]
                             if "ProductDrivers" and "Actions" in check_dir:
