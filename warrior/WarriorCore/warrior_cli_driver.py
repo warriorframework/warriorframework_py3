@@ -281,7 +281,7 @@ def warrior_execute_entry(*args, **kwargs):
         livehtmllocn:
     """
     if sys.argv[1] == "-tc_gen":
-        print("initializing tc generator tool !!")
+        print_info("initializing tc generator tool !!")
 
         site_home_path = os.path.split(site.__file__)[0]
         site_packages_path = "site-packages/warrior/Tools/tc_generator/templates"
