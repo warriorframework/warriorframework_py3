@@ -393,6 +393,8 @@ class CommonActions(object):
                      Ex :datetime.datetime(2018, 10, 22, 5, 51, 21)
 
         """
+        import time
+        time.sleep(900)
         wdesc = "To get the current timestamp in the format of yyyy-mm-dd hh:mm:ss"
         Utils.testcase_Utils.pNote(wdesc)
         currentdate = str(int(time.time()))
