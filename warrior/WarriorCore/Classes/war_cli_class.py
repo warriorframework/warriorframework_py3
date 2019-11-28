@@ -196,235 +196,238 @@ class WarriorCliClass(object):
         parser = argparse.ArgumentParser(prog='PROG')
         warrior_arg = parser.add_argument_group('warrior args')
         # Display version and framework details
-        warrior_arg.add_argument('--version', action='store_true', default=False,
-                            help=':version: Help the user with Current Warrior version and other Warrior package details ')
+        warrior_arg.add_argument('--version', action='store_true', default=False,\
+            help=':version: Help the user with Current Warrior version and other\
+            Warrior package details')
 
 
         # schedule sleep
-        warrior_arg.add_argument('-schedule', action='store', dest='target_time',
-                            nargs='?', help=":schedule execution: Schedule Warrior "\
-                            "execution to the specified time. "\
-                            "Enter future time in yyyy-mm-dd-hh-mm-ss format")
+        warrior_arg.add_argument('-schedule', action='store', dest='target_time',\
+            nargs='?', help=":schedule execution: Schedule Warrior "\
+            "execution to the specified time. "\
+            "Enter future time in yyyy-mm-dd-hh-mm-ss format")
 
         # create a testsuite xml file
-        warrior_arg.add_argument('-cs', action="store_true", default=False,
-                            dest="create", help=":create test suite: cli command to "
-                            "create a Warrior testsuite xml, "\
-                            "Use with -suitename(mandatory), list of testcase xml files "\
-                            "(mandatory when -category is not used), "\
-                            "-suitelocn(optional), -category(optional), -tcdir(optional)")
+        warrior_arg.add_argument('-cs', action="store_true", default=False,\
+            dest="create", help=":create test suite: cli command to "\
+            "create a Warrior testsuite xml, "\
+            "Use with -suitename(mandatory), list of testcase xml files "\
+            "(mandatory when -category is not used), "\
+            "-suitelocn(optional), -category(optional), -tcdir(optional)")
 
         # -runcat : execute testcases of particular category
-        warrior_arg.add_argument('-runcat', nargs='*',
-                            help=":run test cases of specific category: Enter list of test case "\
-                            "category(ies) to be "\
-                            "searched for (space seperated). "
-                            "Additional arguments -tcdir(optional), "\
-                             "-suitename(optional), -suitelocn(optional)   "\
-                             "Format:- './Warrior -runcat [<category1> <category2>]"\
-                             "-tcdir [<dir1> <dir2>] -suitename <suitename> "\
-                             "-suitelocn <suite destination path> ")
+        warrior_arg.add_argument('-runcat', nargs='*',\
+            help=":run test cases of specific category: Enter list of \
+            test case category(ies) to be searched for (space seperated). "\
+            "Additional arguments -tcdir(optional), "\
+            "-suitename(optional), -suitelocn(optional)   "\
+            "Format:- './Warrior -runcat [<category1> <category2>]"\
+            "-tcdir [<dir1> <dir2>] -suitename <suitename> "\
+            "-suitelocn <suite destination path> ")
 
         # arguments related to -createsuite and -runcat
-        warrior_arg.add_argument('-suitename', nargs='?',
-                            help=":suite name: Enter name of the suite to be created.\n"
-                            "Used with -createsuite/-runcat. Format:- -suitename <testsuite name>")
+        warrior_arg.add_argument('-suitename', nargs='?',\
+            help=":suite name: Enter name of the suite to be created.\n"\
+            "Used with -createsuite/-runcat. Format:- -suitename <testsuite name>")\
 
-        warrior_arg.add_argument('-suitelocn', action="store", nargs='?', dest="suite_dest",
-                            help=":suite location: Enter location where the "\
-                            "testsuite will be created, "\
-                            "defaulted to current working directory. "\
-                            "Used with -createsuite/-runcat. "\
-                            "Format:- -suitelocn <dest directory to testsuite xml file>")
+        warrior_arg.add_argument('-suitelocn', action="store", nargs='?', dest="suite_dest",\
+            help=":suite location: Enter location where the "\
+            "testsuite will be created, "\
+            "defaulted to current working directory. "\
+            "Used with -createsuite/-runcat. "\
+            "Format:- -suitelocn <dest directory to testsuite xml file>")
 
-        warrior_arg.add_argument('-tcdir', nargs='*',
-                            help=":testcase directories: Enter list of directories to search for "\
-                            "testcase xml files (space seperated). "\
-                            "Used with -creatsuite/-runcat. Format:- -tcdir [<dir1> <dir2>]")
+        warrior_arg.add_argument('-tcdir', nargs='*',\
+            help=":testcase directories: Enter list of directories to search for "\
+            "testcase xml files (space seperated). "\
+            "Used with -creatsuite/-runcat. Format:- -tcdir [<dir1> <dir2>]")
 
-        warrior_arg.add_argument('-cat', nargs='*',
-                            help=":category: Enter list of test case category(ies) to be "\
-                            "searched for (space seperated). "
-                            "Used with -creatsuite. Format:- -category [<cat1> <cat2>]")
+        warrior_arg.add_argument('-cat', nargs='*',\
+            help=":category: Enter list of test case category(ies) to be "\
+            "searched for (space seperated). "
+            "Used with -creatsuite. Format:- -category [<cat1> <cat2>]")
 
 
         # main functionality
-        warrior_arg.add_argument('filepath', nargs='*',
-                            help="Enter the testcase/testsuite/project xml files "\
-                            "to be executed by Warrior. "\
-                            "Multiple files of different type can be provided "\
-                            "(separated by a space)")
+        warrior_arg.add_argument('filepath', nargs='*',\
+            help="Enter the testcase/testsuite/project xml files "\
+            "to be executed by Warrior. "\
+            "Multiple files of different type can be provided "\
+            "(separated by a space)")
 
         # Run Ironclaw tool
-        warrior_arg.add_argument('-ironclaw', action='store_true', default=False,
-                            help=":ironclaw: Run Warrior's IronClaw tool. "
-                            "Validates the Warrior xml(testcase/testsuite/project) files")
+        warrior_arg.add_argument('-ironclaw', action='store_true', default=False,\
+            help=":ironclaw: Run Warrior's IronClaw tool. "\
+            "Validates the Warrior xml(testcase/testsuite/project) files")
 
         # CLI arguments
-        warrior_arg.add_argument('-kwparallel', action='store_true', default=False,
-                            help=":keyword parallel: Set keyword exec_type to parallel")
+        warrior_arg.add_argument('-kwparallel', action='store_true', default=False,\
+            help=":keyword parallel: Set keyword exec_type to parallel")\
 
-        warrior_arg.add_argument('-kwsequential', action='store_true', default=False,
-                            help=":keyword sequential: Set keyword exec_type to sequential")
+        warrior_arg.add_argument('-kwsequential', action='store_true', default=False,\
+            help=":keyword sequential: Set keyword exec_type to sequential")\
 
-        warrior_arg.add_argument('-tcparallel', action='store_true', default=False,
-                            help=":testcase parallel: Set testcase exec_type to parallel")
+        warrior_arg.add_argument('-tcparallel', action='store_true', default=False,\
+            help=":testcase parallel: Set testcase exec_type to parallel")\
 
-        warrior_arg.add_argument('-tcsequential', action='store_true', default=False,
-                            help=":testcae sequential: Set testcase exec_type to sequential")
+        warrior_arg.add_argument('-tcsequential', action='store_true', default=False,\
+            help=":testcae sequential: Set testcase exec_type to sequential")
 
-        warrior_arg.add_argument('-RMT', type=int, default=0,
-                            help=" :run multiple times: Set testcase exec_type to run multiple times,"\
-                            " Enter value for number of attempts after tag")
+        warrior_arg.add_argument('-RMT', type=int, default=0,\
+            help=" :run multiple times: Set testcase exec_type to run multiple times,"\
+            " Enter value for number of attempts after tag")
 
-        warrior_arg.add_argument('-RUF', type=int, default=0,
-                            help=" :run until fail:  set testcase exec_type to run until fails,"\
-                            "Enter value for number of attempts after tag")
+        warrior_arg.add_argument('-RUF', type=int, default=0,\
+            help=" :run until fail:  set testcase exec_type to run until fails,"\
+            "Enter value for number of attempts after tag")
 
         # defects parsing
-        warrior_arg.add_argument('-ad', action='store_true', default=False,
-                            help=":autodefects:  "\
-                            "Automatically creates bugs in jira for failing keywords. "\
-                            "Takes -jiraproj as optional argument."\
-                            "When used with -jiraproj creates jira bugs "\
-                            "against the provided jira project from the "
-                            "jira config file. "\
-                            "If -jiraproj tag is not provided, creates jira bug against the "\
-                            "default project from the jira config file."\
-                            "Default project:- Is the first proj marked default='true', "\
-                            "in the jira config file. If no projects are marked default='true' "\
-                            "it is first project in the jira config file."\
-                            "jira config file location = Tools/jira/jira_config.xml.")
+        warrior_arg.add_argument('-ad', action='store_true', default=False,\
+            help=":autodefects:  "\
+            "Automatically creates bugs in jira for failing keywords. "\
+            "Takes -jiraproj as optional argument."\
+            "When used with -jiraproj creates jira bugs "\
+            "against the provided jira project from the "\
+            "jira config file. "\
+            "If -jiraproj tag is not provided, creates jira bug against the "\
+            "default project from the jira config file."\
+            "Default project:- Is the first proj marked default='true', "\
+            "in the jira config file. If no projects are marked default='true' "\
+            "it is first project in the jira config file."\
+            "jira config file location = Tools/jira/jira_config.xml.")
 
-        warrior_arg.add_argument('-ujd', action='store_true', default=False,
-                            help=":upload jira defects: Manually upload "\
-                            "defects/bugs to jira using "\
-                            "cli command. Used with either -ddir or -djson. "\
-                            "Takes -jiraproj as an optional argument")
+        warrior_arg.add_argument('-ujd', action='store_true', default=False,\
+            help=":upload jira defects: Manually upload "\
+            "defects/bugs to jira using "\
+            "cli command. Used with either -ddir or -djson. "\
+            "Takes -jiraproj as an optional argument")
 
-        warrior_arg.add_argument('-ddir', action='store', nargs='*',
-                            help=":defect directories: Used with -ujd, "\
-                            "a list of all defects directories")
+        warrior_arg.add_argument('-ddir', action='store', nargs='*',\
+            help=":defect directories: Used with -ujd, "\
+            "a list of all defects directories")
 
-        warrior_arg.add_argument('-djson', action='store', nargs='*',
-                            help=':defect json: Used with -ujd, a list of defect josn files')
+        warrior_arg.add_argument('-djson', action='store', nargs='*',\
+            help=':defect json: Used with -ujd, a list of defect josn files')
 
-        warrior_arg.add_argument('-jiraproj', action='store', nargs='?',
-                            help=":jira project: Represents the name of "\
-                            "jira project jira config file. "
-                            "Used with -ad or -ujd. When provided with -ad or -jd jira bugs "\
-                            "will be created against the "\
-                            "provided project instead of default jira project."\
-                            "jira config file location = Tools/jira/jira_config.xml.")
+        warrior_arg.add_argument('-jiraproj', action='store', nargs='?',\
+            help=":jira project: Represents the name of "\
+            "jira project jira config file. "
+            "Used with -ad or -ujd. When provided with -ad or -jd jira bugs "\
+            "will be created against the "\
+            "provided project instead of default jira project."\
+            "jira config file location = Tools/jira/jira_config.xml.")
 
-        warrior_arg.add_argument('-datafile', action='store', nargs='?',
-                            help="overwrite the path of datafile in execution "\
-                            "ignore the datafile specified in testcase.xml")
+        warrior_arg.add_argument('-datafile', action='store', nargs='?',\
+            help="overwrite the path of datafile in execution "\
+            "ignore the datafile specified in testcase.xml")
 
         #to accept -wrapperfile as command line argument
-        warrior_arg.add_argument('-wrapperfile', action='store', nargs='?',
-                            help="overwrite the path of wrapperfile in execution "\
-                            "when specified in command line skips the wrapperfile "\
-                            "in testcase.xml and suite.xml")
+        warrior_arg.add_argument('-wrapperfile', action='store', nargs='?',\
+            help="overwrite the path of wrapperfile in execution "\
+            "when specified in command line skips the wrapperfile "\
+            "in testcase.xml and suite.xml")
 
-        warrior_arg.add_argument('-resultdir', action='store', nargs='?',
-                            help="overwrite the path of result directory in execution "\
-                            "ignore the result directory specified in testcase.xml")
+        warrior_arg.add_argument('-resultdir', action='store', nargs='?',\
+            help="overwrite the path of result directory in execution "\
+            "ignore the result directory specified in testcase.xml")
 
-        warrior_arg.add_argument('-logdir', action='store', nargs='?',
-                            help="overwrite the path of log directory in execution "\
-                            "ignore the log directory specified in testcase.xml")
+        warrior_arg.add_argument('-logdir', action='store', nargs='?',\
+            help="overwrite the path of log directory in execution "\
+            "ignore the log directory specified in testcase.xml")
 
-        warrior_arg.add_argument('-outputdir', action='store', nargs='?',
-                            help="overwrite the path of log directory and result directory "\
-                            "in execution ignore the log directory specified in testcase.xml")
+        warrior_arg.add_argument('-outputdir', action='store', nargs='?',\
+            help="overwrite the path of log directory and result directory "\
+            "in execution ignore the log directory specified in testcase.xml")
 
-        warrior_arg.add_argument('-jobid', action='store', nargs='?',
-                            help="create a property in test junit files which name is "\
-                            "resultlocation and value is <job_url<url>> + <jobid>")
+        warrior_arg.add_argument('-jobid', action='store', nargs='?',\
+            help="create a property in test junit files which name is "\
+            "resultlocation and value is <job_url<url>> + <jobid>")
 
-        warrior_arg.add_argument('-encrypt', action='store', nargs='*', dest="encrypt", help="encrypt data string")
+        warrior_arg.add_argument('-encrypt', action='store', nargs='*',\
+            dest="encrypt", help="encrypt data string")
 
-        warrior_arg.add_argument('-decrypt', action='store', nargs='*', dest="decrypt", help="decrypt data string")
+        warrior_arg.add_argument('-decrypt', action='store', nargs='*',\
+            dest="decrypt", help="decrypt data string")
 
         # Run Testcases/Suites/Projects in default locations
-        warrior_arg.add_argument('-wt', action='store', nargs='*', dest="tc_name",
-                            help="Runs testcases available in default path, "\
-                            "Warrior/Warriorspace/Testcases/. User need not give entire path. "\
-                            "Format: ./Warrior -wt sample_test.xml."\
-                            " Multiple file names can be provided "\
-                            "(separated by a space)")
+        warrior_arg.add_argument('-wt', action='store', nargs='*', dest="tc_name",\
+            help="Runs testcases available in default path, "\
+            "Warrior/Warriorspace/Testcases/. User need not give entire path. "\
+            "Format: ./Warrior -wt sample_test.xml."\
+            " Multiple file names can be provided "\
+            "(separated by a space)")
 
-        warrior_arg.add_argument('-ws', action='store', nargs='*', dest="ts_name",
-                            help="Runs testsuites available in default path, "\
-                            "Warrior/Warriorspace/Suites/. User need not give entire path. "\
-                            "Format: ./Warrior -ws sample_suite.xml."\
-                            " Multiple file names can be provided "\
-                            "(separated by a space)")
+        warrior_arg.add_argument('-ws', action='store', nargs='*', dest="ts_name",\
+            help="Runs testsuites available in default path, "\
+            "Warrior/Warriorspace/Suites/. User need not give entire path. "\
+            "Format: ./Warrior -ws sample_suite.xml."\
+            " Multiple file names can be provided "\
+            "(separated by a space)")
 
-        warrior_arg.add_argument('-wp', action='store', nargs='*', dest="proj_name",
-                            help="Runs project available in default path, "\
-                            "Warrior/Warriorspace/Projects/. User need not give entire path. "\
-                            "Format: ./Warrior -wp sample_suite.xml."\
-                            " Multiple file names can be provided "\
-                            "(separated by a space)")
+        warrior_arg.add_argument('-wp', action='store', nargs='*', dest="proj_name",\
+            help="Runs project available in default path, "\
+            "Warrior/Warriorspace/Projects/. User need not give entire path. "\
+            "Format: ./Warrior -wp sample_suite.xml."\
+            " Multiple file names can be provided "\
+            "(separated by a space)")
 
-        warrior_arg.add_argument('-secretkey', action='store', default=False,
-                            help=":secretkey: It should be used along with the "
-                                 "encrypt command to create a secret key"\
-                            "...")
+        warrior_arg.add_argument('-secretkey', action='store', default=False,\
+            help=":secretkey: It should be used along with the "\
+            "encrypt command to create a secret key"\
+            "...")
 
         # Update jira issue based on input ID and detail
-        warrior_arg.add_argument('-jiraid', action='store', default=False,
-                            help="The issue that will be updated based on current execution result")
+        warrior_arg.add_argument('-jiraid', action='store', default=False,\
+            help="The issue that will be updated based on current execution result")\
 
-        warrior_arg.add_argument('-dbsystem', action='store', nargs='?',
-                            help=":dbsystem: Represents the name of database "\
-                            "server in the database config file, both html " \
-                            "and xml results will be stored in this " \
-                            "database server, database config file " \
-                            "location = Tools/database/database_config.xml.")
+        warrior_arg.add_argument('-dbsystem', action='store', nargs='?',\
+            help=":dbsystem: Represents the name of database "\
+            "server in the database config file, both html " \
+            "and xml results will be stored in this " \
+            "database server, database config file " \
+            "location = Tools/database/database_config.xml.")
 
-        warrior_arg.add_argument('-livehtmllocn', action='store', nargs='?',
-                            help=":livehtmllocn: locn of live html results file. "\
-                            "TO be used by Katana only " \
-                            "Will be set when katana executes warrior " \
-                            "UI will read live html results from this location" \
-                            "and display html results in a live fashion" )
-
-        #Running Warrior in Mock mode and Test mode
-        warrior_arg.add_argument('-mock', action='store_true', default=False,
-                            help=":mock mode: In this mode, connection to server "\
-                            "will be mocked (won't actually connect) and keywords will run."\
-                            "User can verify input value from console output/result file")
+        warrior_arg.add_argument('-livehtmllocn', action='store', nargs='?',\
+            help=":livehtmllocn: locn of live html results file. "\
+            "TO be used by Katana only " \
+            "Will be set when katana executes warrior " \
+            "UI will read live html results from this location" \
+            "and display html results in a live fashion")
 
         #Running Warrior in Mock mode and Test mode
-        warrior_arg.add_argument('-sim', action='store_true', default=False,
-                            help=":mock mode: In this mode, connection to server "\
-                            "will be mocked (won't actually connect) and keywords will run. "\
-                            "A response file can be specified in testdata file inside global tag."\
-                            "Instead of actual server response, Warrior will use the response "\
-                            "in the response file to do command verification"\
-                            "or other CLI related operation."
-                            "User can verify input value from console output/result file")
+        warrior_arg.add_argument('-mock', action='store_true', default=False,\
+            help=":mock mode: In this mode, connection to server "\
+            "will be mocked (won't actually connect) and keywords will run."\
+            "User can verify input value from console output/result file")
 
-        warrior_arg.add_argument('-headless', action='store_true', default=False,
-                            help="If headless mode is enabled, all selenium tests will run in xfvb "\
-                            "which will not need a GUI")
+        #Running Warrior in Mock mode and Test mode
+        warrior_arg.add_argument('-sim', action='store_true', default=False,\
+            help=":mock mode: In this mode, connection to server "\
+            "will be mocked (won't actually connect) and keywords will run. "\
+            "A response file can be specified in testdata file inside global tag."\
+            "Instead of actual server response, Warrior will use the response "\
+            "in the response file to do command verification"\
+            "or other CLI related operation."
+            "User can verify input value from console output/result file")
+
+        warrior_arg.add_argument('-headless', action='store_true', default=False,\
+            help="If headless mode is enabled, all selenium tests will run in xfvb "\
+            "which will not need a GUI")
 
         #Running testcases in suite in random order
-        warrior_arg.add_argument('-random_tc_execution', action='store_true', default=False,
-                            help=":random_tc_execution mode: In this mode, testcases will be "\
-                            "executed in random order")
+        warrior_arg.add_argument('-random_tc_execution', action='store_true', default=False,\
+            help=":random_tc_execution mode: In this mode, testcases will be "\
+            "executed in random order")
 
-        warrior_arg.add_argument('-pythonpath', action='store',
-                            help="Enter absolute dir path of user repositories"\
-                            "to be integrated with Warrior. "\
-                            "Multiple paths can be provided"\
-                            "(separated by a colon)")
+        warrior_arg.add_argument('-pythonpath', action='store',\
+            help="Enter absolute dir path of user repositories"\
+            "to be integrated with Warrior. "\
+            "Multiple paths can be provided"\
+            "(separated by a colon)")
         tools_arg = parser.add_argument_group('warrior tools')
-        tools_arg.add_argument('-tc_gen', action='store', help="generate the sample cli/netconf/snmp testcase based on "
-                                                           "user provide type")
+        tools_arg.add_argument('-tc_gen', action='store',\
+            help="generate the sample cli/netconf/snmp testcase based on "\
+            "user provide type")
 
         namespace = parser.parse_args(arglist)
         #see if the below line is requried
