@@ -394,7 +394,7 @@ class CommonActions(object):
 
         """
         import time
-        time.sleep(900)
+        time.sleep(1800)
         wdesc = "To get the current timestamp in the format of yyyy-mm-dd hh:mm:ss"
         Utils.testcase_Utils.pNote(wdesc)
         currentdate = str(int(time.time()))
