@@ -14,7 +14,7 @@ class VerifyFileContents:
         self.data = read_xml_get_json(data_file)
         self.ref_data_file = ref_data_file
         self.nav_obj = Navigator()
-        self.dependency_template = join_path(self.nav_obj.get_katana_dir(), "katana.native", "settings", "static",
+        self.dependency_template = join_path(self.nav_obj.get_katana_dir(), "native", "settings", "static",
                                              "settings", "base_templates", "empty.xml")
         self.ref_data = self._get_ref_data()
         self.dependency_dict = self.__get_dependency_dict()

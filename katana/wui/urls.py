@@ -23,7 +23,7 @@ urlpatterns = [
     url(r'^$', RedirectView.as_view(url='/katana/')),
     url(r'^katana/settings/', include('katana.native.settings.urls')),
     url(r'^katana/wapp_management/', include('katana.native.wapp_management.urls')),
-    url(r'^katana/katana.wappstore/', include('katana.native.wappstore.urls')),
+    url(r'^katana/wappstore/', include('katana.native.wappstore.urls')),
     url(r'^katana/microservice_store/', include('katana.native.microservice_store.urls')),
     url(r'^katana/assembler/', include('katana.wapps.assembler.urls')),
     url(r'^katana/cli_data/', include('katana.wapps.cli_data.urls')),

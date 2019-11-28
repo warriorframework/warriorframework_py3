@@ -61,14 +61,11 @@ def get_file(request):
                     output["filepath"] = get_parent_dir_path(file_path)
                 output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
 
-                print(output)
                 output["html_data"] = render_to_string('projects/display_suite.html',
                                                        {"data": data, "mid_req": mid_req,
                                                         "defaults": DROPDOWN_DEFAULTS})
-                print(output)
                 return JsonResponse(output)
             else:
-                print(output)
                 JsonResponse({"status": output["status"], "message": output["message"]})
     except Exception as e:
         return JsonResponse({"status": 0,"message":"Exception opening the file"})
@@ -79,14 +76,12 @@ def save_file(request):
 
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
-    print(data["Project"])
     data["Project"]["Details"] = validate_details_data(data["Project"]["Details"])
     data["Project"]["Testsuites"]["Testsuite"] = validate_suite_data(data["Project"]["Testsuites"]["Testsuite"])
     xml_data = xmltodict.unparse(data, pretty=True)
     directory = request.POST.get("directory")
     filename = request.POST.get("filename")
     extension = request.POST.get("extension")
-    print(directory, filename)
     try:
         with open(join_path(directory, filename + extension), 'w') as f:
             f.write(xml_data)
@@ -110,7 +105,6 @@ def validate_suite_data(data):
     """
     Validates steps of the file before saving
     """
-    print(data)
     for ts in range(0, len(data)):
         if data[ts]["impact"] in impacts():
             data[ts]["impact"] = impacts()[data[ts]["impact"]]

@@ -139,7 +139,7 @@ settings_logging.DEBUG = DEBUG
 LOGGING = settings_logging.get_log_config()
 
 # LDAP Settings (if available)
-CONFIG_FILE = os.path.join(BASE_DIR, 'katana.wui', 'config.ini')
+CONFIG_FILE = os.path.join(BASE_DIR, 'wui', 'config.ini')
 
 
 try:

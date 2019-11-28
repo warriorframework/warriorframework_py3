@@ -13,7 +13,7 @@ from katana.utils.directory_traversal_utils import delete_dir
 from katana.utils.git_utils import get_repository_name, check_url_is_a_valid_repo
 from katana.utils.navigator_util import Navigator
 nav_obj = Navigator()
-REF_FILE = os.path.join(nav_obj.get_katana_dir(), "katana.wapps", "assembler", "static", "assembler",
+REF_FILE = os.path.join(nav_obj.get_katana_dir(), "wapps", "assembler", "static", "assembler",
                         "base_templates", "empty.xml")
 
 
