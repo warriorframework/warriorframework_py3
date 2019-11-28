@@ -1621,18 +1621,22 @@ def get_filepath_from_system(datafile, system_name, *args):
     return abspath_lst
 
 
-def get_var_by_string_prefix(string):
+def get_var_by_string_prefix(string, iter_number=None):
     """Get value from Environment variable or data repo
     """
     if string.startswith("ENV."):
         return os.environ[string.split('.', 1)[1]]
     if string.startswith("REPO."):
         keys = string.split('.', 1)
-        return get_object_from_datarepository(keys[1])
+        value = get_object_from_datarepository(keys[1])
+        if not value:
+            raise KeyError
+        else:
+            return value
 
 
 def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
-                                 end_pattern="}", prefix="ENV"):
+                                 end_pattern="}", prefix="ENV", iter_number=None):
     """Takes a key value pair or string (value) as input in raw_value,
         if the value has a pattern matching ${ENV.env_variable_name}.
     Searches for the env_variable_name in the environment and replaces
@@ -1666,14 +1670,26 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                 for string in extracted_var:
                     try:
                         if isinstance(raw_value[k], str):
-                            raw_value[k] = raw_value[k].replace(
-                                start_pattern+string+end_pattern,
-                                get_var_by_string_prefix(string))
+                            try:
+                                raw_value[k] = raw_value[k].replace(start_pattern + string + end_pattern,
+                                                                    get_var_by_string_prefix(string,
+                                                                                             iter_number))
+                            except KeyError:
+                                print_error(error_msg1.format(string, raw_value))
+                                if raw_value.startswith("${REPO"):
+                                    update_datarepository({"args_repo_flag": True})
+                                raw_value = None
                         elif isinstance(raw_value[k], (list, dict)):
-                            raw_value[k] = str(raw_value[k]).replace(
-                                    start_pattern+string+end_pattern,
-                                    get_var_by_string_prefix(string))
-                            raw_value[k] = ast.literal_eval(raw_value[k])
+                            try:
+                                raw_value[k] = str(raw_value[k]).replace(start_pattern + string + end_pattern,
+                                                                         get_var_by_string_prefix(string,
+                                                                                                  iter_number))
+                                raw_value[k] = ast.literal_eval(raw_value[k])
+                            except KeyError:
+                                print_error(error_msg1.format(string, raw_value))
+                                if raw_value.startswith("${REPO"):
+                                    update_datarepository({"args_repo_flag": True})
+                                raw_value = None
                         else:
                             print_error("Unsupported format - " +
                                         error_msg2.format(string, value))
@@ -1715,6 +1731,8 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                 except KeyError:
                     print_error(error_msg1.format(string, raw_value))
                     raw_value = None
+                    if raw_value.startswith("${REPO"):
+                        update_datarepository({"args_repo_flag": True})
 
     return raw_value
 
