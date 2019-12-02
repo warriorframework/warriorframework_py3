@@ -2,7 +2,8 @@ import sys
 import json
 import os
 import site
-import logging
+import glob
+import subprocess
 import xml.dom.minidom
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree as et
@@ -193,6 +194,58 @@ class Sample():
 
     def ran_generated_testcase(self):
         os.system("Warrior {}".format(self.testcase_file))
+        pass
+
+    def process_logs(self):
+
+        if os.environ.get("HOME"):
+            home_path = os.environ["HOME"]
+            exe_dir = "Warriorspace/Execution"
+
+            logs_dir = os.path.join(home_path, exe_dir)
+            act_path = os.path.join(logs_dir, "*")
+            list_of_files = glob.glob(act_path)
+            logs_dir_full = max(list_of_files, key=os.path.getctime)
+            log_file_name = os.path.split(logs_dir_full)[-1]
+            final_path = os.path.join(logs_dir_full, "Logs")
+
+            os.chdir(final_path)
+            print(final_path, log_file_name)
+            import pdb
+            #pdb.set_trace()
+            tc_name = self.testcase_file.split(".")[0]
+            file_desc = (open("{}_consoleLogs.log".format(tc_name)))
+            file_content = file_desc.read()
+
+            import re
+            match = re.search("TESTCASE\:sample\s*STATUS\:(PASS|FAIL)", file_content)
+            #print(match)
+            result = {}
+            result.update({"script_status" : match.group(1)})
+            print(result)
+            with open('data.txt', 'w') as outfile:
+                json.dump(result, outfile)
+            print("The location of result file {}".format(os.path.join(os.getcwd(), "data.txt")))
+
+
+            #print(json.dump(result))
+
+
+
+
+
+            # import pdb
+            # pdb.set_trace()
+            # os.system("ls -lrt | tail -n 2 | rev | cut -d' ' -f1 | rev >>hello.txt")
+            # fd = open("hello.txt", "r")
+            # lines = fd.readlines()
+            # tc_name = self.testcase_file.split(".")[1]
+            # for line in lines:
+            #     if line.startswith(tc_name):
+            #         dir_name = line
+            #         print(dir_name)
+            #
+            # print(subprocess.check_output(r"ls -lrt | tail -n 2 | rev | cut -d' ' -f1 | rev"))
 
     def generate_cli_files(self):
         os.system("cp {} {}".format(os.path.join(self.template_path, "cli_test_case_template.xml"),
@@ -210,4 +263,5 @@ s.generate_input_data_file()
 s.generate_test_case_file()
 s.generate_test_data_file()
 s.ran_generated_testcase()
+s.process_logs()
 #s.replace_values_in_test_case_xml_tags()
