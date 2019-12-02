@@ -14,6 +14,13 @@
 			"protocol": "ssh",
 			"username": "terralogic",
 			"password": "terralogic"
+		},
+		"NE3": {
+			"ip": "localhost",
+			"port": "22",
+			"protocol": "ssh",
+			"username": "terralogic",
+			"password": "terralogic"
 		}
 
 	},
@@ -27,6 +34,10 @@
 		"NE2": {
 			"frequency1": 101,
 			"frequency2": 220
+		},
+		"NE3": {
+			"frequency1": 1201,
+			"frequency2": 2220
 		}
 
 	},

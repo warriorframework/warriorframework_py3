@@ -192,7 +192,7 @@ class Sample():
         input_data_file.write(final_data)
 
     def ran_generated_testcase(self):
-        os.system("./Warrior {}".format(self.testcase_file))
+        os.system("Warrior {}".format(self.testcase_file))
 
     def generate_cli_files(self):
         os.system("cp {} {}".format(os.path.join(self.template_path, "cli_test_case_template.xml"),
