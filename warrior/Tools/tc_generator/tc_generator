@@ -14,14 +14,43 @@ parser.add_argument('-tc','--tc_name', help="Name of the the test case ", requir
 parser.add_argument('--ip', help="Ip address of the device", required=True)
 parser.add_argument("-u", '--username', help="username of the device ", required=True)
 parser.add_argument("-p",'--password', help="password of the device ", required=True)
-parser.add_argument("-cp", '--cli_port', help="ssh port of the device ", required=True)
-parser.add_argument("-dp", '--dip_port', help="dip port of the device ", required=True)
+parser.add_argument("-cp", '--cli_port', help="ssh port of the device ")
+parser.add_argument("-sp", '--snmp_port', help="snmp port of the device ")
+parser.add_argument("-np", '--netconf_port', help="snmp port of the device ")
+parser.add_argument("-dp", '--dip_port', help="dip port of the device ")
 parser.add_argument("-v","--verbose", action="store_true", help="To display the debug messages ")
 parser.add_argument("-w",'--with_repo_structure', action='store_true',
                     help="to store the generated output files in warriorspace format")
 
-
 args = parser.parse_args()
+
+if args.type == "cli":
+    if args.cli_port and args.dip_port:
+        pass
+    else:
+        print("\n****************************** Error ************************************")
+        print("\nfor cli operation required format and arguments is: ./Warrior(or)Warrior -tc_gen\
+            \n--type='cli' --tc_name='tc_name.xml' --username='username' --password='password'\
+            \n--ip='localhost' -cp='cli_port' -dp='dip_port'")
+        sys.exit()
+elif args.type == "snmp":
+    if args.cli_port and args.snmp_port:
+        pass
+    else:
+        print("\n****************************** Error ************************************")
+        print("\nfor snmp operation required format and arguments is: ./Warrior(or)Warrior -tc_gen\
+            \n--type='snmp' --tc_name='tc_name.xml' --username='username' --password='password'\
+            \n--ip='localhost' -cp='cli_port' -sp='snmp_port'")
+        sys.exit()
+elif args.type == "netconf":
+    if args.netconf_port:
+        pass
+    else:
+        print("\n****************************** Error ************************************")
+        print("\nfor netconf operation required format and arguments is: ./Warrior(or)Warrior -tc_gen\
+            \n--type='netconf' --tc_name='tc_name.xml' --username='username' --password='password'\
+            \n--ip='localhost' -np='netconf_port'\n")
+        sys.exit()
 
 if args.verbose:
     logging.basicConfig(level=logging.DEBUG)
@@ -51,16 +80,17 @@ class Warrior_Execution_Setup_Files:
         self.input_data_file = "id_{}.xml".format(self.tc_name)
         self.tc_file = "{}.xml".format(self.tc_name)
         self.td_file = "td_{}.xml".format(self.tc_name)
-        self.vc_file = "vc_{}.xml".format(self.tc_name)
+        if args.type == "cli":
+            self.vc_file = "vc_{}.xml".format(self.tc_name)
 
 
     def setup_warrior_structure(self):
         self.ws_directory = "Warriorspace"
         self.testcases_dir = "Warriorspace/Testcases"
-        self.data_files_dir = "Warriorspace/Datafiles"
+        self.data_files_dir = "Warriorspace/Data"
         self.config_files_dir = "Warriorspace/Config_files"
         self.project_files_dir = "Warriorspace/Projects"
-        self.testsuite_files_dir = "Warriorspace/Testsuites"
+        self.testsuite_files_dir = "Warriorspace/Suites"
 
         os.chdir(self.current_working_directory)
 
@@ -107,41 +137,99 @@ class Warrior_Execution_Setup_Files:
             self.log.debug("{} directory already presented".format(self.project_files_dir))
 
     def replace_values_in_input_data_xml_tags(self):
-        tree = et.parse(self.input_data_file_path)
-        usernames = tree.findall("system/subsystem/username")
-        for i in range(len(usernames)):
-            usernames[i].text = args.username
-        passwords = tree.findall("system/subsystem/password")
-        for i in range(len(passwords)):
-            passwords[i].text = args.password
-        ip_address = tree.findall("system/subsystem/ip")
-        for i in range(len(ip_address)):
-            ip_address[i].text = args.ip
-        if args.with_repo_structure:
-            self.td_file = self.get_relative_path(self.test_data_file_path)
-        td_files = tree.findall("system/subsystem/testdata")
-        for i in range(len(td_files)):
-            td_files[i].text = self.td_file
-        if args.with_repo_structure:
-            self.vc_file = self.get_relative_path(self.var_conf_file_path)
-        vc_files = tree.findall("system/subsystem/variable_config")
-        for i in range(len(vc_files)):
-            vc_files[i].text = self.vc_file
-        sub_systems = tree.findall("system/subsystem")
-        for i in range(len(sub_systems)):
-            if sub_systems[i].get("name") == "CLI":
-                sub_systems[i].find("ssh_port").text = args.cli_port
-            if sub_systems[i].get("name") == "DIP":
-                sub_systems[i].find("ssh_port").text = args.dip_port
+        if args.type == "cli":
+            tree = et.parse(self.input_data_file_path)
+            usernames = tree.findall("system/subsystem/username")
+            for i in range(len(usernames)):
+                usernames[i].text = args.username
+            passwords = tree.findall("system/subsystem/password")
+            for i in range(len(passwords)):
+                passwords[i].text = args.password
+            ip_address = tree.findall("system/subsystem/ip")
+            for i in range(len(ip_address)):
+                ip_address[i].text = args.ip
+            if args.with_repo_structure:
+                self.td_file = self.get_relative_path(self.test_data_file_path)
+            td_files = tree.findall("system/subsystem/testdata")
+            for i in range(len(td_files)):
+                td_files[i].text = self.td_file
+            if args.with_repo_structure:
+                self.vc_file = self.get_relative_path(self.var_conf_file_path)
+            vc_files = tree.findall("system/subsystem/variable_config")
+            for i in range(len(vc_files)):
+                vc_files[i].text = self.vc_file
+            sub_systems = tree.findall("system/subsystem")
+            for i in range(len(sub_systems)):
+                if sub_systems[i].get("name") == "CLI":
+                    sub_systems[i].find("ssh_port").text = args.cli_port
+                if sub_systems[i].get("name") == "DIP":
+                    sub_systems[i].find("ssh_port").text = args.dip_port
+            tree.write(self.input_data_file_path)
 
-        tree.write(self.input_data_file_path)
+        elif args.type == "snmp":
+            tree = et.parse(self.input_data_file_path)
+            usernames = tree.findall("system/username")
+            for i in range(len(usernames)):
+                usernames[i].text = args.username
+            passwords = tree.findall("system/password")
+            for i in range(len(passwords)):
+                passwords[i].text = args.password
+            ip_address = tree.findall("system/ip")
+            for i in range(len(ip_address)):
+                ip_address[i].text = args.ip
+            if args.with_repo_structure:
+                self.td_file = self.get_relative_path(self.test_data_file_path)
+            td_files = tree.findall("system/testdata")
+            for i in range(len(td_files)):
+                td_files[i].text = self.td_file
+            systems = tree.findall("system")
+            for i in range(len(systems)):
+                systems[i].find("snmp_port").text = args.snmp_port
+                systems[i].find("ssh_port").text = args.cli_port
+            tree.write(self.input_data_file_path)
+
+        elif args.type == "netconf":
+            tree = et.parse(self.input_data_file_path)
+            usernames = tree.findall("system/username")
+            for i in range(len(usernames)):
+                usernames[i].text = args.username
+            passwords = tree.findall("system/password")
+            for i in range(len(passwords)):
+                passwords[i].text = args.password
+            ip_address = tree.findall("system/ip")
+            for i in range(len(ip_address)):
+                ip_address[i].text = args.ip
+            if args.with_repo_structure:
+                self.td_file = self.get_relative_path(self.test_data_file_path)
+            td_files = tree.findall("system/netconf_data")
+            for i in range(len(td_files)):
+                td_files[i].text = self.td_file
+            systems = tree.findall("system")
+            for i in range(len(systems)):
+                systems[i].find("nc_port").text = args.netconf_port
+            tree.write(self.input_data_file_path)
 
     def replace_values_in_test_case_xml_tags(self):
-        tree = et.parse(self.test_case_file_path)
-        if args.with_repo_structure:
-            self.input_data_file = self.get_relative_path(self.input_data_file_path)
-        tree.find('.//InputDataFile').text = self.input_data_file
-        tree.write(self.test_case_file_path)
+        if args.type == "cli":
+            tree = et.parse(self.test_case_file_path)
+            if args.with_repo_structure:
+                self.input_data_file = self.get_relative_path(self.input_data_file_path)
+            tree.find('.//InputDataFile').text = self.input_data_file
+            tree.write(self.test_case_file_path)
+
+        elif args.type == "snmp":
+            tree = et.parse(self.test_case_file_path)
+            if args.with_repo_structure:
+                self.input_data_file = self.get_relative_path(self.input_data_file_path)
+            tree.find('.//InputDataFile').text = self.input_data_file
+            tree.write(self.test_case_file_path)
+
+        elif args.type == "netconf":
+            tree = et.parse(self.test_case_file_path)
+            if args.with_repo_structure:
+                self.input_data_file = self.get_relative_path(self.input_data_file_path)
+            tree.find('.//InputDataFile').text = self.input_data_file
+            tree.write(self.test_case_file_path)
 
     def get_relative_path(self, path):
         if "Warriorspace" in path:
@@ -230,7 +318,127 @@ class Warrior_Execution_Setup_Files:
             # else:
             #     self.log.error("please install warrior as package pip install warriorframework to fix this error")
                 # self.log.info("please install warrior as package pip install warriorframework to fix this error")
+        elif args.type == "snmp":
+            #if os.path.exists(self.template_path):
+                if with_repo_structure:
 
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "snmp_data_file_template.xml"),
+                                                os.path.join(self.current_working_directory, self.data_files_dir,
+                                                             self.input_data_file)))
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "snmp_test_data_template.xml"),
+                                                os.path.join(self.current_working_directory, self.config_files_dir,
+                                                             self.td_file)))
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "snmp_test_case_template.xml"),
+                                                os.path.join(self.current_working_directory, self.testcases_dir,
+                                                             self.tc_file)))
+
+                    self.input_data_file_path = os.path.join(self.current_working_directory, self.data_files_dir,
+                                                             self.input_data_file)
+                    print("*******")
+                    print("Location of input data file : {}".format(self.input_data_file_path))
+                    print("*******")
+                    self.test_case_file_path = os.path.join(self.current_working_directory, self.testcases_dir,
+                                                            self.tc_file)
+                    print("*******")
+                    print("Location of test case file : {}".format(self.test_case_file_path))
+                    print("*******")
+                    self.test_data_file_path = os.path.join(self.current_working_directory, self.config_files_dir,
+                                                            self.td_file)
+                    print("*******")
+                    print("Location of test data file : {}".format(self.test_data_file_path))
+                    print("*******")
+
+                    self.replace_values_in_input_data_xml_tags()
+                    self.replace_values_in_test_case_xml_tags()
+                    print("Run line  command is : Warrior {}".format(self.test_case_file_path))
+
+                else:
+                    # generating the required files i.e test case , data file and testdata file
+
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "snmp_data_file_template.xml"),
+                                                os.path.join(self.current_working_directory, self.input_data_file)))
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "snmp_test_data_template.xml"),
+                                                os.path.join(self.current_working_directory, self.td_file)))
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "snmp_test_case_template.xml"),
+                                                os.path.join(self.current_working_directory, self.tc_file)))
+
+                    self.input_data_file_path = os.path.join(self.current_working_directory, self.input_data_file)
+                    self.test_case_file_path = os.path.join(self.current_working_directory, self.tc_file)
+                    self.test_data_file_path = os.path.join(self.current_working_directory, self.td_file)
+                    print("*******")
+                    print("Location of testcase file::{}".format(self.test_case_file_path))
+                    print("*******")
+                    print("Location of inputdata file::{}".format(self.input_data_file_path))
+                    print("*******")
+                    print("Location of testdata file::{}".format(self.test_data_file_path))
+                    print("*******")
+                    self.replace_values_in_input_data_xml_tags()
+                    self.replace_values_in_test_case_xml_tags()
+                    print("Run line  command is : Warrior {}".format(self.test_case_file_path))
+            # else:
+            #     self.log.error("please install warrior as package pip install warriorframework to fix this error")
+                # self.log.info("please install warrior as package pip install warriorframework to fix this error")
+
+        elif args.type == "netconf":
+            #if os.path.exists(self.template_path):
+                if with_repo_structure:
+
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "netconf_data_file_template.xml"),
+                                                os.path.join(self.current_working_directory, self.data_files_dir,
+                                                             self.input_data_file)))
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "netconf_test_data_template.xml"),
+                                                os.path.join(self.current_working_directory, self.config_files_dir,
+                                                             self.td_file)))
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "netconf_test_case_template.xml"),
+                                                os.path.join(self.current_working_directory, self.testcases_dir,
+                                                             self.tc_file)))
+
+                    self.input_data_file_path = os.path.join(self.current_working_directory, self.data_files_dir,
+                                                             self.input_data_file)
+                    print("*******")
+                    print("Location of input data file : {}".format(self.input_data_file_path))
+                    print("*******")
+                    self.test_case_file_path = os.path.join(self.current_working_directory, self.testcases_dir,
+                                                            self.tc_file)
+                    print("*******")
+                    print("Location of test case file : {}".format(self.test_case_file_path))
+                    print("*******")
+                    self.test_data_file_path = os.path.join(self.current_working_directory, self.config_files_dir,
+                                                            self.td_file)
+                    print("*******")
+                    print("Location of test data file : {}".format(self.test_data_file_path))
+                    print("*******")
+
+                    self.replace_values_in_input_data_xml_tags()
+                    self.replace_values_in_test_case_xml_tags()
+                    print("Run line  command is : Warrior {}".format(self.test_case_file_path))
+
+                else:
+                    # generating the required files i.e test case , data file and testdata file
+
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "netconf_data_file_template.xml"),
+                                                os.path.join(self.current_working_directory, self.input_data_file)))
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "netconf_test_data_template.xml"),
+                                                os.path.join(self.current_working_directory, self.td_file)))
+                    os.system("cp {} {}".format(os.path.join(self.template_path, "netconf_test_case_template.xml"),
+                                                os.path.join(self.current_working_directory, self.tc_file)))
+
+                    self.input_data_file_path = os.path.join(self.current_working_directory, self.input_data_file)
+                    self.test_case_file_path = os.path.join(self.current_working_directory, self.tc_file)
+                    self.test_data_file_path = os.path.join(self.current_working_directory, self.td_file)
+                    print("*******")
+                    print("Location of testcase file::{}".format(self.test_case_file_path))
+                    print("*******")
+                    print("Location of inputdata file::{}".format(self.input_data_file_path))
+                    print("*******")
+                    print("Location of testdata file::{}".format(self.test_data_file_path))
+                    print("*******")
+                    self.replace_values_in_input_data_xml_tags()
+                    self.replace_values_in_test_case_xml_tags()
+                    print("Run line  command is : Warrior {}".format(self.test_case_file_path))
+            # else:
+            #     self.log.error("please install warrior as package pip install warriorframework to fix this error")
+                # self.log.info("please install warrior as package pip install warriorframework to fix this error")
 obj = Warrior_Execution_Setup_Files()
 if args.with_repo_structure:
     obj.setup_warrior_structure()
