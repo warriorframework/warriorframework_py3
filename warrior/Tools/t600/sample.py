@@ -177,7 +177,7 @@ class Sample():
         json_data = self.load_json_file()
         self.testdata = ET.Element('data')
         for key in json_data["devices"].keys():
-            if self.operation == "set":
+            if self.operation == "set" or self.operation == "measure":
                 testdata = ET.SubElement(self.testdata, 'testdata')
                 testdata.set("title", self.d[key])
                 testdata.set("execute", "yes")
@@ -213,7 +213,7 @@ class Sample():
             print(final_path, log_file_name)
             import pdb
             #pdb.set_trace()
-            tc_name = self.testcase_file.split(".")[0]
+            tc_name = "sample"
             file_desc = (open("{}_consoleLogs.log".format(tc_name)))
             file_content = file_desc.read()
 
@@ -263,5 +263,5 @@ s.generate_input_data_file()
 s.generate_test_case_file()
 s.generate_test_data_file()
 s.ran_generated_testcase()
-s.process_logs()
+#s.process_logs()
 #s.replace_values_in_test_case_xml_tags()
