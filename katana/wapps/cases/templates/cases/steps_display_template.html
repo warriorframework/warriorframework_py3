@@ -6,6 +6,7 @@
                 <thead>
                 <tr>
                     <th scope="col" class="col-sm-1">Step #</th>
+                    <th scope="col" class="col-sm-1">Repo</th>
                     <th scope="col" class="col-sm-1">Driver</th>
                     <th scope="col" class="col-sm-1">Keyword</th>
                     <th scope="col" class="col-sm-2">Arguments</th>
@@ -22,6 +23,12 @@
                 {% for step in data.Testcase.Steps.step %}
                 <tr katana-click="cases.stepSection.selectStep" key="step">
                     <td class="col-sm-1" key="@TS">{{ forloop.counter }}</td>
+                    {% if step|get_attribute_repo == "norm" %}
+                    <td class="col-sm-1" key="@Repo">{{ step|get_attribute:"Repo" }}</td>
+                    {% endif %}
+                    {% if step|get_attribute_repo == "empty" %}
+                    <td class="col-sm-1" key="@Repo">warrior</td>
+                    {% endif %}
                     <td class="col-sm-1" key="@Driver">{{ step|get_attribute:"Driver" }}</td>
                     <td class="col-sm-1" key="@Keyword">{{ step|get_attribute:"Keyword" }}</td>
                     <td class="col-sm-2" key="Arguments">
@@ -136,6 +143,7 @@
     <script id="step-row-template" type="text/html">
         <tr katana-click="cases.stepSection.selectStep" key="step">
             <td class="col-sm-1" key="@TS"></td>
+            <td class="col-sm-1" key="@Repo"></td>
             <td class="col-sm-1" key="@Driver"></td>
             <td class="col-sm-1" key="@Keyword"></td>
             <td class="col-sm-2" key="Arguments">

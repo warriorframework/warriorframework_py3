@@ -16,9 +16,10 @@ limitations under the License.
 
 import os
 from django.shortcuts import render
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from katana.native.settings.settings import Settings
 from katana.utils.navigator_util import Navigator
+import ast
 
 nav_obj = Navigator()
 REF_FILE = os.path.join(nav_obj.get_katana_dir(), "katana.native", "assembler", "static", "assembler",
@@ -52,3 +53,20 @@ def prerequisites_handler(request):
 
 def install_prerequisite(request):
     return JsonResponse(controls.prereq_installation_handler(request))
+
+def validate_input_repo(request):
+    paths_string=request.POST.get('paths')
+    paths_list = ast.literal_eval(paths_string)
+    for i in paths_list:
+        if os.path.exists(i):
+           in_valid=False
+        else:
+            in_valid=True
+            break
+    if(in_valid):
+        return HttpResponse(1)
+    else:
+        return HttpResponse(0)
+
+def myajaxtestview(request):
+    return HttpResponse(request.POST['text'])

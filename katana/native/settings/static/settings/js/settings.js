@@ -1,3 +1,7 @@
+window.inc = 0;
+window.current_context="";
+window.$preipf="";
+window.nul_flag=0;
 var settings = {
 
     openFileExplorer: {
@@ -184,12 +188,89 @@ var settings = {
         });
     },
 
+     validatedir: function(paths) {
+        $.ajax({
+                headers: {
+                    'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
+                },
+                type: 'POST',
+                url: 'settings/validate_repo/',
+                data: {"paths": JSON.stringify(paths)}
+            }).done(function(data){
+                if(data==1){
+                nul_flag=1;
+                }
+                else{
+                nul_flag=0;
+                }
+            });
+             return nul_flag;
+   },
+
     save: function () {
+        nul_flag=0;
         var $elem = this;
-        $elem.removeClass('saved').addClass('loading');
+        // $elem.removeClass('saved').addClass('loading');
+        inc =$('#get_count_of_ip input').length;
+        inc -= 13;
+        var ipfarray=[];
+        ipfarray[0]=$ippref=$("#get_count_of_ip").find("input"+"[key=userreposdir]").val();
+        if (inc){
+        var ipfarray = $("input[category='repo']")
+              .map(function(){return $(this).val();}).get();
+    }
+    function find_duplicate_in_array(ipfarray) {
+            var object = {};
+            var result = [];
+            ipfarray.forEach(function (item) {
+              if(!object[item])
+                  object[item] = 0;
+                object[item] += 1;
+            })
+            for (var prop in object) {
+               if(object[prop] >= 2) {
+                   result.push(prop);
+               }
+            }
+            return result;
+        }
+    fresult = find_duplicate_in_array(ipfarray);
+    null_flag = settings.validatedir(ipfarray);
+    console.log("fresult:",fresult.length);
+    console.log("null_flag:",null_flag);
+    console.log("null_flag:",typeof(null_flag));
+    console.log("fresult:",typeof(fresult.length));
+    if(null_flag || fresult.length){
+        console.log("inside if condition..!")
+        ipfarray.forEach(function (i) {
+            $ippreff=$("#get_count_of_ip").find("input[value='"+i+"']");
+            $ippreff.css({"border-color":"#dcdcdc"});
+            
+          })
+        fresult.forEach(function (item) {
+            $ippref=$("#get_count_of_ip").find("input[value='"+item+"']");
+            $ippref.css({"border-color":"red"});
+          })
+
+          katana.openAlert({
+            "alert_type": "danger",
+            "heading": "Invalid Repo path(s)",
+            "text": "It seems like the entered Repo path may be empty or not valid.",
+            "show_cancel_btn": false
+        });
+    
+       }
+       else{
+        $("#get_count_of_ip").find("input").css({"border-color":"#dcdcdc"});
         katana.templateAPI.post.call(katana.$activeTab.find('.to-save'), null, null, katana.toJSON(), function (data) {
+            ipfarray.forEach(function (i) {
+                $ippreff=$("#get_count_of_ip").find("input[value='"+i+"']");
+                $ippreff.css({"border-color":"#dcdcdc"});
+                
+              })
             $elem.removeClass('loading').addClass('saved');
         });
+    }
     },
 
     prerequisites: {
@@ -295,5 +376,39 @@ var settings = {
             $installBtn.attr('aria-selected', 'true');
             $installBtn.html('Installing' + '&nbsp;<i class="fa fa-spinner fa-spin green" aria-hidden="true"></i>&nbsp;');
         },
-    }
+    },
+    incrementfnc: function(){
+    $("#removebtn").find(".fa-minus-circle").remove();
+    inc =$('#get_count_of_ip input').length;
+    inc -= 13;
+    inc += 1;
+    $(".incrementfnc").append("<div katana-click='settings.onselect' class='field'><input category='repo' key="+"userreposdir"+inc+" type='text' {% if v %} value='' {% endif %} placeholder=''><div class='file-explorer-launcher' katana-click='settings.openFileExplorer.logsOrResultsDir'></div>");
+    $("#saveButton").removeClass("saved");
+   },
+
+   set_context:function(context){
+   current_context=context;
+   },
+
+   removerepo: function(){
+    fieldname=$(this).attr("key");
+    inputfd = current_context.parent().remove();
+    inputfd.remove();
+    $("#saveButton").removeClass("saved");
+    $("#removebtn").find(".fa-minus-circle").remove();
+   },
+
+  onselect:function(){
+      elem=$(this).children();
+      field=$(this).children().attr("key");
+      settings.set_context(elem);
+      $("#removebtn").find(".fa-minus-circle").remove();
+      $("<i class='fa fa-minus-circle' key='"+field+"' style='margin-left: 10px;' katana-click='settings.removerepo'></i>").insertAfter(".fa-plus-circle");
+      $("#saveButton").removeClass("saved");
+},
+
+  deselect: function(){
+      $("#removebtn").find(".fa-minus-circle").remove();
+ },
+
 };
