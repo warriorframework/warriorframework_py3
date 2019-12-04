@@ -1,8 +1,8 @@
-from utils.directory_traversal_utils import get_parent_directory, get_dir_from_path, join_path, \
+from katana.utils.directory_traversal_utils import get_parent_directory, get_dir_from_path, join_path, \
     get_paths_of_subfiles, get_relative_path
-from utils.json_utils import read_json_data
-from utils.regex_utils import compile_regex
-from wui.core.core_utils.core_utils import get_app_path_from_name
+from katana.utils.json_utils import read_json_data
+from katana.utils.regex_utils import compile_regex
+from katana.wui.core.core_utils.core_utils import get_app_path_from_name
 
 
 class App:
@@ -48,7 +48,7 @@ class Apps:
 
         for app in installed_apps:
             self.paths.append(get_app_path_from_name(app, data['config_file_name'],
-                                                     data['base_directory']))
+                                                     data['base_directory'].split("katana")[0]))
 
         extra_app_dirs = available_apps.union(settings_apps) - settings_apps
         for app in extra_app_dirs:

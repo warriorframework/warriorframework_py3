@@ -18,8 +18,8 @@ from django.shortcuts import render
 from django.template.loader import render_to_string
 from django.http import HttpResponse, JsonResponse
 from django.http import StreamingHttpResponse
-from utils.navigator_util import Navigator
-from utils.command_options_utils import DockerRunCommandOptions
+from katana.utils.navigator_util import Navigator
+from katana.utils.command_options_utils import DockerRunCommandOptions
 
 DEFAULT_DATA = {
     "docker_options": {},

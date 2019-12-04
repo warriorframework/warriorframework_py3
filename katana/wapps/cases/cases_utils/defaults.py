@@ -1,4 +1,4 @@
-from utils.dict_utils import invert_dict
+from katana.utils.dict_utils import invert_dict
 
 
 def runmodes():

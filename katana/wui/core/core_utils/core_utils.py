@@ -1,7 +1,6 @@
 import os
 from collections import OrderedDict
-from utils.directory_traversal_utils import get_abs_path, join_path
-
+from katana.utils.directory_traversal_utils import get_abs_path, join_path
 
 def get_app_path_from_name(app_name, config_file, base_directory):
     """
@@ -68,29 +67,40 @@ def validate_config_json(json_data, warrior_dir):
         ordered_json["engineer"] = ""
     else:
         ordered_json["engineer"] = json_data["engineer"]
-
-    ordered_json["pythonsrcdir"] = warrior_dir[:-1] \
-        if "pythonsrcdir" not in json_data or json_data["pythonsrcdir"] == "" \
-        else json_data["pythonsrcdir"]
-
-    warrior_dir = ordered_json["pythonsrcdir"]
+    if os.environ["pipmode"]=='True':
+        ordered_json["pythonsrcdir"] = warrior_dir
+    else:
+        ordered_json["pythonsrcdir"] = warrior_dir[:-1] \
+            if "pythonsrcdir" not in json_data or json_data["pythonsrcdir"] == "" \
+            else json_data["pythonsrcdir"]
+    
+        # warrior_dir = ordered_json["pythonsrcdir"]
+        # warrior_dir = os.getcwd()  
     ref = OrderedDict([("xmldir", "Testcases"),
                        ('testsuitedir', 'Suites'),
                        ('projdir', 'Projects'),
                        ('idfdir', 'Data'),
                        ('testdata', 'Config_files'),
                        ('testwrapper', 'wrapper_files')])
-
-    for key, value in list(ref.items()):
-        if key not in json_data or json_data[key] == "":
-            path = get_abs_path(join_path("Warriorspace", value), warrior_dir)
-            if path is not None:
-                ordered_json[key] = path
-            else:
-                ordered_json[key] = ""
-                print("-- An Error Occurred -- Path to {0} directory could not be located".format(value))
+    if os.environ["pipmode"]=='True':
+        if warrior_dir=="":
+            for key, value in list(ref.items()):
+                 ordered_json[key] = ""
         else:
-            ordered_json[key] = json_data[key]
+            for key, value in list(ref.items()):
+                 ordered_json[key] = json_data[key]
+    else:
+        for key, value in list(ref.items()):
+            if key not in json_data or json_data[key] == "":
+                path = get_abs_path(join_path("Warriorspace", value), warrior_dir)
+                if path is not None:
+                    ordered_json[key] = path
+                else:
+                    ordered_json[key] = ""
+                    print("-- An Error Occurred -- Path to {0} directory could not be located".format(value))
+            else:
+                ordered_json[key] = json_data[key]
+
 
     if "pythonpath" not in json_data:
         ordered_json["pythonpath"] = ""

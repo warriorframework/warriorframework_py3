@@ -17,11 +17,11 @@ limitations under the License.
 import os
 from django.shortcuts import render
 from django.http import JsonResponse
-from native.settings.settings import Settings
-from utils.navigator_util import Navigator
+from katana.native.settings.settings import Settings
+from katana.utils.navigator_util import Navigator
 
 nav_obj = Navigator()
-REF_FILE = os.path.join(nav_obj.get_katana_dir(), "native", "assembler", "static", "assembler",
+REF_FILE = os.path.join(nav_obj.get_katana_dir(), "katana.native", "assembler", "static", "assembler",
                         "base_templates", "empty.xml")
 
 controls = Settings()

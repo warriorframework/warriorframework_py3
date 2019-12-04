@@ -1,5 +1,5 @@
 import copy
-from utils.json_utils import read_xml_get_json
+from katana.utils.json_utils import read_xml_get_json
 
 
 class VerifyCliDataClass:
