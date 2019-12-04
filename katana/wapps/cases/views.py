@@ -119,8 +119,6 @@ def save_file(request):
     if not data["Testcase"]["Details"]["TestWrapperFile"]:
         data["Testcase"]["Details"].pop('TestWrapperFile')
     data["Testcase"]["Steps"]["step"] = validate_step_data(data["Testcase"]["Steps"]["step"])
-    if not data["Testcase"]["Details"]["TestWrapperFile"]:
-        data["Testcase"]["Details"].pop('TestWrapperFile')
     if not data["Testcase"]["Details"]["InputDataFile"]:
         data["Testcase"]["Details"]["InputDataFile"] = 'No_Data'
     xml_data = xmltodict.unparse(data, pretty=True)

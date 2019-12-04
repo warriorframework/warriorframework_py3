@@ -73,7 +73,6 @@ def validate_config_json(json_data, warrior_dir):
     if "engineer" not in json_data:
         ordered_json["engineer"] = ""
     else:
-<<<<<<< HEAD
         ordered_json["engineer"] = "Warrior_user"
 
     for key in json_data:

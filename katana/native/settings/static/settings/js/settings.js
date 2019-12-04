@@ -236,19 +236,14 @@ var settings = {
         }
     fresult = find_duplicate_in_array(ipfarray);
     null_flag = settings.validatedir(ipfarray);
-    console.log("fresult:",fresult.length);
-    console.log("null_flag:",null_flag);
-    console.log("null_flag:",typeof(null_flag));
-    console.log("fresult:",typeof(fresult.length));
     if(null_flag || fresult.length){
-        console.log("inside if condition..!")
         ipfarray.forEach(function (i) {
             $ippreff=$("#get_count_of_ip").find("input[value='"+i+"']");
             $ippreff.css({"border-color":"#dcdcdc"});
             
           })
         fresult.forEach(function (item) {
-            $ippref=$("#get_count_of_ip").find("input[value='"+item+"']");
+            $ippref=$("#get_count_of_ip").find("input[category=repo]").filter("[value='"+item+"']");
             $ippref.css({"border-color":"red"});
           })
 
