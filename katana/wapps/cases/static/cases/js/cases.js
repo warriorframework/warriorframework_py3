@@ -824,6 +824,7 @@ var cases = {
     _addArgumentsEtcBlock: function ($container, data) {
         /* This function generates the arguments block (side-drawer) out of an HTML block and json data.
         This function should not be called independently */
+        cases.stepEditor.getDrivers($container.find('[key="@Repo"]'), $container.find('[key="@Driver"]').val());
         cases.stepEditor.getKeywords($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val());
         var $allArgs = $container.find('[key="Arguments.argument"]');
         for (var i=0 ; i<$allArgs.length; i++) {
@@ -1004,7 +1005,7 @@ var cases = {
 
     stepEditor: {
         getDrivers: function ($elem, driverName) {
-            /* This function internally calls the getArgumentsEtc function for updating related fields on driver change */
+            /* This function internally calls the getKeywords function for updating related fields on repo change */
             $elem = $elem ? $elem : $(this);
             driverName = driverName ? driverName : "";
             var repoName = $elem.val();
@@ -1019,6 +1020,7 @@ var cases = {
 
         getKeywords: function ($elem, kwName) {
             /* This function internally calls the getArgumentsEtc function for updating related fields on driver change */
+            
             $elem = $elem ? $elem : $(this);
             kwName = kwName ? kwName : "";
             var driverName = $elem.val();

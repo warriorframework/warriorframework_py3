@@ -862,6 +862,7 @@ var setupcases = {
     _addArgumentsEtcBlock: function ($container, data) {
         /* This function generates the arguments block (side-drawer) out of an HTML block and json data.
         This function should not be called independently */
+        setupcases.stepEditor.getDrivers($container.find('[key="@Repo"]'), $container.find('[key="@Driver"]').val());
         setupcases.stepEditor.getKeywords($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val());
         var $allArgs = $container.find('[key="Arguments.argument"]');
         for (var i=0 ; i<$allArgs.length; i++) {
@@ -2071,6 +2072,7 @@ var cleanupcases = {
     _addArgumentsEtcBlock: function ($container, data) {
         /* This function generates the arguments block (side-drawer) out of an HTML block and json data.
         This function should not be called independently */
+        cleanupcases.stepEditor.getDrivers($container.find('[key="@Repo"]'), $container.find('[key="@Driver"]').val());
         cleanupcases.stepEditor.getKeywords($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val());
         var $allArgs = $container.find('[key="Arguments.argument"]');
         for (var i=0 ; i<$allArgs.length; i++) {
@@ -3282,6 +3284,7 @@ var debugcases = {
     _addArgumentsEtcBlock: function ($container, data) {
         /* This function generates the arguments block (side-drawer) out of an HTML block and json data.
         This function should not be called independently */
+        debugcases.stepEditor.getDrivers($container.find('[key="@Repo"]'), $container.find('[key="@Driver"]').val());
         debugcases.stepEditor.getKeywords($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val());
         var $allArgs = $container.find('[key="Arguments.argument"]');
         for (var i=0 ; i<$allArgs.length; i++) {

@@ -8,8 +8,8 @@
                     <th scope="col" class="col-sm-1">Step #</th>
                     <th scope="col" class="col-sm-1">Repo</th>
                     <th scope="col" class="col-sm-1">Driver</th>
-                    <th scope="col" class="col-sm-1">Keyword</th>
-                    <th scope="col" class="col-sm-2">Arguments</th>
+                    <th scope="col" class="col-sm-1 desc">Keyword</th>
+                    <th scope="col" class="col-sm-1 desc">Arguments</th>
                     <th scope="col" class="col-sm-1 desc" >Description</th>
                     <th scope="col" class="col-sm-1 desc" >Execute</th>
                     <th scope="col" class="col-sm-1">Run Mode</th>
@@ -31,7 +31,7 @@
                     {% endif %}
                     <td class="col-sm-1" key="@Driver">{{ step|get_attribute:"Driver" }}</td>
                     <td class="col-sm-1" key="@Keyword">{{ step|get_attribute:"Keyword" }}</td>
-                    <td class="col-sm-2" key="Arguments">
+                    <td class="col-sm-1" key="Arguments">
                         {% if step.Arguments.argument|get_attribute_new == "list" %}
                         {% for arg in step.Arguments.argument %}
                         <div key="Arguments.argument">
@@ -146,7 +146,7 @@
             <td class="col-sm-1" key="@Repo"></td>
             <td class="col-sm-1" key="@Driver"></td>
             <td class="col-sm-1" key="@Keyword"></td>
-            <td class="col-sm-2" key="Arguments">
+            <td class="col-sm-1" key="Arguments">
                 <div key="Arguments.argument">
                     <span key="Arguments.argument.@name"></span>
                     <span> = </span>
