@@ -1,0 +1,3 @@
+<configuration>
+	<variable_set name="hal_level" value="3"/>
+</configuration>

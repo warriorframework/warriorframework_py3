@@ -15,7 +15,7 @@ limitations under the License.
 
 import json
 import os
-
+import re
 from warrior.Framework import Utils
 from warrior.Framework.Utils.print_Utils import print_info, print_error
 from warrior.Framework.Utils.testcase_Utils import pNote
@@ -442,3 +442,44 @@ class CommonActions(object):
                 return status, output_dict
         status = True
         return status, output_dict
+
+    def save_value_in_json(self, key, device):
+        """Prints value of datavar in datarepository
+        :Argument:
+            1. datavar = Key to fetch value in data_repository,
+                         this could be dot separated to fetch in nested fashion
+                            i.e., if var is k1.k2.k3 then the value would be
+                            fetched as a value in datarepository[k1][k2][k3]
+        :Returns:
+            status (boolean True)
+
+        """
+        wDesc = "Print the  value of given key in data_repository "
+        Utils.testcase_Utils.pNote(wDesc)
+        status = True
+        pass_msg = "Value: {0} is stored in a Key: {1} of Warrior data_repository"
+        value = get_object_from_datarepository(key)
+        testcase_name = get_object_from_datarepository("wt_testcase_filepath")
+        testcase_path = os.path.split(testcase_name)[0]
+
+        if value:
+            value = value.split()[0]
+            if not os.path.exists(os.path.join(testcase_path,"hello.json")):
+                with open(os.path.join(testcase_path,"hello.json"), "a+") as outfile:
+                    json.dump({device: value}, outfile)
+            else:
+                fd1 = open(os.path.join(testcase_path, "hello.json"), "r+")
+                content = fd1.read()
+                if content:
+                    json_content = json.loads(content)
+                    if device in json_content:
+                        if json_content[device] != value:
+                            json_content[device] = value
+                    else:
+                        json_content[device] = value
+                else:
+                    json_content = {device:value}
+                with open(os.path.join(testcase_path, 'hello.json'), 'r+') as outfile:
+                    json.dump(json_content, outfile)
+            print_info(pass_msg.format(value, key))
+        return status  # always returns True, just prints warning if key is not present.

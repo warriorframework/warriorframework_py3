@@ -3,7 +3,6 @@ import json
 import os
 import site
 import glob
-import subprocess
 import xml.dom.minidom
 import xml.etree.ElementTree as ET
 from xml.etree import ElementTree as et
@@ -16,14 +15,13 @@ class Sample():
             sys.exit()
         self.json_file_path = sys.argv[1]
         self.operation = sys.argv[2]
-
         self.current_working_directory = os.getcwd()
         site_home_path = os.path.split(site.__file__)[0]
         site_packages_path = "site-packages/warrior/Tools/templates"
         self.template_path = os.path.join(site_home_path, site_packages_path)
-        self.testcase_file = "sample.xml"
-        self.input_data_file = "sample_id.xml"
-        self.testdata_file = "sample_td.xml"
+        self.testcase_file = "cli_test_case_template.xml"
+        self.input_data_file = "cli_data_file_template.xml"
+        self.test_data_file = "cli_test_data_template.xml"
 
     def load_json_file(self):
         # import pdb
@@ -34,6 +32,65 @@ class Sample():
             return data
         else:
             print("file not found {}".format(self.json_file_path))
+
+    def set_env_var(self):
+        json_data = self.load_json_file()
+        # import pdb
+        # pdb.set_trace()
+        device_names = ["NE1", "NE2"]
+        devices = json_data["devices"]
+        for i in range(len(devices)):
+            for k,v in devices[device_names[i]].items():
+                print("{}_{}".format(device_names[i].upper(), k.upper()))
+                os.environ["{}_{}".format(device_names[i].upper(), k.upper())] = v
+
+        # for key in json_data["devices"]:
+        #     for k,v in devices[key].items():
+        #         print("{}_{}".format(key.upper(),k.upper()))
+        #         os.environ["{}_{}".format(key.upper(),k.upper())] = v
+        # print(os.environ)
+
+    def replace_values_in_input_data_xml_tags(self):
+
+        tree = et.parse(self.input_data_file_path)
+        json_data = self.load_json_file()
+        devices = json_data["devices"]
+        systems = tree.findall("system")
+        for key in json_data["devices"].keys():
+            for system in systems:
+                if system.get("name") == key:
+                    if devices[key].get("username"):
+                        username = system.find("username")
+                        username.text = devices[key]["username"]
+                    else:
+                        print("username field is mandatory !!")
+                        sys.exit()
+                    if devices[key].get("password"):
+                        password = system.find("password")
+                        password.text = devices[key]["password"]
+                    else:
+                        print("password field is mandatory !!")
+                        sys.exit()
+                    if devices[key].get("ip"):
+                        ip = system.find("ip")
+                        ip.text = devices[key]["ip"]
+                    else:
+                        print("ip address field is mandatory !!")
+                        sys.exit()
+                    if devices[key].get("port"):
+                        cli_port = system.find("ssh_port")
+                        cli_port.text = devices[key]["port"]
+                    else:
+                        print("port field is mandatory !!")
+                        sys.exit()
+        tree.write(self.input_data_file_path)
+
+    def replace_values_in_test_case_xml_tags(self):
+        tree = et.parse(self.test_case_file_path)
+        if args.with_repo_structure:
+            self.input_data_file = self.get_relative_path(self.input_data_file_path)
+        tree.find('.//InputDataFile').text = self.input_data_file
+        tree.write(self.test_case_file_path)
 
     def generate_input_data_file(self):
         json_data = self.load_json_file()
@@ -229,11 +286,6 @@ class Sample():
 
 
             #print(json.dump(result))
-
-
-
-
-
             # import pdb
             # pdb.set_trace()
             # os.system("ls -lrt | tail -n 2 | rev | cut -d' ' -f1 | rev >>hello.txt")
@@ -259,9 +311,5 @@ class Sample():
         tree.findall("")
 
 s = Sample()
-s.generate_input_data_file()
-s.generate_test_case_file()
-s.generate_test_data_file()
+s.set_env_var()
 s.ran_generated_testcase()
-#s.process_logs()
-#s.replace_values_in_test_case_xml_tags()
