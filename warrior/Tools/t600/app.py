@@ -36,8 +36,8 @@ def find_single_ne(ne_id):
 
 
 
-@app.route('/set', methods=['POST'])
-def set():
+@app.route('/measure', methods=['POST'])
+def measure():
     #os.chdir("/usr/src/app/")
     #Process data
     data = request.json
@@ -48,8 +48,8 @@ def set():
     # creating necessary files and running the test case
     status = os.system("python sample.py data.json set ")
     if status != 0:
-       return jsonify({"SCRIPT_STATUS":"FAIL"}), 200
-      
+        return jsonify({"SCRIPT_STATUS": "FAIL"}), 200
+
     return_data = process_logs()
 
     if return_data["script_status"] == "PASS":
@@ -60,10 +60,11 @@ def set():
         print('Execute failed...')
         return 'Error Message', 500
 
-@app.route('/measure', methods=['POST'])
-def measure():
-    #os.chdir("/usr/src/app/")
-    #Process data
+
+@app.route('/set', methods=['POST'])
+def set():
+    # os.chdir("/usr/src/app/")
+    # Process data
     data = request.json
     with open('data.json', 'w') as outfile:
         json.dump(data, outfile)
@@ -80,6 +81,7 @@ def measure():
         print('Execute failed...')
         return 'Error Message', 500
 
+
 def process_logs():
     if os.environ.get("HOME"):
         home_path = os.environ["HOME"]
@@ -92,23 +94,24 @@ def process_logs():
         log_file_name = os.path.split(logs_dir_full)[-1]
         final_path = os.path.join(logs_dir_full, "Logs")
 
-        #os.chdir(final_path)
+        # os.chdir(final_path)
         print(final_path, log_file_name)
         tc_name = "cli_test_case_template"
         file_desc = open(os.path.join(final_path, "{}_consoleLogs.log".format(tc_name)))
 
-        #file_desc = (open("{}_consoleLogs.log".format(tc_name)))
+        # file_desc = (open("{}_consoleLogs.log".format(tc_name)))
         file_content = file_desc.read()
         import re
         match = re.search("TESTCASE\:{}\s*STATUS\:(PASS|FAIL)".format(tc_name), file_content)
-        #print(match)
+        # print(match)
         result = {}
-        result.update({"script_status" : match.group(1)})
-        #print(result)
+        result.update({"script_status": match.group(1)})
+        # print(result)
         with open('data.txt', 'w') as outfile:
             json.dump(result, outfile)
         print("The location of result file {}".format(os.path.join(os.getcwd(), "data.txt")))
         return result
+
 
 @app.route('/execute', methods=['POST'])
 def execute():
@@ -126,7 +129,6 @@ def execute():
     else:
         print('Execute failed...')
         return 'Error Message', 500
-
 
 
 @app.route('/execute1', methods=['POST'])
@@ -152,8 +154,9 @@ def execute1():
         print('Execute failed...')
         return 'Error Message', 500
 
+
 def hello(x):
     print(x, " is the timeout..")
     time.sleep(6)
     return 'Hello World'
-app.run(host="0.0.0.0", port=5002)
+# app.run(host="0.0.0.0", port=5002)
