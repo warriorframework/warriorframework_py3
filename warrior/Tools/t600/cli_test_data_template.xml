@@ -13,7 +13,7 @@
     </testdata>
 
 	<testdata title="show_software_version" execute="yes">
-        	<command end="terralogic" send="echo 104303"/>
+        	<command end="\$" send="echo 104303"/>
     </testdata>
 
     <testdata title="set_hal_level" execute="yes">
