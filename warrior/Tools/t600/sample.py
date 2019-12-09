@@ -34,8 +34,8 @@ class Measure():
     def set_env_var(self):
         json_data = self.load_json_file()
         device_names = ["NE1", "NE2"]
-        import pdb
-        pdb.set_trace()
+        # import pdb
+        # pdb.set_trace()
         device_keys = list(json_data["devices"].keys())
         for i in range(len(device_names)):
             os.environ[device_names[i]] = device_keys[i]
@@ -374,7 +374,7 @@ class SetValues:
     def set_env_var_for_data_json(self):
         str1 = "Please run measure script first before setting the values!!!"
         import pdb
-        pdb.set_trace()
+        #pdb.set_trace()
         if os.path.exists(self.data_json_file):
             json_data = self.load_json_file(self.data_json_file)
             user_json_data = self.load_json_file(self.json_file_path)
@@ -619,8 +619,6 @@ class SetValues:
 
             os.chdir(final_path)
             print(final_path, log_file_name)
-            import pdb
-            #pdb.set_trace()
             tc_name = "sample"
             file_desc = (open("{}_consoleLogs.log".format(tc_name)))
             file_content = file_desc.read()
