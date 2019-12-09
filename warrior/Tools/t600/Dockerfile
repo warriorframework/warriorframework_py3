@@ -5,10 +5,16 @@ ADD app.py /usr/src/app/
 ADD ne_details.py /usr/src/app/
 ADD requirements.txt /usr/src/app/
 ADD sample.py /usr/src/app/
-ADD cli_data_file_template.xml .
-ADD cli_test_case_template.xml .
-ADD cli_test_data_template.xml .
-ADD cli_var_conf_template.xml .
+# for
+ADD cli_data_file_measure.xml .
+ADD cli_test_case_measure.xml .
+ADD cli_test_data_measure.xml .
+ADD cli_var_conf_measure.xml .
+# for set
+ADD cli_data_file_set.xml .
+ADD cli_test_case_set.xml .
+ADD cli_test_data_set.xml .
+ADD cli_var_conf_set.xml .
 RUN pip3 install -r requirements.txt
 ADD common_actions.py /usr/local/lib/python3.6/site-packages/warrior/Actions/CommonActions/
 
