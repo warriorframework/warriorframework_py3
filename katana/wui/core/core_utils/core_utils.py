@@ -73,7 +73,7 @@ def validate_config_json(json_data, warrior_dir):
     if "engineer" not in json_data:
         ordered_json["engineer"] = ""
     else:
-        ordered_json["engineer"] = "Warrior_user"
+        ordered_json["engineer"] = ""
 
     for key in json_data:
         pattern = r'userreposdir*[0-9a-zA-Z]*'
@@ -109,9 +109,8 @@ def validate_config_json(json_data, warrior_dir):
                    ('testdata', 'Config_files'),
                    ('testwrapper', 'wrapper_files'),])
     ref.update(ordered_json)
-
     if os.environ["pipmode"]=='True':
-        if warrior_dir=="":
+        if warrior_dir == "":
             for key, value in list(ref.items()):
                  ordered_json[key] = ""
         else:
@@ -120,12 +119,15 @@ def validate_config_json(json_data, warrior_dir):
     else:
         for key, value in list(ref.items()):
             if key not in json_data or json_data[key] == "":
-                path = get_abs_path(join_path("Warriorspace", value), warrior_dir)
-                if path is not None:
-                    ordered_json[key] = path
+                if key == "engineer" and value == "":
+                    pass
                 else:
-                    ordered_json[key] = ""
-                    print("-- An Error Occurred -- Path to {0} directory could not be located".format(value))
+                    path = get_abs_path(join_path("Warriorspace", value), warrior_dir)
+                    if path is not None:
+                        ordered_json[key] = path
+                    else:
+                        ordered_json[key] = ""
+                        print("-- An Error Occurred -- Path to {0} directory could not be located".format(value))
             else:
                 ordered_json[key] = json_data[key]
 
