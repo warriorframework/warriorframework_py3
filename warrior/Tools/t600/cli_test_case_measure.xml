@@ -3,7 +3,7 @@
 	<Details>
 		<Name>tc_cli_sample</Name>
 		<Title>sample cli test case</Title>
-		<InputDataFile>cli_data_file_template.xml</InputDataFile>
+		<InputDataFile>cli_data_file_measure.xml</InputDataFile>
 		<Datatype>Custom</Datatype>
 		<default_onError action="next"/>
 		<Date>14-11-2019</Date>
@@ -61,7 +61,7 @@
         <step Driver="common_driver" Keyword="save_value_in_json" TS="3">
                         <Arguments>
                                 <argument name="key" value="NE1_td_response.show_software_version.1"/>
-                                <argument name="device" value="NE1"/>
+                                <argument name="device" value="${ENV.NE1}"/>
 
                         </Arguments>
                         <onError action="abort"/>
@@ -73,7 +73,7 @@
         <step Driver="common_driver" Keyword="save_value_in_json" TS="3">
                         <Arguments>
                                 <argument name="key" value="NE2_td_response.set_hal_level.1"/>
-                                <argument name="device" value="NE2"/>
+                                <argument name="device" value="${ENV.NE2}"/>
 
                         </Arguments>
                         <onError action="abort"/>
@@ -95,7 +95,7 @@
                 </step>
         <step Driver="cli_driver" Keyword="disconnect" TS="1">
                         <Arguments>
-                                <argument name="system_name" value="NE1"/>
+                                <argument name="system_name" value="NE2"/>
                         </Arguments>
                         <onError action="abort"/>
                         <Description>connect</Description>

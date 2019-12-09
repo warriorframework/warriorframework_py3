@@ -5,6 +5,7 @@ import time
 import os
 import glob
 import json
+import sample
 from flask import Flask, jsonify, request
 from ne_details import nes
 from func_timeout import func_timeout, FunctionTimedOut
@@ -35,7 +36,6 @@ def find_single_ne(ne_id):
     return jsonify(nes[ne_id])
 
 
-
 @app.route('/measure', methods=['POST'])
 def measure():
     #os.chdir("/usr/src/app/")
@@ -46,11 +46,11 @@ def measure():
         json.dump(data, outfile)
 
     # creating necessary files and running the test case
-    status = os.system("python sample.py data.json set ")
-    if status != 0:
-        return jsonify({"SCRIPT_STATUS": "FAIL"}), 200
+    s = sample.Measure("data.json", "measure")
+    s.set_env_var()
+    s.ran_generated_testcase()
 
-    return_data = process_logs()
+    return_data = process_logs("measure")
 
     if return_data["script_status"] == "PASS":
         return jsonify(return_data), 200
@@ -69,20 +69,25 @@ def set():
     with open('data.json', 'w') as outfile:
         json.dump(data, outfile)
 
-    # creating necessary files and running the test case
-    os.system("python sample.py data.json measure")
-    return_data = process_logs()
 
-    if return_data["script_status"] == "PASS":
-        return jsonify(return_data), 200
-    elif return_data["script_status"] == "FAIL":
-        return jsonify(return_data), 200
-    else:
-        print('Execute failed...')
-        return 'Error Message', 500
+    s = sample.SetValues("data.json", "set")
+    s.set_env_var_for_user_defined_json()
+    value, data_json_status = s.set_env_var_for_data_json()
+    if not value:
+        return jsonify({"script_status":"FAIL", "message":data_json_status}), 200
+    else :
+        s.ran_generated_testcase()
+        return_data = process_logs("set")
+        if return_data["script_status"] == "PASS":
+            return jsonify(return_data), 200
+        elif return_data["script_status"] == "FAIL":
+            return jsonify(return_data), 200
+        else:
+            print('Execute failed...')
+            return 'Error Message', 500
 
 
-def process_logs():
+def process_logs(operation):
     if os.environ.get("HOME"):
         home_path = os.environ["HOME"]
         exe_dir = "Warriorspace/Execution"
@@ -96,7 +101,7 @@ def process_logs():
 
         # os.chdir(final_path)
         print(final_path, log_file_name)
-        tc_name = "cli_test_case_template"
+        tc_name = "cli_test_case_{}".format(operation)
         file_desc = open(os.path.join(final_path, "{}_consoleLogs.log".format(tc_name)))
 
         # file_desc = (open("{}_consoleLogs.log".format(tc_name)))
@@ -159,4 +164,4 @@ def hello(x):
     print(x, " is the timeout..")
     time.sleep(6)
     return 'Hello World'
-# app.run(host="0.0.0.0", port=5002)
+#app.run(host="0.0.0.0", port=5002)
