@@ -13,11 +13,11 @@
     </testdata>
 
 	<testdata title="show_software_version" execute="yes">
-        	<command end="\$" send="echo 104303"/>
+        	<command end="[\$\>]" send="echo 104303"/>
     </testdata>
 
     <testdata title="set_hal_level" execute="yes">
-        <command  end="\$" start=".*" send="echo 230"/>
+        <command  end="[\$\>]" start=".*" send="echo 230"/>
     </testdata>
 
 </data>
