@@ -68,7 +68,9 @@ def validate_config_json(json_data, warrior_dir):
 
     :return: Ordered Dictionary containing validated config.json data
     """
-   
+    userobj = Navigator()
+    default_userrepo = userobj.get_warrior_dir()
+
     ordered_json = OrderedDict()
     if "engineer" not in json_data:
         ordered_json["engineer"] = ""
@@ -116,6 +118,8 @@ def validate_config_json(json_data, warrior_dir):
         else:
             for key, value in list(ref.items()):
                  ordered_json[key] = json_data[key]
+
+        ordered_json['userreposdir'] = default_userrepo
     else:
         for key, value in list(ref.items()):
             if key not in json_data or json_data[key] == "":
