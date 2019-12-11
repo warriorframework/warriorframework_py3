@@ -2,8 +2,8 @@
 
 
 import json, xmltodict, os, copy
-from utils.navigator_util import Navigator
-from utils.json_utils import read_json_data
+from katana.utils.navigator_util import Navigator
+from katana.utils.json_utils import read_json_data
 from collections import OrderedDict
 from django.template.defaulttags import register
 

@@ -1,7 +1,7 @@
 import os
 from django.apps import apps
-from utils.directory_traversal_utils import get_sub_folders
-from wui.core.core_utils.core_utils import _get_package_name
+from katana.utils.directory_traversal_utils import get_sub_folders
+from katana.wui.core.core_utils.core_utils import _get_package_name
 
 
 class CoreIndex:
@@ -29,11 +29,11 @@ class CoreIndex:
             self.available_apps: list of app directories available in /warriorframework/katana/
 
         """
-
-        self.available_apps.extend(_get_apps(os.path.join(self.base_directory, self.user_apps),
-                                             _get_package_name(self.user_apps)))
+        self.available_apps.extend(_get_apps(os.path.join(self.base_directory, self.user_apps), 
+                                            _get_package_name(self.user_apps)))
         self.available_apps.extend(_get_apps(os.path.join(self.base_directory, self.native_apps),
-                                             _get_package_name(self.native_apps)))
+                                            _get_package_name(self.native_apps)))
+
         return self.available_apps
 
     def get_apps_from_settings_file(self):
@@ -46,7 +46,7 @@ class CoreIndex:
         """
 
         for app in apps.get_app_configs():
-            if not app.name.startswith('django.contrib.') and app.name != 'wui.core':
+            if not app.name.startswith('django.contrib.') and app.name != 'katana.wui.core':
                 self.settings_installed_apps.append(app.name)
 
         return self.settings_installed_apps
@@ -54,7 +54,7 @@ class CoreIndex:
 
 def _get_apps(apps_directory_path, apps_package_name):
     """
-    This function gets all the app directories inside the "/katana/wapps" and "katana/native"
+    This function gets all the app directories inside the "/katana/katana.wapps" and "katana/katana.native"
     directories
 
     Returns:
@@ -64,6 +64,6 @@ def _get_apps(apps_directory_path, apps_package_name):
     apps_list = []
     apps_sub_dir = get_sub_folders(apps_directory_path)
     for i in range(0, len(apps_sub_dir)):
-        apps_sub_dir[i] = apps_package_name + apps_sub_dir[i]
+        apps_sub_dir[i] = "katana." + apps_package_name + apps_sub_dir[i]
     apps_list.extend(apps_sub_dir)
     return apps_list

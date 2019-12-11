@@ -1,9 +1,10 @@
 from os import sep, path
+
 import re
-from utils.directory_traversal_utils import get_dir_from_path, join_path, get_abs_path, create_dir, \
+from katana.utils.directory_traversal_utils import get_dir_from_path, join_path, get_abs_path, create_dir, \
     delete_dir, get_parent_directory
-from utils.file_utils import copy_dir, readlines_from_file, write_to_file
-from utils.json_utils import read_json_data
+from katana.utils.file_utils import copy_dir, readlines_from_file, write_to_file
+from katana.utils.json_utils import read_json_data
 
 
 class Uninstaller:
@@ -13,8 +14,8 @@ class Uninstaller:
         self.base_directory = base_directory
         self.plugin_dir = join_path(self.base_directory, "warrior", "plugins")
         self.app_dir = join_path(self.base_directory, "katana", app_type)
-        self.settings_file = join_path(self.base_directory, "katana", "wui", "settings.py")
-        self.urls_file = join_path(self.base_directory, "katana", "wui", "urls.py")
+        self.settings_file = join_path(self.base_directory, "katana", "katana.wui", "settings.py")
+        self.urls_file = join_path(self.base_directory, "katana", "katana.wui", "urls.py")
         self.app_path = get_abs_path(self.app_name, self.app_dir)
         self.app_type = app_type
         self.config_file = join_path(self.app_path, "wf_config.json")
@@ -22,7 +23,7 @@ class Uninstaller:
         self.related_plugins = self.__extract_plugin_names()
         self.pkg_in_settings = self.__get_setting_file_info()
         self.include_urls = self.__get_urls_info()
-        self.valid_app_types = {"wapps"}
+        self.valid_app_types = {"katana.wapps"}
         self.cache_dir = create_dir(join_path(self.base_directory, "katana", ".data", self.app_name))
         self.settings_backup = []
         self.urls_backup = []

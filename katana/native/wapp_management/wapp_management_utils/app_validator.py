@@ -1,10 +1,10 @@
 import os
 import re
-from native.wapp_management.wapp_management_utils.wapp_mgmt_utils import get_version_list, check_against_version_list
-from utils.directory_traversal_utils import join_path, get_sub_dirs_and_files, \
+from katana.native.wapp_management.wapp_management_utils.wapp_mgmt_utils import get_version_list, check_against_version_list
+from katana.utils.directory_traversal_utils import join_path, get_sub_dirs_and_files, \
     get_paths_of_subfiles, get_sub_folders
-from utils.json_utils import read_json_data
-from utils.navigator_util import Navigator
+from katana.utils.json_utils import read_json_data
+from katana.utils.navigator_util import Navigator
 
 
 class AppValidator:
@@ -24,8 +24,8 @@ class AppValidator:
                            app still uses the old Katana API
         """
         self.navigator = Navigator()
-        self.app_name = get_sub_folders(join_path(filepath, "warriorframework_py3", "katana", "wapps"))[0]
-        self.path_to_app = join_path(filepath, "warriorframework_py3", "katana", "wapps", self.app_name)
+        self.app_name = get_sub_folders(join_path(filepath, "warriorframework_py3", "katana", "katana.wapps"))[0]
+        self.path_to_app = join_path(filepath, "warriorframework_py3", "katana", "katana.wapps", self.app_name)
         self.wf_config_file = join_path(self.path_to_app, "wf_config.json")
         self.urls_inclusions = []
         self.mandatory_fields = ["app", "version", "warrior-compatibility", "warrior-incompatibility"]

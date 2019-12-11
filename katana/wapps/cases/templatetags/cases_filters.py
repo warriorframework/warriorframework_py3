@@ -1,6 +1,6 @@
 import collections
 from django import template
-from wapps.cases.cases_utils.defaults import inverted_on_errors, inverted_contexts, \
+from katana.wapps.cases.cases_utils.defaults import inverted_on_errors, inverted_contexts, \
     inverted_impacts, inverted_runmodes, inverted_iteration_types
 
 register = template.Library()

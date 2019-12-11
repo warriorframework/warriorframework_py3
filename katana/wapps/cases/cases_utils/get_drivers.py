@@ -1,5 +1,5 @@
-from utils.directory_traversal_utils import join_path, get_dir_from_path, get_direct_sub_files, get_paths_of_subfiles
-from utils.regex_utils import compile_regex
+from katana.utils.directory_traversal_utils import join_path, get_dir_from_path, get_direct_sub_files, get_paths_of_subfiles
+from katana.utils.regex_utils import compile_regex
 
 
 class GetDriversActions:
@@ -68,7 +68,7 @@ class GetDriversActions:
         for pkg in list_of_pkgs:
             temp = pkg.split(".")
             path = self.warrior_dir
-            for i in range(0, len(temp)):
+            for i in range(1, len(temp)):
                 path = join_path(path, temp[i])
             package_list.append(path)
         return package_list

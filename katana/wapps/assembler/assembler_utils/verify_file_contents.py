@@ -1,10 +1,10 @@
 import copy
 import os
-from wapps.assembler.assembler_utils.repository_details import KwRepositoryDetails
-from utils.directory_traversal_utils import delete_dir, join_path
-from utils.git_utils import get_repository_name, check_url_is_a_valid_repo
-from utils.json_utils import read_xml_get_json
-from utils.navigator_util import Navigator
+from katana.wapps.assembler.assembler_utils.repository_details import KwRepositoryDetails
+from katana.utils.directory_traversal_utils import delete_dir, join_path
+from katana.utils.git_utils import get_repository_name, check_url_is_a_valid_repo
+from katana.utils.json_utils import read_xml_get_json
+from katana.utils.navigator_util import Navigator
 
 
 class VerifyFileContents:
@@ -146,7 +146,7 @@ class VerifyFileContents:
                     if available:
                         drivers_data = []
                         drivers_index = set()
-                        temp_directory = os.path.join(self.nav_obj.get_katana_dir(), "wapps", "assembler",
+                        temp_directory = os.path.join(self.nav_obj.get_katana_dir(), "katana.wapps", "assembler",
                                                       ".data")
                         kw_repo_obj = KwRepositoryDetails(url, temp_directory)
                         drivers = set(kw_repo_obj.get_pd_names())

@@ -19,22 +19,22 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
 import xml.etree.cElementTree as ET
-from native.wapp_management.wapp_management_utils.app_validator import AppValidator
-from native.wapp_management.wapp_management_utils.installer import Installer
-from native.wapp_management.wapp_management_utils.uninstaller import Uninstaller
-from utils.directory_traversal_utils import join_path, get_sub_files, get_parent_directory, \
+from katana.native.wapp_management.wapp_management_utils.app_validator import AppValidator
+from katana.native.wapp_management.wapp_management_utils.installer import Installer
+from katana.native.wapp_management.wapp_management_utils.uninstaller import Uninstaller
+from katana.utils.directory_traversal_utils import join_path, get_sub_files, get_parent_directory, \
     create_dir, get_dir_from_path
-from utils.file_utils import copy_dir
-from utils.navigator_util import Navigator
-from utils.string_utils import get_repository_name
-from wui.core.core_utils.app_info_class import AppInformation
+from katana.utils.file_utils import copy_dir
+from katana.utils.navigator_util import Navigator
+from katana.utils.string_utils import get_repository_name
+from katana.wui.core.core_utils.app_info_class import AppInformation
 nav_obj = Navigator()
 
 
 class WappManagementView(View):
 
     template = 'wapp_management/wapp_management.html'
-    dot_data_directory = join_path(nav_obj.get_katana_dir(), "native", "wapp_management", ".data")
+    dot_data_directory = join_path(nav_obj.get_katana_dir(), "katana.native", "wapp_management", ".data")
 
     def get(self, request):
         """
@@ -66,7 +66,7 @@ def uninstall_an_app(request):
 
 def install_an_app(request):
     app_path = request.POST.get("app_paths")
-    dot_data_dir = join_path(nav_obj.get_katana_dir(), "native", "wapp_management", ".data")
+    dot_data_dir = join_path(nav_obj.get_katana_dir(), "katana.native", "wapp_management", ".data")
     temp_dir_path = join_path(dot_data_dir, "temp")
     output_data = {"status": True, "message": ""}
 
@@ -200,7 +200,7 @@ def validate_app_path(request):
     output = {"status": True, "message": ""}
     detail_type = request.POST.get("type", None)
     detail_info = request.POST.get("value", None)
-    dot_data_dir = join_path(nav_obj.get_katana_dir(), "native", "wapp_management", ".data")
+    dot_data_dir = join_path(nav_obj.get_katana_dir(), "katana.native", "wapp_management", ".data")
     temp_dir_path = join_path(dot_data_dir, "temp")
     app_path = False
 

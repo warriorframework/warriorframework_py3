@@ -1,5 +1,5 @@
 from django import template
-from wapps.projects.project_utils.defaults import inverted_on_errors, inverted_contexts, \
+from katana.wapps.projects.project_utils.defaults import inverted_on_errors, inverted_contexts, \
     inverted_impacts, inverted_runmodes, inverted_executiontypes, inverted_runtypes
 
 register = template.Library()
