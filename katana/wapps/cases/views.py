@@ -116,7 +116,7 @@ def save_file(request):
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
     data["Testcase"]["Details"] = validate_details_data(data["Testcase"]["Details"])
-    if not data["Testcase"]["Details"]["TestWrapperFile"]:
+    if data["Testcase"]["Details"]["TestWrapperFile"] == 'None' or data["Testcase"]["Details"]["TestWrapperFile"] == '':
         data["Testcase"]["Details"].pop('TestWrapperFile')
     data["Testcase"]["Steps"]["step"] = validate_step_data(data["Testcase"]["Steps"]["step"])
     if not data["Testcase"]["Details"]["InputDataFile"]:
