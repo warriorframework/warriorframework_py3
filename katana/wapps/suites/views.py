@@ -78,6 +78,8 @@ def save_file(request):
     data["TestSuite"]["Testcases"]["Testcase"] = validate_step_data(data["TestSuite"]["Testcases"]["Testcase"])
     if data["TestSuite"]["Details"]["TestWrapperFile"] == 'None' or data["TestSuite"]["Details"]["TestWrapperFile"] == '':
         data["TestSuite"]["Details"].pop('TestWrapperFile')
+    if not data["TestSuite"]["Details"]["InputDataFile"]:
+        data["TestSuite"]["Details"]["InputDataFile"] = 'No_Data'
     xml_data = xmltodict.unparse(data, pretty=True)
     directory = request.POST.get("directory")
     filename = request.POST.get("filename")

@@ -47,3 +47,11 @@ def get_attribute_new(value):
         pass
     elif type(value) == collections.OrderedDict:
         return "str"
+
+@register.filter(name='get_attribute_repo')
+def get_attribute_repo(value):
+    sorted_fruit_list = list(value.keys())
+    if "@Repo" in sorted_fruit_list:
+        return "norm"
+    else:
+        return "empty"

@@ -1,10 +1,12 @@
 {
     "engineer": "",
+    "userreposdir": "",
     "pythonsrcdir": "",
     "xmldir": "",
     "testsuitedir": "",
     "projdir": "",
     "idfdir": "",
     "testdata": "",
+    "testwrapper": "",
     "pythonpath": ""
 }

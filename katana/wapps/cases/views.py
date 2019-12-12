@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import collections
 import json
-
 import os
+import re
 import xmltodict
+from collections import OrderedDict
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
@@ -45,26 +46,37 @@ def get_file(request):
     Reads a case file and returns it's contents in JSOn format
     """
     try:
-            file_path = request.GET.get('path')
-            if file_path == "false":
-                file_path = TEMPLATE
-            vcf_obj = VerifyCaseFile(TEMPLATE, file_path)
-            output, data = vcf_obj.verify_file()
-            if output["status"]:
-                mid_req = (len(data["Testcase"]["Requirements"]["Requirement"]) + 1)/2
-                da_obj = GetDriversActions(navigator.get_warrior_dir()[:-1])
+        file_path = request.GET.get('path')
+        if file_path == "false":
+            file_path = TEMPLATE
+        vcf_obj = VerifyCaseFile(TEMPLATE, file_path)
+        output, data = vcf_obj.verify_file()
+        if output["status"]:
+            mid_req = (len(data["Testcase"]["Requirements"]["Requirement"]) + 1)/2
+            repo_dirs = navigator.get_user_repos_dir()
+            repo_dict = {}
+
+            for repo in repo_dirs:
+                repo_dict[repo] = {}
+
+                repo_path = repo_dirs[str(repo)]
+                da_obj = GetDriversActions(repo_path)
                 if file_path == TEMPLATE:
                     output["filepath"] = read_json_data(CONFIG_FILE)["xmldir"]
                 else:
                     output["filepath"] = get_parent_dir_path(file_path)
                 output["filename"] = os.path.splitext(get_dir_from_path(file_path))[0]
-                output["drivers"] = da_obj.get_all_actions()
-                output["html_data"] = render_to_string('cases/display_case.html', {"data": data, "mid_req": mid_req,
-                                                                                   "defaults": DROPDOWN_DEFAULTS,
-                                                                                   "drivers": output["drivers"]})
-                return JsonResponse(output)
-            else:
-                JsonResponse({"status": output["status"], "message": output["message"]})
+                output["user_repos"] = repo_dirs
+
+                repo_dict[repo]= da_obj.get_all_actions()
+            output["drivers"] = repo_dict
+            output["html_data"] = render_to_string('cases/display_case.html', {"data": data, "mid_req": mid_req,
+                                                                               "defaults": DROPDOWN_DEFAULTS,
+                                                                               "user_repos":repo_dirs})
+
+            return JsonResponse(output)
+        else:
+            JsonResponse({"status": output["status"], "message": output["message"]})
     except Exception as e:
         return JsonResponse({"status": 0,"message":"Exception opening the file"})
 
@@ -104,9 +116,9 @@ def save_file(request):
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
     data["Testcase"]["Details"] = validate_details_data(data["Testcase"]["Details"])
-    data["Testcase"]["Steps"]["step"] = validate_step_data(data["Testcase"]["Steps"]["step"])
-    if not data["Testcase"]["Details"]["TestWrapperFile"]:
+    if data["Testcase"]["Details"]["TestWrapperFile"] == 'None' or data["Testcase"]["Details"]["TestWrapperFile"] == '':
         data["Testcase"]["Details"].pop('TestWrapperFile')
+    data["Testcase"]["Steps"]["step"] = validate_step_data(data["Testcase"]["Steps"]["step"])
     if not data["Testcase"]["Details"]["InputDataFile"]:
         data["Testcase"]["Details"]["InputDataFile"] = 'No_Data'
     xml_data = xmltodict.unparse(data, pretty=True)

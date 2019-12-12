@@ -5,28 +5,36 @@
             <table class="table table-bordered">
                 <thead>
                 <tr>
-                    <th scope="col" class="col-sm-1">Step #</th>
-                    <th scope="col" class="col-sm-1">Driver</th>
-                    <th scope="col" class="col-sm-1">Keyword</th>
-                    <th scope="col" class="col-sm-2">Arguments</th>
-                    <th scope="col" class="col-sm-1 desc">Description</th>
-                    <th scope="col" class="col-sm-1 desc">Execute</th>
-                    <th scope="col" class="col-sm-1">Run Mode</th>
-                    <th scope="col" class="col-sm-1">Iteration Type</th>
-                    <th scope="col" class="col-sm-1">Context</th>
-                    <th scope="col" class="col-sm-1">Impact</th>
-                    <th scope="col" class="col-sm-1">On Error</th>
+                    <th class="col-sm-1" scope="col" >Step #</th>
+                    <th class="col-sm-1" scope="col" >Repo</th>
+                    <th class="col-sm-1" scope="col" >Driver</th>
+                    <th class="col-sm-1" scope="col" >Keyword</th>
+                    <th class="col-sm-1 desc" scope="col">Arguments</th>
+                    <th class="col-sm-1 desc" scope="col">Description</th>
+                    <th class="col-sm-1 desc" scope="col">Execute</th>
+                    <th class="col-sm-1" scope="col" >Run Mode</th>
+                    <th class="col-sm-1" scope="col" >Iteration Type</th>
+                    <th class="col-sm-1" scope="col" >Context</th>
+                    <th class="col-sm-1" scope="col" >Impact</th>
+                    <th class="col-sm-1" scope="col" >On Error</th>
                 </tr>
                 </thead>
                 <tbody>
                 <!--this is for multiple steps start here  -->
                 {% if data.TestWrapper.Setup.step|get_attribute_new == "list" %}
+
                 {% for step in data.TestWrapper.Setup.step %}
                 <tr katana-click="setupcases.stepSection.selectStep" key="step">
-                    <td class="col-sm-1" key="@TS">{{ forloop.counter }}</td>
-                    <td class="col-sm-1" key="@Driver">{{ step|get_attribute:"Driver" }}</td>
-                    <td class="col-sm-1" key="@Keyword">{{ step|get_attribute:"Keyword" }}</td>
-                    <td class="col-sm-2" key="Arguments">
+                    <td class="col-sm-1"  key="@TS">{{ forloop.counter }}</td>
+                   {% if step|get_attribute_repo == "norm" %}
+                    <td class="col-sm-1"  key="@Repo">{{ step|get_attribute:"Repo" }}</td>
+                    {% endif %}
+                    {% if step|get_attribute_repo == "empty" %}
+                    <td class="col-sm-1" key="@Repo">warrior</td>
+                    {% endif %}
+                    <td class="col-sm-1"  key="@Driver">{{ step|get_attribute:"Driver" }}</td>
+                    <td class="col-sm-1"  key="@Keyword">{{ step|get_attribute:"Keyword" }}</td>
+                    <td class="col-sm-1"  key="Arguments">
                         {% if step.Arguments.argument|get_attribute_new == "list" %}
                         {% for arg in step.Arguments.argument %}
                         <div key="Arguments.argument">
@@ -45,7 +53,7 @@
                         {% endif %}
                     </td>
                     <td class="col-sm-1" key="Description">{{ step.Description }}</td>
-                    <td class="col-sm-1">
+                    <td class="col-sm-1" >
                         <span key="Execute.@ExecType">{{ step.Execute|get_attribute:"ExecType" }}</span><br>
                         {% if step.Execute|get_attribute:"ExecType" == "If" or step.Execute|get_attribute:"ExecType" == "If Not" %}
                         {% for rule in step.Execute.Rule %}
@@ -88,7 +96,7 @@
                     {% endif %}
 
                     <td class="col-sm-1" key="context">{{ step.context|convert_contexts }}</td>
-                    <td class="col-sm-1" key="impact">{{ step.impact|convert_impacts }}</td>
+                    <td class="col-sm-1"  key="impact">{{ step.impact|convert_impacts }}</td>
                     <td class="col-sm-1">
                         <span key="onError.@action"> {{ step.onError|get_attribute:"action"|convert_on_errors }} </span>
                         {% if step.onError|get_attribute:"action"|convert_on_errors == "Go To" %}
@@ -104,10 +112,16 @@
                 <!-- processing single step start here-->
                 {% if data.TestWrapper.Setup.step|get_attribute_new == "str" %}
                 <tr katana-click="setupcases.stepSection.selectStep" key="step">
-                    <td class="col-sm-1" key="@TS">{{ 1 }}</td>
-                    <td class="col-sm-1" key="@Driver">{{ data.TestWrapper.Setup.step|get_attribute:"Driver" }}</td>
-                    <td class="col-sm-1" key="@Keyword">{{ data.TestWrapper.Setup.step|get_attribute:"Keyword" }}</td>
-                    <td class="col-sm-2" key="Arguments">
+                    <td class="col-sm-1"  key="@TS">{{ 1 }}</td>
+                    {% if data.TestWrapper.Setup.step|get_attribute_repo == "norm" %}
+                    <td class="col-sm-1"  key="@Repo">{{ data.TestWrapper.Setup.step|get_attribute:"Repo" }}</td>
+                    {% endif %}
+                    {% if data.TestWrapper.Setup.step|get_attribute_repo == "empty" %}
+                    <td class="col-sm-1"  key="@Repo">warrior</td>
+                    {% endif %}
+                    <td class="col-sm-1"  key="@Driver">{{ data.TestWrapper.Setup.step|get_attribute:"Driver" }}</td>
+                    <td class="col-sm-1"  key="@Keyword">{{ data.TestWrapper.Setup.step|get_attribute:"Keyword" }}</td>
+                    <td class="col-sm-1"  key="Arguments">
                         {% if data.TestWrapper.Setup.step.Arguments.argument|get_attribute_new == "list" %}
                         {% for arg in data.TestWrapper.Setup.step.Arguments.argument %}
                         <div key="Arguments.argument">
@@ -125,7 +139,7 @@
                         </div>
                         {% endif %}
                     </td>
-                    <td class="col-sm-1" key="Description">{{ data.TestWrapper.Setup.step.Description }}</td>
+                    <td class="col-sm-1"  key="Description">{{ data.TestWrapper.Setup.step.Description }}</td>
                     <td class="col-sm-1">
                         <span key="Execute.@ExecType">{{ data.TestWrapper.Setup.step.Execute|get_attribute:"ExecType" }}</span><br>
                         {% if data.TestWrapper.Setup.step.Execute|get_attribute:"ExecType" == "If" or data.TestWrapper.Setup.step.Execute|get_attribute:"ExecType" == "If Not" %}
@@ -205,17 +219,18 @@
     <script id="step-row-template" type="text/html">
         <tr katana-click="setupcases.stepSection.selectStep" key="step">
             <td class="col-sm-1" key="@TS"></td>
-            <td class="col-sm-1" key="@Driver"></td>
+            <td class="col-sm-1"  key="@Repo"></td>
+            <td class="col-sm-1"  key="@Driver"></td>
             <td class="col-sm-1" key="@Keyword"></td>
-            <td class="col-sm-2" key="Arguments">
+            <td class="col-sm-1"  key="Arguments">
                 <div key="Arguments.argument">
                     <span key="Arguments.argument.@name"></span>
                     <span> = </span>
                     <span key="Arguments.argument.@value"></span>
                 </div>
             </td>
-            <td class="col-sm-1" key="Description"></td>
-            <td class="col-sm-1">
+            <td class="col-sm-1"  key="Description"></td>
+            <td class="col-sm-1" >
                 <span key="Execute.@ExecType"></span>
                 <br>
                 <span key="Execute.Rule">
@@ -230,7 +245,7 @@
                 </span>
                 <br>
             </td>
-            <td class="col-sm-1">
+            <td class="col-sm-1" >
                 <span key="runmode.@type"></span>
                 <span> = </span>
                 <span key="runmode.@value"></span>
@@ -238,9 +253,9 @@
             <td class="col-sm-1">
                 <div key="Iteration_type.@type"></div>
             </td>
-            <td class="col-sm-1" key="context"></td>
-            <td class="col-sm-1" key="impact"></td>
-            <td class="col-sm-1">
+            <td class="col-sm-1"  key="context"></td>
+            <td class="col-sm-1"  key="impact"></td>
+            <td class="col-sm-1" >
                 <span key="onError.@action"></span>
                 <span> = </span>
                 <span key="onError.@value"></span>

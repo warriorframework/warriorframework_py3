@@ -41,7 +41,8 @@ setup(
                       "lxml==4.4.1", "paramiko==2.4.2", "pysnmp==4.4.9",
                       "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6",
                       "cloudshell-automation-api==9.3.0.175525",
-                      "pycryptodome==3.6.1", "Django==2.2.7", "xmltodict==0.12.0",
+                      "pycryptodome==3.6.1", "Django==2.1.2", "xmltodict==0.12.0",
+                      "python-ldap", "django_auth_ldap",
                       "djangorestframework==3.10.3",]
 
 )
