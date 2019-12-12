@@ -1,6 +1,6 @@
 import collections
 from django import template
-from wapps.testwrapper.testwrapper_utils.defaults import inverted_on_errors, inverted_contexts, \
+from katana.wapps.testwrapper.testwrapper_utils.defaults import inverted_on_errors, inverted_contexts, \
     inverted_impacts, inverted_runmodes, inverted_iteration_types, inverted_executiontypes
 
 register = template.Library()
@@ -47,3 +47,11 @@ def get_attribute_new(value):
         pass
     elif type(value) == collections.OrderedDict:
         return "str"
+
+@register.filter(name='get_attribute_repo')
+def get_attribute_repo(value):
+    sorted_fruit_list = list(value.keys())
+    if "@Repo" in sorted_fruit_list:
+        return "norm"
+    else:
+        return "empty"

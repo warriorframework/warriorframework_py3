@@ -3,6 +3,7 @@ var cases = {
     mappings: {
         newStep: {
             drivers: false, //stores all drivers and actions' information
+            repos:false, //stores all the repos and actions information
             title:  "New Step" //drawer title for when new step is being edited
         },
         newReq: {
@@ -353,6 +354,7 @@ var cases = {
                 url: 'cases/get_file/',
                 data: {"path": false}
             }).done(function(data){
+                
                 if(data.status){
                     cases.invert();
                     katana.$activeTab.find('#main-div').attr("current-file", data.filepath);
@@ -822,6 +824,7 @@ var cases = {
     _addArgumentsEtcBlock: function ($container, data) {
         /* This function generates the arguments block (side-drawer) out of an HTML block and json data.
         This function should not be called independently */
+        cases.stepEditor.getDrivers($container.find('[key="@Repo"]'), $container.find('[key="@Driver"]').val());
         cases.stepEditor.getKeywords($container.find('[key="@Driver"]'), $container.find('[key="@Keyword"]').val());
         var $allArgs = $container.find('[key="Arguments.argument"]');
         for (var i=0 ; i<$allArgs.length; i++) {
@@ -1001,20 +1004,34 @@ var cases = {
     },
 
     stepEditor: {
+        getDrivers: function ($elem, driverName) {
+            /* This function internally calls the getKeywords function for updating related fields on repo change */
+            $elem = $elem ? $elem : $(this);
+            driverName = driverName ? driverName : "";
+            var repoName = $elem.val();
+            var $driverRow = $elem.closest('.row').next();
+            $driverRow.find('input').attr("value", driverName).val(driverName);
+            $elem.attr("value", repoName);
+            $driverRow.find('#drivers').html("");
+            for (driver in cases.mappings.newStep.drivers[repoName]) {
+                        $driverRow.find('#drivers').append('<option>' + driver + '</option>');
+                    }
+                },
+
         getKeywords: function ($elem, kwName) {
             /* This function internally calls the getArgumentsEtc function for updating related fields on driver change */
+            
             $elem = $elem ? $elem : $(this);
             kwName = kwName ? kwName : "";
             var driverName = $elem.val();
+            var $repoRow = $elem.closest('.row').prev();
             var $kwRow = $elem.closest('.row').next();
+            var repo = $repoRow.find('input').attr("value");
             $kwRow.find('input').attr("value", kwName).val(kwName);
             $kwRow.find('#keywords').html("");
-            if (driverName in cases.mappings.newStep.drivers) {
-                for (var key in cases.mappings.newStep.drivers[driverName].actions){
-                    if (cases.mappings.newStep.drivers[driverName].actions.hasOwnProperty(key)){
-                        $kwRow.find('#keywords').append('<option>' + key + '</option>');
-                    }
-                }
+            for (keyword in cases.mappings.newStep.drivers[repo][driverName].actions){
+                $kwRow.find('#keywords').append('<option>' + keyword + '</option>');
+
             }
             cases.stepEditor.getArgumentsEtc($kwRow.find('input'));
         },
@@ -1025,11 +1042,13 @@ var cases = {
             $elem = $elem ? $elem : $(this);
             var kwName = $elem.val();
             var driverName = $elem.closest('.row').prev().find('input').val();
+            $DriverRow = $elem.closest('.row').prev();
+            Repo=$DriverRow.closest('.row').prev().find('input').attr("value");
             data = data ? data : false;
-
-            if (driverName in cases.mappings.newStep.drivers) {
-                if (kwName in cases.mappings.newStep.drivers[driverName].actions) {
-                    data = cases.mappings.newStep.drivers[driverName].actions[kwName]
+            if (driverName in cases.mappings.newStep.drivers[Repo]) {
+                if (kwName in cases.mappings.newStep.drivers[Repo][driverName].actions) {
+                    data = cases.mappings.newStep.drivers[Repo][driverName].actions[kwName]
+                   
                 }
             }
 

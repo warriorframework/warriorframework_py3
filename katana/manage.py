@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 import os
 import sys
+from os.path import abspath, dirname
 
 if __name__ == "__main__":
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "wui.settings")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "katana.wui.settings")
     try:
         from django.core.management import execute_from_command_line
     except ImportError:
@@ -19,4 +20,16 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
+    try:
+        import katana
+        os.environ["pipmode"]= "True"
+    #except ModuleNotFoundError as error:
+    except:
+        WARRIORDIR = dirname(dirname(abspath(__file__)))
+        sys.path.append(WARRIORDIR)
+        try:
+            import katana
+            os.environ["pipmode"]= "False"
+        except:
+            raise
     execute_from_command_line(sys.argv)

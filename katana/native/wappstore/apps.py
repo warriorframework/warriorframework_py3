@@ -5,4 +5,4 @@ from django.apps import AppConfig
 
 
 class WappstoreConfig(AppConfig):
-    name = 'wappstore'
+    name = 'katana.wappstore'

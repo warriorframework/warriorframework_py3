@@ -2,17 +2,19 @@
 
 import json
 from django.apps import AppConfig
-from utils.directory_traversal_utils import get_abs_path, join_path
-from utils.json_utils import read_json_data
-from utils.navigator_util import Navigator
-from wui.core.core_utils.app_info_class import AppInformation
-from wui.core.core_utils.apps_class import Apps
-from wui.core.core_utils.core_index_class_utils import CoreIndex
-from wui.core.core_utils.core_utils import validate_config_json
+from katana.utils.directory_traversal_utils import get_abs_path, join_path
+from katana.utils.json_utils import read_json_data
+from katana.utils.navigator_util import Navigator
+from katana.wui.core.core_utils.app_info_class import AppInformation
+from katana.wui.core.core_utils.apps_class import Apps
+from katana.wui.core.core_utils.core_index_class_utils import CoreIndex
+from katana.wui.core.core_utils.core_utils import validate_config_json
+import os
+import shutil
 
 
 class CoreConfig(AppConfig):
-    name = 'wui.core'
+    name = 'katana.wui.core'
     verbose_name = "Core Katana"
 
     def ready(self):
@@ -38,8 +40,11 @@ class CoreConfig(AppConfig):
                                              'config_file_name': config_file_name,
                                              'available_apps': available_apps,
                                              'settings_apps': settings_apps})
-
-        ordered_json = validate_config_json(read_json_data(config_json_file), warrior_dir)
+        if os.environ["pipmode"]=="True":
+            pythonsrcdir = read_json_data(config_json_file)['pythonsrcdir']
+        else:
+            pythonsrcdir = warrior_dir
+        ordered_json = validate_config_json(read_json_data(config_json_file), pythonsrcdir)
         with open(config_json_file, "w") as f:
             f.write(json.dumps(ordered_json, indent=4))
 

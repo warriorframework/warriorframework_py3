@@ -40,6 +40,9 @@ def get_arguments(step):
                     arg_value = argument.text
                 if "${ENV." in arg_value:
                     arg_value = Utils.data_Utils.sub_from_env_var(arg_value)
+                if arg_value:
+                    if "${REPO." in arg_value:
+                        arg_value = Utils.data_Utils.sub_from_data_repo(arg_value)
                 arg_datatype_object.arg_name = arg_name
                 arg_datatype_object.arg_value = arg_value
                 value = arg_datatype_object.convert_arg_to_datatype()
@@ -172,6 +175,13 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     send_keyword_to_productdriver(
         driver, plugin, keyword, data_repository, args_repository, repo_name)
     keyword_status = data_repository['step-%s_status' % step_num]
+    if data_repository.get("args_repo_flag"):
+        args_repo_status = data_repository["args_repo_flag"]
+    else:
+        args_repo_status = False
+    if args_repo_status:
+        keyword_status = False
+        data_repository.update({"args_repo_flag": False})
     Utils.testcase_Utils.update_step_num(str(step_num))
     if context.upper() == 'NEGATIVE' and type(keyword_status) == bool:
         print_debug("Keyword status = {0}, Flip status as context is Negative".format(

@@ -9,17 +9,29 @@
                 <input disabled key="@TS" title="Step number">
             </div>
         </div>
+
         <div class="row">
             <div class="col-sm-3">
-                <label class="cases-label">Driver<span>*</span></label>
+                <label class="cases-label">Repo<span>*</span></label>
+            </div>
+            <div class="field col-sm-9">
+                <input list="user_repos" key="@Repo" katana-change="cases.stepEditor.getDrivers" title="Name of the Repo" validation-check="cases.validations.checkIfEmpty">
+                <datalist id="user_repos">
+                    {% for repo in user_repos %}
+                    <option>{{ repo }}</option>
+                    {% endfor %}
+                </datalist>
+            </div>
+        </div>
+
+<div class="row">
+<div class="col-sm-3">
+<label class="cases-label">Driver<span>*</span></label>
             </div>
             <div class="field col-sm-9">
                 <input list="drivers" key="@Driver" katana-change="cases.stepEditor.getKeywords"
                        title="Name of the Driver" validation-check="cases.validations.checkIfEmpty">
                 <datalist id="drivers">
-                    {% for driver in drivers %}
-                    <option>{{ driver }}</option>
-                    {% endfor %}
                 </datalist>
             </div>
         </div>

@@ -8,12 +8,12 @@ import os
 import xmltodict
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from utils.directory_traversal_utils import join_path, get_parent_dir_path, get_dir_from_path
-from utils.json_utils import read_json_data, read_xml_get_json
-from utils.navigator_util import Navigator
-from wapps.suites.suite_utils.defaults import on_errors, impacts, contexts, runmodes, \
+from katana.utils.directory_traversal_utils import join_path, get_parent_dir_path, get_dir_from_path
+from katana.utils.json_utils import read_json_data, read_xml_get_json
+from katana.utils.navigator_util import Navigator
+from katana.wapps.suites.suite_utils.defaults import on_errors, impacts, contexts, runmodes, \
     executiontypes, runtypes
-from wapps.suites.suite_utils.verify_suite_file import VerifySuiteFile
+from katana.wapps.suites.suite_utils.verify_suite_file import VerifySuiteFile
 
 navigator = Navigator()
 CONFIG_FILE = join_path(navigator.get_katana_dir(), "config.json")
@@ -76,6 +76,10 @@ def save_file(request):
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
     data["TestSuite"]["Details"] = validate_details_data(data["TestSuite"]["Details"])
     data["TestSuite"]["Testcases"]["Testcase"] = validate_step_data(data["TestSuite"]["Testcases"]["Testcase"])
+    if data["TestSuite"]["Details"]["TestWrapperFile"] == 'None' or data["TestSuite"]["Details"]["TestWrapperFile"] == '':
+        data["TestSuite"]["Details"].pop('TestWrapperFile')
+    if not data["TestSuite"]["Details"]["InputDataFile"]:
+        data["TestSuite"]["Details"]["InputDataFile"] = 'No_Data'
     xml_data = xmltodict.unparse(data, pretty=True)
     directory = request.POST.get("directory")
     filename = request.POST.get("filename")

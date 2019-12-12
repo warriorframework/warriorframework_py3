@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class UsersConfig(AppConfig):
-    name = 'wui.users'
+    name = 'katana.wui.users'
     verbose_name = "User Management"

@@ -8,9 +8,9 @@ import xmltodict
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views import View
-from wapps.cli_data.cli_data_utils.verify_cli_data_class import VerifyCliDataClass
-from utils.directory_traversal_utils import join_path, get_dir_from_path
-from utils.navigator_util import Navigator
+from katana.wapps.cli_data.cli_data_utils.verify_cli_data_class import VerifyCliDataClass
+from katana.utils.directory_traversal_utils import join_path, get_dir_from_path
+from katana.utils.navigator_util import Navigator
 
 
 class CliDataView(View):
@@ -27,7 +27,7 @@ class CliDataView(View):
 
 class CliDataFileClass(View):
     nav_obj = Navigator()
-    app_directory = join_path(nav_obj.get_katana_dir(), "wapps", "cli_data")
+    app_directory = join_path(nav_obj.get_katana_dir(), "katana.wapps", "cli_data")
     app_static_dir = join_path(app_directory, "static")
 
     def get(self, request):

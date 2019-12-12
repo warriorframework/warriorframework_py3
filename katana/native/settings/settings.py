@@ -8,10 +8,11 @@ import subprocess
 from threading import Timer
 import xml.etree.ElementTree as xml_controler
 from distutils.version import LooseVersion
-from utils.directory_traversal_utils import join_path
-from utils.json_utils import read_xml_get_json
-from utils.navigator_util import Navigator
-from wui.core.apps import validate_config_json
+from katana.utils.directory_traversal_utils import join_path
+from katana.utils.json_utils import read_xml_get_json
+from katana.utils.navigator_util import Navigator
+from katana.utils.json_utils import read_json_data
+from katana.wui.core.apps import validate_config_json
 try:
     import xmltodict
 except ImportError:
@@ -22,7 +23,7 @@ class Settings:
 
     def __init__(self):
         self.navigator = Navigator()
-        self.static_dir = join_path(self.navigator.get_katana_dir(), "native", "settings", "static", "settings")
+        self.static_dir = join_path(self.navigator.get_katana_dir(), "katana.native", "settings", "static", "settings")
 
     def get_location(self):
         pass
@@ -53,10 +54,33 @@ class Settings:
         if request.method == 'POST':
             w_settings_data = {'Setting': {'Logsdir': '', 'Resultsdir': '', '@name': ''}}
             returned_json = json.loads(request.POST.get('data'))
+            if os.environ["pipmode"]=='True':
+                if os.path.isdir(returned_json[0]['pythonsrcdir']):
+                    if os.path.split(returned_json[0]['pythonsrcdir'])[-1]=='Warriorspace' or os.path.split(returned_json[0]['pythonsrcdir'])[-2]=='Warriorspace':
+                        returned_json[0]['pythonsrcdir']= returned_json[0]['pythonsrcdir']
+                    else:
+                        try:
+                            os.mkdir(returned_json[0]['pythonsrcdir']+'/Warriorspace')
+                            returned_json[0]['pythonsrcdir']= returned_json[0]['pythonsrcdir']+'/Warriorspace'
+                        except FileExistsError:
+                            returned_json[0]['pythonsrcdir']= returned_json[0]['pythonsrcdir']+'/Warriorspace'
+                else:
+                    return
+                ref = {'xmldir': "Testcases",
+                       'testsuitedir': 'Suites',
+                       'projdir': 'Projects',
+                       'idfdir': 'Data',
+                       'testdata': 'Config_files',
+                       'testwrapper': 'wrapper_files'}
             for k, v in list(w_settings_data['Setting'].items()):
                 w_settings_data['Setting'][k] = returned_json[0][k]
                 del returned_json[0][k]
-
+            if os.environ["pipmode"]=='True':
+                for key, value in returned_json[0].items():
+                    if key in ref.keys() and returned_json[0]['pythonsrcdir'] != "" and returned_json[0][key]=="":
+                        returned_json[0][key] = returned_json[0]['pythonsrcdir']+'/'+ ref[key]
+                        if not os.path.isdir(returned_json[0][key]):
+                            os.mkdir(returned_json[0][key])
             elem_file.remove(def_dir_xml_obj)
             val = xmltodict.unparse(w_settings_data, pretty=True)
             elem_file.insert(0, xml_controler.fromstring(val))
@@ -67,8 +91,13 @@ class Settings:
         else:
             with open(json_file, 'r') as f:
                 json_data = json.load(f)
+            if os.environ["pipmode"]=='True':
+                pythonsrcdir = read_json_data(json_file)['pythonsrcdir']
+            else:
+                pythonsrcdir = self.navigator.get_warrior_dir()
             data = {'fromXml': xmltodict.parse(def_dir_string).get('Setting'),
                     'fromJson': validate_config_json(json_data, self.navigator.get_warrior_dir())}
+
             return data
 
     def profile_setting_handler(self, request):

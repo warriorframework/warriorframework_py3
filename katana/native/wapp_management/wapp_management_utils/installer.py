@@ -1,26 +1,26 @@
 import os
-from utils.directory_traversal_utils import join_path, get_dir_from_path, get_sub_folders, \
+from katana.utils.directory_traversal_utils import join_path, get_dir_from_path, get_sub_folders, \
     delete_dir
-from utils.file_utils import copy_dir, readlines_from_file, write_to_file
-from utils.json_utils import read_json_data
+from katana.utils.file_utils import copy_dir, readlines_from_file, write_to_file
+from katana.utils.json_utils import read_json_data
 
 
 class Installer:
 
     def __init__(self, base_directory, path_to_app):
         self.base_directory = base_directory
-        self.app_directory = join_path(self.base_directory, "katana", "wapps")
+        self.app_directory = join_path(self.base_directory, "katana", "katana.wapps")
         self.plugin_directory = join_path(self.base_directory, "warrior", "plugins")
-        self.settings_file = join_path(self.base_directory, "katana", "wui", "settings.py")
-        self.urls_file = join_path(self.base_directory, "katana", "wui", "urls.py")
+        self.settings_file = join_path(self.base_directory, "katana", "katana.wui", "settings.py")
+        self.urls_file = join_path(self.base_directory, "katana", "katana.wui", "urls.py")
 
-        self.app_name = get_sub_folders(join_path(path_to_app, "warriorframework_py3", "katana", "wapps"))[0]
-        self.path_to_app = join_path(path_to_app, "warriorframework_py3", "katana", "wapps", self.app_name)
+        self.app_name = get_sub_folders(join_path(path_to_app, "warriorframework_py3", "katana", "katana.wapps"))[0]
+        self.path_to_app = join_path(path_to_app, "warriorframework_py3", "katana", "katana.wapps", self.app_name)
         self.path_to_plugin_dir = join_path(path_to_app, "warriorframework_py3", "warrior", "plugins")
         self.wf_config_file = join_path(self.path_to_app, "wf_config.json")
 
         self.plugins_paths = get_sub_folders(self.path_to_plugin_dir, abs_path=True)
-        self.pkg_in_settings = "wapps.{0}".format(self.app_name)
+        self.pkg_in_settings = "katana.wapps.{0}".format(self.app_name)
         self.urls_inclusions = []
         self.settings_backup = []
         self.urls_backup = []
@@ -111,7 +111,7 @@ class Installer:
         self.settings_backup = data
         index = -1
         for i in range(0, len(data)):
-            if "wui.core" in data[i]:
+            if "katana.wui.core" in data[i]:
                 index = i
                 break
 
