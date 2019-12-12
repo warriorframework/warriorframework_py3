@@ -74,6 +74,9 @@ def save_file(request):
     """ This function saves the file in the given path. """
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
+    # check for medatory details
+    if data['TestSuite']['Details']['Engineer']=='' or data['TestSuite']['Details']['Name'] == '' or data['TestSuite']['Details']['Title'] == '':
+        output['status'] = False
     data["TestSuite"]["Details"] = validate_details_data(data["TestSuite"]["Details"])
     data["TestSuite"]["Testcases"]["Testcase"] = validate_step_data(data["TestSuite"]["Testcases"]["Testcase"])
     if data["TestSuite"]["Details"]["TestWrapperFile"] == 'None' or data["TestSuite"]["Details"]["TestWrapperFile"] == '':

@@ -76,6 +76,9 @@ def save_file(request):
 
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
+    # check for medatory details
+    if data['Project']['Details']['Engineer']=='' or data['Project']['Details']['Name'] == '' or data['Project']['Details']['Title'] == '':
+        output['status'] = False
     data["Project"]["Details"] = validate_details_data(data["Project"]["Details"])
     data["Project"]["Testsuites"]["Testsuite"] = validate_suite_data(data["Project"]["Testsuites"]["Testsuite"])
     xml_data = xmltodict.unparse(data, pretty=True)
