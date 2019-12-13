@@ -18,7 +18,8 @@ import json
 import subprocess
 import shutil
 from xml.etree import ElementTree
-
+from katana.utils.directory_traversal_utils import join_path
+from katana.utils.json_utils import read_json_data
 from django.http import StreamingHttpResponse, JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
@@ -35,7 +36,11 @@ controls = Settings()
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates')
 data_live_dir = os.path.join(os.path.dirname(__file__), '.data', 'live')
 
-
+def read_config_file_data():
+    nav_obj = Navigator()
+    config_file_path = join_path(nav_obj.get_katana_dir(), "config.json")
+    data = read_json_data(config_file_path)
+    return data
 
 class Execution(object):
     """
@@ -51,7 +56,10 @@ class Execution(object):
         self.katana_dir = os.path.dirname(katana.native.__path__[0])
         self.wf_dir = os.path.dirname(self.katana_dir)
         self.warrior = os.path.join(self.wf_dir, 'warrior', 'Warrior')
-        self.default_ws = os.path.join(self.wf_dir, 'warrior', 'Warriorspace')
+        if os.environ["pipmode"]=='True':
+            self.default_ws = self.config_data["pythonsrcdir"]
+        else:
+            self.default_ws = os.path.join(self.wf_dir, 'warrior', 'Warriorspace')
         self.templates_dir = os.path.join(templates_dir, 'execution')
         self.jira_settings_file = os.path.join(self.wf_dir, 'warrior', 'Tools', 'jira', 'jira_config.xml')        
         self.execution_settings_json = os.path.join(templates_dir, 'execution', 'execution_settings.json')
