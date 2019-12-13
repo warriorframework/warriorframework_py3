@@ -354,7 +354,13 @@ var cases = {
                 url: 'cases/get_file/',
                 data: {"path": false}
             }).done(function(data){
-                
+                if (data.filepath==''){
+                    katana.openAlert({"alert_type": "danger",
+                    "heading": "Please setup the path in warrior settings",
+                    "text": "Errors: " + 'Path is not provided',
+                    "show_cancel_btn": false});
+                    return;
+                }
                 if(data.status){
                     cases.invert();
                     katana.$activeTab.find('#main-div').attr("current-file", data.filepath);
@@ -410,7 +416,7 @@ var cases = {
                         katana.openAlert({
                             "alert_type": "danger",
                             "heading": "File Not Saved",
-                            "text": "Some problem occurred while saving the file: " + inputValue,
+                            "text": "Please fill all the medatory details: " + inputValue,
                             "show_cancel_btn": false
                         })
                     }

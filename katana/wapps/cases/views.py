@@ -115,6 +115,9 @@ def save_file(request):
     """ This function saves the file in the given path. """
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
+    # check for medatory details
+    if data['Testcase']['Details']['Engineer']=='' or data['Testcase']['Details']['Name'] == '' or data['Testcase']['Details']['Title'] == '':
+        output['status'] = False
     data["Testcase"]["Details"] = validate_details_data(data["Testcase"]["Details"])
     if data["Testcase"]["Details"]["TestWrapperFile"] == 'None' or data["Testcase"]["Details"]["TestWrapperFile"] == '':
         data["Testcase"]["Details"].pop('TestWrapperFile')
@@ -125,7 +128,6 @@ def save_file(request):
     directory = request.POST.get("directory")
     filename = request.POST.get("filename")
     extension = request.POST.get("extension")
-
     try:
         with open(join_path(directory, filename + extension), 'w') as f:
             f.write(xml_data)
