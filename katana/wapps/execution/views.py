@@ -184,6 +184,17 @@ class Execution(object):
         config_json_dict = json.loads(open(self.config_json).read())
         python_path = config_json_dict['pythonpath']
 
+        katana_dir = os.path.dirname(katana.native.__path__[0])
+        config_json = os.path.join(katana_dir, 'config.json')
+        config_json_dict = json.loads(open(config_json).read())
+        pythonpaths=[]
+        for key in config_json_dict.keys():
+            if key.startswith('userreposdir'):
+                repo = config_json_dict[key].split('/')
+                repo = "/".join(repo[:-1])
+                pythonpaths.append(repo)
+        pythonpath = ':'.join(pythonpaths)
+        cmd_string = cmd_string + ' -pythonpath {0}'.format(pythonpath) 
         return StreamingHttpResponse(stream_warrior_output(self.warrior, cmd_string, execution_file_list, live_html_res_file, python_path))
            
 
@@ -197,13 +208,10 @@ def stream_warrior_output(warrior_exe, cmd_string, file_list, live_html_res_file
     Start warrior execution and stream console logs output to client
     """
     pypath = python_path if python_path else 'python3'
-    
     print_cmd = '{0} {1} {2}'.format(pypath, warrior_exe, cmd_string )
     warrior_cmd = '{0} {1} -livehtmllocn {2} {3}'.format(pypath, warrior_exe, live_html_res_file, cmd_string )
-
     
     output = subprocess.Popen(str(warrior_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-#     output = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     first_poll = True
     
     file_li_string = ""
@@ -227,8 +235,6 @@ def stream_warrior_output(warrior_exe, cmd_string, file_list, live_html_res_file
         # Yield this line to be used by streaming http response
         yield line + '</br>'
         if line.startswith('-I- DONE'):
-#             with open(live_html_res_file, 'a') as html_file:
-#                 html_file.write("<div class='eoc'></div>")
             break 
     
     # before returning set eoc div on the live html results file
@@ -265,19 +271,3 @@ def update_jira_proj_list(jira_settings_file, exec_settings_json):
         json.dump(execution_settings_dict, fp)
         
     return execution_settings_dict
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    
-    
-    
-    
-    
-
