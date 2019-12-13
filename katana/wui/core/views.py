@@ -73,7 +73,7 @@ class getFileExplorerData(View):
         if config_data["pythonsrcdir"] == "" and start_dir == "false":
             start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
         elif config_data["pythonsrcdir"] != "" and start_dir == "false":
-            start_dir = config_data["pythonsrcdir"]
+            start_dir = join_path(config_data["pythonsrcdir"], "Warriorspace")
 
         if "data[path]" in request.POST and request.POST["data[path]"] != "false":
             start_dir = get_parent_directory(request.POST["data[path]"])
@@ -111,7 +111,7 @@ class getFileExplorerData(View):
             start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
         elif config_data["pythonsrcdir"] != "" and start_dir == "false":
             get_children_only = False
-            start_dir = config_data["pythonsrcdir"]
+            start_dir = join_path(config_data["pythonsrcdir"], "Warriorspace")
 
         if "path" in request.GET:
             get_children_only = False
