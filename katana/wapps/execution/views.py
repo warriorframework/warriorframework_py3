@@ -53,6 +53,7 @@ class Execution(object):
         Constructor for execution app
         """
         self.nav = Navigator()
+        self.config_data = read_config_file_data()
         self.katana_dir = os.path.dirname(katana.native.__path__[0])
         self.wf_dir = os.path.dirname(self.katana_dir)
         self.warrior = os.path.join(self.wf_dir, 'warrior', 'Warrior')
