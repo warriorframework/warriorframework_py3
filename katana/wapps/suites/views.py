@@ -87,13 +87,14 @@ def save_file(request):
     directory = request.POST.get("directory")
     filename = request.POST.get("filename")
     extension = request.POST.get("extension")
-    try:
-        with open(join_path(directory, filename + extension), 'w') as f:
-            f.write(xml_data)
-    except Exception as e:
-        output["status"] = False
-        output["message"] = e
-        print("-- An Error Occurred -- {0}".format(e))
+    if output['status']:
+        try:
+            with open(join_path(directory, filename + extension), 'w') as f:
+                f.write(xml_data)
+        except Exception as e:
+            output["status"] = False
+            output["message"] = e
+            print("-- An Error Occurred -- {0}".format(e))
     return JsonResponse(output)
 
 

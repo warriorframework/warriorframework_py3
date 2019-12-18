@@ -69,11 +69,15 @@ class getFileExplorerData(View):
         if "data[start_dir]" in request.POST:
             start_dir = request.POST["data[start_dir]"]
 
-        config_data = read_config_file_data()
-        if config_data["pythonsrcdir"] == "" and start_dir == "false":
-            start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
-        elif config_data["pythonsrcdir"] != "" and start_dir == "false":
-            start_dir = config_data["pythonsrcdir"]
+        if os.environ["pipmode"] == 'True':
+            config_data = read_config_file_data()
+            if config_data["pythonsrcdir"] != "" and start_dir == "false":
+                start_dir = config_data["pythonsrcdir"]
+            elif config_data["pythonsrcdir"] == "" and start_dir == "false":
+                start_dir = config_data["userreposdir"]
+        else:
+            if start_dir == "false":
+                start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
 
         if "data[path]" in request.POST and request.POST["data[path]"] != "false":
             start_dir = get_parent_directory(request.POST["data[path]"])
@@ -106,12 +110,17 @@ class getFileExplorerData(View):
             get_children_only = True
             start_dir = request.GET["start_dir"]
 
-        if config_data["pythonsrcdir"] == "" and start_dir == "false":
-            get_children_only = False
-            start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
-        elif config_data["pythonsrcdir"] != "" and start_dir == "false":
-            get_children_only = False
-            start_dir = config_data["pythonsrcdir"]
+        if os.environ["pipmode"] == 'True':
+            if config_data["pythonsrcdir"] != "" and start_dir == "false":
+                get_children_only = False
+                start_dir = config_data["pythonsrcdir"]
+            elif config_data["pythonsrcdir"] == "" and start_dir == "false":
+                get_children_only = False
+                start_dir = config_data["userreposdir"]
+        else:
+            if start_dir == "false":
+                get_children_only = False
+                start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
 
         if "path" in request.GET:
             get_children_only = False
