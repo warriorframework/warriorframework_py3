@@ -118,7 +118,7 @@ def validate_config_json(json_data, warrior_dir):
         else:
             for key, value in list(ref.items()):
                  ordered_json[key] = json_data[key]
-
+        default_userrepo = default_userrepo[:-1]
         ordered_json['userreposdir'] = default_userrepo
     else:
         for key, value in list(ref.items()):

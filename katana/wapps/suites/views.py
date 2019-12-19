@@ -74,6 +74,9 @@ def save_file(request):
     """ This function saves the file in the given path. """
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
+    # check for medatory details
+    if data['TestSuite']['Details']['Engineer']=='' or data['TestSuite']['Details']['Name'] == '' or data['TestSuite']['Details']['Title'] == '':
+        output['status'] = False
     data["TestSuite"]["Details"] = validate_details_data(data["TestSuite"]["Details"])
     data["TestSuite"]["Testcases"]["Testcase"] = validate_step_data(data["TestSuite"]["Testcases"]["Testcase"])
     if data["TestSuite"]["Details"]["TestWrapperFile"] == 'None' or data["TestSuite"]["Details"]["TestWrapperFile"] == '':
@@ -84,13 +87,14 @@ def save_file(request):
     directory = request.POST.get("directory")
     filename = request.POST.get("filename")
     extension = request.POST.get("extension")
-    try:
-        with open(join_path(directory, filename + extension), 'w') as f:
-            f.write(xml_data)
-    except Exception as e:
-        output["status"] = False
-        output["message"] = e
-        print("-- An Error Occurred -- {0}".format(e))
+    if output['status']:
+        try:
+            with open(join_path(directory, filename + extension), 'w') as f:
+                f.write(xml_data)
+        except Exception as e:
+            output["status"] = False
+            output["message"] = e
+            print("-- An Error Occurred -- {0}".format(e))
     return JsonResponse(output)
 
 

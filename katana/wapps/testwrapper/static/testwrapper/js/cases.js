@@ -368,6 +368,13 @@ var setupcases = {
                 url: 'testwrapper/get_file/',
                 data: {"path": false}
             }).done(function(data){
+                if (data.filepath==''){
+                    katana.openAlert({"alert_type": "danger",
+                    "heading": "Please setup the path in warrior settings",
+                    "text": "Errors: " + 'Path is not provided',
+                    "show_cancel_btn": false});
+                    return;
+                }
                 if(data.status){
                     setupcases.invert();
                     katana.$activeTab.find('#main-div').attr("current-file", data.filepath);

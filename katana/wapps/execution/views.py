@@ -18,7 +18,8 @@ import json
 import subprocess
 import shutil
 from xml.etree import ElementTree
-
+from katana.utils.directory_traversal_utils import join_path
+from katana.utils.json_utils import read_json_data
 from django.http import StreamingHttpResponse, JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
@@ -35,7 +36,11 @@ controls = Settings()
 templates_dir = os.path.join(os.path.dirname(__file__), 'templates')
 data_live_dir = os.path.join(os.path.dirname(__file__), '.data', 'live')
 
-
+def read_config_file_data():
+    nav_obj = Navigator()
+    config_file_path = join_path(nav_obj.get_katana_dir(), "config.json")
+    data = read_json_data(config_file_path)
+    return data
 
 class Execution(object):
     """
@@ -48,10 +53,14 @@ class Execution(object):
         Constructor for execution app
         """
         self.nav = Navigator()
+        self.config_data = read_config_file_data()
         self.katana_dir = os.path.dirname(katana.native.__path__[0])
         self.wf_dir = os.path.dirname(self.katana_dir)
         self.warrior = os.path.join(self.wf_dir, 'warrior', 'Warrior')
-        self.default_ws = os.path.join(self.wf_dir, 'warrior', 'Warriorspace')
+        if os.environ["pipmode"]=='True':
+            self.default_ws = self.config_data["pythonsrcdir"]
+        else:
+            self.default_ws = os.path.join(self.wf_dir, 'warrior', 'Warriorspace')
         self.templates_dir = os.path.join(templates_dir, 'execution')
         self.jira_settings_file = os.path.join(self.wf_dir, 'warrior', 'Tools', 'jira', 'jira_config.xml')        
         self.execution_settings_json = os.path.join(templates_dir, 'execution', 'execution_settings.json')
@@ -184,6 +193,17 @@ class Execution(object):
         config_json_dict = json.loads(open(self.config_json).read())
         python_path = config_json_dict['pythonpath']
 
+        katana_dir = os.path.dirname(katana.native.__path__[0])
+        config_json = os.path.join(katana_dir, 'config.json')
+        config_json_dict = json.loads(open(config_json).read())
+        pythonpaths=[]
+        for key in config_json_dict.keys():
+            if key.startswith('userreposdir'):
+                repo = config_json_dict[key].split('/')
+                repo = "/".join(repo[:-1])
+                pythonpaths.append(repo)
+        pythonpath = ':'.join(pythonpaths)
+        cmd_string = cmd_string + ' -pythonpath {0}'.format(pythonpath) 
         return StreamingHttpResponse(stream_warrior_output(self.warrior, cmd_string, execution_file_list, live_html_res_file, python_path))
            
 
@@ -197,13 +217,10 @@ def stream_warrior_output(warrior_exe, cmd_string, file_list, live_html_res_file
     Start warrior execution and stream console logs output to client
     """
     pypath = python_path if python_path else 'python3'
-    
     print_cmd = '{0} {1} {2}'.format(pypath, warrior_exe, cmd_string )
     warrior_cmd = '{0} {1} -livehtmllocn {2} {3}'.format(pypath, warrior_exe, live_html_res_file, cmd_string )
-
     
     output = subprocess.Popen(str(warrior_cmd), shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-#     output = subprocess.Popen('date', shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     first_poll = True
     
     file_li_string = ""
@@ -227,8 +244,6 @@ def stream_warrior_output(warrior_exe, cmd_string, file_list, live_html_res_file
         # Yield this line to be used by streaming http response
         yield line + '</br>'
         if line.startswith('-I- DONE'):
-#             with open(live_html_res_file, 'a') as html_file:
-#                 html_file.write("<div class='eoc'></div>")
             break 
     
     # before returning set eoc div on the live html results file
@@ -265,19 +280,3 @@ def update_jira_proj_list(jira_settings_file, exec_settings_json):
         json.dump(execution_settings_dict, fp)
         
     return execution_settings_dict
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-    
-    
-    
-    
-    
-

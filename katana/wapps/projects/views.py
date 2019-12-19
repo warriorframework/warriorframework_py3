@@ -76,19 +76,23 @@ def save_file(request):
 
     output = {"status": True, "message": ""}
     data = json.loads(request.POST.get("data"), object_pairs_hook=collections.OrderedDict)
+    # check for medatory details
+    if data['Project']['Details']['Engineer']=='' or data['Project']['Details']['Name'] == '' or data['Project']['Details']['Title'] == '':
+        output['status'] = False
     data["Project"]["Details"] = validate_details_data(data["Project"]["Details"])
     data["Project"]["Testsuites"]["Testsuite"] = validate_suite_data(data["Project"]["Testsuites"]["Testsuite"])
     xml_data = xmltodict.unparse(data, pretty=True)
     directory = request.POST.get("directory")
     filename = request.POST.get("filename")
     extension = request.POST.get("extension")
-    try:
-        with open(join_path(directory, filename + extension), 'w') as f:
-            f.write(xml_data)
-    except Exception as e:
-        output["status"] = False
-        output["message"] = e
-        print("-- An Error Occurred -- {0}".format(e))
+    if output['status']:
+        try:
+            with open(join_path(directory, filename + extension), 'w') as f:
+                f.write(xml_data)
+        except Exception as e:
+            output["status"] = False
+            output["message"] = e
+            print("-- An Error Occurred -- {0}".format(e))
     return JsonResponse(output)
 
 
