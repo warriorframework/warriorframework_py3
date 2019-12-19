@@ -105,9 +105,6 @@ class Warrior_Execution_Setup_Files:
             self.tc_file = "{}.xml".format(self.tc_name)
             self.vc_file = "vc_{}.xml".format(self.tc_name)
 
-
-
-
     def setup_warrior_structure(self):
         self.ws_directory = "Warriorspace"
         self.testcases_dir = "Warriorspace/Testcases"
