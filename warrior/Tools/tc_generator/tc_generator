@@ -215,17 +215,13 @@ class Warrior_Execution_Setup_Files:
                 td_files = tree.findall("system/testdata")
                 for i in range(len(td_files)):
                     td_files[i].text = self.td_file
-                if args.with_repo_structure:
-                    self.vc_file = self.get_relative_path(self.var_conf_file_path)
                 vc_files = tree.findall("system/variable_config")
                 for i in range(len(vc_files)):
                     vc_files[i].text = self.vc_file
-                sub_systems = tree.findall("system")
-                for i in range(len(sub_systems)):
-                    if sub_systems[i].get("name") == "CLI":
-                        sub_systems[i].find("ssh_port").text = args.cli_port
+                systems = tree.findall("system")
+                for i in range(len(systems)):
+                    systems[i].find("ssh_port").text = args.cli_port
                 tree.write(self.input_data_file_path)
-
 
         elif args.type == "snmp":
             tree = et.parse(self.input_data_file_path)
