@@ -1,0 +1,15 @@
+<?xml version="1.0" ?>
+<credentials>
+    <system name="SN1">
+        <ip>localhost</ip>
+        <nc_port></nc_port>
+        <username></username>
+        <password></password>
+        <timeout>30</timeout>
+        <hostkey_verify>False</hostkey_verify>
+        <allow_agent>False</allow_agent>
+        <look_for_keys>False</look_for_keys>
+        <device_name>default</device_name>
+        <netconf_data></netconf_data>
+    </system>
+</credentials>

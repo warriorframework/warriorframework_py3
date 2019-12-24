@@ -1,0 +1,67 @@
+<?xml version="1.0" ?>
+<Testcase>
+	<Details>
+		<Name>tc_rest_verify</Name>
+		<Title>To test verify api response keyword </Title>
+		<Engineer>warrior</Engineer>
+		<Date>2019-12-19</Date>
+		<Time>11:25</Time>
+		<InputDataFile></InputDataFile>
+		<Datatype>Custom</Datatype>
+		<default_onError action="next"/>
+		<Logsdir/>
+		<Resultsdir/>
+		<ExpectedResults>PASS</ExpectedResults>
+		<Category>Feature</Category>
+	</Details>
+	<Requirements>
+		<Requirement/>
+	</Requirements>
+	<Steps>
+		<step Driver="rest_driver" Keyword="perform_http_get" TS="1">
+			<Arguments>
+				<argument name="system_name" value="http_bin_1"/>
+				<argument name="url" value="http://httpbin.org/response-headers?key=val"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>This step tests the GET capability of REST</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="rest_driver" Keyword="verify_response" TS="2">
+			<Arguments>
+				<argument name="system_name" value="http_bin_1"/>
+				<argument name="expected_api_response" value='{"Content-Length": "85","Content-Type": "application/json", "key": "val"}'/>
+        		<argument name="expected_response_type" value="json"/>
+        		<argument name="comparison_mode" value="file" />
+			</Arguments>
+			<onError action="next"/>
+			<Description>This step verifies the API response with the expected API response</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+        <step Driver="rest_driver" Keyword="perform_http_post" TS="3" draft="no">
+            <Arguments>
+                    <argument name="system_name" value="http_bin_1"/>
+                    <argument name="cookies" value="cookie=cookie_name"/>
+                    <argument name="url" value="http://httpbin.org/response-headers?key=val"/>
+                    <argument name="json" value="{&quot;postId&quot;:1, &quot;comments&quot;:&quot;this is post Comment&quot;}"/>
+                    <argument name="expected_response" value="200, 302, 404"/>
+                    <argument name="data" value="userId=1;id=1;title=Changed Post;body=New Comment"/>
+                    <argument name="allow_redirects" value="yes"/>
+            </Arguments>
+            <onError action="next"/>
+            <Description>This step tests tag= function </Description>
+            <iteration_type type=""/>
+            <Execute ExecType="Yes">
+                    <Rule Condition="" Condvalue="" Else="" Elsevalue=""/>
+            </Execute>
+            <context>positive</context>
+            <impact>impact</impact>
+            <runmode type="Standard" value=""/>
+            <Iteration_type type="Standard"/>
+        </step>
+	</Steps>
+</Testcase>
