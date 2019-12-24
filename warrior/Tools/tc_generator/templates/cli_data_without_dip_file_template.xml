@@ -7,7 +7,6 @@
             <timeout>120</timeout>
             <username></username>
             <password></password>
-            <variable_config></variable_config>
             <testdata></testdata>
     </system>
 </credentials>

@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 <Testcase>
 	<Details>
-		<Name>tc_netconf_sanity</Name>
-		<Title>tc_netconf_sanity</Title>
-		<Engineer>venkat</Engineer>
+		<Name>tc_netconf</Name>
+		<Title>tc_netconf</Title>
+		<Engineer>warroir</Engineer>
 		<Date>29-11-2019</Date>
 		<Time>15:04</Time>
 		<InputDataFile></InputDataFile>

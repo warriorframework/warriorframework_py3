@@ -13,8 +13,8 @@ parser.add_argument('-t', '--type', choices=['cli','snmp','netconf', 'rest'],\
  help="type argument support test cases", required=True)
 parser.add_argument('-tc','--tc_name', help="Name of the the test case ", required=True)
 parser.add_argument('--ip', help="Ip address of the device")
-parser.add_argument("-u", '--username', help="username of the device ")
-parser.add_argument("-p",'--password', help="password of the device ")
+parser.add_argument("-un", '--username', help="username of the device ")
+parser.add_argument("-pw",'--password', help="password of the device ")
 parser.add_argument("-cp", '--cli_port', help="ssh port of the device ")
 parser.add_argument("-sp", '--snmp_port', help="snmp port of the device ")
 parser.add_argument("-np", '--netconf_port', help="snmp port of the device ")
@@ -100,7 +100,8 @@ class Warrior_Execution_Setup_Files:
             self.input_data_file = "id_{}.xml".format(self.tc_name)
             self.tc_file = "{}.xml".format(self.tc_name)
             self.td_file = "td_{}.xml".format(self.tc_name)
-            self.vc_file = "vc_{}.xml".format(self.tc_name)
+            if args.dip_port:
+                self.vc_file = "vc_{}.xml".format(self.tc_name)
 
         if args.type == "snmp":
             self.input_data_file = "id_{}.xml".format(self.tc_name)
@@ -215,9 +216,6 @@ class Warrior_Execution_Setup_Files:
                 td_files = tree.findall("system/testdata")
                 for i in range(len(td_files)):
                     td_files[i].text = self.td_file
-                vc_files = tree.findall("system/variable_config")
-                for i in range(len(vc_files)):
-                    vc_files[i].text = self.vc_file
                 systems = tree.findall("system")
                 for i in range(len(systems)):
                     systems[i].find("ssh_port").text = args.cli_port
@@ -376,9 +374,6 @@ class Warrior_Execution_Setup_Files:
                     os.system("cp {} {}".format(os.path.join(self.template_path, "cli_test_case_without_dip_template.xml"),
                                                 os.path.join(self.current_working_directory, self.testcases_dir,
                                                              self.tc_file)))
-                    os.system("cp {} {}".format(os.path.join(self.template_path, "cli_var_conf_without_dip_template.xml"),
-                                                os.path.join(self.current_working_directory, self.config_files_dir,
-                                                             self.vc_file)))
 
                     self.input_data_file_path = os.path.join(self.current_working_directory, self.data_files_dir,
                                                              self.input_data_file)
@@ -395,11 +390,7 @@ class Warrior_Execution_Setup_Files:
                     print("*******")
                     print("Location of test data file : {}".format(self.test_data_file_path))
                     print("*******")
-                    self.var_conf_file_path = os.path.join(self.current_working_directory, self.config_files_dir,
-                                                            self.vc_file)
-                    print("*******")
-                    print("Location of var conf  file : {}".format(self.var_conf_file_path))
-                    print("*******")
+
                     self.replace_values_in_input_data_xml_tags()
                     self.replace_values_in_test_case_xml_tags()
                     print("Run line  command is : Warrior {}".format(self.test_case_file_path))
@@ -441,22 +432,18 @@ class Warrior_Execution_Setup_Files:
                                                 os.path.join(self.current_working_directory, self.td_file)))
                     os.system("cp {} {}".format(os.path.join(self.template_path, "cli_test_case_without_dip_template.xml"),
                                                 os.path.join(self.current_working_directory, self.tc_file)))
-                    os.system("cp {} {}".format(os.path.join(self.template_path, "cli_var_conf_without_dip_template.xml"),
-                                                os.path.join(self.current_working_directory, self.vc_file)))
+
 
                     self.input_data_file_path = os.path.join(self.current_working_directory, self.input_data_file)
                     self.test_case_file_path = os.path.join(self.current_working_directory, self.tc_file)
                     self.test_data_file_path = os.path.join(self.current_working_directory, self.td_file)
-                    self.var_conf_file_path = os.path.join(self.current_working_directory, self.vc_file)
                     print("*******")
                     print("Location of testcase file::{}".format(self.test_case_file_path))
                     print("*******")
                     print("Location of inputdata file::{}".format(self.input_data_file_path))
                     print("*******")
                     print("Location of testdata file::{}".format(self.test_data_file_path))
-                    print("*******")
-                    print("Location of var conf  file::{}".format(self.var_conf_file_path))
-                    print("*******")
+
                     self.replace_values_in_input_data_xml_tags()
                     self.replace_values_in_test_case_xml_tags()
                     print("Run line  command is : Warrior {}".format(self.test_case_file_path))

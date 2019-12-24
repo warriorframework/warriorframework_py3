@@ -41,7 +41,7 @@
                                 <argument name="title" value="show_software_version"/>
                         </Arguments>
                         <onError action="abort"/>
-                        <Description>connect</Description>
+                        <Description>send_commands_by_testdata_title</Description>
                         <Execute ExecType="Yes"/>
                         <context>positive</context>
                         <impact>impact</impact>
@@ -57,7 +57,7 @@
                         <context>positive</context>
                         <impact>impact</impact>
                 </step>
-            <step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="4">
+            <step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="5">
                         <Arguments>
                                 <argument name="system_name" value="NE1[CLI]" />
                                 <argument name="title" value="execute_id_command" />
@@ -68,12 +68,12 @@
                         <context>positive</context>
                         <impact>impact</impact>
                 </step>
-            <step Driver="cli_driver" Keyword="disconnect" TS="1">
+            <step Driver="cli_driver" Keyword="disconnect" TS="6">
                         <Arguments>
                                 <argument name="system_name" value="NE1[CLI]"/>
                         </Arguments>
                         <onError action="abort"/>
-                        <Description>connect</Description>
+                        <Description>disconnect</Description>
                         <Execute ExecType="Yes"/>
                         <context>positive</context>
                         <impact>impact</impact>

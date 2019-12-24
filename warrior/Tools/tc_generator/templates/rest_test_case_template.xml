@@ -2,11 +2,11 @@
 <Testcase>
 	<Details>
 		<Name>tc_rest_verify</Name>
-		<Title>To test verify api response keyword </Title>
-		<Engineer>venkatadhri kotakonda</Engineer>
+		<Title>To test verify api response </Title>
+		<Engineer>warrior</Engineer>
 		<Date>2019-12-19</Date>
 		<Time>11:25</Time>
-		<InputDataFile>rest_data_file_template.xml</InputDataFile>
+		<InputDataFile></InputDataFile>
 		<Datatype>Custom</Datatype>
 		<default_onError action="next"/>
 		<Logsdir/>
@@ -42,7 +42,7 @@
 			<context>positive</context>
 			<impact>impact</impact>
 		</step>
-        <step Driver="rest_driver" Keyword="perform_http_post" TS="4" draft="no">
+        <step Driver="rest_driver" Keyword="perform_http_post" TS="3" draft="no">
             <Arguments>
                     <argument name="system_name" value="http_bin_1"/>
                     <argument name="cookies" value="cookie=cookie_name"/>
@@ -53,7 +53,7 @@
                     <argument name="allow_redirects" value="yes"/>
             </Arguments>
             <onError action="next"/>
-            <Description>This step tests tag= function </Description>
+            <Description>perform_http_post</Description>
             <iteration_type type=""/>
             <Execute ExecType="Yes">
                     <Rule Condition="" Condvalue="" Else="" Elsevalue=""/>

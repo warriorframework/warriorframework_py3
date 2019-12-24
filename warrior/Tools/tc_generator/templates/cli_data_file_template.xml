@@ -19,8 +19,6 @@
             <timeout>120</timeout>
             <username></username>
             <password></password>
-            <tl_ip>asy34</tl_ip>
-            <tl_port>2082</tl_port>
             <variable_config></variable_config>
             <testdata></testdata>
         </subsystem>

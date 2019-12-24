@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <credentials>
     <system name="SN1">
-        <ip></ip>
+        <ip>localhost</ip>
         <nc_port></nc_port>
         <username></username>
         <password></password>

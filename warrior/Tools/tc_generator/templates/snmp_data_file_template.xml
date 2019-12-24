@@ -1,6 +1,6 @@
 <credentials>
     <system name="SN1">
-        <ip></ip>
+        <ip>localhost</ip>
         <snmp_port></snmp_port>
         <ssh_port></ssh_port>
         <conn_type>ssh</conn_type>

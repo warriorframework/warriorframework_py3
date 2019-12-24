@@ -16,8 +16,4 @@
         	<command end=">" send="show sw-version"/>
     </testdata>
 
-    <testdata title="set_hal_level" execute="yes">
-        <command  end="$" start=".*" send="/usr/local/fnc/dip/dip_verbosity set hal ${hal_level.value}"/>
-    </testdata>
-
 </data>
