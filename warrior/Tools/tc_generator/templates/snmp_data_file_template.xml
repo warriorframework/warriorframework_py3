@@ -1,0 +1,15 @@
+<credentials>
+    <system name="SN1">
+        <ip>localhost</ip>
+        <snmp_port></snmp_port>
+        <ssh_port></ssh_port>
+        <conn_type>ssh</conn_type>
+        <prompt>fujitsu@.*></prompt>
+        <timeout>60</timeout>
+        <username></username>
+        <password></password>
+        <variable_config></variable_config>
+        <community>testing</community>
+        <testdata></testdata>
+  </system>
+</credentials>

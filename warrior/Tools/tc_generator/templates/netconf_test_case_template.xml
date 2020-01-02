@@ -1,0 +1,204 @@
+<?xml version="1.0" ?>
+<Testcase>
+	<Details>
+		<Name>tc_netconf</Name>
+		<Title>tc_netconf</Title>
+		<Engineer>warrior</Engineer>
+		<Date>29-11-2019</Date>
+		<Time>15:04</Time>
+		<InputDataFile></InputDataFile>
+		<Datatype>Custom</Datatype>
+		<default_onError action="next"/>
+		<Logsdir/>
+		<Resultsdir/>
+		<ExpectedResults/>
+	</Details>
+	<Requirements>
+		<Requirement/>
+	</Requirements>
+	<Steps>
+		<step Driver="netconf_driver" Keyword="connect_netconf" TS="1">
+			<Arguments>
+				<argument name="system_name" value="SN1"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>connect_netconf</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="netconf_driver" Keyword="get" TS="2">
+			<Arguments>
+				<argument name="system_name" value="SN1"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>get_config</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+
+        <step Driver="netconf_driver" Keyword="edit_config" TS="3">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+                <argument name="datastore" value="candidate"/>
+                <argument name="config" value="addUserConfig"/>
+            </Arguments>
+            <onError action="abort"/>
+            <Description>edit_config</Description>
+            <Execute ExecType="Yes"/>
+            <context>positive</context>
+            <impact>impact</impact>
+        </step>
+		<step Driver="netconf_driver" Keyword="commit" TS="4">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+            </Arguments>
+            <onError action="next"/>
+            <Description>commit the candidate DB</Description>
+            <Execute ExecType="Yes"/>
+            <context>positive</context>
+            <impact>impact</impact>
+        </step>
+		<step Driver="common_driver" Keyword="wait_for_timeout" TS="5">
+			<Arguments>
+					<argument name="timeout" value="10"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>wait for 10 seconds</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+		   <impact>impact</impact>
+		</step>
+
+        <step Driver="netconf_driver" Keyword="edit_config" TS="6">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+                <argument name="datastore" value="candidate"/>
+                <argument name="config" value="modifyUserConfig"/>
+            </Arguments>
+            <onError action="next"/>
+            <Description>edit_config</Description>
+            <Execute ExecType="Yes"/>
+            <context>positive</context>
+            <impact>impact</impact>
+        </step>
+
+		<step Driver="netconf_driver" Keyword="commit" TS="7">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+            </Arguments>
+            <onError action="next"/>
+            <Description>commit the candidate DB</Description>
+            <Execute ExecType="Yes"/>
+            <context>positive</context>
+            <impact>impact</impact>
+        </step>
+
+		<step Driver="common_driver" Keyword="wait_for_timeout" TS="8">
+			<Arguments>
+					<argument name="timeout" value="10"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>wait for 10 seconds</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+		   <impact>impact</impact>
+		</step>
+
+		<step Driver="netconf_driver" Keyword="get_config" TS="9">
+			<Arguments>
+				<argument name="datastore" value="candidate"/>
+				<argument name="system_name" value="SN1"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>get_config</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+
+		<step Driver="netconf_driver" Keyword="lock" TS="10">
+			<Arguments>
+				<argument name="datastore" value="candidate"/>
+				<argument name="system_name" value="SN1"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>lock the database</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+
+		<step Driver="netconf_driver" Keyword="edit_config" TS="11">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+                <argument name="datastore" value="candidate"/>
+                <argument name="config" value="deleteUserConfig"/>
+            </Arguments>
+            <onError action="abort"/>
+            <Description>edit_config</Description>
+            <Execute ExecType="Yes"/>
+            <context>positive</context>
+            <impact>impact</impact>
+        </step>
+
+		<step Driver="netconf_driver" Keyword="unlock" TS="12">
+			<Arguments>
+				<argument name="datastore" value="candidate"/>
+				<argument name="system_name" value="SN1"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>unlock the database</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+		<step Driver="netconf_driver" Keyword="get_config" TS="13">
+			<Arguments>
+				<argument name="datastore" value="candidate"/>
+				<argument name="system_name" value="SN1"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>get_config</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+
+		<step Driver="netconf_driver" Keyword="copy_config" TS="14">
+			<Arguments>
+				<argument name="system_name" value="SN1"/>
+                <argument name="source" value="running"/>
+				<argument name="target" value="candidate"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>copying the netconf config</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+
+		<step Driver="netconf_driver" Keyword="discard_changes" TS="15">
+			<Arguments>
+				<argument name="system_name" value="SN1"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>discard changes</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+
+		<step Driver="netconf_driver" Keyword="close_netconf" TS="16">
+			<Arguments>
+				<argument name="system_name" value="SN1"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>close_netconf</Description>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+		</step>
+	</Steps>
+</Testcase>

@@ -1,0 +1,44 @@
+<?xml version="1.0" ?>
+<configs>
+
+  <config_data name='addUserConfig'>
+     <config>
+      <users xmlns="urn:fujitsu:params:xml:ns:yang:usersecurity">
+      <user>
+        <username>warrioruser</username>
+        <group>level-4</group>
+        <adminState>allow</adminState>
+      <password>Netconf123</password>
+      </user>
+    <user>
+        <username>sample</username>
+        <group>level-4</group>
+        <adminState>allow</adminState>
+      <password>Netconf123</password>
+      </user>
+    </users>
+  </config>
+  </config_data>
+
+    <config_data name='modifyUserConfig'>
+     <config>
+      <users xmlns="urn:fujitsu:params:xml:ns:yang:usersecurity">
+      <user>
+        <username>warrioruser</username>
+        <adminState>inhibit</adminState>
+      </user>
+    </users>
+  </config>
+    </config_data>
+
+  <config_data name='deleteUserConfig'>
+     <config>
+      <users xmlns="urn:fujitsu:params:xml:ns:yang:usersecurity" >
+      <user operation="delete">
+        <username>warrioruser</username>
+      </user>
+    </users>
+  </config>
+    </config_data>
+</configs>
+
