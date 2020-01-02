@@ -8,13 +8,13 @@
         <username>warrioruser</username>
         <group>level-4</group>
         <adminState>allow</adminState>
-      <password>netconf</password>
+      <password>Netconf123</password>
       </user>
     <user>
         <username>sample</username>
         <group>level-4</group>
         <adminState>allow</adminState>
-      <password>netconf</password>
+      <password>Netconf123</password>
       </user>
     </users>
   </config>
