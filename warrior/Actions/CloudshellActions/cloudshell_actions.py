@@ -18,6 +18,7 @@ from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.Utils.print_Utils import print_exception, print_info, print_error
 import os
 import time
+import datetime
 
 try:
     from cloudshell.api.cloudshell_api import CloudShellAPISession as cs
@@ -109,6 +110,133 @@ class CloudShellActions(object):
 
         testcase_Utils.report_substep_status(status)
         return status
+
+    def cs_reservation(self, system_name, reservation_name, duration_in_mins, topology_full_path):
+        """
+        Defines a reservation to be created.
+
+        This keyword only defines the reservation with all its details by saving
+        the details in the data repository. Actual creation is done by using the
+        cs_reservation keyword by providing the reservation name
+        to it.
+
+        :Datafile usage:
+            Tags or attributes to be used in input datafile for the system
+            or subsystem.If both tag and attribute is provided the attribute
+            will be used.
+            1. username   = name of the cloudshell user
+
+        :Arguments:
+            1. system_name(string) = Name of the UAP system from the datafile
+            2. reservation_name(string) = Specify the name of the reservation.
+            3. duration_in_mins(int) = Specify the length of the reservation.
+            4. topology_full_path(str) = Specify the full path of the reservation.
+
+        :Returns:
+            1. status(bool)= True/False
+        """
+        try:
+            from cloudshell.api.cloudshell_api import CloudShellAPISession
+            from cloudshell.api.common_cloudshell_api import CloudShellAPIError
+        except ImportError:
+            print_info("{0}: Cloudshell Python Package is not installed".\
+                       format(os.path.abspath(__file__)))
+            print_info("Please install latest Cloudshell Python Package.")
+
+        api = self._create_cs_obj(system_name)
+        flag = True
+        output_dict = {}
+        wdesc = "Save reservation details for the reservation name provided"
+        testcase_Utils.pSubStep(wdesc)
+        testcase_Utils.pNote(file_Utils.getDateTime())
+        testcase_Utils.pNote("save reservation, cs obj-{}".\
+                             format(api), "info")
+        testcase_Utils.pNote("Login, cs obj-{}".format(api), "info")
+
+        if api is not None:
+            testcase_Utils.pNote("\n\n *** Login to Cloudshell System-{}"
+                                 " successfull, domain-{}\n".\
+                                 format(api.host,\
+                                 api.domain), "info")
+
+        keys_for_credentials = ['username']
+        credentials = data_Utils.get_credentials(self.datafile, system_name,
+                                                 keys_for_credentials)
+
+        pNote("This keyword will only collect the reservation information "\
+              "and save the details in data repository.\n")
+        res_key = "{0}_{1}_cs_rsrv_details".format(system_name, reservation_name)
+        output_dict = {
+                       res_key: {"reservation_name": reservation_name,
+                                 "username": credentials['username'],
+                                 "duration": duration_in_mins,
+                                 "topology_full_path":topology_full_path
+                                 },}
+        pNote("The CloudShell Reservation Provided Details is :{}".format(output_dict))
+
+        blueprint_to_reserve = topology_full_path
+        reservation_time = duration_in_mins
+        blueprint_owner = credentials['username']
+        reservation_name = reservation_name
+        # Do reservation
+        try:
+            result = api.CreateImmediateTopologyReservation(reservationName=reservation_name, \
+                                                            owner=blueprint_owner,
+                                                            durationInMinutes=reservation_time,
+                                                            topologyFullPath=\
+                                                                blueprint_to_reserve).Reservation
+
+            reservation_id = result.Id
+            reservation_details = api.GetReservationDetails(reservation_id).ReservationDescription
+            # Check for Conflicts
+            if reservation_details.Conflicts:
+                conflicts_suggested_end_times = []
+                for conflicted_resource in reservation_details.Conflicts:
+                    planned_end_time = conflicted_resource.ConflictPlannedEndTime
+                    if planned_end_time is None:
+                        continue
+                    if planned_end_time not in conflicts_suggested_end_times:
+                        conflicts_suggested_end_times.append(planned_end_time)
+                # End the Reservation
+                api.EndReservation(reservation_id)
+                msg = "Conflicts Found, Planned end time for resources inside \
+                is:\n{}".format("\n".join(conflicts_suggested_end_times))
+                raise CloudShellAPIError(102, msg, "")
+
+            # Wait for Sandbox to be ready
+            wait_timeout = 100  # seconds
+            now = datetime.datetime.now()
+            while wait_timeout > (datetime.datetime.now() - now).seconds:
+                status = api.GetReservationStatus(reservation_id).ReservationSlimStatus
+                if status.ProvisioningStatus == "Error":
+                    api.EndReservation(reservation_id)
+                    raise CloudShellAPIError(102, "Error with Setup workflow", "")
+                elif status.ProvisioningStatus == "Ready" or status.ProvisioningStatus == "Not Run":
+                    pNote(" CloudShell Reservation made successfully. ID is: {}".format(reservation_id))
+                    flag = True
+                    break
+                time.sleep(1)
+            else:
+                api.EndReservation(reservation_id)
+                raise CloudShellAPIError(102, "No positive status return for reservation \
+                after {} seconds".format(wait_timeout), "")
+
+        except CloudShellAPIError as cs_err:
+            # Example error check for user
+            if 'User "{}" does not exist'.format(blueprint_owner) == cs_err.message:
+                raise Exception("No user name: {}".format(blueprint_owner))
+            # Example error check for blueprint
+            elif 'Topology \'{}\' was not found'.format(blueprint_to_reserve) == cs_err.message:
+                raise Exception("No blueprint with name: {}".format(blueprint_to_reserve))
+            # Generic raise error from cloudshell
+            raise Exception(cs_err.message)
+        except Exception as e:
+            # other non-cloudshell errors
+            raise
+        else:
+            pNote("Sucessfully saved reservation details for reservation_name={0}"\
+                  .format(reservation_name))
+        return flag
 
     def cs_create_reservation(self, system_name, reservation_name,
                               duration_in_mins, notify_on_start, notify_on_end,
@@ -985,7 +1113,7 @@ class CloudShellActions(object):
            reservation
         returns the cloudshell reservation id
         '''
-        for attr, value in responseObject.__dict__.items():
+        for attr, value in list(responseObject.__dict__.items()):
             for val in value:
                 topo1 = val.Topologies[0]
                 topo2 = topo1.split("/", 2)
