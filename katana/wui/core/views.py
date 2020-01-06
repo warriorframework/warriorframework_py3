@@ -35,6 +35,8 @@ except Exception as err:
     print("Please install django auth ldap to authenticate against ldap")
     print("Error while importing django auth ldap: \n", err)
 
+nav_obj = Navigator()
+BASE_DIR = nav_obj.get_katana_dir()
 
 def refresh_landing_page(request):
     return render(request, 'core/landing_page.html', {"apps": AppInformation.information.apps})
@@ -163,7 +165,10 @@ class HomeView(View):
 
     def get(self, request):
         user_data = self.get_user_data()
-        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
+        fname_file=os.path.join(BASE_DIR,"wui/core/static/core/framework_name.json")
+        data = read_json_data(fname_file)
+        framename = data["fr_name"]
+        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data, "frame_name":framename})
 
     def get_user_data(self):
         """

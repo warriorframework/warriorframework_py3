@@ -49,18 +49,6 @@ INSTALLED_APPS = [
     'katana.wui.administration',
     'katana.wui.users',
     'katana.wui.core',
-    'katana.native.wapp_management',
-    'katana.native.wappstore',
-    'katana.native.settings',
-    'katana.native.microservice_store',
-    'katana.wapps.cases',
-    'katana.wapps.suites',
-    'katana.wapps.cli_data',
-    'katana.wapps.assembler',
-    'katana.wapps.wdf_edit',
-    'katana.wapps.execution',
-    'katana.wapps.projects',
-    'katana.wapps.testwrapper',
 ]
 
 MIDDLEWARE = [

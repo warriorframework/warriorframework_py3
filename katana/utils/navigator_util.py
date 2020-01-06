@@ -3,7 +3,7 @@ import os
 import re
 import json
 from .directory_traversal_utils import get_parent_directory, join_path
-from katana.utils.json_utils import read_json_data
+from .json_utils import read_json_data
 import subprocess
 
 

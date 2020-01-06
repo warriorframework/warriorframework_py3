@@ -1,7 +1,34 @@
 #!/usr/bin/env python
 import os
 import sys
+import logging
+import threading
+import time
+import requests
+import json
+import shutil
 from os.path import abspath, dirname
+from termcolor import colored
+from primary_process import __appmanager__, install_custom_app, install_default_apps, remove_app_from_settings_custom, remove_appurl_from_urls_custom, remove_cust_app_source, configure_settings_file, configure_settings_file_custom_app, configure_urls_file, configure_urls_file_custom, update_fname, update_logo, update_panel_color
+from utils.navigator_util import Navigator
+from utils.json_utils import read_json_data
+from utils.directory_traversal_utils import join_path
+
+nav_obj = Navigator()
+BASE_DIR = nav_obj.get_katana_dir()
+wapps_dir_path = BASE_DIR + "/wapps/"
+wapps_dir = BASE_DIR + "/wapps"
+native_dir = BASE_DIR + "/native"
+settings_file = BASE_DIR + "/wui/settings.py"
+app_config_file = BASE_DIR + "/app_config.json"
+urls_file = BASE_DIR + "/wui/urls.py"
+PORT=0
+wapps_content = os.listdir(wapps_dir)
+wapp_ignore = ["__init__.py", "__pycache__", "readme.txt"]
+wapps_app = list(set(wapps_content) - set(wapp_ignore))
+native_content = os.listdir(native_dir)
+native_app = list(set(native_content) - set(wapp_ignore))
+Updated_Apps_list=[]
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "katana.wui.settings")
@@ -32,4 +59,172 @@ if __name__ == "__main__":
             os.environ["pipmode"]= "False"
         except:
             raise
-    execute_from_command_line(sys.argv)
+
+
+    def __port_error__():
+        return print('\033[31m', "Error: You don't have permission to access that port.")
+
+
+    if (len(sys.argv) > 2 and int(sys.argv[2]) >= 1024):
+        PORT = sys.argv[2]
+    if (len(sys.argv) > 2 and PORT == 0):
+        __port_error__()
+    else:
+        def read_config_file_data():
+            nav_obj = Navigator()
+            config_file_path = join_path(nav_obj.get_katana_dir(), "app_config.json")
+            data = read_json_data(config_file_path)
+            return data
+        
+        app_config_data = read_config_file_data()
+        if app_config_data["__READ_ACCESS__"] == "True":
+            config_apps = app_config_data["custom_apps"].keys()
+        else:
+            config_apps = []
+        if (app_config_data["default_apps"] == "True" or app_config_data["default_apps"] == "true"):
+            deafault_wapps = ["cases", "assembler", "cli_data", "execution", "projects", "suites", "testwrapper", "wdf_edit"]
+            cust_wapps = list(set(wapps_app) - set(deafault_wapps))
+            deleted_Apps_list = list(set(cust_wapps) - set(config_apps))
+            deleted_Apps_list = list(set(deleted_Apps_list) - set(["__init__.py", "__pycache__"]))
+        else:
+            deleted_Apps_list = list(set(wapps_app) - set(config_apps))
+            deleted_Apps_list = list(set(deleted_Apps_list).union(set(native_app)))
+            deleted_Apps_list = list(set(deleted_Apps_list) - set(["__init__.py", "__pycache__"]))
+        if app_config_data["__READ_ACCESS__"] == "True":
+            __appmanager__(deleted_Apps_list)
+
+
+        def function_to_give_read_access():
+            clean_data = read_config_file_data()
+            clean_data["__READ_ACCESS__"] = "True"
+            with open(app_config_file, "w") as f:
+                f.write(json.dumps(clean_data, indent=4))
+
+
+        def thread_function_to_ping(name):
+            print("\nChecking Compatability for:", name)
+            print("Waiting for server to restart...\n")
+            time.sleep(5)
+            print("\n---------------------------------------------------------\n")
+            print("Checking katana compatibility for :", name)
+            if PORT == 0:
+                try:
+                    resp = requests.get('http://127.0.0.1:8000/')
+                except:
+                    print(colored(name + " app is not compatible with katana, so it is not going to be installed!\n", "red"))
+                    print("\n---------------------------------------------------------\n")
+                    clean_data = read_config_file_data()
+                    clean_data["__READ_ACCESS__"] = "False"
+                    with open(app_config_file, "w") as f:
+                        f.write(json.dumps(clean_data, indent=4))
+                    remove_appurl_from_urls_custom(name, "wapps")
+                    remove_app_from_settings_custom(name, "wapps")
+                    remove_cust_app_source(name, "wapps")
+                    time.sleep(2)
+                else:
+                    print(colored(name + " app installed successfully.\n", "green"))
+                    print("\n---------------------------------------------------------\n")
+            else:
+                url = 'http://127.0.0.1:' + PORT + '/'
+                try:
+                    resp = requests.get(url)
+                except:
+                    print(colored(name + " app is not compatible with katana, so it is not going to be installed!\n", "red"))
+                    print("\n---------------------------------------------------------\n")
+                    clean_data = read_config_file_data()
+                    clean_data["__READ_ACCESS__"] = "False"
+                    with open(app_config_file, "w") as f:
+                        f.write(json.dumps(clean_data, indent=4))
+                    remove_appurl_from_urls_custom(name, "wapps")
+                    remove_app_from_settings_custom(name, "wapps")
+                    remove_cust_app_source(name, "wapps")
+                else:
+                    print(colored(name + " app installed successfully.\n", "green"))
+                    print("\n---------------------------------------------------------\n")
+
+        if app_config_data["__READ_ACCESS__"] == "True":
+            if (app_config_data["framework_name"].strip() != ""):
+                frame_name = app_config_data["framework_name"]
+                update_fname(frame_name)
+            if (app_config_data["logo_path"].strip() != ""):
+                logo_path = app_config_data["logo_path"]
+                update_logo(logo_path)
+            if (app_config_data["panel_color"].strip() != ""):
+                panel_color = app_config_data["panel_color"]
+                update_panel_color(panel_color)
+            else :
+                update_panel_color("#343a40")
+            if (app_config_data["default_apps"] == "True" or app_config_data["default_apps"] == "true"):
+                default_apps_list = ["cases", "assembler", "cli_data", "execution", "projects", "suites", "testwrapper", "wdf_edit", "microservice_store", "settings", "wapp_management", "wappstore"]
+                all_inst_apps = list(set(wapps_app).union(set(native_app)))
+                check_def_apps = list(set(default_apps_list) - set(all_inst_apps))
+                if (len(check_def_apps)):
+                    install_default_apps()
+                else:
+                    print("\n")
+                    print(colored("Default apps already installed", "green"))
+                    print("\n")
+
+            elif (app_config_data["default_apps"] == "False" or app_config_data["default_apps"] == "false"):
+                print(colored(
+                    "\n\n---Default Apps value has set to False in app_config.py, so no Default Apps will be installed in the framework.\n", "yellow"))
+                if not (os.path.exists(wapps_dir_path)):
+                    os.mkdir(wapps_dir)
+                if not (os.path.exists(native_dir)):
+                    os.mkdir(native_dir)
+            default_apps_list = ["cases", "assembler", "cli_data", "execution", "projects", "suites", "testwrapper", "wdf_edit"]
+            if (app_config_data["default_apps"] == "True" or app_config_data["default_apps"] == "true"):
+                cust_wapps = list(set(wapps_app) - set(default_apps_list))
+                Updated_Apps_list = list(set(config_apps) - set(cust_wapps))
+                Updated_Apps_list = list(set(Updated_Apps_list) - set(default_apps_list))
+            else:
+                Updated_Apps_list = list(set(config_apps) - set(wapps_app))
+                Updated_Apps_list = list(set(Updated_Apps_list) - set(default_apps_list))
+        if (len(Updated_Apps_list) == 1):
+            for app in Updated_Apps_list:
+                app_url = app_config_data["custom_apps"][app]
+                x = threading.Thread(target=thread_function_to_ping, args=(app,), daemon=True)
+                try:
+                    install_custom_app(app, app_url)
+                except:
+                    clean_data = read_config_file_data()
+                    clean_data["__READ_ACCESS__"] = "False"
+                    with open(app_config_file, "w") as f:
+                        f.write(json.dumps(clean_data, indent=4))
+                    remove_app_from_settings_custom(app, "wapps")
+                    remove_cust_app_source(app, "wapps")
+                    tempdir = os.path.join(BASE_DIR, app)
+                    if (os.path.exists(tempdir)):
+                        shutil.rmtree(tempdir)
+                    print(colored("Error: There might be something wrong in the provided app name or git url or may be the app your trying to install is incompatible with warrior framework.", "red"))
+                else:
+                    x.start()
+                    execute_from_command_line(sys.argv)
+                    x.join()
+        elif (len(Updated_Apps_list) > 1):
+            print(colored("\n------------------------------------------------------\n", "red"))
+            print(colored("Error: Multiple apps can't be installed at the same time, please install one app at a time!", "red"))
+            print(colored("\n------------------------------------------------------\n", "red"))
+            execute_from_command_line(sys.argv)
+        else:
+            default_apps_list = ["cases", "assembler", "cli_data", "execution", "projects", "suites", "testwrapper", "wdf_edit"]
+            conf_apps = app_config_data["custom_apps"].keys()
+            if (app_config_data["default_apps"] == "True" or app_config_data["default_apps"] == "true"):
+                cust_wapps = list(set(wapps_app) - set(default_apps_list))
+                failed_app = list(set(conf_apps) - set(cust_wapps))
+                failed_app = list(set(failed_app) - set(default_apps_list))
+            else:
+                failed_app = list(set(conf_apps) - set(wapps_app))
+                failed_app = list(set(failed_app) - set(default_apps_list))
+            print (colored("\nAPP INSTALATION COMPLETED...\n", "green"))
+            if (len(failed_app) == 1):
+                print (colored("\n------------------------------------------------------\n", "red"))
+                print(colored("FAILED APP: ", "red"),failed_app)
+                print (colored("\n------------------------------------------------------\n", "red"))
+            print (colored("\n------------------------------------------------------\n", "green"))
+            Apps_content = list(set(os.listdir(wapps_dir)).union(set(os.listdir(native_dir))))
+            installed_apps = list(set(Apps_content) - set(wapp_ignore))
+            print(colored("INSTALLED APPS: ", "green"),installed_apps)
+            print (colored("\n------------------------------------------------------\n", "green"))
+            function_to_give_read_access()
+            execute_from_command_line(sys.argv)
