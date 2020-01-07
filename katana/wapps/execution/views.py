@@ -58,7 +58,7 @@ class Execution(object):
         self.wf_dir = os.path.dirname(self.katana_dir)
         self.warrior = os.path.join(self.wf_dir, 'warrior', 'Warrior')
         if os.environ["pipmode"]=='True':
-            self.default_ws = self.config_data["pythonsrcdir"]
+            self.default_ws = read_config_file_data()["pythonsrcdir"]
         else:
             self.default_ws = os.path.join(self.wf_dir, 'warrior', 'Warriorspace')
         self.templates_dir = os.path.join(templates_dir, 'execution')
@@ -75,8 +75,11 @@ class Execution(object):
         """
         execution_settings_dict = update_jira_proj_list(self.jira_settings_file, self.execution_settings_json)
         #json.loads(open(self.execution_settings_json).read())
-        start_dir = self.default_ws if execution_settings_dict['defaults']['start_dir'] == 'default' \
-        else execution_settings_dict['defaults']['start_dir']
+        if os.environ["pipmode"]=='True':
+            start_dir = read_config_file_data()["pythonsrcdir"]
+        else:
+            start_dir = self.default_ws if execution_settings_dict['defaults']['start_dir'] == 'default' \
+                    else execution_settings_dict['defaults']['start_dir']
         execution_settings_dict['defaults']['start_dir'] = start_dir
         index_template = os.path.join(self.templates_dir, 'execution.html')        
         
@@ -280,3 +283,4 @@ def update_jira_proj_list(jira_settings_file, exec_settings_json):
         json.dump(execution_settings_dict, fp)
         
     return execution_settings_dict
+
