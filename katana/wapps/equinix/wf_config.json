@@ -1,0 +1,13 @@
+{
+
+  "icon": "desktop",
+  "color": "red",
+  "developer": "Warrior Framework",
+  "description": "Provides an interface for SET and MEASURE APIs",
+  "app" : {"name" : "equinix", "url" : "/katana/equinix/", "include": "katana.wapps.equinix.urls"},
+  "warrior-compatibility": ":warrior-4.0.0-beta",
+  "warrior-incompatibility": "",
+  "version": "1.0.0",
+  "permissions": "",
+  "availability": ""
+}

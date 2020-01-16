@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Equinix</title>
+  {% load staticfiles %}
+  <link rel="stylesheet" href="{% static 'equinix/css/equinix.css' %}">
+  <style>
+    .set_loader {
+      position: absolute;
+      top: 248px;
+      left: 272px;
+      display: none;
+}
+.measure_loader {
+      position: absolute;
+      top: 444px;
+      left: 272px;
+      display: none;
+}
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row" style="padding: 20px">
+      <div class="col-*-*"><button type="button" class="btn btn-success set-measure-btn" katana-click="equinix.set_func"
+          style="background-color:#0c9420">Set</button></div>
+      <div class="col-*-* equinix_template"><textarea type="text" class="json_data set_data"
+          style=" height: 150px; margin-left: 80px; border:2px solid #b1b6bd; resize: none;"></textarea></div>
+    </div>
+    <div class="row set-result" style="padding: 20px; display:none;">
+      <img src="../../static/images/Gear-0.4s-121px.gif"
+          class="set_loader" />
+      <textarea type='text' placeholder='Fetching result...' class='set_result'
+        style='height: 150px; margin-left: 80px; border:2px solid #b1b6bd; resize: none;color:#000000; font-size:20px; width:28%; margin-left:162px; border-radius: 20px;'
+        disabled></textarea>
+    </div>
+
+    <div class="row" style="padding: 20px">
+      <div class="col-*-*"><button type="button" class="btn btn-success set-measure-btn"
+          katana-click="equinix.measure_func" style="background-color:#0c9420">Measure</button></div>
+      <div class="col-*-* equinix_template"><textarea type="text" class="json_data measure_data"
+          style=" height: 150px; margin-left: 80px; border:2px solid #b1b6bd; resize: none;"></textarea></div>
+    </div>
+    <div class="row measure-result" style="padding: 20px; display:none;">
+      <img src="../../static/images/Gear-0.4s-121px.gif"
+          class="measure_loader" />
+      <textarea type='text' placeholder='Fetching result...' class='measure_result'
+        style='height: 150px; margin-left: 80px; border:2px solid #b1b6bd; resize: none;color:#000000; font-size:20px; width:28%; margin-left:162px; border-radius: 20px;'
+        disabled></textarea>
+    </div>
+    <div class="csrf-container">{% csrf_token %}</div>
+  </div>
+</body>
+
+</html>
