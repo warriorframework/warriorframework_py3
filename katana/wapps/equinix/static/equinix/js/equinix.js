@@ -38,9 +38,14 @@ var equinix = {
             async:false,
             data: {"json_data": data}
         }).done(function(data){
-            $(".set_result").val("Script status: "+data["script_status"]);
-            $('.set-measure-btn').attr('disabled',false);
+            if (data["message"] != undefined){
+            $(".set_result").val("Script status: "+data["script_status"]+"\n\n"+"Message: "+data["message"]);
+            }
+            else{
+           $(".set_result").val("Script status: "+data["script_status"]);
+            }
             $(".set_loader").css("display", "none");
+            $('.set-measure-btn').attr('disabled',false);
         })
     }
    },
@@ -73,7 +78,12 @@ var equinix = {
             async:false,
             data: {"json_data": data}
         }).done(function(data){
-            $(".measure_result").val("Script status: "+data["script_status"]);
+            if (data["message"] != undefined){
+            $(".measure_result").val("Script status: "+data["script_status"]+"\n\n"+"Message: "+data["message"]);
+            }
+            else{
+                $(".measure_result").val("Script status: "+data["script_status"]);
+            }
             $('.set-measure-btn').attr('disabled',false);
             $(".measure_loader").css("display", "none");
         })
