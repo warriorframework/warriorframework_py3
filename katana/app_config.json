@@ -1,8 +1,8 @@
 {
-    "__READ_ACCESS__": "True",
-    "framework_name": "",
+    "framework_name": "Warrior",
     "logo_path": "",
     "panel_color": "",
-    "default_apps": "True",
-    "custom_apps": {}
+    "default_apps": "true",
+    "custom_apps": {},
+    "__READ_ACCESS__": "True"
 }

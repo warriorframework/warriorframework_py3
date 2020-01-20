@@ -8,6 +8,7 @@ from git import Repo
 from termcolor import colored
 from utils.navigator_util import Navigator
 from utils.json_utils import read_json_data
+from datetime import datetime
 
 nav_obj = Navigator()
 BASE_DIR = nav_obj.get_katana_dir()
@@ -19,6 +20,14 @@ urls_file = BASE_DIR + "/wui/urls.py"
 check_ok = 'true'
 DONE = False
 app_config_data = ""
+
+def create_log(message):
+        with open("log.txt", "a") as f:
+            now = datetime.now()
+            dt_string = now.strftime("%d/%m/%Y %H:%M:%S")
+            log_line = dt_string +"     "+ message+ "\n"
+            f.writelines(log_line)
+            f.close()
 
 def __appmanager__(deleted_Apps_list):
     if (len(deleted_Apps_list)):
@@ -33,7 +42,7 @@ def __appmanager__(deleted_Apps_list):
                 remove_cust_app_source(uapp, "wapps")
 
 def install_default_apps():
-    print("\n\nInstalling Default Apps ...\n")
+    # print("\n\nInstalling Default Apps ...\n")
     repo_url = "https://github.com/terrakom/wapps.git"
     directory = "temp_wapps"
     tempdirr = os.path.join(BASE_DIR, directory)
@@ -70,10 +79,10 @@ def install_default_apps():
             configure_settings_file(sub_dir,"native")
             configure_urls_file(sub_dir, "native")
     shutil.rmtree(tempdirr)
-    print(colored("DEFAULT APPS INSTALLED SUCCESSFULLY\n\n", "green"))
+    # print(colored("DEFAULT APPS INSTALLED SUCCESSFULLY\n\n", "green"))
 
 def install_custom_app(app, app_url):
-    print("\n\nInstalling : ",app)
+    # print("\n\nInstalling : ",app)
     if not (os.path.exists(wapps_dir_path)):
         os.mkdir(wapps_dir)
     repo_url = app_url
@@ -90,9 +99,9 @@ def install_custom_app(app, app_url):
     shutil.move(source, destination)
     shutil.rmtree(tempdir)
     configure_settings_file_custom_app(app)
-    print("DONE !\n")
+    # print("DONE !\n")
     configure_urls_file_custom(app, "wapps")
-    print("DONE !\n\n")
+    # print("DONE !\n\n")
 
 def remove_cust_app_source(uapp,  category):
     if category == "wapps":
@@ -120,7 +129,7 @@ def configure_settings_file(app_name, category):
                 f.writelines(line)
 
 def configure_settings_file_custom_app(app):
-    print("\nConfiguring settings.py for: "+app+"\n.\n.\n.\n.\n.\n.\n")
+    # print("\nConfiguring settings.py for: "+app+"\n.\n.\n.\n.\n.\n.\n")
     with open(settings_file, "r") as f:
         settings_file_content = f.readlines()
     with open(settings_file, "w") as f:
@@ -159,7 +168,7 @@ def configure_urls_file(app_name, category):
                 f.writelines(line)
 
 def configure_urls_file_custom(app, category):
-    print("\nConfiguring urls.py for: "+app+"\n.\n.\n.\n.\n.\n.\n")
+    # print("\nConfiguring urls.py for: "+app+"\n.\n.\n.\n.\n.\n.\n")
     app_main_folder = os.path.join(BASE_DIR, category)
     app_folder = os.path.join(app_main_folder, app)
     wf_config_file = os.path.join(app_folder, "wf_config.json")
@@ -184,7 +193,7 @@ def configure_urls_file_custom(app, category):
 
 def remove_app_from_settings_custom(app, category):
     if category == "wapps":
-        print("Removing "+app+" from settings.py\n.\n.\n.\n.\n.\n.\n")
+        # print("Removing "+app+" from settings.py\n.\n.\n.\n.\n.\n.\n")
         with open(settings_file, "r") as f:
             settings_file_content = f.readlines()
         with open(settings_file, "w") as f:
@@ -195,9 +204,9 @@ def remove_app_from_settings_custom(app, category):
             else:
                 for line in settings_file_content:
                     f.writelines(line)
-        print(app+" was successfully removed from settings.py\n")
+        # print(app+" was successfully removed from settings.py\n")
     elif category == "native":
-        print("Removing "+app+" from settings.py\n.\n.\n.\n.\n.\n.\n")
+        # print("Removing "+app+" from settings.py\n.\n.\n.\n.\n.\n.\n")
         with open(settings_file, "r") as f:
             settings_file_content = f.readlines()
         with open(settings_file, "w") as f:
@@ -208,10 +217,10 @@ def remove_app_from_settings_custom(app, category):
             else:
                 for line in settings_file_content:
                     f.writelines(line)
-        print(app+" was successfully removed from settings.py\n")
+        # print(app+" was successfully removed from settings.py\n")
 
 def remove_appurl_from_urls_custom(app, category):
-    print("Removing "+ app+" app-url from urls.py\n.\n.\n.\n.\n.\n.\n")
+    # print("Removing "+ app+" app-url from urls.py\n.\n.\n.\n.\n.\n.\n")
     app_main_folder = os.path.join(BASE_DIR, category)
     app_folder = os.path.join(app_main_folder, app)
     wf_config_file = os.path.join(app_folder, "wf_config.json")
@@ -233,7 +242,7 @@ def remove_appurl_from_urls_custom(app, category):
             else:
                 for line in url_file_content:
                     f.writelines(line)
-        print(app+" app-url was successfully removed from urls.py\n\n")
+        # print(app+" app-url was successfully removed from urls.py\n\n")
     elif category == "native":
         with open(urls_file, "r") as f:
             url_file_content = f.readlines()
@@ -245,7 +254,7 @@ def remove_appurl_from_urls_custom(app, category):
             else:
                 for line in url_file_content:
                     f.writelines(line)
-        print(app+" app-url was successfully removed from urls.py\n\n")
+        # print(app+" app-url was successfully removed from urls.py\n\n")
 
 def update_logo(img):
     try:
@@ -256,7 +265,8 @@ def update_logo(img):
         fh.write(base64.b64decode(encoded_img))
         fh.close()
     except:
-        print(colored("Error: Unabale to upload logo, please provide the valid image path.\n", "red"))
+        # print(colored("Error: Unabale to upload logo, please provide the valid image path.\n", "red"))
+        create_log("Error: Unabale to upload logo, please provide the valid image path.")
 
 def update_fname(fname):
     fname_file=os.path.join(BASE_DIR,"wui/core/static/core/framework_name.json")
