@@ -132,6 +132,7 @@ if __name__ == "__main__":
                     if app_config_data["__READ_ACCESS__"] == "True":
                         app_config_json_path = os.path.join(BASE_DIR,"app_config.json")
                         final_input_json_data["__READ_ACCESS__"] = "True"
+                        final_input_json_data["__userconfigured__"] = "True"
                         with open(app_config_json_path, "w") as f:
                             json.dump(final_input_json_data, f)
                             # print("configuring katana, please do not close the terminal...")

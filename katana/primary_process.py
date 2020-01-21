@@ -42,47 +42,39 @@ def __appmanager__(deleted_Apps_list):
                 remove_cust_app_source(uapp, "wapps")
 
 def install_default_apps():
-    # print("\n\nInstalling Default Apps ...\n")
-    repo_url = "https://github.com/terrakom/wapps.git"
-    directory = "temp_wapps"
+    repo_url = "https://github.com/warriorframework/warrior-apps.git"
+    directory = "temp_apps"
     tempdirr = os.path.join(BASE_DIR, directory)
     if (os.path.exists(tempdirr)):
         shutil.rmtree(tempdirr)
     os.mkdir(tempdirr)
-    Repo.clone_from(repo_url, tempdirr)
-    temp_wapps_dir_list = os.listdir(tempdirr)
-    for sub_dir in temp_wapps_dir_list:
-        if os.path.isdir(os.path.join(tempdirr, sub_dir)) and not sub_dir.startswith(".") :
-            source = os.path.join(tempdirr, sub_dir)
-            destination = os.path.join(wapps_dir_path, sub_dir)
-            if (os.path.exists(destination)):
-                shutil.rmtree(destination)
-            shutil.move(source, destination)
-            configure_settings_file(sub_dir,"wapps")
-            configure_urls_file(sub_dir, "wapps")
+    Repo.clone_from(repo_url, tempdirr, branch='develop')
+    _ignore = ["README.md", ".git"]
+    temp_apps_dir_list = list(set(os.listdir(tempdirr)) - set(_ignore))
+    for apps_dir in temp_apps_dir_list :
+        if apps_dir == "wapps":
+            for sub_dir in os.listdir(os.path.join(tempdirr,apps_dir)):
+                if os.path.isdir(os.path.join(tempdirr, os.path.join(apps_dir, sub_dir))) and not sub_dir.startswith(".") :
+                    source = os.path.join(tempdirr, os.path.join(apps_dir, sub_dir))
+                    destination = os.path.join(wapps_dir_path, sub_dir)
+                    if (os.path.exists(destination)):
+                        shutil.rmtree(destination)
+                    shutil.move(source, destination)
+                    configure_settings_file(sub_dir, "wapps")
+                    configure_urls_file(sub_dir, "wapps")
+        elif apps_dir == "native":
+            for sub_dir in os.listdir(os.path.join(tempdirr,apps_dir)):
+                if os.path.isdir(os.path.join(tempdirr, os.path.join(apps_dir, sub_dir))) and not sub_dir.startswith(".") :
+                    source = os.path.join(tempdirr, os.path.join(apps_dir, sub_dir))
+                    destination = os.path.join(native_dir_path, sub_dir)
+                    if (os.path.exists(destination)):
+                        shutil.rmtree(destination)
+                    shutil.move(source, destination)
+                    configure_settings_file(sub_dir, "native")
+                    configure_urls_file(sub_dir, "native")
     shutil.rmtree(tempdirr)
-    repo_url = "https://github.com/terrakom/native.git"
-    directory = "temp_native"
-    tempdirr = os.path.join(BASE_DIR, directory)
-    if (os.path.exists(tempdirr)):
-        shutil.rmtree(tempdirr)
-    os.mkdir(tempdirr)
-    Repo.clone_from(repo_url, tempdirr)
-    temp_native_dir_list = os.listdir(tempdirr)
-    for sub_dir in temp_native_dir_list:
-        if os.path.isdir(os.path.join(tempdirr, sub_dir)) and not sub_dir.startswith(".") :
-            source = os.path.join(tempdirr, sub_dir)
-            destination = os.path.join(native_dir_path, sub_dir)
-            if (os.path.exists(destination)):
-                shutil.rmtree(destination)
-            shutil.move(source, destination)
-            configure_settings_file(sub_dir,"native")
-            configure_urls_file(sub_dir, "native")
-    shutil.rmtree(tempdirr)
-    # print(colored("DEFAULT APPS INSTALLED SUCCESSFULLY\n\n", "green"))
 
 def install_custom_app(app, app_url):
-    # print("\n\nInstalling : ",app)
     if not (os.path.exists(wapps_dir_path)):
         os.mkdir(wapps_dir)
     repo_url = app_url

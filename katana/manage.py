@@ -2,6 +2,10 @@
 import os
 import sys
 from os.path import abspath, dirname
+from utils.navigator_util import Navigator
+from primary_process import install_default_apps
+from utils.json_utils import read_json_data
+from utils.directory_traversal_utils import join_path
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "katana.wui.settings")
@@ -32,9 +36,21 @@ if __name__ == "__main__":
             os.environ["pipmode"]= "False"
         except:
             raise
-    if os.path.exists("log.txt"):
-        print("=============================KATANA CONFIGURATION LOG================================")
-        os.system("tail -n +3 log.txt")
-        print("======================================================================================")
-        print("\n\n")
+    nav_obj = Navigator()
+    BASE_DIR = nav_obj.get_katana_dir()
+    app_config_file = BASE_DIR + "/app_config.json"
+    def read_config_file_data():
+            nav_obj = Navigator()
+            config_file_path = join_path(nav_obj.get_katana_dir(), "app_config.json")
+            data = read_json_data(config_file_path)
+            return data
+    app_config_data = read_config_file_data()
+    if app_config_data["__userconfigured__"] == "False":
+        install_default_apps()
+    if app_config_data["__userconfigured__"] == "True":
+        if os.path.exists("log.txt"):
+            print("=============================KATANA CONFIGURATION LOG================================")
+            os.system("tail -n +3 log.txt")
+            print("======================================================================================")
+            print("\n\n")
     execute_from_command_line(sys.argv)
