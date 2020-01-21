@@ -44,11 +44,15 @@ def set_api(request):
         equinix_json_data["set"][device]["preset_protect_max_frequency"] = set_freq
         equinix_json_data["set"][device]["min_frequency_preset_work"] = set_freq
         equinix_json_data["set"][device]["min_frequency_preset_protect"] = set_freq
+        equinix_json_data["set"][device]["otsi_center_frequency"] = set_freq
+        equinix_json_data["set"][device]["center_frequency_rx"] = set_freq
+        equinix_json_data["set"][device]["preset_max_frequency"] = set_freq
+        equinix_json_data["set"][device]["preset_min_frequency"] = set_freq
         equinix_json_data["set"][device]["path_type"] = path_type
     with open(equinix_set_data_json_path, "w") as f:
         json.dump(equinix_json_data, f)
     # print(read_json_data(equinix_set_data_json_path))
-    response = requests.post('http://0.0.0.0:5002/measure', json=read_json_data(equinix_set_data_json_path))
+    response = requests.post('http://0.0.0.0:5002/set', json=read_json_data(equinix_set_data_json_path))
     return HttpResponse(response)
 
 def measure_api(request):
@@ -66,6 +70,10 @@ def measure_api(request):
         equinix_json_data["set"][device]["preset_protect_max_frequency"] = msr_freq
         equinix_json_data["set"][device]["min_frequency_preset_work"] = msr_freq
         equinix_json_data["set"][device]["min_frequency_preset_protect"] = msr_freq
+        equinix_json_data["set"][device]["otsi_center_frequency"] = msr_freq
+        equinix_json_data["set"][device]["center_frequency_rx"] = msr_freq
+        equinix_json_data["set"][device]["preset_max_frequency"] = msr_freq
+        equinix_json_data["set"][device]["preset_min_frequency"] = msr_freq
         equinix_json_data["set"][device]["path_type"] = path_type
     with open(equinix_measure_data_json_path, "w") as f:
         json.dump(equinix_json_data, f)

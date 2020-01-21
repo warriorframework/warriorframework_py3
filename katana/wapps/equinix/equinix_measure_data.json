@@ -1,1 +1,54 @@
-{"devices": {"NE1": {"ip": "192.68.200.30", "port": "22", "protocol": "ssh", "username": "manjunath", "password": "aaa"}, "NE2": {"ip": "192.168.20.30", "port": "22", "protocol": "ssh", "username": "manjunath", "password": "aaa"}}, "set": {"NE5": {"card_type": "PIT6-P6A3", "pluggable_interface_type": "EDGEBI", "interface_name": "otsi-1/1/0/E1", "interface_card_type": "fujitsuOtsiV2", "otsi_rate": "R500G", "modulation_format": "dp-qam32", "otsi_center_frequency": "191.33750", "center_frequency_rx": "191.33750", "preset_max_frequency": "191.35000", "preset_work_max_frequency": "32", "preset_protect_max_frequency": "32", "preset_min_frequency": "191.35000", "min_frequency_preset_work": "32", "min_frequency_preset_protect": "32", "path_type": "Line"}, "NE22": {"card_type": "PIT6-P6A3", "pluggable_interface_type": "EDGEBI", "interface_name": "otsi-1/1/0/E1", "interface_card_type": "fujitsuOtsiV2", "otsi_rate": "R500G", "modulation_format": "dp-qam32", "otsi_center_frequency": "191.33570", "center_frequency_rx": "191.33570", "preset_max_frequency": "191.35000", "preset_work_max_frequency": "32", "preset_protect_max_frequency": "32", "preset_min_frequency": "191.35000", "min_frequency_preset_work": "32", "min_frequency_preset_protect": "32", "path_type": "Line"}}}
+{
+    "devices": {
+        "NE1": {
+            "ip": "192.68.200.30",
+            "port": "22",
+            "protocol": "ssh",
+            "username": "manjunath",
+            "password": "aaa"
+        },
+        "NE2": {
+            "ip": "192.168.20.30",
+            "port": "22",
+            "protocol": "ssh",
+            "username": "manjunath",
+            "password": "aaa"
+        }
+    },
+    "set": {
+        "NE5": {
+            "card_type": "PIT6-P6A3",
+            "pluggable_interface_type": "EDGEBI",
+            "interface_name": "otsi-1/1/0/E1",
+            "interface_card_type": "fujitsuOtsiV2",
+            "otsi_rate": "R500G",
+            "modulation_format": "dp-qam32",
+            "otsi_center_frequency": "191.33750",
+            "center_frequency_rx": "191.33750",
+            "preset_max_frequency": "191.35000",
+            "preset_work_max_frequency": "32",
+            "preset_protect_max_frequency": "32",
+            "preset_min_frequency": "191.35000",
+            "min_frequency_preset_work": "32",
+            "min_frequency_preset_protect": "32",
+            "path_type": "Line"
+        },
+        "NE22": {
+            "card_type": "PIT6-P6A3",
+            "pluggable_interface_type": "EDGEBI",
+            "interface_name": "otsi-1/1/0/E1",
+            "interface_card_type": "fujitsuOtsiV2",
+            "otsi_rate": "R500G",
+            "modulation_format": "dp-qam32",
+            "otsi_center_frequency": "191.33570",
+            "center_frequency_rx": "191.33570",
+            "preset_max_frequency": "191.35000",
+            "preset_work_max_frequency": "32",
+            "preset_protect_max_frequency": "32",
+            "preset_min_frequency": "191.35000",
+            "min_frequency_preset_work": "32",
+            "min_frequency_preset_protect": "32",
+            "path_type": "Line"
+        }
+    }
+}
