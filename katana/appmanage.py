@@ -9,10 +9,25 @@ import json
 import shutil
 from os.path import abspath, dirname
 from termcolor import colored
-from primary_process import __appmanager__, install_custom_app, install_default_apps, remove_app_from_settings_custom, remove_appurl_from_urls_custom, remove_cust_app_source, configure_settings_file, configure_settings_file_custom_app, configure_urls_file, configure_urls_file_custom, update_fname, update_logo, update_panel_color, create_log
-from utils.navigator_util import Navigator
-from utils.json_utils import read_json_data
-from utils.directory_traversal_utils import join_path
+
+try:
+    import katana
+
+    os.environ["pipmode"] = "True"
+# except ModuleNotFoundError as error:
+except:
+    WARRIORDIR = dirname(dirname(abspath(__file__)))
+    sys.path.append(WARRIORDIR)
+    try:
+        import katana
+
+        os.environ["pipmode"] = "False"
+    except:
+        raise
+from katana.primary_process import __appmanager__, install_custom_app, install_default_apps, remove_app_from_settings_custom, remove_appurl_from_urls_custom, remove_cust_app_source, configure_settings_file, configure_settings_file_custom_app, configure_urls_file, configure_urls_file_custom, update_fname, update_logo, update_panel_color, create_log
+from katana.utils.navigator_util import Navigator
+from katana.utils.json_utils import read_json_data
+from katana.utils.directory_traversal_utils import join_path
 
 nav_obj = Navigator()
 BASE_DIR = nav_obj.get_katana_dir()

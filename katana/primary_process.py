@@ -6,8 +6,23 @@ import json
 import base64
 from git import Repo
 from termcolor import colored
-from utils.navigator_util import Navigator
-from utils.json_utils import read_json_data
+
+try:
+    import katana
+
+    os.environ["pipmode"] = "True"
+# except ModuleNotFoundError as error:
+except:
+    WARRIORDIR = dirname(dirname(abspath(__file__)))
+    sys.path.append(WARRIORDIR)
+    try:
+        import katana
+
+        os.environ["pipmode"] = "False"
+    except:
+        raise
+from katana.utils.navigator_util import Navigator
+from katana.utils.json_utils import read_json_data
 from datetime import datetime
 
 nav_obj = Navigator()

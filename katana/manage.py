@@ -2,10 +2,25 @@
 import os
 import sys
 from os.path import abspath, dirname
-from utils.navigator_util import Navigator
-from primary_process import install_default_apps
-from utils.json_utils import read_json_data
-from utils.directory_traversal_utils import join_path
+
+try:
+    import katana
+
+    os.environ["pipmode"] = "True"
+# except ModuleNotFoundError as error:
+except:
+    WARRIORDIR = dirname(dirname(abspath(__file__)))
+    sys.path.append(WARRIORDIR)
+    try:
+        import katana
+
+        os.environ["pipmode"] = "False"
+    except:
+        raise
+from katana.utils.navigator_util import Navigator
+from katana.primary_process import install_default_apps
+from katana.utils.json_utils import read_json_data
+from katana.utils.directory_traversal_utils import join_path
 
 if __name__ == "__main__":
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "katana.wui.settings")
@@ -24,18 +39,6 @@ if __name__ == "__main__":
                 "forget to activate a virtual environment?"
             )
         raise
-    try:
-        import katana
-        os.environ["pipmode"]= "True"
-    #except ModuleNotFoundError as error:
-    except:
-        WARRIORDIR = dirname(dirname(abspath(__file__)))
-        sys.path.append(WARRIORDIR)
-        try:
-            import katana
-            os.environ["pipmode"]= "False"
-        except:
-            raise
     nav_obj = Navigator()
     BASE_DIR = nav_obj.get_katana_dir()
     app_config_file = BASE_DIR + "/app_config.json"
