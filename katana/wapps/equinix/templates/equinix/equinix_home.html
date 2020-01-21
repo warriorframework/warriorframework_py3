@@ -9,11 +9,11 @@
   {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'equinix/css/equinix.css' %}">
   <style>
-   .loader{
-    position: relative;
-    left: -38%;
-    top: -31%;
-   }
+    .loader {
+      position: relative;
+      left: -38%;
+      top: -31%;
+    }
 
     .head {
       font-size: 24px;
@@ -21,12 +21,15 @@
 
     div input {
       width: 32%;
-      position: relative;
       font-size: 15px;
+      display: inline-block;
+      float: left;
+      margin-left: -18%;
     }
 
     div select {
       width: 95px;
+      margin-left: -18%;
     }
 
     .bgcolor {
@@ -49,10 +52,18 @@
 
     }
 
-    .set_btn:disabled, .msr_btn:disabled{
-      background:rgba(0, 0, 0, 0.04);
-      color:#474747;
-      border-color:#c5c5c5;
+    .set_btn:disabled,
+    .msr_btn:disabled {
+      background: rgba(0, 0, 0, 0.04);
+      color: #474747;
+      border-color: #c5c5c5;
+    }
+
+    label {
+      display: inline-block;
+      float: left;
+      clear: left;
+      width: 250px;
     }
   </style>
 </head>
@@ -68,12 +79,13 @@
             <label>otsi-interface name:</label>
             <input type="text" class="msr_odi"><br><br>
             <label>Center frequency:</label>
-            <input type="text" class="msr_min_freq" placeholder="min freq = 190">
-            <input type="text" class="msr_max_freq" placeholder="max freq = 210"><br><br>
-            <label>Path type:</label>
+            <input type="text" class="msr_freq" placeholder="freq">
+            <!-- <input type="text" class="msr_max_freq" placeholder="max freq = 210"> -->
+            <br><br>
+            <label>Protection type:</label>
             <select class="msr_pr_type">
               <option>Line</option>
-              <option>Protect</option>
+              <option>Path</option>
             </select><br><br>
             <button class="btn btn-success msr_btn" katana-click="equinix.measure_func">Measure</button>
           </div>
@@ -88,12 +100,13 @@
             <label>otsi-interface name:</label>
             <input type="text" class="set_odi"><br><br>
             <label>Center frequency:</label>
-            <input type="text" class="set_min_freq" placeholder="min freq = 190">
-            <input type="text" class="set_max_freq" placeholder="max freq = 210"><br><br>
-            <label>Path type:</label>
+            <input type="text" class="set_freq" placeholder="freq">
+            <!-- <input type="text" class="set_max_freq" placeholder="max freq = 210"> -->
+            <br><br>
+            <label>Protection type:</label>
             <select class="set_pr_type">
               <option>Line</option>
-              <option>Protect</option>
+              <option>Path</option>
             </select><br><br>
             <button class="btn btn-success set_btn" katana-click="equinix.set_func">Set</button>
           </div>

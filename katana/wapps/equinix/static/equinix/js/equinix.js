@@ -11,10 +11,9 @@ measure_func: function(){
     $(".set_btn").attr("disabled", true);
     $(".msr_btn").attr("disabled", true);
    $odi = $(".msr_odi").val()
-   $msr_min_freq = $(".msr_min_freq").val()
-   $msr_max_freq = $(".msr_max_freq").val()
+   $msr_freq = $(".msr_freq").val()
    $pr_type = $(".msr_pr_type").find(":selected").text()
-   console.log($odi, $msr_min_freq, $msr_max_freq, $pr_type)
+   console.log($odi, $msr_freq, $pr_type)
    $.ajax({
     headers: {
         'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -23,7 +22,7 @@ measure_func: function(){
     url: 'equinix/measure/',
     dataType: "json",
     async:false,
-    data: {"odi": $odi, "msr_min_freq":$msr_min_freq, "msr_max_freq" :$msr_max_freq, "pr_type":$pr_type}
+    data: {"odi": $odi, "msr_freq":$msr_freq, "pr_type":$pr_type}
 }).done(function(data){
     console.log(data)
     $(".loader").css("display", "none");
@@ -45,10 +44,9 @@ set_func: function(){
     $(".set_btn").attr("disabled", true);
     $(".msr_btn").attr("disabled", true);
    $odi = $(".set_odi").val()
-   $set_min_freq = $(".set_min_freq").val()
-   $set_max_freq = $(".set_max_freq").val()
+   $set_freq = $(".set_freq").val()
    $set_pr_type = $(".set_pr_type").find(":selected").text()
-   console.log($odi, $set_min_freq, $set_max_freq, $set_pr_type)
+   console.log($odi, $set_freq, $set_pr_type)
    $.ajax({
     headers: {
         'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -57,7 +55,7 @@ set_func: function(){
     url: 'equinix/set/',
     dataType: "json",
     async:false,
-    data: {"odi": $odi, "set_min_freq":$set_min_freq, "set_max_freq" :$set_max_freq, "pr_type":$set_pr_type}
+    data: {"odi": $odi, "set_freq":$set_freq, "pr_type":$set_pr_type}
 }).done(function(data){
     console.log(data)
     $(".loader").css("display", "none");

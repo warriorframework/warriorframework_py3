@@ -31,8 +31,7 @@ class EquinixView(View):
 
 def set_api(request):
     otsi_interface_name = request.GET.get("odi")
-    set_min_freq = request.GET.get("set_min_freq")
-    set_max_freq = request.GET.get("set_max_freq")
+    set_freq = request.GET.get("set_freq")
     path_type = request.GET.get("pr_type")
     equinix_json_data = read_json_data(equinix_set_data_json_path)
     # print(equinix_json_data)
@@ -41,10 +40,10 @@ def set_api(request):
     devices = equinix_json_data["set"].keys()
     for device in devices:
         equinix_json_data["set"][device]["interface_name"] = otsi_interface_name
-        equinix_json_data["set"][device]["preset_work_max_frequency"] = set_max_freq
-        equinix_json_data["set"][device]["preset_protect_max_frequency"] = set_max_freq
-        equinix_json_data["set"][device]["min_frequency_preset_work"] = set_min_freq
-        equinix_json_data["set"][device]["min_frequency_preset_protect"] = set_min_freq
+        equinix_json_data["set"][device]["preset_work_max_frequency"] = set_freq
+        equinix_json_data["set"][device]["preset_protect_max_frequency"] = set_freq
+        equinix_json_data["set"][device]["min_frequency_preset_work"] = set_freq
+        equinix_json_data["set"][device]["min_frequency_preset_protect"] = set_freq
         equinix_json_data["set"][device]["path_type"] = path_type
     with open(equinix_set_data_json_path, "w") as f:
         json.dump(equinix_json_data, f)
@@ -54,8 +53,7 @@ def set_api(request):
 
 def measure_api(request):
     otsi_interface_name = request.GET.get("odi")
-    msr_min_freq = request.GET.get("msr_min_freq")
-    msr_max_freq = request.GET.get("msr_max_freq")
+    msr_freq = request.GET.get("msr_freq")
     path_type = request.GET.get("pr_type")
     equinix_json_data = read_json_data(equinix_measure_data_json_path)
     # print(equinix_json_data)
@@ -64,10 +62,10 @@ def measure_api(request):
     devices = equinix_json_data["set"].keys()
     for device in devices:
         equinix_json_data["set"][device]["interface_name"] = otsi_interface_name
-        equinix_json_data["set"][device]["preset_work_max_frequency"] = msr_max_freq
-        equinix_json_data["set"][device]["preset_protect_max_frequency"] = msr_max_freq
-        equinix_json_data["set"][device]["min_frequency_preset_work"] = msr_min_freq
-        equinix_json_data["set"][device]["min_frequency_preset_protect"] = msr_min_freq
+        equinix_json_data["set"][device]["preset_work_max_frequency"] = msr_freq
+        equinix_json_data["set"][device]["preset_protect_max_frequency"] = msr_freq
+        equinix_json_data["set"][device]["min_frequency_preset_work"] = msr_freq
+        equinix_json_data["set"][device]["min_frequency_preset_protect"] = msr_freq
         equinix_json_data["set"][device]["path_type"] = path_type
     with open(equinix_measure_data_json_path, "w") as f:
         json.dump(equinix_json_data, f)
