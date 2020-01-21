@@ -9,53 +9,107 @@
   {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'equinix/css/equinix.css' %}">
   <style>
-    .set_loader {
+   .loader{
+    position: relative;
+    left: -38%;
+    top: -31%;
+   }
+
+    .head {
+      font-size: 24px;
+    }
+
+    div input {
+      width: 32%;
       position: relative;
-      top: -114px;
-      left: 255px;
-      display: none;
-}
-.measure_loader {
-      position: relative;
-      top: -111px;
-      left: 255px;
-      display: none;
-}
+      font-size: 15px;
+    }
+
+    div select {
+      width: 95px;
+    }
+
+    .bgcolor {
+      background-color: #ac8f8f2b;
+      margin: auto;
+      padding: 25px;
+      border-radius: 10px;
+    }
+
+    .container-fluid {
+      margin-top: 40px !important;
+    }
+
+    .result {
+      width: 60%;
+      height: 130px;
+      font-size: 22px;
+      resize: none;
+      background-color: #f2f1f0;
+
+    }
+
+    .set_btn:disabled, .msr_btn:disabled{
+      background:rgba(0, 0, 0, 0.04);
+      color:#474747;
+      border-color:#c5c5c5;
+    }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <div class="row" style="padding: 20px">
-      <div class="col-*-*"><button type="button" class="btn btn-success set-measure-btn" katana-click="equinix.set_func"
-          style="background-color:#0c9420">Set</button></div>
-      <div class="col-*-* equinix_template"><textarea type="text" class="json_data set_data" placeholder="Input data"
-          style=" height: 150px; margin-left: 80px; border:2px solid #b1b6bd; resize: none;"></textarea></div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="bgcolor">
+          <div class="head"><b>Measure:</b></div>
+          <br>
+          <div>
+            <label>otsi-interface name:</label>
+            <input type="text" class="msr_odi"><br><br>
+            <label>Center frequency:</label>
+            <input type="text" class="msr_min_freq" placeholder="min freq = 190">
+            <input type="text" class="msr_max_freq" placeholder="max freq = 210"><br><br>
+            <label>Path type:</label>
+            <select class="msr_pr_type">
+              <option>Line</option>
+              <option>Protect</option>
+            </select><br><br>
+            <button class="btn btn-success msr_btn" katana-click="equinix.measure_func">Measure</button>
+          </div>
+        </div>
+      </div>
+      <br><br>
+      <div class="col-md-6">
+        <div class="bgcolor">
+          <div class="head"><b>Set:</b></div>
+          <br>
+          <div>
+            <label>otsi-interface name:</label>
+            <input type="text" class="set_odi"><br><br>
+            <label>Center frequency:</label>
+            <input type="text" class="set_min_freq" placeholder="min freq = 190">
+            <input type="text" class="set_max_freq" placeholder="max freq = 210"><br><br>
+            <label>Path type:</label>
+            <select class="set_pr_type">
+              <option>Line</option>
+              <option>Protect</option>
+            </select><br><br>
+            <button class="btn btn-success set_btn" katana-click="equinix.set_func">Set</button>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="row set-result" style="padding: 20px; display:none;">
-      <label><b>API Response:</label></b><br>
-      <textarea type='text' placeholder='Fetching result...' class='set_result'
-        style='height: 150px; margin-left: 145px; border:2px solid #b1b6bd; resize: none;color:#000000; font-size:20px; width:28%; border-radius: 20px;'
-        disabled></textarea>
-        <img src="../../static/images/Gear-0.4s-121px.gif"
-        class="set_loader" />
+    <br>
+    <div class="row">
+      <div class="col-md-12 api_res" style="display: none;">
+        <label><b>API Response:</b></label><br>
+        <textarea class="result" placeholder="fetching result..." disabled></textarea>
+        <img class="loader" src="../../static/images/Gear-0.4s-121px.gif">
+      </div>
     </div>
-
-    <div class="row" style="padding: 20px">
-      <div class="col-*-*"><button type="button" class="btn btn-success set-measure-btn"
-          katana-click="equinix.measure_func" style="background-color:#0c9420">Measure</button></div>
-      <div class="col-*-* equinix_template"><textarea type="text" class="json_data measure_data" placeholder="Input data"
-          style=" height: 150px; margin-left: 80px; border:2px solid #b1b6bd; resize: none;"></textarea></div>
-    </div>
-    <div class="row measure-result" style="padding: 20px; display:none;">
-      <label><b>API Response:</b></label><br>
-      <textarea type='text' placeholder='Fetching result...' class='measure_result'
-        style='height: 150px; margin-left: 145px; border:2px solid #b1b6bd; resize: none;color:#000000; font-size:20px; width:28%; border-radius: 20px;'
-        disabled></textarea>
-        <img src="../../static/images/Gear-0.4s-121px.gif"
-        class="measure_loader" />
-    </div>
-    <div class="csrf-container">{% csrf_token %}</div>
+  </div>
+  <div class="csrf-container">{% csrf_token %}</div>
   </div>
 </body>
 
