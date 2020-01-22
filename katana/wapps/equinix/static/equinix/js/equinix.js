@@ -1,19 +1,18 @@
 var equinix = {
 
 measure_func: function(){
-    $(".result").attr("placeholder", "fetching result...");
+    $(".result").val("")
     if($(".api_res").css("display") == "none"){
         $(".api_res").css("display", "block");
     }
     if($(".loader").css("display") == "none"){
-        $(".loader").css("display", "block");
+        $(".loader").show();
     }
     $(".set_btn").attr("disabled", true);
     $(".msr_btn").attr("disabled", true);
    $odi = $(".msr_odi").val()
-   $msr_freq = $(".msr_freq").val()
-   $pr_type = $(".msr_pr_type").find(":selected").text()
-   console.log($odi, $msr_freq, $pr_type)
+   $msr_pr_type = $(".msr_pr_type").find(":selected").text()
+   console.log($odi, $msr_pr_type)
    $.ajax({
     headers: {
         'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -22,11 +21,10 @@ measure_func: function(){
     url: 'equinix/measure/',
     dataType: "json",
     async:false,
-    data: {"odi": $odi, "msr_freq":$msr_freq, "pr_type":$pr_type}
+    data: {"odi": $odi, "pr_type":$msr_pr_type}
 }).done(function(data){
-    console.log(data)
     $(".loader").css("display", "none");
-    $(".result").val(JSON.stringify(data))
+    $(".result").val(JSON.stringify(data, null, 4));
     $(".set_btn").attr("disabled", false);
     $(".msr_btn").attr("disabled", false);
 
@@ -34,19 +32,18 @@ measure_func: function(){
 },
 
 set_func: function(){
-    $(".result").attr("placeholder", "fetching result...");
+    $(".result").val("")
     if($(".api_res").css("display") == "none"){
         $(".api_res").css("display", "block");
     }
     if($(".loader").css("display") == "none"){
-        $(".loader").css("display", "block");
+        $(".loader").show();
     }
     $(".set_btn").attr("disabled", true);
     $(".msr_btn").attr("disabled", true);
    $odi = $(".set_odi").val()
-   $set_freq = $(".set_freq").val()
    $set_pr_type = $(".set_pr_type").find(":selected").text()
-   console.log($odi, $set_freq, $set_pr_type)
+   console.log($odi, $set_pr_type)
    $.ajax({
     headers: {
         'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -55,11 +52,10 @@ set_func: function(){
     url: 'equinix/set/',
     dataType: "json",
     async:false,
-    data: {"odi": $odi, "set_freq":$set_freq, "pr_type":$set_pr_type}
+    data: {"odi": $odi, "pr_type":$set_pr_type}
 }).done(function(data){
-    console.log(data)
     $(".loader").css("display", "none");
-    $(".result").val(JSON.stringify(data))
+    $(".result").val(JSON.stringify(data, null, 4));
     $(".set_btn").attr("disabled", false);
     $(".msr_btn").attr("disabled", false);
 
