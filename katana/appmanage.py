@@ -189,7 +189,7 @@ if __name__ == "__main__":
         def thread_function_to_ping(name):
             create_log("Checking Compatability for:" + name)
             create_log("Waiting for server to restart...")
-            time.sleep(7)
+            time.sleep(11)
             create_log("Checking katana compatibility for :" + name)
             if PORT == 0:
                 try:
