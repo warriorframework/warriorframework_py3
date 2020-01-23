@@ -10,15 +10,12 @@ from termcolor import colored
 try:
     import katana
 
-    os.environ["pipmode"] = "True"
 # except ModuleNotFoundError as error:
 except:
     WARRIORDIR = dirname(dirname(abspath(__file__)))
     sys.path.append(WARRIORDIR)
     try:
         import katana
-
-        os.environ["pipmode"] = "False"
     except:
         raise
 from katana.utils.navigator_util import Navigator
