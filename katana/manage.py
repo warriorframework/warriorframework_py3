@@ -49,8 +49,10 @@ if __name__ == "__main__":
             return data
     app_config_data = read_config_file_data()
     if app_config_data["__userconfigured__"] == "False" and app_config_data["__normal_run__"] == "False":
-        install_default_apps()
         app_config_data["__normal_run__"] == "True"
+        with open(app_config_file, "w") as f:
+            json.dump(app_config_data, f)
+        install_default_apps()
 
     if app_config_data["__userconfigured__"] == "True":
         if os.path.exists("log.txt"):
