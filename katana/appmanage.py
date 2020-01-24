@@ -126,41 +126,44 @@ if __name__ == "__main__":
                 else:
                     with open(json_path) as f:
                         input_json_data = json.loads(f.read())
-                    if "framework_name" in input_json_data:
-                        final_input_json_data["framework_name"] = input_json_data["framework_name"]
+                    if "app_title" in input_json_data:
+                        final_input_json_data["app_title"] = input_json_data["app_title"]
                     else:
-                        final_input_json_data["framework_name"] = ""
-                    if "logo_path" in input_json_data:
-                        final_input_json_data["logo_path"] = input_json_data["logo_path"]
+                        final_input_json_data["app_title"] = ""
+                    if "custom_logo_path" in input_json_data:
+                        final_input_json_data["custom_logo_path"] = input_json_data["custom_logo_path"]
                     else:
-                        final_input_json_data["logo_path"] = ""
+                        final_input_json_data["custom_logo_path"] = ""
                     if "panel_color" in input_json_data:
                         final_input_json_data["panel_color"] = input_json_data["panel_color"]
                     else:
                         final_input_json_data["panel_color"] = ""
-                    if "default_apps" in input_json_data:
-                        final_input_json_data["default_apps"] = input_json_data["default_apps"]
+                    if "katana_default_apps" in input_json_data:
+                        final_input_json_data["katana_default_apps"] = input_json_data["katana_default_apps"]
                     else:
-                        final_input_json_data["default_apps"] = ""
-                    if "custom_apps" in input_json_data:
-                        final_input_json_data["custom_apps"] = input_json_data["custom_apps"]
+                        final_input_json_data["katana_default_apps"] = ""
+                    if "user_custom_apps" in input_json_data:
+                        final_input_json_data["user_custom_apps"] = input_json_data["user_custom_apps"]
                     else:
-                        final_input_json_data["custom_apps"] = {}
+                        final_input_json_data["user_custom_apps"] = {}
 
                     if app_config_data["__READ_ACCESS__"] == "True":
                         app_config_json_path = os.path.join(BASE_DIR, "app_config.json")
                         final_input_json_data["__READ_ACCESS__"] = "True"
                         final_input_json_data["__userconfigured__"] = "True"
+                        final_input_json_data["__normal_run__"] = "True"
                         with open(app_config_json_path, "w") as f:
                             json.dump(final_input_json_data, f)
-                            print("configuring katana apps, please do not close the terminal...")
+                            print("======================================================================================")
+                            print(colored("configuring katana apps...\n Please do not quit (or) kill the server manually, wait until the server closes itself...!", "yellow"))
+                            print("======================================================================================")
 
         app_config_data = read_config_file_data()
         if app_config_data["__READ_ACCESS__"] == "True":
-            config_apps = app_config_data["custom_apps"].keys()
+            config_apps = app_config_data["user_custom_apps"].keys()
         else:
             config_apps = []
-        if (app_config_data["default_apps"] == "True" or app_config_data["default_apps"] == "true"):
+        if (app_config_data["katana_default_apps"] == "True" or app_config_data["katana_default_apps"] == "true"):
             deafault_wapps = ["cases", "assembler", "cli_data", "execution", "projects", "suites", "testwrapper",
                               "wdf_edit"]
             cust_wapps = list(set(wapps_app) - set(deafault_wapps))
@@ -183,7 +186,7 @@ if __name__ == "__main__":
 
         def thread_function_to_kill(name):
             time.sleep(40)
-            os.system("fuser -k 8000/tcp")
+            os.system("fuser -k 9999/tcp")
 
 
         def thread_function_to_ping(name):
@@ -193,7 +196,7 @@ if __name__ == "__main__":
             create_log("Checking katana compatibility for :" + name)
             if PORT == 0:
                 try:
-                    resp = requests.get('http://127.0.0.1:8000/')
+                    resp = requests.get('http://127.0.0.1:9999/')
                 except Exception as e:
                     print(str(e))
                     create_log(name + " app is not compatible with katana, so it is not going to be installed.")
@@ -249,18 +252,18 @@ if __name__ == "__main__":
 
 
         if app_config_data["__READ_ACCESS__"] == "True":
-            if (app_config_data["framework_name"].strip() != ""):
-                frame_name = app_config_data["framework_name"]
+            if (app_config_data["app_title"].strip() != ""):
+                frame_name = app_config_data["app_title"]
                 update_fname(frame_name)
-            if (app_config_data["logo_path"].strip() != ""):
-                logo_path = app_config_data["logo_path"]
+            if (app_config_data["custom_logo_path"].strip() != ""):
+                logo_path = app_config_data["custom_logo_path"]
                 update_logo(logo_path)
             if (app_config_data["panel_color"].strip() != ""):
                 panel_color = app_config_data["panel_color"]
                 update_panel_color(panel_color)
             else:
                 update_panel_color("#343a40")
-            if (app_config_data["default_apps"] == "True" or app_config_data["default_apps"] == "true"):
+            if (app_config_data["katana_default_apps"] == "True" or app_config_data["katana_default_apps"] == "true"):
                 default_apps_list = ["cases", "assembler", "cli_data", "execution", "projects", "suites", "testwrapper",
                                      "wdf_edit", "microservice_store", "settings", "wapp_management", "wappstore"]
                 all_inst_apps = list(set(wapps_app).union(set(native_app)))
@@ -272,7 +275,7 @@ if __name__ == "__main__":
                     print("\n")
                     create_log("Default apps are installed.")
 
-            elif (app_config_data["default_apps"] == "False" or app_config_data["default_apps"] == "false"):
+            elif (app_config_data["katana_default_apps"] == "False" or app_config_data["katana_default_apps"] == "false"):
                 create_log("Default Apps value has set to False in app_config.py, so no Default Apps will be installed in the framework.")
                 if not (os.path.exists(wapps_dir_path)):
                     os.mkdir(wapps_dir)
@@ -280,7 +283,7 @@ if __name__ == "__main__":
                     os.mkdir(native_dir)
             default_apps_list = ["cases", "assembler", "cli_data", "execution", "projects", "suites", "testwrapper",
                                  "wdf_edit"]
-            if (app_config_data["default_apps"] == "True" or app_config_data["default_apps"] == "true"):
+            if (app_config_data["katana_default_apps"] == "True" or app_config_data["katana_default_apps"] == "true"):
                 cust_wapps = list(set(wapps_app) - set(default_apps_list))
                 Updated_Apps_list = list(set(config_apps) - set(cust_wapps))
                 Updated_Apps_list = list(set(Updated_Apps_list) - set(default_apps_list))
@@ -289,7 +292,7 @@ if __name__ == "__main__":
                 Updated_Apps_list = list(set(Updated_Apps_list) - set(default_apps_list))
         if (len(Updated_Apps_list) == 1):
             for app in Updated_Apps_list:
-                app_url = app_config_data["custom_apps"][app]
+                app_url = app_config_data["user_custom_apps"][app]
                 x = threading.Thread(target=thread_function_to_ping, args=(app,), daemon=True)
                 try:
                     clean_data = read_config_file_data()
@@ -308,17 +311,17 @@ if __name__ == "__main__":
                     if (os.path.exists(tempdir)):
                         shutil.rmtree(tempdir)
                     print(colored(
-                        "Error: There might be something wrong in the app-name or git-url in the input json file or may be the app your trying to install is incompatible with warrior framework.",
+                        "Error: There might be something wrong in the app-name (or) git-url in the input json file (or) may be the app your trying to install is incompatible with warrior framework.",
                         "red"))
                     create_log(
-                        "Error: There might be something wrong in the app-name or git-url in the input json file or may be the app your trying to install is incompatible with warrior framework.")
+                        "Error: There might be something wrong in the app-name (or) git-url in the input json file (or) may be the app your trying to install is incompatible with warrior framework.")
                     clean_data["__READ_ACCESS__"] = "True"
                     with open(app_config_file, "w") as f:
                         f.write(json.dumps(clean_data, indent=4))
                 else:
                     time.sleep(5)
                     x.start()
-                    execute_from_command_line(["manage.py", "runserver"])
+                    execute_from_command_line(["manage.py", "runserver", "9999"])
                     x.join()
         elif (len(Updated_Apps_list) > 1):
             print(colored("\n------------------------------------------------------\n", "red"))
@@ -329,8 +332,8 @@ if __name__ == "__main__":
         else:
             default_apps_list = ["cases", "assembler", "cli_data", "execution", "projects", "suites", "testwrapper",
                                  "wdf_edit"]
-            conf_apps = app_config_data["custom_apps"].keys()
-            if (app_config_data["default_apps"] == "True" or app_config_data["default_apps"] == "true"):
+            conf_apps = app_config_data["user_custom_apps"].keys()
+            if (app_config_data["katana_default_apps"] == "True" or app_config_data["katana_default_apps"] == "true"):
                 cust_wapps = list(set(wapps_app) - set(default_apps_list))
                 failed_app = list(set(conf_apps) - set(cust_wapps))
                 failed_app = list(set(failed_app) - set(default_apps_list))
@@ -341,14 +344,14 @@ if __name__ == "__main__":
             installed_apps = list(set(Apps_content) - set(wapp_ignore))
             if len(failed_app):
                 clean_data = read_config_file_data()
-                if failed_app[0] in clean_data["custom_apps"].keys():
-                    del clean_data["custom_apps"][failed_app[0]]
+                if failed_app[0] in clean_data["user_custom_apps"].keys():
+                    del clean_data["user_custom_apps"][failed_app[0]]
                 with open(app_config_file, "w") as f:
                     f.write(json.dumps(clean_data, indent=4))
             function_to_give_read_access()
 
             y = threading.Thread(target=thread_function_to_kill, args=("app",), daemon=True)
             y.start()
-            execute_from_command_line(["manage.py", "runserver"])
+            execute_from_command_line(["manage.py", "runserver", "9999"])
     else:
         print("Usage: python3 appmanage.py appconfig <json file path>")

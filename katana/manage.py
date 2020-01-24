@@ -42,7 +42,7 @@ if __name__ == "__main__":
         raise
     nav_obj = Navigator()
     BASE_DIR = nav_obj.get_katana_dir()
-    app_config_file = BASE_DIR + "/app_config.json"
+    app_config_json_path = os.path.join(BASE_DIR, "app_config.json")
     def read_config_file_data():
             nav_obj = Navigator()
             config_file_path = join_path(nav_obj.get_katana_dir(), "app_config.json")
@@ -50,8 +50,8 @@ if __name__ == "__main__":
             return data
     app_config_data = read_config_file_data()
     if app_config_data["__userconfigured__"] == "False" and app_config_data["__normal_run__"] == "False":
-        app_config_data["__normal_run__"] == "True"
-        with open(app_config_file, "w") as f:
+        app_config_data["__normal_run__"] = "True"
+        with open(app_config_json_path, "w") as f:
             json.dump(app_config_data, f)
         install_default_apps()
 
