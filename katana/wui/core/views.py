@@ -29,6 +29,8 @@ from katana.wui.core.apps import AppInformation
 from katana.wui.users.views import PublicView
 from .core_utils.core_settings import FileSettings, LDAPSettings, Restart, EMAILSettings
 
+nav_obj = Navigator()
+BASE_DIR = nav_obj.get_katana_dir()
 try:
     from django_auth_ldap.backend import LDAPBackend
 except Exception as err:
@@ -163,7 +165,10 @@ class HomeView(View):
 
     def get(self, request):
         user_data = self.get_user_data()
-        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
+        fname_file = os.path.join(BASE_DIR, "wui/core/static/core/framework_name.json")
+        data = read_json_data(fname_file)
+        framename = data["fr_name"]
+        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data, "frame_name": framename})
 
     def get_user_data(self):
         """

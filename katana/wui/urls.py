@@ -21,16 +21,4 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^katana/', include('katana.wui.core.urls')),
     url(r'^$', RedirectView.as_view(url='/katana/')),
-    url(r'^katana/settings/', include('katana.native.settings.urls')),
-    url(r'^katana/wapp_management/', include('katana.native.wapp_management.urls')),
-    url(r'^katana/wappstore/', include('katana.native.wappstore.urls')),
-    url(r'^katana/microservice_store/', include('katana.native.microservice_store.urls')),
-    url(r'^katana/assembler/', include('katana.wapps.assembler.urls')),
-    url(r'^katana/cli_data/', include('katana.wapps.cli_data.urls')),
-    url(r'^katana/suites/', include('katana.wapps.suites.urls')),
-    url(r'^katana/cases/', include('katana.wapps.cases.urls')),
-    url(r'^katana/wdf/', include('katana.wapps.wdf_edit.urls')),
-    url(r'^katana/execution/', include('katana.wapps.execution.urls')),
-    url(r'^katana/projects/', include('katana.wapps.projects.urls')),
-    url(r'^katana/testwrapper/', include('katana.wapps.testwrapper.urls'))
 ]
