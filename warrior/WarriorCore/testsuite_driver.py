@@ -374,6 +374,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         if execution_type.upper() == 'PARALLEL_TESTCASES':
             ts_junit_object.remove_html_obj()
             data_repository["war_parallel"] = True
+            Utils.config_Utils.data_repository = data_repository
             print_info("Executing testcases in parallel")
             test_suite_status = parallel_testcase_driver.main(testcase_list, suite_repository,
                                                               data_repository, from_project,
