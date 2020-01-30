@@ -37,6 +37,14 @@ lxml<br/>
 xlrd<br/>
 cloudshell-automation-api<br/>
 
+#### Procedure to install pip module
+    1. Latest version warriorframework from PyPI server
+       `pip install warriorframework`
+    2. Specfic Version warriorframework from PyPI Server
+	`pip install warriorframework==4.2.0`
+    3. Uninstall warriorframework
+	`pip uninstall warriorframework` 
+
 #### Clone warriorframework
 
 We strongly recommend getting the latest released version.
