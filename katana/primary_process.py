@@ -53,14 +53,22 @@ def __appmanager__(deleted_Apps_list):
                 remove_app_from_settings_custom(uapp, "wapps")
                 remove_cust_app_source(uapp, "wapps")
 
-def install_default_apps():
+def install_default_apps(default_branch):
     repo_url = "https://github.com/warriorframework/warrior-apps.git"
     directory = "temp_apps"
     tempdirr = os.path.join(BASE_DIR, directory)
     if (os.path.exists(tempdirr)):
         shutil.rmtree(tempdirr)
     os.mkdir(tempdirr)
-    Repo.clone_from(repo_url, tempdirr, branch='master')
+    if default_branch == '':
+        branch = "master"
+    else:
+        branch = default_branch
+    try:
+        Repo.clone_from(repo_url, tempdirr, branch= branch)
+    except:
+        print("The given repo does not exists")
+        exit()
     _ignore = ["README.md", ".git"]
     temp_apps_dir_list = list(set(os.listdir(tempdirr)) - set(_ignore))
     for apps_dir in temp_apps_dir_list :
@@ -89,6 +97,12 @@ def install_default_apps():
 def install_custom_app(app, app_url):
     if not (os.path.exists(wapps_dir_path)):
         os.mkdir(wapps_dir)
+    if len(app_url) == 3:
+        repo_url = app_url[0]
+        user_branch = app_url[2]
+    else:
+        repo_url = app_url[0]
+        user_branch = 'master'
     repo_url = app_url
     directory = app
     tempdir = os.path.join(BASE_DIR, directory)

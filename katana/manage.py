@@ -53,7 +53,7 @@ if __name__ == "__main__":
         app_config_data["__normal_run__"] = "True"
         with open(app_config_json_path, "w") as f:
             json.dump(app_config_data, f)
-        install_default_apps()
+        install_default_apps('master')
 
     if app_config_data["__userconfigured__"] == "True":
         if os.path.exists("log.txt"):
