@@ -60,7 +60,7 @@ def install_default_apps():
     if (os.path.exists(tempdirr)):
         shutil.rmtree(tempdirr)
     os.mkdir(tempdirr)
-    Repo.clone_from(repo_url, tempdirr, branch='develop')
+    Repo.clone_from(repo_url, tempdirr, branch='master')
     _ignore = ["README.md", ".git"]
     temp_apps_dir_list = list(set(os.listdir(tempdirr)) - set(_ignore))
     for apps_dir in temp_apps_dir_list :
