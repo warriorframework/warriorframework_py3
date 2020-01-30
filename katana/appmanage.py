@@ -146,6 +146,10 @@ if __name__ == "__main__":
                         final_input_json_data["user_custom_apps"] = input_json_data["user_custom_apps"]
                     else:
                         final_input_json_data["user_custom_apps"] = {}
+                    if "katana_default_apps_branch" in input_json_data:
+                        final_input_json_data["katana_default_apps_branch"] = input_json_data["katana_default_apps_branch"]
+                    else:
+                        final_input_json_data["katana_default_apps_branch"] = ""
 
                     if app_config_data["__READ_ACCESS__"] == "True":
                         app_config_json_path = os.path.join(BASE_DIR, "app_config.json")
@@ -269,14 +273,14 @@ if __name__ == "__main__":
                 all_inst_apps = list(set(wapps_app).union(set(native_app)))
                 check_def_apps = list(set(default_apps_list) - set(all_inst_apps))
                 if (len(check_def_apps)):
-                    install_default_apps()
+                    install_default_apps(app_config_data['katana_default_apps_branch'])
                 else:
                     print("\n")
                     print("\n")
                     create_log("Default apps are installed.")
 
             elif (app_config_data["katana_default_apps"] == "False" or app_config_data["katana_default_apps"] == "false"):
-                create_log("Default Apps value has set to False in app_config.py, so no Default Apps will be installed in the framework.")
+                create_log("Default Apps value has set to False in app_config.json, so no Default Apps will be installed in the framework.")
                 if not (os.path.exists(wapps_dir_path)):
                     os.mkdir(wapps_dir)
                 if not (os.path.exists(native_dir)):
