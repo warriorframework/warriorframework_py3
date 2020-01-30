@@ -1681,26 +1681,14 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                 for string in extracted_var:
                     try:
                         if isinstance(raw_value[k], str):
-                            try:
                                 raw_value[k] = raw_value[k].replace(start_pattern+string+end_pattern,
                                                                     get_var_by_string_prefix(string,
                                                                                              iter_number))
-                            except KeyError:
-                                print_error(error_msg1.format(string, raw_value))
-                                if raw_value.startswith("${REPO"):
-                                    update_datarepository({"args_repo_flag": True})
-                                raw_value = None
                         elif isinstance(raw_value[k], (list, dict)):
-                            try:
                                 raw_value[k] = str(raw_value[k]).replace(start_pattern+string+end_pattern,
                                                                          get_var_by_string_prefix(string,
                                                                                                   iter_number))
                                 raw_value[k] = ast.literal_eval(raw_value[k])
-                            except KeyError:
-                                print_error(error_msg1.format(string, raw_value))
-                                if raw_value.startswith("${REPO"):
-                                    update_datarepository({"args_repo_flag": True})
-                                raw_value = None
                         else:
                             print_error("Unsupported format - " +
                                         error_msg2.format(string, value))
@@ -1741,8 +1729,6 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                                                   get_var_by_string_prefix(string, iter_number))
                 except KeyError:
                     print_error(error_msg1.format(string, raw_value))
-                    if raw_value.startswith("${REPO"):
-                        update_datarepository({"args_repo_flag": True})
                     raw_value = None
     return raw_value
 
