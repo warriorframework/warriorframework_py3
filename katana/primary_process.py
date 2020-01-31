@@ -97,19 +97,19 @@ def install_default_apps(default_branch):
 def install_custom_app(app, app_url):
     if not (os.path.exists(wapps_dir_path)):
         os.mkdir(wapps_dir)
+    app_url= app_url.split(" ")
     if len(app_url) == 3:
         repo_url = app_url[0]
         user_branch = app_url[2]
     else:
         repo_url = app_url[0]
         user_branch = 'master'
-    repo_url = app_url
     directory = app
     tempdir = os.path.join(BASE_DIR, directory)
     if (os.path.exists(tempdir)):
         shutil.rmtree(tempdir)
     os.mkdir(tempdir)
-    Repo.clone_from(repo_url, tempdir)
+    Repo.clone_from(repo_url, tempdir, branch= user_branch)
     source = os.path.join(tempdir, directory)
     destination = os.path.join(wapps_dir_path, directory)
     if (os.path.exists(destination)):
