@@ -1,5 +1,5 @@
 Release: Ninja
-Version: warrior-4.1.0
+Version: warrior-4.2.0
 
 ===================
 1: Release details
@@ -9,15 +9,14 @@ This is release Ninja of Warrior Test Automation Framework
 -------------------------------
 1.1: List of available releases
 -------------------------------
-1. Ninja = warrior-4.1.0
+1. Ninja = warrior-4.2.0
 
 ==================
 2. Version Details
 ==================
 You are on Release Ninja, Version warrior-4.1.0 of Warrior Framework.
 
-Warrior-4.1.0 python3 release supports the presence of keyword libraries and test cases outside Warrior install base by updating PYTHONPATH.
-warrior-4.1.0 is also released as pip installable pacakge.
+warrior-4.2.0 is also released as pip installable package.
 The pre-requiste for installing pip module is python 3.6 version and above.
 
 
@@ -29,17 +28,27 @@ All features and bugs from python2 warrior framework have been ported to python3
 -------------
 New Features:
 -------------
-[WAR-2238] - Warrior framework as pip installable module
-[WAR-2244] - Warrior Migration Script to Python3 - Testcases and Keywords Repo
-[WAR-2232] - Debug Section Support in the Wrapper File.
-[WAR-2213] - Support to run the testcase in the Random Order.
-[WAR-2174] - Looping Support in the Warrior Framework
-[WAR-2154] - Kakfa Keywords for Test Automation
-[WAR-2056] - Keyword to log Custom Messages.
-[WAR-1927]  -GNMI Support in Warrior Framework
-[WAR-2028] - Keywords to get current timestamp and time delta
-[WAR-2055] - store_in_repo keyword enchanced to store nested in json file
+[WAR-2221] -  Warrior Framework support for configurable app feature.
+[WAR-2242] -  Testcase generator tool for Warrior - Reduce the intial startup time.
+[WAR-2260] -  Enchance Testapp to support the adding reposistary  name.
+[WAR-2261] -  Substituting Variables from data repository in testcase and input_data file
+[WAR-2269] -  Fully qualified import changes for katana
+[WAR-2272] -  Enchance Execution App to Support Repo feature
+[WAR-2273] -  Alert message should be shown when the user creates testcase without configuring the settings(warriorspace path).
+[WAR-2274] -  Cloudshell new keyword for Reservation.
+[WAR-2275] -  Change the default browse options mode to selected warriorspace in settings/general_settings in PIP mode
+[WAR-2276] -  Warrior Space directory need to be excluded while creating the packages
+[WAR-2282] -  Changes to manage.py  to make it work with configurable apps
 
+-----------
+Bugfixes:
+-----------
+[WAR-2263] -  perform_http_get keyword is not working
+[WAR-2268] -  Keywords are not popping up with respective selected Drivers in Katana
+[WAR-2280] -  log_message keyword enhancement to support all types of values.
+[WAR-2289] -  parallel_testcases and prarallel_keywords scenario is not working
+[WAR-2290] -  Pulling the default apps through master branch from warrior-apps
+[WAR-2293] -  Rest testcase is failing due to substitution of repo/env variable should be presented in the env/repo
 
 =================================================
 3. Procedure to install pip module
@@ -49,7 +58,7 @@ New Features:
     pip install warriorframework
 
 2.Specfic Version warriorframework from PyPI Server
-    pip install warriorframework==4.1.0
+    pip install warriorframework==4.2.0
 
 3. Uninstall warriorframework
     pip uninstall warriorframework
@@ -68,42 +77,42 @@ New Features:
 
 3. To check the list of versions available, execute "git tag --list" command
 
-	$ git tag --list
-	warior-4.1.0
+    $ git tag --list
+    warior-4.2.0
 
 
-3. To Check the current version you are at, execute "git branch" command
+4. To Check the current version you are at, execute "git branch" command
 
-	$ git branch
-		* master
-		- * indicates the active version.
-		- In the above example master is the active version.
-		- If the active version is master it means you are not using a standard release version of warrior framework and hence it may
-		  not be a stable tested version.
+    $ git branch
+        * master
+        - * indicates the active version.
+        - In the above example master is the active version.
+        - If the active version is master it means you are not using a standard release version of warrior framework and hence it may
+          not be a stable tested version.
 
-4. To switch to a specific version from master, execute 'git checkout <version_name>' command.
+5. To switch to a specific version from master, execute 'git checkout <version_name>' command.
 
-	$ git checkout warrior-4.1.0
-		Note: checking out 'warrior-4.1.0'.
+    $ git checkout warrior-4.2.0
+        Note: checking out 'warrior-4.2.0'.
 
-		You are in 'detached HEAD' state. You can look around, make experimental
-		changes and commit them, and you can discard any commits you make in this
-		state without impacting any branches by performing another checkout.
+        You are in 'detached HEAD' state. You can look around, make experimental
+        changes and commit them, and you can discard any commits you make in this
+        state without impacting any branches by performing another checkout.
 
-		If you want to create a new branch to retain commits you create, you may
-		do so (now or later) by using -b with the checkout command again. Example:
+        If you want to create a new branch to retain commits you create, you may
+        do so (now or later) by using -b with the checkout command again. Example:
 
-		git checkout -b <new-branch-name>
+        git checkout -b <new-branch-name>
 
-		HEAD is now at 146313d... reduce command timeout, wait after timeout=60
+        HEAD is now at 146313d... reduce command timeout, wait after timeout=60
 
 
-5. Execute git branch command to verify the active version.
+6. Execute git branch command to verify the active version.
 
-	$ git branch
-		* (HEAD detached at warrior-4.1.0)
-		master
-		- * indicates the active version.
+    $ git branch
+        * (HEAD detached at warrior-4.2.0)
+        master
+        - * indicates the active version.
 
 
 
