@@ -1,0 +1,22 @@
+<data>
+  <global>
+    <command_params start=".*" end="\[edit(.*)fujitsu(.*)" sleep="2" timeout="60" >
+    </command_params>
+    <verifications>
+          <v1 found="no" search="Error: application communication failure"/>
+            <v2 found="no" search="Error: application error"/>
+            <v3 found="no" search="Aborted: application communication failure"/>
+          <v4 found="yes" search="oper up"/>
+            <v5 found="yes" search="Commit complete"/>
+
+    </verifications>
+  </global>
+
+  <testdata execute="yes" title="enter_config_mode">
+         <command end="fujitsu%.*" send="configure" sys="SN1" verify=""/>
+         <command end="fujitsu%.*" send="set system services snmp snmp-enabled true" sys="SN1" verify=""/>
+         <command end="fujitsu%.*" send="set snmp community public1" sys="SN1" verify=""/>
+         <command end="fujitsu%." send="commit" sys="SN1" verify="v1"/>
+         <v1 found="yes" search="ok"/>
+  </testdata>
+</data>

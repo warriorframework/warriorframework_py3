@@ -1,0 +1,3 @@
+recursive-include katana *
+recursive-include warrior *
+prune warrior/Warriorspace

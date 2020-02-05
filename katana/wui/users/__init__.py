@@ -1,1 +1,1 @@
-default_app_config = 'wui.users.apps.UsersConfig'
+default_app_config = 'katana.wui.users.apps.UsersConfig'

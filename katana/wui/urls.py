@@ -1,4 +1,4 @@
-"""wui URL Configuration
+"""katana.wui URL Configuration
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/1.11/topics/http/urls/
@@ -19,18 +19,6 @@ from django.views.generic import RedirectView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^katana/', include('wui.core.urls')),
+    url(r'^katana/', include('katana.wui.core.urls')),
     url(r'^$', RedirectView.as_view(url='/katana/')),
-    url(r'^katana/settings/', include('native.settings.urls')),
-    url(r'^katana/wapp_management/', include('native.wapp_management.urls')),
-    url(r'^katana/wappstore/', include('native.wappstore.urls')),
-    url(r'^katana/microservice_store/', include('native.microservice_store.urls')),
-    url(r'^katana/assembler/', include('wapps.assembler.urls')),
-    url(r'^katana/cli_data/', include('wapps.cli_data.urls')),
-    url(r'^katana/suites/', include('wapps.suites.urls')),
-    url(r'^katana/cases/', include('wapps.cases.urls')),
-    url(r'^katana/wdf/', include('wapps.wdf_edit.urls')),
-    url(r'^katana/execution/', include('wapps.execution.urls')),
-    url(r'^katana/projects/', include('wapps.projects.urls')),
-    url(r'^katana/testwrapper/', include('wapps.testwrapper.urls'))
 ]

@@ -1,0 +1,12 @@
+<credentials>
+	<system name="NE1">
+            <ip>localhost</ip>
+            <conn_type>ssh</conn_type>
+            <ssh_port></ssh_port>
+            <prompt>fujitsu.*</prompt>
+            <timeout>120</timeout>
+            <username></username>
+            <password></password>
+            <testdata></testdata>
+    </system>
+</credentials>

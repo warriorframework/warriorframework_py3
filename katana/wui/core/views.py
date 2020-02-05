@@ -22,13 +22,15 @@ from django.contrib.auth.views import LoginView as BaseLoginView
 from django.contrib.auth.forms import PasswordChangeForm
 import json
 import os
-from utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
-from utils.json_utils import read_json_data
-from utils.navigator_util import Navigator
-from wui.core.apps import AppInformation
-from wui.users.views import PublicView
+from katana.utils.directory_traversal_utils import get_parent_directory, join_path, file_or_dir_exists
+from katana.utils.json_utils import read_json_data
+from katana.utils.navigator_util import Navigator
+from katana.wui.core.apps import AppInformation
+from katana.wui.users.views import PublicView
 from .core_utils.core_settings import FileSettings, LDAPSettings, Restart, EMAILSettings
 
+nav_obj = Navigator()
+BASE_DIR = nav_obj.get_katana_dir()
 try:
     from django_auth_ldap.backend import LDAPBackend
 except Exception as err:
@@ -39,6 +41,12 @@ except Exception as err:
 def refresh_landing_page(request):
     return render(request, 'core/landing_page.html', {"apps": AppInformation.information.apps})
 
+
+def read_config_file_data():
+    nav_obj = Navigator()
+    config_file_path = join_path(nav_obj.get_katana_dir(), "config.json")
+    data = read_json_data(config_file_path)
+    return data
 
 class getFileExplorerData(View):
 
@@ -63,8 +71,15 @@ class getFileExplorerData(View):
         if "data[start_dir]" in request.POST:
             start_dir = request.POST["data[start_dir]"]
 
-        if start_dir == "false":
-            start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
+        if os.environ["pipmode"] == 'True':
+            config_data = read_config_file_data()
+            if config_data["pythonsrcdir"] != "" and start_dir == "false":
+                start_dir = config_data["pythonsrcdir"]
+            elif config_data["pythonsrcdir"] == "" and start_dir == "false":
+                start_dir = config_data["userreposdir"]
+        else:
+            if start_dir == "false":
+                start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
 
         if "data[path]" in request.POST and request.POST["data[path]"] != "false":
             start_dir = get_parent_directory(request.POST["data[path]"])
@@ -90,14 +105,24 @@ class getFileExplorerData(View):
         nav_obj = Navigator()
         start_dir = "false"
         lazy_loading = True if "lazy_loading" in request.GET and request.GET["lazy_loading"].lower() == "true" else False
+        config_data = read_config_file_data()
+
         get_children_only = False
         if "start_dir" in request.GET:
             get_children_only = True
             start_dir = request.GET["start_dir"]
 
-        if start_dir == "false":
-            get_children_only = False
-            start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
+        if os.environ["pipmode"] == 'True':
+            if config_data["pythonsrcdir"] != "" and start_dir == "false":
+                get_children_only = False
+                start_dir = config_data["pythonsrcdir"]
+            elif config_data["pythonsrcdir"] == "" and start_dir == "false":
+                get_children_only = False
+                start_dir = config_data["userreposdir"]
+        else:
+            if start_dir == "false":
+                get_children_only = False
+                start_dir = join_path(nav_obj.get_warrior_dir(), "Warriorspace")
 
         if "path" in request.GET:
             get_children_only = False
@@ -140,7 +165,10 @@ class HomeView(View):
 
     def get(self, request):
         user_data = self.get_user_data()
-        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data})
+        fname_file = os.path.join(BASE_DIR, "wui/core/static/core/framework_name.json")
+        data = read_json_data(fname_file)
+        framename = data["fr_name"]
+        return render(request, self.index_page, {"apps": AppInformation.information.apps, "userData": user_data, "frame_name": framename})
 
     def get_user_data(self):
         """

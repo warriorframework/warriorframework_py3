@@ -1,5 +1,5 @@
 Name        : warriorframework
-Version     : warrior-4.1.0
+Version     : warrior-4.2.0
 Release     : Ninja
-Build Date  : Wed Oct 23 00:22:38 CDT 2019
+Build Date  : Wed Feb  5 10:00:00 IST 2020
 Size        : 56M

@@ -8,8 +8,8 @@ import codecs
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 
-from wui.core.core_utils.app_info_class import AppInformation
-from utils import date_time_stamp_utils as dtutils
+from katana.wui.core.core_utils.app_info_class import AppInformation
+from katana.utils import date_time_stamp_utils as dtutils
 
 def readlines_from_file(path, start=None, end=None):
     """

@@ -1,0 +1,19 @@
+<data>
+	<global>
+		<command_params>
+		</command_params>
+		<verifications>
+            <v1 found="no" search="error" />
+		</verifications>
+	</global>
+
+    <testdata execute="yes" title ="execute_id_command" >
+            <command send="id" end=">" verify="v1" />
+        <v1 found="yes" search="ok" />
+    </testdata>
+
+	<testdata title="show_software_version" execute="yes">
+        	<command end=">" send="show sw-version"/>
+    </testdata>
+
+</data>

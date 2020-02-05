@@ -1634,7 +1634,11 @@ def get_var_by_string_prefix(string, iter_number=None):
         return os.environ[string.split('.', 1)[1]]
     if string.startswith("REPO."):
         keys = string.split('.', 1)
-        return get_object_from_datarepository(keys[1])
+        value =  get_object_from_datarepository(keys[1])
+        if not value:
+            raise KeyError
+        else:
+            return value
     if string.startswith("LOOP."):
         keys = string.split('.', 1)
         loop_json = get_object_from_datarepository('loop_json')
@@ -1677,14 +1681,14 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                 for string in extracted_var:
                     try:
                         if isinstance(raw_value[k], str):
-                            raw_value[k] = raw_value[k].replace(
-                                start_pattern+string+end_pattern,
-                                get_var_by_string_prefix(string, iter_number))
+                                raw_value[k] = raw_value[k].replace(start_pattern+string+end_pattern,
+                                                                    get_var_by_string_prefix(string,
+                                                                                             iter_number))
                         elif isinstance(raw_value[k], (list, dict)):
-                            raw_value[k] = str(raw_value[k]).replace(
-                                start_pattern+string+end_pattern,\
-                                get_var_by_string_prefix(string, iter_number))
-                            raw_value[k] = ast.literal_eval(raw_value[k])
+                                raw_value[k] = str(raw_value[k]).replace(start_pattern+string+end_pattern,
+                                                                         get_var_by_string_prefix(string,
+                                                                                                  iter_number))
+                                raw_value[k] = ast.literal_eval(raw_value[k])
                         else:
                             print_error("Unsupported format - " +
                                         error_msg2.format(string, value))

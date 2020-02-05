@@ -1,0 +1,102 @@
+<?xml version="1.0" ?>
+<Testcase>
+	<Details>
+		<Name>tc_snmp_sample</Name>
+		<Title>sample snmp testcase</Title>
+        <InputDataFile></InputDataFile>
+        <Datatype>custom</Datatype>
+		<Category>SNMP</Category>
+		<default_onError action = 'next'/>
+        <Date>28/11/2019</Date>
+        <Time>14:20:30</Time>
+        <Engineer>warrior</Engineer>
+		<Logsdir></Logsdir>
+		<Resultsdir></Resultsdir>
+	</Details>
+	<Requirements>
+	</Requirements>
+    <Steps>
+        <step Driver="cli_driver" Keyword="connect" TS="1">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+            </Arguments>
+            <onError action="next"/>
+            <Description>connect to cli</Description>
+            <Execute ExecType="Yes"/>
+            <context>positive</context>
+            <impact>impact</impact>
+        </step>
+
+        <step Driver="cli_driver" Keyword="send_commands_by_testdata_title" TS="2">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+                <argument name="title" value="enter_config_mode"/>
+            </Arguments>
+            <onError action="next"/>
+            <Description>enter config mode</Description>
+            <Execute ExecType="Yes"/>
+            <context>positive</context>
+            <impact>impact</impact>
+        </step>
+
+        <step TS='3' Driver='snmp_driver' Keyword='snmp_walk'>
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+                <argument name="oid_string" value="1.3.6.1.4.1.211.1.24.12.1100"/>
+                <argument name="snmp_ver" value="2"/>
+                <argument name="communityname" value="public1"/>
+                <argument name="lexicographicMode" value="False"/>
+                <argument name="snmp_timeout" value="20"/>
+            </Arguments>
+            <Execute ExecType="Yes"/>
+        </step>
+
+        <step Driver="snmp_driver" Keyword="snmp_getnext" TS="4">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+                <argument name="snmp_ver" value="2"/>
+                <argument name="communityname" value="public"/>
+                <argument name="oid_string" value="1.3.6.1.4.1.211.1.24.12.1100"/>
+            </Arguments>
+            <onError action="abort"/>
+            <Description>Send SNMP Get for sysDescr</Description>
+            <Execute ExecType="Yes">
+                <Rule Condition="" Condvalue="" Else="" Elsevalue=""/>
+            </Execute>
+            <context>positive</context>
+            <impact>impact</impact>
+            <Iteration_type type="Standard"/>
+            <runmode type="Standard" value=""/>
+        </step>
+
+        <step Driver="snmp_driver" Keyword="start_trap_listener" TS="5">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+            </Arguments>
+            <onError action="abort"/>
+            <Description>Send SNMP Get for sysDescr</Description>
+            <Execute ExecType="Yes">
+                <Rule Condition="" Condvalue="" Else="" Elsevalue=""/>
+            </Execute>
+            <context>positive</context>
+            <impact>impact</impact>
+            <Iteration_type type="Standard"/>
+            <runmode type="Standard" value=""/>
+        </step>
+
+        <step Driver="snmp_driver" Keyword="stop_trap_listener" TS="6">
+            <Arguments>
+                <argument name="system_name" value="SN1"/>
+            </Arguments>
+            <onError action="abort"/>
+            <Description>Send SNMP Get for sysDescr</Description>
+            <Execute ExecType="Yes">
+                <Rule Condition="" Condvalue="" Else="" Elsevalue=""/>
+            </Execute>
+            <context>positive</context>
+            <impact>impact</impact>
+            <Iteration_type type="Standard"/>
+            <runmode type="Standard" value=""/>
+        </step>
+    </Steps>
+</Testcase>

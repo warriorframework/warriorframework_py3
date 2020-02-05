@@ -1,0 +1,96 @@
+<data>
+    <!--This is a Warrior standard testdata file.-->
+    <!--Please refer below link for more information
+    https://github.com/warriorframework/warriorframework_py3/blob/
+    master/warrior/Warriorspace/Config_files/Samples/CLI_Test_Data_Sample.xml-->
+    <!--The testdata file has a global section and multiple testdata sections.-->
+    <!--
+	===================
+	Global section:
+	===================
+		This is the global section in testdata file, data that needs to be used repeatedly
+		in the testdata sections can be provided in this global section.
+		If a specific parameter is not provided in the testdata section, framework searches for the global value.
+		If not it uses the default values for the paramter.
+		Thereby avoiding the need to repeat the same data in multiple testdata sections.
+	-->
+
+	<global>
+		<command_params>
+		</command_params>
+        <!--
+		====================
+		I.b : verifications:
+		====================
+			Global values for command verifications & verification combos can be provided in the verification section
+			as shown below
+		-->
+		<verifications>
+            <v1 found="no" search="error" />
+		</verifications>
+	</global>
+
+    <!--There can be multiple testdata sections in the testdata file.-->
+		<!--Each testdata is identified by a 'title' or 'row' or combination of title and row.-->
+    <!--:execute: the execute tag can take values 'yes' or 'no'-->
+				  <!--any testdata that is marked 'no' will not be executed. By default the value is 'yes'-->
+
+    <testdata execute="yes" title ="execute_id_command" >
+            <command send="id" end=">" verify="v1" />
+        <v1 found="yes" search="ok" />
+    </testdata>
+    <!--
+        =================
+		command :
+		=================
+		The command tag is used to provide command and command related parameters.
+		1.  :send: The actual command that has to be sent
+		   		- variable should be referenced from the variable config file
+		   			in dot notations inside the pattern '${}', values for such variables will be
+		   			substituted from the variable config file of the respective system.
+		   		- the patterns [VAR_SUB] will be replaced by the var_sub
+		   			argument provided in the testcase steps.
+				- sending control characters to the session:
+					In order to send control characters to the session like ctrl-x, ctrl-z etc..
+					Use the format "wctrl:char" in the command
+					Eg: to send ctrl-x to the session
+					send="wctrl:x"
+		2.  :sys: system/subsystem on which the command should be executed.
+					Connection to the system/subsystem should have been established earlier.
+			  		a. system = provide the system name directly
+				 		Eg:- "NE1", "server1"
+			  		b. system+subsystem = provide system+subsystem combination, only a single subsystem is supported
+			 			Eg: "NE1[cli]", sever1["interface1"]
+			  		c. subsystem only = to refer only a subsystem provide the subsystem name
+						enclosed by square brackets, In this case the system name provided in
+						the testcase keyword will be used.
+						Eg:- [cli], [dip], [interface1]
+		3.  :session: session name of the system or susbsystem to connect to.
+		4.  :start: (default=".*") starting prompt of the command.
+					using ".*" ignores the check for start prompts.
+					variable substitution is supported for this parameter.
+		5.  :end:	(mandatory) ending prompt of the command, the command is considered to have completed
+					successfully if the end prompt is found in the command's response.
+					variable substitution is supported for this parameter.
+		6.  :timeout: 	(default=60 sec) time to wait to receive the end prompt.
+						If a command time's out
+						- command status will be marked as error.
+						- after timeout will wait for an additional 60 seconds to receive the end prompt, this is a
+						to provide an extra buffer to check if it is a intermittent delay or a long delay. Irrespective
+						of whether or not the end prompt is received during this extra time the command will be marked as error.
+		7.  :sleep:		(default=0 sec) time to wait(in secs) after completion of a command.
+		8.  :verify: 	(tags) provided the tag names containing verification details
+					 	If multiple verification are required for a command, provide tag names seperated by
+					 	commas Eg: "v1,v2,v3"
+					 	-->
+
+
+	<testdata title="show_software_version" execute="yes">
+        	<command end=">" send="show sw-version"/>
+    </testdata>
+
+    <testdata title="set_hal_level" execute="yes">
+        <command  end="$" start=".*" send="/usr/local/fnc/dip/dip_verbosity set hal ${hal_level.value}"/>
+    </testdata>
+
+</data>

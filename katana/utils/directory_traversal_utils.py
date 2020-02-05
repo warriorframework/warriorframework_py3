@@ -40,7 +40,7 @@ def get_sub_folders(path, abs_path=False):
     folders = []
     temp = glob.glob(path + os.sep + "*")
     for folder in temp:
-        if os.path.isdir(folder):
+        if os.path.isdir(folder) and not folder.endswith('__pycache__'):
             folders.append(folder)
     only_folders = [f.replace("\\", '/') for f in folders]
     if not abs_path:
