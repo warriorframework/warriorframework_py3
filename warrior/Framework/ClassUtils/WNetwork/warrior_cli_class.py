@@ -1592,6 +1592,7 @@ class PexpectConnect(object):
             if kwargs.get("log", "true") != "false":
                 pNote("[{0}] Sending Command: {1}".format(start_time, command))
             WarriorCli._send_cmd_by_type(self.target_host, command)
+            time.sleep(2)
             try:
                 while True:
                     if kwargs.get("sleep_before", None):
