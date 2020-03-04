@@ -33,9 +33,9 @@ from warrior.WarriorCore.Classes.warmock_class import mocked
 from timeit import itertools
 from warrior.Framework.Utils.config_Utils import data_repository
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
+from multiprocessing import current_process
 
 """ Module for performing CLI operations """
-
 
 class WarriorCli(object):
     """
@@ -1592,7 +1592,12 @@ class PexpectConnect(object):
             if kwargs.get("log", "true") != "false":
                 pNote("[{0}] Sending Command: {1}".format(start_time, command))
             WarriorCli._send_cmd_by_type(self.target_host, command)
-            time.sleep(2)
+
+            if current_process().name == 'MainProcess':
+                pass
+            else:
+                time.sleep(2)
+
             try:
                 while True:
                     if kwargs.get("sleep_before", None):
