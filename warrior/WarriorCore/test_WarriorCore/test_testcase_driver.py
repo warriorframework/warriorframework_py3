@@ -200,6 +200,7 @@ def test_report_testcase_result(capsys):
     class temp(object):
         """temp"""
         def __init__(self):
+            """init"""
             pass
 
         def findall(self, a):
@@ -281,6 +282,7 @@ def test_get_system_list():
     class temp(object):
         """temp"""
         def __init__(self):
+            """init"""
             pass
 
         def findall(self, a):
@@ -358,6 +360,7 @@ def test_execute_steps():
     class temp(object):
         """temp"""
         def __init__(self):
+            """init"""
             pass
 
         def remove_html_obj(self):
@@ -489,6 +492,7 @@ def test_check_robot_wrapper_case():
     class temp(object):
         """temp"""
         def __init__(self):
+            """init"""
             pass
 
         def get(self, a):
