@@ -1,0 +1,62 @@
+<?xml version="1.0" ?>
+<Testcase>
+        <Details>
+                <Name>test_log_messages</Name>
+                <Title>testcase to print log messages</Title>
+                <Engineer>Sekhar</Engineer>
+                <Date>2018-12-04</Date>
+                <Time>11:27</Time>
+                <State/>
+		<InputDataFile>No_Data</InputDataFile>
+		<GenericDataFile>data_generic.xls</GenericDataFile>
+                <Datatype/>
+                <default_onError action="next"/>
+                <Logsdir/>
+                <Resultsdir/>
+                <ExpectedResults/>
+        </Details>
+        <Requirements>
+                <Requirement/>
+        </Requirements>
+        <Steps>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="fruit"/>
+				<argument name="datavalue" value="${GEN.fruit}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="vegetable"/>
+				<argument name="datavalue" value="${GEN.vegetable}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="log_driver" Keyword="log_message" TS="4" draft="no">
+                        <Arguments>
+                                <argument name="dict_message" value="{'my first preference' : 'fruit', 'my next preference' : 'vegetable'}"/>
+                                <argument name="type" value="INFO"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+        </Steps>
+</Testcase>
