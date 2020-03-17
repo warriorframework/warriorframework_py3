@@ -22,6 +22,7 @@ import os
 import time
 import shutil
 import ast
+import pandas as pd
 import xml.etree.ElementTree as et
 from json import loads, dumps
 from warrior.WarriorCore.defects_driver import DefectsDriver
@@ -36,6 +37,7 @@ from warrior.Framework.Utils.print_Utils import print_info, print_warning, print
 from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
 from warrior.Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
 import warrior.Framework.Utils.email_utils as email
+from warrior.WarriorCore import warrior_cli_driver
 
 
 def get_testcase_details(testcase_filepath, data_repository, jiraproj):
@@ -45,7 +47,7 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     by user assigns default values.
     """
 
-    Utils.config_Utils.set_datarepository(data_repository)
+    #Utils.config_Utils.set_datarepository(data_repository)
     name = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Name')
     title = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Title')
     expResults = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details',\
@@ -866,20 +868,65 @@ def check_robot_wrapper_case(testcase_filepath):
             break
     return isRobotWrapperCase
 
+def update_database(tc_status, data_repository):
+    """ update tc generic iteration results in persistent db"""
+    #code to connect db and persist iteration results
+    pass
+
+def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
+    """ get iterations from generic data"""
+    if Utils.xml_Utils.nodeExists(testcase_filepath, "GenericDataFile"):
+        genericdatafile = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, \
+                    'Details', 'GenericDataFile')
+        if not genericdatafile:
+            return False
+        abs_cur_dir = os.path.dirname(testcase_filepath)
+        abs_genericdatafile = Utils.file_Utils.getAbsPath(genericdatafile, abs_cur_dir)
+        df = pd.read_excel(abs_genericdatafile)
+        generic_data_dict = df.to_dict('records')
+        #random or boundary logic and verifying persistent db has to be implemented here
+        gen_dict = {"gen_dict" : generic_data_dict}
+        Utils.data_Utils.update_datarepository(gen_dict)
+        return generic_data_dict
+    else:
+        return False
 
 def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
          runtype='SEQUENTIAL_KEYWORDS', tc_parallel=False, auto_defects=False, suite=None,
-         tc_onError_action=None, iter_ts_sys=None, queue=None, jiraproj=None):
+         tc_onError_action=None, iter_ts_sys=None, queue=None, jiraproj=None, jiraid=None):
 
     """ Executes a testcase """
     tc_start_time = Utils.datetime_utils.get_current_timestamp()
     if Utils.file_Utils.fileExists(testcase_filepath):
 
         try:
-            tc_status, data_repository = execute_testcase(testcase_filepath,
-                                                          data_repository, tc_context, runtype,
-                                                          tc_parallel, queue, auto_defects, suite,
-                                                          jiraproj, tc_onError_action, iter_ts_sys)
+            Utils.config_Utils.set_datarepository(data_repository)
+            generic_data_dict = get_iterations_from_generic_data(testcase_filepath)
+            if generic_data_dict:
+                tc_status = True
+                for iter_number, _ in enumerate(generic_data_dict):
+                    Utils.data_Utils.update_datarepository({"gen_iter_number" : iter_number})
+                    data_key = "gen_" + str(iter_number)
+                    #print_info("data repo is : {}".format(data_repository))
+                    data_repository[data_key] = {'db_obj': False, 'war_file_type': 'Case'}
+                    gen_tc_status, gen_data_repository = execute_testcase(testcase_filepath,
+                                                                  data_repository[data_key], tc_context, runtype,
+                                                                  tc_parallel, queue, auto_defects, suite,
+                                                                  jiraproj, tc_onError_action, iter_ts_sys)
+                    #print_info("gen data repo is : {}".format(gen_data_repository))
+                    print_info("Result of {} : {}".format(data_key, tc_status))
+                    tc_status = tc_status and gen_tc_status
+                    update_database(tc_status, data_repository[data_key])
+                    warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, os.path.dirname(
+                                     data_repository[data_key]['wt_resultsdir']), gen_tc_status)
+                    email.compose_send_email("Test Case: ", testcase_filepath,
+                                 data_repository[data_key]['wt_logsdir'],
+                                 data_repository[data_key]['wt_resultsdir'], gen_tc_status)
+            else:
+                tc_status, data_repository = execute_testcase(testcase_filepath,
+                                                              data_repository, tc_context, runtype,
+                                                              tc_parallel, queue, auto_defects, suite,
+                                                              jiraproj, tc_onError_action, iter_ts_sys)
         except Exception as exception:
             print_exception(exception)
             tc_status = False

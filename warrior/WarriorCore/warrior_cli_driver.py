@@ -130,12 +130,13 @@ def file_execution(cli_args, abs_filepath, default_repo):
         result, _, data_repository = testcase_driver.main(
             abs_filepath, data_repository=default_repo,
             runtype='SEQUENTIAL_KEYWORDS',
-            auto_defects=a_defects, jiraproj=jiraproj)
-        update_jira_by_id(jiraproj, jiraid, os.path.dirname(
-            data_repository['wt_resultsdir']), result)
-        email.compose_send_email("Test Case: ", abs_filepath,
-                                 data_repository['wt_logsdir'],
-                                 data_repository['wt_resultsdir'], result)
+            auto_defects=a_defects, jiraproj=jiraproj, jiraid=jiraid)
+        if not Utils.data_Utils.get_object_from_datarepository('gen_dict'):
+            update_jira_by_id(jiraproj, jiraid, os.path.dirname(
+                data_repository['wt_resultsdir']), result)
+            email.compose_send_email("Test Case: ", abs_filepath,
+                                     data_repository['wt_logsdir'],
+                                     data_repository['wt_resultsdir'], result)
     elif Utils.xml_Utils.getRoot(abs_filepath).tag == 'TestSuite':
         default_repo['war_file_type'] = "Suite"
         result, suite_repository = testsuite_driver.main(
