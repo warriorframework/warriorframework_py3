@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+<Testcase>
+    <Details>
+        <Name>multi_rules_and_if_example</Name>
+        <Title>multi rule with and if example</Title>
+        <Engineer>Apathapa</Engineer>
+        <Date>2020-03-23</Date>
+        <Time>14:53</Time>
+        <State/>
+        <InputDataFile>No_Data</InputDataFile>
+        <Datatype/>
+        <default_onError action="next"/>
+        <Logsdir/>
+        <Resultsdir/>
+        <ExpectedResults/>
+    </Details>
+    <Requirements>
+        <Requirement/>
+    </Requirements>
+    <Steps>
+
+        <step Driver="ci_regression_driver" Keyword="local_data_test" TS="1">
+			<Arguments>
+				<argument name="desired_status" value="pass"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>local_data_test</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+			<rmt/>
+		</step>
+        <step Driver="ci_regression_driver" Keyword="local_data_test" TS="2">
+			<Arguments>
+				<argument name="desired_status" value="pass"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>local_data_test</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>noimpact</impact>
+			<rmt/>
+		</step>
+        <step Driver="log_driver" Keyword="log_message" TS="3">
+			<Arguments>
+				<argument name="message" value="condition not met not executing the keyword"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>local_data_test</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="If" Expression="1 and 2">
+
+				<Rule Condition="step_1_result" Condvalue="FAIL" />
+                <Rule Condition="step_2_result" Condvalue="PASS" />
+			</Execute>
+			<context>positive</context>
+			<impact>impact</impact>
+			<rmt/>
+		</step>
+		<step Driver="log_driver" Keyword="log_message" TS="4">
+			<Arguments>
+				<argument name="message" value="condition  met  executing the keyword"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>local_data_test</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="If" Expression="1 and 2">
+
+				<Rule Condition="step_1_result" Condvalue="PASS" />
+                <Rule Condition="step_2_result" Condvalue="PASS" />
+			</Execute>
+			<context>positive</context>
+			<impact>impact</impact>
+			<rmt/>
+		</step>
+    </Steps>
+</Testcase>
