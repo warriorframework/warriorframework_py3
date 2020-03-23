@@ -23,29 +23,62 @@ as it will lead to cyclic imports.
 """
 import sys
 import re
+import os
+import socket
+import logging
+import re
 
+def print_all(message, print_type, color_message=None, log_level="INFO", *args, **kwargs):
+    if print_type == "":
+        print(message)
+    elif print_type != "":
+        host_name = socket.gethostname()
+        p_id = os.getpid()
+        extra_msg = {"pid":p_id,"host_name":host_name}
+        FORMAT = '%(asctime)-15s %(host_name)-8s %(pid)s %(levelname)s %(message)s'
+        logging.basicConfig(format=FORMAT)
+        logger = logging.getLogger()
+        if log_level == "DEBUG":
+            logger.setLevel(logging.DEBUG)
+        elif log_level == "INFO":
+            logger.setLevel(logging.INFO)
+        elif log_level == "WARNING":
+            logger.setLevel(logging.WARNING)
+        elif log_level == "ERROR":
+            logger.setLevel(logging.ERROR)
+        elif log_level == "NOTSET":
+            logger.setLevel(logging.NOTSET)
+        elif log_level == "CRITICAL":
+            logger.setLevel(logging.CRITICAL)
+        if print_type == "-I-":
+            matched = re.match("^=+",message) or re.match("^\++",message)
+            if matched:
+                print(message)
+            else:
+                logger.info(message, extra=extra_msg)
+        elif print_type == "\x1b[1;33m-W-\x1b[0m":
+            logger.warning(message, extra=extra_msg)
+        elif print_type == "-E-":
+            logger.error(message, extra=extra_msg)
+        elif print_type == "-N-":
+            logger.info(message, extra=extra_msg)
+        elif print_type == "-D-":
+            logger.debug(message, extra=extra_msg)
 
 def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
     """
-    if color_message is not None:
-        print_string = print_type + " " + str(color_message)
-    elif color_message is None:
-        print_string = print_type + " " + str(message)
-    if args:
-        print_string = (print_type + " " + str(message) + str(args))
-    # set logging argument default to True, to write the message in the log file
-    if isinstance(sys.stdout, RedirectPrint):
-        sys.stdout.write((print_string + '\n'),
-                         logging=kwargs.get('logging', True))
+    # import pdb; pdb.set_trace()
+    arg_list = sys.argv
+    if len(arg_list)>2:
+        if sys.argv[2] in ["loglevel=0","loglevel=10","loglevel=20","loglevel=30","loglevel=40","loglevel=50"]:
+            log_levels = {"loglevel=0":"NOTSET","loglevel=10":"DEBUG","loglevel=20":"INFO","loglevel=30":"WARNNG","loglevel=40":"ERROR","loglevel=50":"CRITICAL"}
+            level = log_levels[sys.argv[2]]
+            print_all(message, print_type, log_level=level, color_message=None, *args, **kwargs)
+        else:
+            print_all(message, print_type, color_message=None, *args, **kwargs)
     else:
-        sys.stdout.write(print_string + '\n')
-    sys.stdout.flush()
-    from warrior.Framework.Utils.testcase_Utils import TCOBJ
-    if TCOBJ.pnote is False:
-        TCOBJ.p_note_level(message, print_type)
-    return print_string
-
+        print_all(message, print_type, color_message=None, *args, **kwargs)
 
 class RedirectPrint(object):
     """Class that has methods to redirect prints
