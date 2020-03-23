@@ -43,33 +43,45 @@
 			<impact>noimpact</impact>
 			<rmt/>
 		</step>
-        <step Driver="log_driver" Keyword="log_message" TS="3">
+		<step Driver="ci_regression_driver" Keyword="local_data_test" TS="3">
+			<Arguments>
+				<argument name="desired_status" value="fail"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>local_data_test</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>noimpact</impact>
+			<rmt/>
+		</step>
+        <step Driver="log_driver" Keyword="log_message" TS="4">
 			<Arguments>
 				<argument name="message" value="condition not met not executing the keyword"/>
 			</Arguments>
 			<onError action="next"/>
 			<Description>local_data_test</Description>
 			<iteration_type type=""/>
-			<Execute ExecType="If" Expression="1 and 2">
-
+			<Execute ExecType="If" Expression="1 and 2 and 3">
 				<Rule Condition="step_1_result" Condvalue="FAIL" />
                 <Rule Condition="step_2_result" Condvalue="PASS" />
+				<Rule Condition="step_3_result" Condvalue="PASS" />
 			</Execute>
 			<context>positive</context>
 			<impact>impact</impact>
 			<rmt/>
 		</step>
-		<step Driver="log_driver" Keyword="log_message" TS="4">
+		<step Driver="log_driver" Keyword="log_message" TS="5">
 			<Arguments>
 				<argument name="message" value="condition  met  executing the keyword"/>
 			</Arguments>
 			<onError action="next"/>
 			<Description>local_data_test</Description>
 			<iteration_type type=""/>
-			<Execute ExecType="If" Expression="1 and 2">
-
+			<Execute ExecType="If" Expression="1 and 2 and 3">
 				<Rule Condition="step_1_result" Condvalue="PASS" />
                 <Rule Condition="step_2_result" Condvalue="PASS" />
+				<Rule Condition="step_3_result" Condvalue="FAIL" />
 			</Execute>
 			<context>positive</context>
 			<impact>impact</impact>
