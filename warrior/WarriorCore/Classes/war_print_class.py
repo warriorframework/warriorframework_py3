@@ -27,17 +27,25 @@ import os
 import socket
 import logging
 import re
+import io
+import psutil
 
 def print_all(message, print_type, color_message=None, log_level="INFO", *args, **kwargs):
+    host_name = socket.gethostname()
+    process = psutil.Process(os.getpid())
+    pname = str(process.name())
+    extra_msg = {"pname": pname, "host_name": host_name}
+    formatter = logging.Formatter('%(asctime)-15s %(host_name)s %(pname)-8s %(levelname)s ::%(message)s','%Y-%m-%d %H:%M:%S')
+    logger = logging.getLogger(__name__)
+
+    log_capture_string = io.StringIO()
+    ch = logging.StreamHandler(log_capture_string)
+    ch.setFormatter(formatter)
+    logger.setLevel(logging.INFO)
+    # import pdb;pdb.set_trace()
     if print_type == "":
         print(message)
     elif print_type != "":
-        host_name = socket.gethostname()
-        p_id = os.getpid()
-        extra_msg = {"pid":p_id,"host_name":host_name}
-        FORMAT = '%(asctime)-15s %(host_name)-8s %(pid)s %(levelname)s %(message)s'
-        logging.basicConfig(format=FORMAT)
-        logger = logging.getLogger()
         if log_level == "DEBUG":
             logger.setLevel(logging.DEBUG)
         elif log_level == "INFO":
@@ -50,30 +58,50 @@ def print_all(message, print_type, color_message=None, log_level="INFO", *args, 
             logger.setLevel(logging.NOTSET)
         elif log_level == "CRITICAL":
             logger.setLevel(logging.CRITICAL)
-        if print_type == "-I-":
-            matched = re.match("^=+",message) or re.match("^\++",message)
-            if matched:
-                print(message)
-            else:
-                logger.info(message, extra=extra_msg)
-        elif print_type == "\x1b[1;33m-W-\x1b[0m":
-            logger.warning(message, extra=extra_msg)
-        elif print_type == "-E-":
-            logger.error(message, extra=extra_msg)
-        elif print_type == "-N-":
+    logger.addHandler(ch)
+    logger = logging.LoggerAdapter(logger, extra_msg)
+
+    if print_type == "-I-":
+        matched = re.match("^=+",message) or re.match("^\++",message) or re.match("^\*+",message)
+        if matched:
+            print(message)
+        else:
             logger.info(message, extra=extra_msg)
-        elif print_type == "-D-":
-            logger.debug(message, extra=extra_msg)
+    elif print_type == "\x1b[1;33m-W-\x1b[0m":
+        logger.warning(message, extra=extra_msg)
+    elif print_type == "-E-" or print_type == "\x1b[1;33m-E-\x1b[0m":
+        logger.error(message, extra=extra_msg)
+    elif print_type == "-N-":
+        logger.info(message, extra=extra_msg)
+    elif print_type == "-D-":
+        logger.debug(message, extra=extra_msg)
+    elif print_type == "-C-":
+        logger.critical(message, extra=extra_msg)
+
+    log_contents = log_capture_string.getvalue()
+
+    if isinstance(sys.stdout, RedirectPrint):
+        sys.stdout.write((log_contents + '\n'),
+                         logging=kwargs.get('logging', True))
+    else:
+        sys.stdout.write(log_contents + '\n')
+    sys.stdout.flush()
+    from warrior.Framework.Utils.testcase_Utils import TCOBJ
+    if TCOBJ.pnote is False:
+        TCOBJ.p_note_level(log_contents, print_type)
+    return log_contents
+
 
 def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
     """
     # import pdb; pdb.set_trace()
     arg_list = sys.argv
-    if len(arg_list)>2:
-        if sys.argv[2] in ["loglevel=0","loglevel=10","loglevel=20","loglevel=30","loglevel=40","loglevel=50"]:
-            log_levels = {"loglevel=0":"NOTSET","loglevel=10":"DEBUG","loglevel=20":"INFO","loglevel=30":"WARNNG","loglevel=40":"ERROR","loglevel=50":"CRITICAL"}
-            level = log_levels[sys.argv[2]]
+    if len(arg_list) > 3:
+        cmd =sys.argv[2].upper()+"="+sys.argv[3].upper()
+        if cmd in ["-LOGLEVEL=NOTSET","-LOGLEVEL=DEBUG","-LOGLEVEL=INFO","-LOGLEVEL=WARNING","-LOGLEVEL=ERROR","-LOGLEVEL=CRITICAL"]:
+            log_levels = {"-LOGLEVEL=NOTSET":"NOTSET","-LOGLEVEL=DEBUG":"DEBUG","-LOGLEVEL=INFO":"INFO","-LOGLEVEL=WARNING":"WARNING","-LOGLEVEL=ERROR":"ERROR","-LOGLEVEL=CRITICAL":"CRITICAL"}
+            level = log_levels[cmd]
             print_all(message, print_type, log_level=level, color_message=None, *args, **kwargs)
         else:
             print_all(message, print_type, color_message=None, *args, **kwargs)

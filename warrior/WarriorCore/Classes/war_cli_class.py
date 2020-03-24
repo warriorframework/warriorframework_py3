@@ -424,10 +424,14 @@ class WarriorCliClass(object):
             "to be integrated with Warrior. "\
             "Multiple paths can be provided"\
             "(separated by a colon)")
+
         tools_arg = parser.add_argument_group('warrior tools')
         tools_arg.add_argument('-tc_gen', action='store',\
             help="generate the sample cli/netconf/snmp testcase based on "\
             "user provide type")
+
+        tools_arg.add_argument('-loglevel', action='store', \
+                               help="set the log level and print the logs at the given level")
 
         namespace = parser.parse_args(arglist)
         #see if the below line is requried
