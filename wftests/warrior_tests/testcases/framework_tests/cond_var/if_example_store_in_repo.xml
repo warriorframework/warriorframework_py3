@@ -40,7 +40,7 @@
 			<Description>displaying the message</Description>
 			<iteration_type type=""/>
 			<Execute ExecType="If">
-				<Rule Condition="name" Condvalue="warriorframework" Else=""/>
+				<Rule Condition="key" Condvalue="warriorframework" Else=""/>
 			</Execute>
 			<context>positive</context>
 			<impact>impact</impact>
