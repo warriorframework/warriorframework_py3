@@ -8,69 +8,39 @@
   <title>Equinix</title>
   {% load staticfiles %}
   <link rel="stylesheet" href="{% static 'equinix/css/equinix.css' %}">
-  <style>
-    .loader {
-      position: relative;
-      left: -38%;
-      top: -31%;
-    }
-
-    .head {
-      font-size: 24px;
-    }
-
-    div input {
-      width: 32%;
-      font-size: 15px;
-      display: inline-block;
-      float: left;
-      margin-left: -18%;
-    }
-
-    div select {
-      width: 95px;
-      margin-left: -18%;
-    }
-
-    .bgcolor {
-      background-color: #ac8f8f2b;
-      margin: auto;
-      padding: 25px;
-      border-radius: 10px;
-    }
-
-    .container-fluid {
-      margin-top: 40px !important;
-    }
-
-    .result {
-      width: 70%;
-      height: 190px;
-      font-size: 18px;
-      resize: none;
-      background-color: #f2f1f0;
-
-    }
-
-    .set_btn:disabled,
-    .msr_btn:disabled {
-      background: rgba(0, 0, 0, 0.04);
-      color: #474747;
-      border-color: #c5c5c5;
-    }
-
-    label {
-      display: inline-block;
-      float: left;
-      clear: left;
-      width: 250px;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@9"></script>
+  <!-- <style>
+    
+  </style> -->
 </head>
 
 <body>
   <div class="container-fluid">
     <div class="row">
+      <div class="col">
+        <div class="bgcolor" style="text-align: center;">
+          <div class="group">
+            <button class="btn btn-success addgrp-btn" data-toggle="modal" data-target="#groupform"
+              onclick="equinix.openaddgroupform()">Add group</button>
+            <button class="btn btn-success addgrp-btn" data-toggle="modal" data-target="#groupform"
+              onclick="equinix.openeditgroupform()">Edit group</button>
+            <button class="btn btn-success addgrp-btn" data-toggle="modal" data-target="#groupform"
+              onclick="equinix.openviewgroupform()">View group</button>
+          </div><br>
+
+          <div class="group">
+            <button class="btn btn-success addgrp-btn" data-toggle="modal" data-target="#groupform"
+              onclick="equinix.openaddeviceform()">Add device</button>
+            <button class="btn btn-success addgrp-btn" data-toggle="modal" data-target="#groupform"
+              onclick="equinix.openeditdeviceform()">Edit device</button>
+            <button class="btn btn-success addgrp-btn" data-toggle="modal" data-target="#groupform"
+              onclick="equinix.openviewdeviceform()">View device</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="row splitform">
       <div class="col-md-6">
         <div class="bgcolor">
           <div class="head"><b>Measure:</b></div>
@@ -78,10 +48,18 @@
           <div>
             <label>otsi-interface name:</label>
             <input type="text" class="msr_odi"><br><br>
+            <label>Port:</label>
+            <input type="text" class="msr_port"><br><br>
             <label>Protection type:</label>
             <select class="msr_pr_type">
               <option>Line</option>
               <option>Path</option>
+            </select><br>
+            <label>Select group:</label>
+            <select class="msr_grp_name">
+              {% for option in group_list %}
+              <option>{{ option }}</option>
+              {% endfor %}
             </select><br><br>
             <button class="btn btn-success msr_btn" katana-click="equinix.measure_func">Measure</button>
           </div>
@@ -95,10 +73,18 @@
           <div>
             <label>otsi-interface name:</label>
             <input type="text" class="set_odi"><br><br>
+            <label>Port:</label>
+            <input type="text" class="set_port"><br><br>
             <label>Protection type:</label>
             <select class="set_pr_type">
               <option>Line</option>
               <option>Path</option>
+            </select><br>
+            <label>Select group:</label>
+            <select class="set_grp_name">
+              {% for option in group_list %}
+              <option>{{ option }}</option>
+              {% endfor %}
             </select><br><br>
             <button class="btn btn-success set_btn" katana-click="equinix.set_func">Set</button>
           </div>
@@ -113,9 +99,77 @@
         <img class="loader" src="../../static/images/Gear-0.4s-121px.gif">
       </div>
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="groupform" role="dialog">
+      <div class="modal-dialog modal-lg  modal-dialog-centered vertcal-align">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title"></h4>
+          </div>
+          <div class="modal-body input-fields-body" style="height: 435px; overflow-y:scroll;">
+
+            <div class="input-field" id="toggle-for-add-edit">
+            </div>
+            <div class="input-field" id="space-for-device-edit"></div>
+            <br>
+            <fieldset class="fieldset transponder-block">
+              <legend>Transponder details</legend>
+              <div class="input-field">
+                <label>Transponder name:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="tsname" type="text">
+              </div>
+
+              <div class="input-field">
+                <label>Ip address:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="tsip" type="text">
+              </div>
+
+              <div class="input-field">
+                <label>Transponder username:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="tsuname" type="text">
+              </div>
+              <div class="input-field">
+                <label>Transponder password:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="tspassword" type="text">
+              </div>
+            </fieldset>
+            <!-- <br> -->
+            <fieldset class="fieldset ops-block">
+              <legend>ops details</legend>
+              <div class="input-field">
+                <label>ops name:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="opsname" type="text">
+              </div>
+
+              <div class="input-field">
+                <label>Ip address:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="opsip" type="text">
+              </div>
+
+              <div class="input-field">
+                <label>ops username:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="opsuname" type="text">
+              </div>
+              <div class="input-field">
+                <label>ops password:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="opspassword" type="text">
+              </div>
+              <!-- <div class="input-field">
+                <label>interface name:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="interfacename" type="text">
+              </div> -->
+            </fieldset>
+          </div>
+          <div class="modal-footer">
+
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
   <div class="csrf-container">{% csrf_token %}</div>
-  </div>
 </body>
 
 </html>
