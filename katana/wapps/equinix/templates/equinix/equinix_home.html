@@ -48,8 +48,8 @@
           <div>
             <label>otsi-interface name:</label>
             <input type="text" class="msr_odi"><br><br>
-            <label>Port:</label>
-            <input type="text" class="msr_port"><br><br>
+            <!-- <label>Port:</label>
+            <input type="text" class="msr_port"><br><br> -->
             <label>Protection type:</label>
             <select class="msr_pr_type">
               <option>Line</option>
@@ -73,8 +73,8 @@
           <div>
             <label>otsi-interface name:</label>
             <input type="text" class="set_odi"><br><br>
-            <label>Port:</label>
-            <input type="text" class="set_port"><br><br>
+            <!-- <label>Port:</label>
+            <input type="text" class="set_port"><br><br> -->
             <label>Protection type:</label>
             <select class="set_pr_type">
               <option>Line</option>
@@ -126,6 +126,11 @@
               </div>
 
               <div class="input-field">
+                <label>Port:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="tsport" type="text">
+              </div>
+
+              <div class="input-field">
                 <label>Transponder username:<span style="color: red; font-size: 24px;">*</span></label>
                 <input class="tsuname" type="text">
               </div>
@@ -145,6 +150,11 @@
               <div class="input-field">
                 <label>Ip address:<span style="color: red; font-size: 24px;">*</span></label>
                 <input class="opsip" type="text">
+              </div>
+
+              <div class="input-field">
+                <label>Port:<span style="color: red; font-size: 24px;">*</span></label>
+                <input class="opsport" type="text">
               </div>
 
               <div class="input-field">

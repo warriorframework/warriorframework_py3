@@ -21,14 +21,6 @@ class DbRouter(object):
                 return 'equinix'
         return 'default'
 
-    def allow_relation(self, obj1, obj2, **hints):
-        """
-        Do not allow relations involving the equinix database
-        """
-        if obj1._meta.app_label == 'equinix' or \
-           obj2._meta.app_label == 'equinix':
-           return False
-        return None
 
     def allow_migrate(self, db, app_label, model=None, **hints):
         """

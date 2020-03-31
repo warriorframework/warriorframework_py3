@@ -12,7 +12,6 @@ var equinix = {
         $(".msr_btn").attr("disabled", true);
         $odi = $(".msr_odi").val()
         $msr_pr_type = $(".msr_pr_type").find(":selected").text()
-        $port = $(".msr_port").val()
         $group = $(".msr_grp_name").find(":selected").text()
         $.ajax({
             headers: {
@@ -22,7 +21,7 @@ var equinix = {
             url: 'equinix/measure/',
             dataType: "json",
             async: false,
-            data: { "odi": $odi, "pr_type": $msr_pr_type, "msr_port":$port, "msr_group":$group }
+            data: { "odi": $odi, "pr_type": $msr_pr_type, "msr_group":$group }
         }).done(function (data) {
             $(".loader").css("display", "none");
             $(".result").val(JSON.stringify(data, null, 4));
@@ -44,7 +43,6 @@ var equinix = {
         $(".msr_btn").attr("disabled", true);
         $odi = $(".set_odi").val()
         $set_pr_type = $(".set_pr_type").find(":selected").text()
-        $port = $(".set_port").val()
         $set_grp = $(".set_grp_name").find(":selected").text()
         $.ajax({
             headers: {
@@ -54,7 +52,7 @@ var equinix = {
             url: 'equinix/set/',
             dataType: "json",
             async: false,
-            data: { "odi": $odi, "pr_type": $set_pr_type, "set_port":$port, "set_group":$set_grp }
+            data: { "odi": $odi, "pr_type": $set_pr_type, "set_group":$set_grp }
         }).done(function (data) {
             $(".loader").css("display", "none");
             $(".result").val(JSON.stringify(data, null, 4));
@@ -276,6 +274,7 @@ var equinix = {
             if (seldevname == "T600") {
                 transpondername = $(".tsname").val()
                 transponderip = $(".tsip").val()
+                transponderport = $(".tsport").val()
                 transponderusername = $(".tsuname").val()
                 transponderpassword = $(".tspassword").val()
                 $.ajax({
@@ -285,7 +284,7 @@ var equinix = {
                     type: 'POST',
                     url: 'equinix/add_transponder/',
                     async: false,
-                    data: { "transpondername": transpondername, "transponderip": transponderip, "transponderusername": transponderusername, "transponderpassword": transponderpassword }
+                    data: { "transpondername": transpondername, "transponderip": transponderip, "transponderport":transponderport, "transponderusername": transponderusername, "transponderpassword": transponderpassword }
                 }).done(function (data) {
                     if (data == "success") {
                         equinix.success_alert("Success!", "Succesfully added a device.", "success")
@@ -302,6 +301,7 @@ var equinix = {
             else if (seldevname == "OPS") {
                 opsname = $(".opsname").val()
                 opsip = $(".opsip").val()
+                opsport = $(".opsport").val()
                 opsusername = $(".opsuname").val()
                 opspassword = $(".opspassword").val()
                 $.ajax({
@@ -311,7 +311,7 @@ var equinix = {
                     type: 'POST',
                     url: 'equinix/add_ops/',
                     async: false,
-                    data: { "opsname": opsname, "opsip": opsip, "opsusername": opsusername, "opspassword": opspassword }
+                    data: { "opsname": opsname, "opsip": opsip, "opsport":opsport, "opsusername": opsusername, "opspassword": opspassword }
                 }).done(function (data) {
                     if (data == "success") {
                         equinix.success_alert("Success!", "Succesfully added a device.", "success")
@@ -333,6 +333,7 @@ var equinix = {
             if (seldevtype == "T600") {
                 transpondername = $(".tsname").val()
                 transponderip = $(".tsip").val()
+                transponderport = $(".tsport").val()
                 transponderusername = $(".tsuname").val()
                 transponderpassword = $(".tspassword").val()
                 $.ajax({
@@ -342,7 +343,7 @@ var equinix = {
                     type: 'POST',
                     url: 'equinix/edit_transponder/',
                     async: false,
-                    data: { "seldevname": seldevname, "transpondername": transpondername, "transponderip": transponderip, "transponderusername": transponderusername, "transponderpassword": transponderpassword }
+                    data: { "seldevname": seldevname, "transpondername": transpondername, "transponderip": transponderip, "transponderport":transponderport, "transponderusername": transponderusername, "transponderpassword": transponderpassword }
                 }).done(function (data) {
                     if (data == "success") {
                         equinix.success_alert("Success!", "Succesfully added a device.", "success")
@@ -359,6 +360,7 @@ var equinix = {
             else if (seldevtype == "OPS") {
                 opsname = $(".opsname").val()
                 opsip = $(".opsip").val()
+                opsport = $(".opsport").val()
                 opsusername = $(".opsuname").val()
                 opspassword = $(".opspassword").val()
                 $.ajax({
@@ -368,7 +370,7 @@ var equinix = {
                     type: 'POST',
                     url: 'equinix/edit_ops/',
                     async: false,
-                    data: { "seldevname": seldevname, "opsname": opsname, "opsip": opsip, "opsusername": opsusername, "opspassword": opspassword }
+                    data: { "seldevname": seldevname, "opsname": opsname, "opsip": opsip, "opsport":opsport, "opsusername": opsusername, "opspassword": opspassword }
                 }).done(function (data) {
                     if (data == "success") {
                         equinix.success_alert("Success!", "Succesfully added a device.", "success")
@@ -548,12 +550,14 @@ var equinix = {
                 if (device_type == "T600") {
                     $(".tsname").val(data["transpondername"])
                     $(".tsip").val(data["transponderip"])
+                    $(".tsport").val(data["transponderport"])
                     $(".tsuname").val(data["transponderusername"])
                     $(".tspassword").val(data["transponderpassword"])
                 }
                 else if (device_type == "OPS") {
                     $(".opsname").val(data["opsname"])
                     $(".opsip").val(data["opsip"])
+                    $(".opsport").val(data["opsport"])
                     $(".opsuname").val(data["opsusername"])
                     $(".opspassword").val(data["opspassword"])
                 }

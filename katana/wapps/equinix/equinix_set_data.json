@@ -1,1 +1,22 @@
-{"devices": {"new2": {"interface_name": "3", "protection_type": "Line", "password": "new2new2new2new2", "username": "new2new2new2", "protocol": "ssh", "port": "44", "ip": "new2new2"}, "OPS2": {"interface_name": "3", "protection_type": "Line", "password": "KDFJDGF@12354", "username": "OPD-USR45", "protocol": "ssh", "port": "44", "ip": "95.34.5.6.6"}}}
+{
+    "devices": {
+        "NE1": {
+            "ip": "",
+            "port": "",
+            "protocol": "",
+            "username": "",
+            "password": "",
+            "interface_name": "",
+            "protection_type": "Path"
+        },
+        "NE2": {
+            "ip": "",
+            "port": "",
+            "protocol": "",
+            "username": "",
+            "password": "",
+            "interface_name": "",
+            "protection_type": "Path"
+        }
+    }
+}

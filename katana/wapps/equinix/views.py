@@ -46,7 +46,6 @@ def set_api(request):
     otsi_interface_name = request.GET.get("odi")
     set_freq = request.GET.get("set_freq")
     pr_type = request.GET.get("pr_type")
-    port = request.GET.get("set_port")
     groupname = request.GET.get("set_group")
     # group details fetching from db
     group_details = equinixgroups.objects.get(groupname=groupname)
@@ -54,6 +53,7 @@ def set_api(request):
     opsname = group_details.opsname
     transponder_details = equinixtransponder.objects.get(transpondername=transpondername)
     transponderip = transponder_details.transponderip
+    transponderport = transponder_details.transponderport
     transponderusername = transponder_details.transponderusername
     transponderpassword = transponder_details.transponderpassword
     ops_details = equinixops.objects.get(opsname=opsname)
@@ -61,6 +61,7 @@ def set_api(request):
     opsusername = ops_details.opsusername
     opspassword = ops_details.opspassword
     opsip = ops_details.opsip
+    opsport = ops_details.opsport
     equinix_json_data={}
     equinix_json_data["devices"] = {}
     equinix_json_data["devices"][transpondername]={}
@@ -70,14 +71,14 @@ def set_api(request):
     equinix_json_data["devices"][transpondername]["password"] = transponderpassword
     equinix_json_data["devices"][transpondername]["username"] = transponderusername
     equinix_json_data["devices"][transpondername]["protocol"] = "ssh"
-    equinix_json_data["devices"][transpondername]["port"] = port
+    equinix_json_data["devices"][transpondername]["port"] = transponderport
     equinix_json_data["devices"][transpondername]["ip"] = transponderip
     equinix_json_data["devices"][opsname]["interface_name"] = otsi_interface_name
     equinix_json_data["devices"][opsname]["protection_type"] = pr_type
     equinix_json_data["devices"][opsname]["password"] = opspassword
     equinix_json_data["devices"][opsname]["username"] = opsusername
     equinix_json_data["devices"][opsname]["protocol"] = "ssh"
-    equinix_json_data["devices"][opsname]["port"] = port
+    equinix_json_data["devices"][opsname]["port"] = opsport
     equinix_json_data["devices"][opsname]["ip"] = opsip
     
     
@@ -90,7 +91,6 @@ def measure_api(request):
     # getdata(request)
     otsi_interface_name = request.GET.get("odi")
     pr_type = request.GET.get("pr_type")
-    port = request.GET.get("msr_port")
     groupname = request.GET.get("msr_group")
     # group details fetching from db
     group_details = equinixgroups.objects.get(groupname=groupname)
@@ -98,6 +98,7 @@ def measure_api(request):
     opsname = group_details.opsname
     transponder_details = equinixtransponder.objects.get(transpondername=transpondername)
     transponderip = transponder_details.transponderip
+    transponderport = transponder_details.transponderport
     transponderusername = transponder_details.transponderusername
     transponderpassword = transponder_details.transponderpassword
     ops_details = equinixops.objects.get(opsname=opsname)
@@ -105,6 +106,7 @@ def measure_api(request):
     opsusername = ops_details.opsusername
     opspassword = ops_details.opspassword
     opsip = ops_details.opsip
+    opsport = ops_details.opsport
     equinix_json_data={}
     equinix_json_data["devices"] = {}
     equinix_json_data["devices"][transpondername]={}
@@ -114,14 +116,14 @@ def measure_api(request):
     equinix_json_data["devices"][transpondername]["password"] = transponderpassword
     equinix_json_data["devices"][transpondername]["username"] = transponderusername
     equinix_json_data["devices"][transpondername]["protocol"] = "ssh"
-    equinix_json_data["devices"][transpondername]["port"] = port
+    equinix_json_data["devices"][transpondername]["port"] = transponderport
     equinix_json_data["devices"][transpondername]["ip"] = transponderip
     equinix_json_data["devices"][opsname]["interface_name"] = otsi_interface_name
     equinix_json_data["devices"][opsname]["protection_type"] = pr_type
     equinix_json_data["devices"][opsname]["password"] = opspassword
     equinix_json_data["devices"][opsname]["username"] = opsusername
     equinix_json_data["devices"][opsname]["protocol"] = "ssh"
-    equinix_json_data["devices"][opsname]["port"] = port
+    equinix_json_data["devices"][opsname]["port"] = opsport
     equinix_json_data["devices"][opsname]["ip"] = opsip
     
     with open(equinix_measure_data_json_path, "w") as f:
@@ -268,6 +270,7 @@ def get_device_details(request):
         device_details = equinixtransponder.objects.get(transpondername=selected_device)
         details_json["transpondername"]=device_details.transpondername
         details_json["transponderip"]=device_details.transponderip
+        details_json["transponderport"]=device_details.transponderport
         details_json["transponderusername"]=device_details.transponderusername
         details_json["transponderpassword"]=device_details.transponderpassword
         return JsonResponse(details_json)
@@ -276,6 +279,7 @@ def get_device_details(request):
         device_details = equinixops.objects.get(opsname=selected_device)
         details_json["opsname"]=device_details.opsname
         details_json["opsip"]=device_details.opsip
+        details_json["opsport"]=device_details.opsport
         details_json["opsusername"]=device_details.opsusername
         details_json["opspassword"]=device_details.opspassword
         return JsonResponse(details_json)
