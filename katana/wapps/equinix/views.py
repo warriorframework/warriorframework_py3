@@ -43,43 +43,70 @@ class EquinixView(View):
         return render(request, 'equinix/equinix_home.html',{"group_list":group_list})
 
 def set_api(request):
-    otsi_interface_name = request.GET.get("odi")
-    set_freq = request.GET.get("set_freq")
-    pr_type = request.GET.get("pr_type")
-    groupname = request.GET.get("set_group")
+    groupname1 = request.GET.get("set_group1")
+    groupname2 = request.GET.get("set_group2")
     # group details fetching from db
-    group_details = equinixgroups.objects.get(groupname=groupname)
-    transpondername = group_details.transpondername
-    opsname = group_details.opsname
-    transponder_details = equinixtransponder.objects.get(transpondername=transpondername)
-    transponderip = transponder_details.transponderip
-    transponderport = transponder_details.transponderport
-    transponderusername = transponder_details.transponderusername
-    transponderpassword = transponder_details.transponderpassword
-    ops_details = equinixops.objects.get(opsname=opsname)
-    opsname = ops_details.opsname
-    opsusername = ops_details.opsusername
-    opspassword = ops_details.opspassword
-    opsip = ops_details.opsip
-    opsport = ops_details.opsport
+    group_details1 = equinixgroups.objects.get(groupname=groupname1)
+    group_details2 = equinixgroups.objects.get(groupname=groupname2)
+    transpondername1 = group_details1.transpondername
+    opsname1 = group_details1.opsname
+    interface1 = group_details1.interfacename
+    transponder_details1 = equinixtransponder.objects.get(transpondername=transpondername1)
+    transponderip1 = transponder_details1.transponderip
+    transponderport1 = transponder_details1.transponderport
+    transponderusername1 = transponder_details1.transponderusername
+    transponderpassword1 = transponder_details1.transponderpassword
+    ops_details1 = equinixops.objects.get(opsname=opsname1)
+    opsname1 = ops_details1.opsname
+    opsusername1 = ops_details1.opsusername
+    opspassword1 = ops_details1.opspassword
+    opsip1 = ops_details1.opsip
+    opsport1 = ops_details1.opsport
+    transpondername2 = group_details2.transpondername
+    opsname2 = group_details2.opsname
+    interface2 = group_details2.interfacename
+    transponder_details2 = equinixtransponder.objects.get(transpondername=transpondername2)
+    transponderip2 = transponder_details2.transponderip
+    transponderport2 = transponder_details2.transponderport
+    transponderusername2 = transponder_details2.transponderusername
+    transponderpassword2 = transponder_details2.transponderpassword
+    ops_details2 = equinixops.objects.get(opsname=opsname2)
+    opsname2 = ops_details2.opsname
+    opsusername2 = ops_details2.opsusername
+    opspassword2 = ops_details2.opspassword
+    opsip2 = ops_details2.opsip
+    opsport2 = ops_details2.opsport
     equinix_json_data={}
-    equinix_json_data["devices"] = {}
-    equinix_json_data["devices"][transpondername]={}
-    equinix_json_data["devices"][opsname]={}
-    equinix_json_data["devices"][transpondername]["interface_name"] = otsi_interface_name
-    equinix_json_data["devices"][transpondername]["protection_type"] = pr_type
-    equinix_json_data["devices"][transpondername]["password"] = transponderpassword
-    equinix_json_data["devices"][transpondername]["username"] = transponderusername
-    equinix_json_data["devices"][transpondername]["protocol"] = "ssh"
-    equinix_json_data["devices"][transpondername]["port"] = transponderport
-    equinix_json_data["devices"][transpondername]["ip"] = transponderip
-    equinix_json_data["devices"][opsname]["interface_name"] = otsi_interface_name
-    equinix_json_data["devices"][opsname]["protection_type"] = pr_type
-    equinix_json_data["devices"][opsname]["password"] = opspassword
-    equinix_json_data["devices"][opsname]["username"] = opsusername
-    equinix_json_data["devices"][opsname]["protocol"] = "ssh"
-    equinix_json_data["devices"][opsname]["port"] = opsport
-    equinix_json_data["devices"][opsname]["ip"] = opsip
+    equinix_json_data["T600"] = {}
+    equinix_json_data["OPS"] = {}
+    equinix_json_data["T600"][transpondername1]={}
+    equinix_json_data["T600"][transpondername2]={}
+    equinix_json_data["T600"][transpondername1]["interface_name"] = interface1
+    equinix_json_data["T600"][transpondername1]["password"] = transponderpassword1
+    equinix_json_data["T600"][transpondername1]["username"] = transponderusername1
+    equinix_json_data["T600"][transpondername1]["protocol"] = "ssh"
+    equinix_json_data["T600"][transpondername1]["port"] = transponderport1
+    equinix_json_data["T600"][transpondername1]["ip"] = transponderip1
+    equinix_json_data["T600"][transpondername2]["interface_name"] = interface2
+    equinix_json_data["T600"][transpondername2]["password"] = transponderpassword2
+    equinix_json_data["T600"][transpondername2]["username"] = transponderusername2
+    equinix_json_data["T600"][transpondername2]["protocol"] = "ssh"
+    equinix_json_data["T600"][transpondername2]["port"] = transponderport2
+    equinix_json_data["T600"][transpondername2]["ip"] = transponderip2
+    equinix_json_data["OPS"][opsname1]={}
+    equinix_json_data["OPS"][opsname2]={}
+    equinix_json_data["OPS"][opsname1]["interface_name"] = interface1
+    equinix_json_data["OPS"][opsname1]["password"] = opspassword1
+    equinix_json_data["OPS"][opsname1]["username"] = opsusername1
+    equinix_json_data["OPS"][opsname1]["protocol"] = "ssh"
+    equinix_json_data["OPS"][opsname1]["port"] = opsport1
+    equinix_json_data["OPS"][opsname1]["ip"] = opsip1
+    equinix_json_data["OPS"][opsname2]["interface_name"] = interface2
+    equinix_json_data["OPS"][opsname2]["password"] = opspassword2
+    equinix_json_data["OPS"][opsname2]["username"] = opsusername2
+    equinix_json_data["OPS"][opsname2]["protocol"] = "ssh"
+    equinix_json_data["OPS"][opsname2]["port"] = opsport2
+    equinix_json_data["OPS"][opsname2]["ip"] = opsip2
     
     
     with open(equinix_set_data_json_path, "w") as f:
@@ -89,42 +116,70 @@ def set_api(request):
 
 def measure_api(request):
     # getdata(request)
-    otsi_interface_name = request.GET.get("odi")
-    pr_type = request.GET.get("pr_type")
-    groupname = request.GET.get("msr_group")
+    groupname1 = request.GET.get("msr_group1")
+    groupname2 = request.GET.get("msr_group2")
     # group details fetching from db
-    group_details = equinixgroups.objects.get(groupname=groupname)
-    transpondername = group_details.transpondername
-    opsname = group_details.opsname
-    transponder_details = equinixtransponder.objects.get(transpondername=transpondername)
-    transponderip = transponder_details.transponderip
-    transponderport = transponder_details.transponderport
-    transponderusername = transponder_details.transponderusername
-    transponderpassword = transponder_details.transponderpassword
-    ops_details = equinixops.objects.get(opsname=opsname)
-    opsname = ops_details.opsname
-    opsusername = ops_details.opsusername
-    opspassword = ops_details.opspassword
-    opsip = ops_details.opsip
-    opsport = ops_details.opsport
+    group_details1 = equinixgroups.objects.get(groupname=groupname1)
+    group_details2 = equinixgroups.objects.get(groupname=groupname2)
+    transpondername1 = group_details1.transpondername
+    interfacename1 = group_details1.interfacename
+    opsname1 = group_details1.opsname
+    transponder_details1 = equinixtransponder.objects.get(transpondername=transpondername1)
+    transponderip1 = transponder_details1.transponderip
+    transponderport1 = transponder_details1.transponderport
+    transponderusername1 = transponder_details1.transponderusername
+    transponderpassword1 = transponder_details1.transponderpassword
+    ops_details1 = equinixops.objects.get(opsname=opsname1)
+    opsname1 = ops_details1.opsname
+    opsusername1 = ops_details1.opsusername
+    opspassword1 = ops_details1.opspassword
+    opsip1 = ops_details1.opsip
+    opsport1 = ops_details1.opsport
+    transpondername2 = group_details2.transpondername
+    interfacename2 = group_details2.interfacename
+    opsname2 = group_details2.opsname
+    transponder_details2 = equinixtransponder.objects.get(transpondername=transpondername2)
+    transponderip2 = transponder_details2.transponderip
+    transponderport2 = transponder_details2.transponderport
+    transponderusername2 = transponder_details2.transponderusername
+    transponderpassword2 = transponder_details2.transponderpassword
+    ops_details2 = equinixops.objects.get(opsname=opsname2)
+    opsname2 = ops_details2.opsname
+    opsusername2 = ops_details2.opsusername
+    opspassword2 = ops_details2.opspassword
+    opsip2 = ops_details2.opsip
+    opsport2 = ops_details2.opsport
     equinix_json_data={}
-    equinix_json_data["devices"] = {}
-    equinix_json_data["devices"][transpondername]={}
-    equinix_json_data["devices"][opsname]={}
-    equinix_json_data["devices"][transpondername]["interface_name"] = otsi_interface_name
-    equinix_json_data["devices"][transpondername]["protection_type"] = pr_type
-    equinix_json_data["devices"][transpondername]["password"] = transponderpassword
-    equinix_json_data["devices"][transpondername]["username"] = transponderusername
-    equinix_json_data["devices"][transpondername]["protocol"] = "ssh"
-    equinix_json_data["devices"][transpondername]["port"] = transponderport
-    equinix_json_data["devices"][transpondername]["ip"] = transponderip
-    equinix_json_data["devices"][opsname]["interface_name"] = otsi_interface_name
-    equinix_json_data["devices"][opsname]["protection_type"] = pr_type
-    equinix_json_data["devices"][opsname]["password"] = opspassword
-    equinix_json_data["devices"][opsname]["username"] = opsusername
-    equinix_json_data["devices"][opsname]["protocol"] = "ssh"
-    equinix_json_data["devices"][opsname]["port"] = opsport
-    equinix_json_data["devices"][opsname]["ip"] = opsip
+    equinix_json_data["T600"] = {}
+    equinix_json_data["OPS"] = {}
+    equinix_json_data["T600"][transpondername1]={}
+    equinix_json_data["T600"][transpondername2]={}
+    equinix_json_data["T600"][transpondername1]["interface_name"] = interfacename1
+    equinix_json_data["T600"][transpondername1]["password"] = transponderpassword1
+    equinix_json_data["T600"][transpondername1]["username"] = transponderusername1
+    equinix_json_data["T600"][transpondername1]["protocol"] = "ssh"
+    equinix_json_data["T600"][transpondername1]["port"] = transponderport1
+    equinix_json_data["T600"][transpondername1]["ip"] = transponderip1
+    equinix_json_data["T600"][transpondername2]["interface_name"] = interfacename2
+    equinix_json_data["T600"][transpondername2]["password"] = transponderpassword2
+    equinix_json_data["T600"][transpondername2]["username"] = transponderusername2
+    equinix_json_data["T600"][transpondername2]["protocol"] = "ssh"
+    equinix_json_data["T600"][transpondername2]["port"] = transponderport2
+    equinix_json_data["T600"][transpondername2]["ip"] = transponderip2
+    equinix_json_data["OPS"][opsname1]={}
+    equinix_json_data["OPS"][opsname2]={}
+    equinix_json_data["OPS"][opsname1]["interface_name"] = interfacename1
+    equinix_json_data["OPS"][opsname1]["password"] = opspassword1
+    equinix_json_data["OPS"][opsname1]["username"] = opsusername1
+    equinix_json_data["OPS"][opsname1]["protocol"] = "ssh"
+    equinix_json_data["OPS"][opsname1]["port"] = opsport1
+    equinix_json_data["OPS"][opsname1]["ip"] = opsip1
+    equinix_json_data["OPS"][opsname2]["interface_name"] = interfacename2
+    equinix_json_data["OPS"][opsname2]["password"] = opspassword2
+    equinix_json_data["OPS"][opsname2]["username"] = opsusername2
+    equinix_json_data["OPS"][opsname2]["protocol"] = "ssh"
+    equinix_json_data["OPS"][opsname2]["port"] = opsport2
+    equinix_json_data["OPS"][opsname2]["ip"] = opsip2
     
     with open(equinix_measure_data_json_path, "w") as f:
         json.dump(equinix_json_data, f)
@@ -173,6 +228,7 @@ def fetch_group_details(request):
     details_json["groupname"] = group_details.groupname
     details_json["transpondername"]=group_details.transpondername
     details_json["opsname"]=group_details.opsname
+    details_json["interfacename"]=group_details.interfacename
     return JsonResponse(details_json)
 
 def edit_group(request):

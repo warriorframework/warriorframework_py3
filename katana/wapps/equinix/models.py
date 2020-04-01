@@ -3,8 +3,9 @@
 
 from django.db import models
 
-class equinixgroups(models.Model):  
-        groupname = models.CharField(max_length=100,primary_key=True)  
+class equinixgroups(models.Model):
+        groupname = models.CharField(max_length=100,primary_key=True)
+        interfacename = models.CharField(max_length=100)
         transpondername = models.CharField(max_length=100)  
         opsname = models.CharField(max_length=100)
 

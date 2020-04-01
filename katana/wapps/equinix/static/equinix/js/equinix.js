@@ -10,9 +10,8 @@ var equinix = {
         }
         $(".set_btn").attr("disabled", true);
         $(".msr_btn").attr("disabled", true);
-        $odi = $(".msr_odi").val()
-        $msr_pr_type = $(".msr_pr_type").find(":selected").text()
-        $group = $(".msr_grp_name").find(":selected").text()
+        $group1 = $(".msr_grp_name1").find(":selected").text()
+        $group2 = $(".msr_grp_name2").find(":selected").text()
         $.ajax({
             headers: {
                 'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -21,7 +20,7 @@ var equinix = {
             url: 'equinix/measure/',
             dataType: "json",
             async: false,
-            data: { "odi": $odi, "pr_type": $msr_pr_type, "msr_group":$group }
+            data: { "msr_group1":$group1, "msr_group2":$group2 }
         }).done(function (data) {
             $(".loader").css("display", "none");
             $(".result").val(JSON.stringify(data, null, 4));
@@ -41,9 +40,8 @@ var equinix = {
         }
         $(".set_btn").attr("disabled", true);
         $(".msr_btn").attr("disabled", true);
-        $odi = $(".set_odi").val()
-        $set_pr_type = $(".set_pr_type").find(":selected").text()
-        $set_grp = $(".set_grp_name").find(":selected").text()
+        $set_grp1 = $(".set_grp_name1").find(":selected").text()
+        $set_grp2 = $(".set_grp_name2").find(":selected").text()
         $.ajax({
             headers: {
                 'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -52,7 +50,7 @@ var equinix = {
             url: 'equinix/set/',
             dataType: "json",
             async: false,
-            data: { "odi": $odi, "pr_type": $set_pr_type, "set_group":$set_grp }
+            data: { "set_group1":$set_grp1, "set_group2":$set_grp2 }
         }).done(function (data) {
             $(".loader").css("display", "none");
             $(".result").val(JSON.stringify(data, null, 4));
@@ -78,7 +76,7 @@ var equinix = {
         }).done(function (data) {
             data = data.replace(/'/g, '"');
             data = JSON.parse(data)
-            transoptions = "<option>None</option>"
+            transoptions = ""
             if (data.length) {
                 for (grp = 0; grp < data.length; grp++) {
                     transoptions += "<option>" + String(data[grp]) + "</option>"
@@ -96,7 +94,7 @@ var equinix = {
         }).done(function (data) {
             data = data.replace(/'/g, '"');
             data = JSON.parse(data)
-            opsoptions = "<option>None</option>"
+            opsoptions = ""
             if (data.length) {
                 for (grp = 0; grp < data.length; grp++) {
                     opsoptions += "<option>" + String(data[grp]) + "</option>"
@@ -104,7 +102,8 @@ var equinix = {
             }
         })
         $("#toggle-for-add-edit").html("<p></p>")
-        grp = '<div class="input-field"><label>Group name:<span style="color: red; font-size: 24px;">*</span></label><input class="groupname" type="text"></div><br>'
+        grp = '<div class="input-field"><label>Group name:<span style="color: red; font-size: 24px;">*</span></label><input class="groupname" type="text"></div><br>\
+        <div class="input-field"><label>otsi-interface name:<span style="color: red; font-size: 24px;">*</span></label><input type="text" class="interface"></input></div><br>'
         trans = '<label>Select transponder:</label><select class="selected_trans" style="margin:0;">' + transoptions + '</select><br><br>'
         ops = '<label>Select OPS:</label><select class="selected_ops" style="margin:0;">' + opsoptions + '</select>'
         $("#toggle-for-add-edit").html(grp + trans + ops)
@@ -220,6 +219,7 @@ var equinix = {
     save: function (e) {
         save_type = $(e).attr("action-type")
         grpname = $(".groupname").val()
+        interfacename = $(".interface").val()
         tsname = $(".selected_trans").find(":selected").text()
         opsname = $(".selected_ops").find(":selected").text()
 
@@ -232,7 +232,7 @@ var equinix = {
                 url: 'equinix/add_new_group/',
                 // dataType: "json",
                 async: false,
-                data: { "groupname": grpname, "transpondername": tsname, "opsname": opsname }
+                data: { "groupname": grpname, "interfacename":interfacename, "transpondername": tsname, "opsname": opsname }
             }).done(function (data) {
                 if (data == "success") {
                     equinix.success_alert("Success!", "Succesfully added a group.", "success")
@@ -255,7 +255,7 @@ var equinix = {
                 type: 'POST',
                 url: 'equinix/edit_group/',
                 async: false,
-                data: { "selgrpname": selgrpname, "groupname": grpname, "transpondername": tsname, "opsname": opsname }
+                data: { "selgrpname": selgrpname, "groupname": grpname, "interfacename":interfacename, "transpondername": tsname, "opsname": opsname }
             }).done(function (data) {
                 if (data == "success") {
                     equinix.success_alert("Success!", "Succesfully added a group.", "success")
@@ -420,7 +420,7 @@ var equinix = {
             }).done(function (data) {
                 data = data.replace(/'/g, '"');
                 data = JSON.parse(data)
-                transoptions = "<option>None</option>"
+                transoptions = ""
                 if (data.length) {
                     for (grp = 0; grp < data.length; grp++) {
                         transoptions += "<option>" + String(data[grp]) + "</option>"
@@ -438,7 +438,7 @@ var equinix = {
             }).done(function (data) {
                 data = data.replace(/'/g, '"');
                 data = JSON.parse(data)
-                opsoptions = "<option>None</option>"
+                opsoptions = ""
                 if (data.length) {
                     for (grp = 0; grp < data.length; grp++) {
                         opsoptions += "<option>" + String(data[grp]) + "</option>"
@@ -447,7 +447,8 @@ var equinix = {
             })
 
             $("#space-for-device-edit").html("<p></p>")
-            grp = '<div class="input-field"><label>Group name:<span style="color: red; font-size: 24px;">*</span></label><input class="groupname" type="text"></div><br>'
+            grp = '<div class="input-field"><label>Group name:<span style="color: red; font-size: 24px;">*</span></label><input class="groupname" type="text"></div><br>\
+            <div class="input-field"><label>otsi-interface name:<span style="color: red; font-size: 24px;">*</span></label><input type="text" class="interface"></input></div><br>'
             trans = '<label>Select transponder:</label><select class="selected_trans" style="margin:0;">' + transoptions + '</select><br><br>'
             ops = '<label>Select OPS:</label><select class="selected_ops" style="margin:0;">' + opsoptions + '</select>'
             $("#space-for-device-edit").html(grp + trans + ops)
@@ -463,6 +464,7 @@ var equinix = {
             }).done(function (data) {
                 opsoptions = "<option>None</option>"
                 $(".groupname").val(data["groupname"])
+                $(".interface").val(data["interfacename"])
                 $(".selected_trans").val(data["transpondername"])
                 $(".selected_ops").val(data["opsname"])
             })

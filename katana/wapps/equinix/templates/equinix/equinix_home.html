@@ -46,17 +46,22 @@
           <div class="head"><b>Measure:</b></div>
           <br>
           <div>
-            <label>otsi-interface name:</label>
-            <input type="text" class="msr_odi"><br><br>
+            <!-- <br><br> -->
             <!-- <label>Port:</label>
             <input type="text" class="msr_port"><br><br> -->
-            <label>Protection type:</label>
+            <!-- <label>Protection type:</label>
             <select class="msr_pr_type">
               <option>Line</option>
               <option>Path</option>
-            </select><br>
-            <label>Select group:</label>
-            <select class="msr_grp_name">
+            </select><br> -->
+            <label>Select group 1:</label>
+            <select class="msr_grp_name1">
+              {% for option in group_list %}
+              <option>{{ option }}</option>
+              {% endfor %}
+            </select><br><br>
+            <label>Select group 2:</label>
+            <select class="msr_grp_name2">
               {% for option in group_list %}
               <option>{{ option }}</option>
               {% endfor %}
@@ -71,17 +76,23 @@
           <div class="head"><b>Set:</b></div>
           <br>
           <div>
-            <label>otsi-interface name:</label>
-            <input type="text" class="set_odi"><br><br>
+            <!-- <label>otsi-interface name:</label>
+            <input type="text" class="set_odi"><br><br> -->
             <!-- <label>Port:</label>
             <input type="text" class="set_port"><br><br> -->
-            <label>Protection type:</label>
+            <!-- <label>Protection type:</label>
             <select class="set_pr_type">
               <option>Line</option>
               <option>Path</option>
-            </select><br>
-            <label>Select group:</label>
-            <select class="set_grp_name">
+            </select><br> -->
+            <label>Select group 1:</label>
+            <select class="set_grp_name1">
+              {% for option in group_list %}
+              <option>{{ option }}</option>
+              {% endfor %}
+            </select><br><br>
+            <label>Select group 2:</label>
+            <select class="set_grp_name2">
               {% for option in group_list %}
               <option>{{ option }}</option>
               {% endfor %}
