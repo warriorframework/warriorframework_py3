@@ -66,6 +66,12 @@
               <option>{{ option }}</option>
               {% endfor %}
             </select><br><br>
+            <label>Wavelength type:</label>
+            <select class="msr_wavelen">
+              <option>shortest wavelength</option>
+              <option>longest wavelength</option>
+              <option>actual wavelength</option>
+            </select><br><br>
             <button class="btn btn-success msr_btn" katana-click="equinix.measure_func">Measure</button>
           </div>
         </div>
@@ -96,6 +102,12 @@
               {% for option in group_list %}
               <option>{{ option }}</option>
               {% endfor %}
+            </select><br><br>
+            <label>Wavelength type:</label>
+            <select class="set_wavelen">
+              <option>shortest wavelength</option>
+              <option>longest wavelength</option>
+              <option>actual wavelength</option>
             </select><br><br>
             <button class="btn btn-success set_btn" katana-click="equinix.set_func">Set</button>
           </div>
