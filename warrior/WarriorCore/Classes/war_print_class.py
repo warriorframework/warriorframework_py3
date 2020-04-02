@@ -29,13 +29,17 @@ import logging
 import re
 import io
 import psutil
+import multiprocessing
 
-def print_all(message, print_type, color_message=None, log_level="INFO", *args, **kwargs):
+def py_logger(message, print_type, color_message=None, log_level="INFO", *args, **kwargs):
     host_name = socket.gethostname()
     process = psutil.Process(os.getpid())
     pname = str(process.name())
-    extra_msg = {"pname": pname, "host_name": host_name}
-    formatter = logging.Formatter('%(asctime)-15s %(host_name)s %(pname)-8s %(levelname)s ::%(message)s','%Y-%m-%d %H:%M:%S')
+    # "pname": pname,
+    # "current_process": current_process,
+    cur_process = multiprocessing.current_process().name
+    extra_msg = {"cur_process": cur_process, "host_name": host_name}
+    formatter = logging.Formatter('%(asctime)-15s %(host_name)s %(cur_process)-8s %(levelname)s ::%(message)s','%Y-%m-%d %H:%M:%S')
     logger = logging.getLogger(__name__)
 
     log_capture_string = io.StringIO()
@@ -62,9 +66,15 @@ def print_all(message, print_type, color_message=None, log_level="INFO", *args, 
     logger = logging.LoggerAdapter(logger, extra_msg)
 
     if print_type == "-I-":
-        matched = re.match("^=+",message) or re.match("^\++",message) or re.match("^\*+",message)
+        matched = re.match("^=+",message) or re.match("^\++",message) or re.match("^\*+",message)  or re.match("^\n<<",message) \
+        or re.match("^\n\**",message)
         if matched:
-            print(message)
+            print(message.strip())
+        elif message.strip() == '':
+            pass
+        elif message.startswith("["):
+            msg = message.split()
+            logger.info(" ".join(msg[2:]), extra=extra_msg)
         else:
             logger.info(message, extra=extra_msg)
     elif print_type == "\x1b[1;33m-W-\x1b[0m":
@@ -79,34 +89,40 @@ def print_all(message, print_type, color_message=None, log_level="INFO", *args, 
         logger.critical(message, extra=extra_msg)
 
     log_contents = log_capture_string.getvalue()
-
-    if isinstance(sys.stdout, RedirectPrint):
-        sys.stdout.write((log_contents + '\n'),
-                         logging=kwargs.get('logging', True))
-    else:
-        sys.stdout.write(log_contents + '\n')
-    sys.stdout.flush()
-    from warrior.Framework.Utils.testcase_Utils import TCOBJ
-    if TCOBJ.pnote is False:
-        TCOBJ.p_note_level(log_contents, print_type)
-    return log_contents
+    if log_contents != '':
+        if isinstance(sys.stdout, RedirectPrint):
+            sys.stdout.write((log_contents),
+                             logging=kwargs.get('logging', True))
+        else:
+            sys.stdout.write(log_contents)
+        sys.stdout.flush()
+        from warrior.Framework.Utils.testcase_Utils import TCOBJ
+        if TCOBJ.pnote is False:
+            TCOBJ.p_note_level(log_contents, print_type)
+        return log_contents
 
 
 def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
     """
     # import pdb; pdb.set_trace()
+    if color_message is not None:
+        print_string = str(color_message)
+    elif color_message is None:
+        print_string = str(message)
+    if args:
+        print_string = str(message) + str(args)
     arg_list = sys.argv
     if len(arg_list) > 3:
         cmd =sys.argv[2].upper()+"="+sys.argv[3].upper()
         if cmd in ["-LOGLEVEL=NOTSET","-LOGLEVEL=DEBUG","-LOGLEVEL=INFO","-LOGLEVEL=WARNING","-LOGLEVEL=ERROR","-LOGLEVEL=CRITICAL"]:
             log_levels = {"-LOGLEVEL=NOTSET":"NOTSET","-LOGLEVEL=DEBUG":"DEBUG","-LOGLEVEL=INFO":"INFO","-LOGLEVEL=WARNING":"WARNING","-LOGLEVEL=ERROR":"ERROR","-LOGLEVEL=CRITICAL":"CRITICAL"}
             level = log_levels[cmd]
-            print_all(message, print_type, log_level=level, color_message=None, *args, **kwargs)
+            py_logger(print_string, print_type, log_level=level, color_message=None, *args, **kwargs)
         else:
-            print_all(message, print_type, color_message=None, *args, **kwargs)
+            py_logger(print_string, print_type, color_message=None, *args, **kwargs)
     else:
-        print_all(message, print_type, color_message=None, *args, **kwargs)
+        py_logger(print_string, print_type, color_message=None, *args, **kwargs)
 
 class RedirectPrint(object):
     """Class that has methods to redirect prints
