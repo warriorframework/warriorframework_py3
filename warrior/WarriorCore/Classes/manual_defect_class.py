@@ -80,7 +80,7 @@ class ManualDefectClass(object):
                 else:
                     print_error("Directory does not exist in provided path {0} "\
                                 "relative to cwd".format(path))
-                print_info("\n")
+                # print_info("\n")
         else:
             defects_json_list = []
             i = 0
@@ -90,7 +90,7 @@ class ManualDefectClass(object):
                 check_file = self.check_defect_file(path)
                 if check_file is not None:
                     defects_json_list.append(check_file)
-                print_info("\n")
+                # print_info("\n")
 
         if len(defects_json_list) == 0:
             print_info("No defect json files found")

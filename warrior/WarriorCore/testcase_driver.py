@@ -695,7 +695,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
 
     print_info("\n")
     tc_end_time = Utils.datetime_utils.get_current_timestamp()
-    print_info("[{0}] Testcase execution completed".format(tc_end_time))
+    # print_info("[{0}] Testcase execution completed".format(tc_end_time))
     tc_duration = Utils.datetime_utils.get_time_delta(tc_start_time)
     hms = Utils.datetime_utils.get_hms_for_seconds(tc_duration)
     print_info("Testcase duration= {0}".format(hms))

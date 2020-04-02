@@ -205,7 +205,7 @@ class KeywordOperations(object):
             print_error("value for mandatory argument '{0}' not available in "
                         "data_repository/args_repository".format(args))
             return None
-        print_info("getting values for mandatory arguments")
+        # print_info("getting values for mandatory arguments")
         arg_kv = {}
         sysname = 'system_name'
         args_list = self.req_args_list[:]
@@ -232,7 +232,7 @@ class KeywordOperations(object):
     def get_values_for_optional_args(self, arg_kv):
         """The values for optional arguments as a python dictionary
         """
-        print_info("getting values for optional arguments")
+        # print_info("getting values for optional arguments")
         for args in self.optional_args_list:
             if args in self.args_repository:
                 arg_kv[args] = self.args_repository[args]
