@@ -315,10 +315,10 @@ if __name__ == "__main__":
                     if (os.path.exists(tempdir)):
                         shutil.rmtree(tempdir)
                     print(colored(
-                        "Error: There might be something wrong in the app-name (or) git-url in the input json file (or) may be the app your trying to install is incompatible with warrior framework.",
+                        "Error: There might be something wrong in the app-name (or) git-url/app path in the input json file (or) may be the app your trying to install is incompatible with warrior framework.",
                         "red"))
                     create_log(
-                        "Error: There might be something wrong in the app-name (or) git-url in the input json file (or) may be the app your trying to install is incompatible with warrior framework.")
+                        "Error: There might be something wrong in the app-name (or) git-url/app path in the input json file (or) may be the app your trying to install is incompatible with warrior framework.")
                     clean_data["__READ_ACCESS__"] = "True"
                     with open(app_config_file, "w") as f:
                         f.write(json.dumps(clean_data, indent=4))
