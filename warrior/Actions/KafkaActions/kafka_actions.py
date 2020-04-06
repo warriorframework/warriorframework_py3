@@ -89,6 +89,12 @@ class KafkaActions(object):
         else:
             self.kafka_obj_producer = data_repository["kafka_producer"]
 
+        # handling string and dict as input
+        try:
+            value =  eval(value)
+        except:
+            value = value
+
         if not hasattr(self.kafka_obj_producer, "kafka_producer"):
             print_error("couldn't create connection to the kafka broker")
             result = False
