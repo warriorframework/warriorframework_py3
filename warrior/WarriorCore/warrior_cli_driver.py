@@ -279,7 +279,7 @@ def warrior_execute_entry(*args, **kwargs):
         dbsystem:
         livehtmllocn:
     """
-    if sys.argv[1] == "-tc_gen":
+    if sys.argv[1:] == "-tc_gen":
         print_info("initializing tc generator tool !!")
 
         site_home_path = os.path.split(site.__file__)[0]
