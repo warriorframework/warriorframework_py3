@@ -22,7 +22,6 @@ import binascii
 from warrior.Framework.Utils import file_Utils
 from warrior.Framework.Utils.print_Utils import print_exception, print_error, print_warning
 from warrior.Framework.Utils.testcase_Utils import pNote
-from warrior import Tools
 
 try:
     MOD = 'Pycryptodome'
@@ -46,7 +45,8 @@ def get_key(encoded_key):
     """
     IV = None
     CIPHER = None
-    MYFILE = Tools.__path__[0]+os.sep+"admin"+os.sep+'secret.key'
+    #MYFILE = Tools.__path__[0]+os.sep+"admin"+os.sep+'secret.key'
+    MYFILE = os.getenv("WAR_TOOLS_DIR")+os.sep+"admin"+os.sep+'secret.key'
     try:
         if not encoded_key:
             with open(MYFILE, 'r') as myfileHandle:
@@ -126,7 +126,8 @@ def set_secret_key(plain_text_key):
         encoded_key = base64.b64encode(plain_text_key.encode('utf-8'))
 
         # Gets path to Tools
-        path = Tools.__path__[0]
+        #path = Tools.__path__[0]
+        path = os.getenv("WAR_TOOLS_DIR")
 
         # creates admin directory if that does not exist
         path = file_Utils.createDir(path, "admin")

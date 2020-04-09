@@ -53,7 +53,6 @@ except:
 import re
 import sys
 import multiprocessing
-from warrior import Tools
 from warrior.Framework.Utils import config_Utils, file_Utils, xml_Utils
 from warrior.Framework.Utils.data_Utils import get_credentials
 import warrior.Framework.Utils.encryption_utils as Encrypt
@@ -424,7 +423,8 @@ def decide_overwrite_var(namespace):
         print_error("outputdir shouldn't be used with resultdir or logdir")
         exit(1)
     if namespace.jobid:
-        settings_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+        #settings_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+        settings_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml'
         job_url = get_credentials(settings_xml, 'job_url', ['url'], 'Setting')
         if job_url['url'] is not None:
             url = job_url['url']
@@ -478,9 +478,10 @@ def decide_action(w_cli_obj, namespace):
         else:
             # If secret key has not been given, checks for the existence of the
             # secret.key file
-            path = file_Utils.get_parent_dir(os.path.realpath(__file__),
-                                             "WarriorCore")
-            path = os.path.join(path, "Tools", "admin", "secret.key")
+            #path = file_Utils.get_parent_dir(os.path.realpath(__file__),
+            #                                 "WarriorCore")
+            #path = os.path.join(path, "Tools", "admin", "secret.key")
+            path = os.path.join(os.getenv("WAR_TOOLS_DIR"), "admin", "secret.key")
             if not os.path.exists(path):
                 print_error("Could not find the secret.key file in Tools/Admin!"
                             " Please use '-secretkey your_key_text' in the "
@@ -509,9 +510,10 @@ def decide_action(w_cli_obj, namespace):
         else:
             # If secret key has not been given, checks for the existence of the
             # secret.key file
-            path = file_Utils.get_parent_dir(os.path.realpath(__file__),
-                                             "WarriorCore")
-            path = os.path.join(path, "Tools", "admin", "secret.key")
+            #path = file_Utils.get_parent_dir(os.path.realpath(__file__),
+            #                                 "WarriorCore")
+            #path = os.path.join(path, "Tools", "admin", "secret.key")
+            path = os.path.join(os.getenv("WAR_TOOLS_DIR"), "admin", "secret.key")
             if not os.path.exists(path):
                 print_error("Could not find the secret.key file in Tools/Admin!"
                             " Please use '-secretkey your_key_text' in the "
