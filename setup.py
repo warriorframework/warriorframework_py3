@@ -32,14 +32,16 @@ setup(
                 ('warrior_settings/Tools/admin', ['warrior/Tools/admin/secret.key']),
                 ('warrior_settings/Tools/jira', ['warrior/Tools/jira/jira_config.xml']),
                 ('warrior_settings/Tools/database', ['warrior/Tools/database/database_config.xml']),
-                ('warrior_settings/Tools/connection', ['warrior/Tools/connection/configs/1finity_command_data.xml', 
-                                                       'warrior/Tools/connection/configs/ubuntu_command_data.xml',
-                                                       'warrior/Tools/connection/connect_settings.xml']),
-                ('warrior_settings/Tools/xsd', ['warrior/Tools/xsd/warrior_testcase.xsd',
-                                                'warrior/Tools/xsd/warrior_project.xsd',
+                ('warrior_settings/Tools/connection', \
+                                  ['warrior/Tools/connection/configs/1finity_command_data.xml', \
+                                   'warrior/Tools/connection/configs/ubuntu_command_data.xml', \
+                                   'warrior/Tools/connection/connect_settings.xml']),
+                ('warrior_settings/Tools/xsd', ['warrior/Tools/xsd/warrior_testcase.xsd',\
+                                                'warrior/Tools/xsd/warrior_project.xsd',\
                                                 'warrior/Tools/xsd/warrior_suite.xsd']),
-                ('warrior_settings/Tools/reporting', ['warrior/Tools/reporting/wjunit_to_xunit.xsl',
-                                                      'warrior/Tools/reporting/html_results_template.html'])],
+                ('warrior_settings/Tools/reporting',\
+                                  ['warrior/Tools/reporting/wjunit_to_xunit.xsl',\
+                                   'warrior/Tools/reporting/html_results_template.html'])],
     long_description=open('module.txt').read(),
     description="Warrior Framework is an open source Automation Framework",
     url="https://github.com/warriorframework/warriorframework_py3",
@@ -49,8 +51,7 @@ setup(
     },
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: Apache Software License',
-                 'Programming Language :: Python :: 3.6',
-                 ],
+                 'Programming Language :: Python :: 3.6',],
     install_requires=["pexpect==4.8.0", "requests==2.21.0", "selenium==3.8.0",
                       "lxml==4.4.1", "paramiko==2.4.2", "pysnmp==4.4.9",
                       "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6",
