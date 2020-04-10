@@ -120,14 +120,21 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     },
     'equinix': {  
-        'ENGINE': 'django.db.backends.mysql',  
+        'ENGINE': 'djongo',  
         'NAME': 'equinix',  
-        'USER':'root',  
-        'PASSWORD':'root',  
-        'HOST':'localhost',  
-        'PORT':'3306'  
     } 
 }
+
+# for MySQL DB
+# 'equinix': {  
+#         'ENGINE': 'django.db.backends.mysql',  
+#         'NAME': 'equinix',  
+#         'USER':'root',  
+#         'PASSWORD':'root',  
+#         'HOST':'localhost',  
+#         'PORT':'3306'  
+#     } 
+
 DATABASE_ROUTERS = ['katana.wapps.equinix.dbrouter.DbRouter']
 
 # Authentication settings

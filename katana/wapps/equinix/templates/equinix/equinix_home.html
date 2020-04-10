@@ -12,6 +12,22 @@
   <!-- <style>
     
   </style> -->
+  <style>
+    .tb-items {
+      line-height: 8px;
+    }
+
+    .desc {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      text-align: left;
+    }
+    tr:hover > .desc {
+    white-space: initial;
+    word-break: break-all;
+   }
+  </style>
 </head>
 
 <body>
@@ -46,14 +62,6 @@
           <div class="head"><b>Measure:</b></div>
           <br>
           <div>
-            <!-- <br><br> -->
-            <!-- <label>Port:</label>
-            <input type="text" class="msr_port"><br><br> -->
-            <!-- <label>Protection type:</label>
-            <select class="msr_pr_type">
-              <option>Line</option>
-              <option>Path</option>
-            </select><br> -->
             <label>Select group 1:</label>
             <select class="msr_grp_name1">
               {% for option in group_list %}
@@ -82,15 +90,6 @@
           <div class="head"><b>Set:</b></div>
           <br>
           <div>
-            <!-- <label>otsi-interface name:</label>
-            <input type="text" class="set_odi"><br><br> -->
-            <!-- <label>Port:</label>
-            <input type="text" class="set_port"><br><br> -->
-            <!-- <label>Protection type:</label>
-            <select class="set_pr_type">
-              <option>Line</option>
-              <option>Path</option>
-            </select><br> -->
             <label>Select group 1:</label>
             <select class="set_grp_name1">
               {% for option in group_list %}
@@ -124,13 +123,13 @@
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="groupform" role="dialog">
+    <div class="modal fade" id="groupform" role="dialog" style="z-index: 0; overflow-y: hidden; overflow-x: hidden;">
       <div class="modal-dialog modal-lg  modal-dialog-centered vertcal-align">
         <div class="modal-content">
           <div class="modal-header">
             <h4 class="modal-title"></h4>
           </div>
-          <div class="modal-body input-fields-body" style="height: 435px; overflow-y:scroll;">
+          <div class="modal-body input-fields-body" style="height: 400px; overflow-y:scroll;">
 
             <div class="input-field" id="toggle-for-add-edit">
             </div>
@@ -166,7 +165,7 @@
             <fieldset class="fieldset ops-block">
               <legend>ops details</legend>
               <div class="input-field">
-                <label>ops name:<span style="color: red; font-size: 24px;">*</span></label>
+                <label>OPS name:<span style="color: red; font-size: 24px;">*</span></label>
                 <input class="opsname" type="text">
               </div>
 
@@ -181,28 +180,54 @@
               </div>
 
               <div class="input-field">
-                <label>ops username:<span style="color: red; font-size: 24px;">*</span></label>
+                <label>OPS username:<span style="color: red; font-size: 24px;">*</span></label>
                 <input class="opsuname" type="text">
               </div>
               <div class="input-field">
-                <label>ops password:<span style="color: red; font-size: 24px;">*</span></label>
+                <label>OPS password:<span style="color: red; font-size: 24px;">*</span></label>
                 <input class="opspassword" type="text">
               </div>
-              <!-- <div class="input-field">
-                <label>interface name:<span style="color: red; font-size: 24px;">*</span></label>
-                <input class="interfacename" type="text">
-              </div> -->
             </fieldset>
           </div>
+
+          <div class="equinix-group-toolbar"
+            style="position: absolute; margin-top: 86px; margin-left: 770px; background-color: #d2d2d2; padding: 5px; display: none;">
+            <div katana-click="equinix.editgroupintable()" title="Select a group to edit it">
+              <i class="fa fa-pencil" aria-hidden="true"></i>
+            </div><br>
+            <div katana-click="equinix.deletegroupintable()"
+              title="Select a group or multiple groups to delete it/them">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </div>
+          </div>
+
+          <!-- device toolbar -->
+          <div class="equinix-device-toolbar"
+            style="position: absolute; margin-top: 147px; margin-left: 770px; background-color: #d2d2d2; padding: 5px; display: none;">
+            <div katana-click="equinix.editdeviceintable()" title="Select a device to edit it">
+              <i class="fa fa-pencil" aria-hidden="true"></i>
+            </div><br>
+            <div katana-click="equinix.prompt_before_delete()"
+              title="Select a device or multiple deivces to delete it/them">
+              <i class="fa fa-trash-o" aria-hidden="true"></i>
+            </div>
+          </div>
+          <!-- device toolbar ends -->
+
           <div class="modal-footer">
 
           </div>
         </div>
       </div>
     </div>
+    <!-- modal ends -->
+    <div class="edit-area-template"
+      style="height: 93%; width: 41%; background-color: #fff; position: relative; padding: 10px; margin-top: -537px; margin-left: 60%; border: solid 1px #c1bdbd; border-left: solid 48px #f1ecec; display: none;">
+      <!-- <div style="display: inline; float: right; padding: 5px;"><button class="btn btn-default" onclick="equinix.closesidepanel()">Close</button>&nbsp;<button class="btn btn-default">Save</button></div> -->
 
-  </div>
-  <div class="csrf-container">{% csrf_token %}</div>
+
+    </div>
+    <div class="csrf-container">{% csrf_token %}</div>
 </body>
 
 </html>

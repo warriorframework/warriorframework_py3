@@ -242,7 +242,7 @@ def edit_group(request):
             return HttpResponse("duplicate")
         else:
             if (request.POST.get("groupname")).strip() != "" and (request.POST.get("transpondername")).strip() != ""\
-                 and (request.POST.get("opsname")).strip() != "":
+                 and (request.POST.get("opsname")).strip() != "" and (request.POST.get("interfacename")).strip() != "":
                     group_detail = equinixgroups.objects.get(groupname = request.POST.get("selgrpname"))  
                     group_detail.delete()
             edit_group_data.save()
@@ -415,3 +415,77 @@ def get_list_of_ops(request):
 
     else:
         return HttpResponse(str(ops_list))
+
+def fetch_all_groups(request):
+    data = equinixgroups.objects.all()
+    allgrp_list = []
+    for i in data:
+        allgrp_list.append([i.groupname, i.interfacename, i.transpondername, i.opsname])
+    return JsonResponse(allgrp_list, safe=False)
+
+def delete_group(request):
+    groups = request.POST.get("groups")
+    groups_list = groups.split(",")
+    try:
+        for group in groups_list:
+            del_grp = equinixgroups.objects.get(groupname=group)
+            del_grp.delete()
+    except:
+        return HttpResponse("fail")
+    else:
+        return HttpResponse("success")
+
+def fetch_devices_details_for_table(request):
+    if request.POST.get("device_type") == "T600":
+        try:
+            device_list=[]
+            data = equinixtransponder.objects.all()
+            for i in data:
+                device_list.append([i.transpondername, i.transponderport, i.transponderip, i.transponderusername, i.transponderpassword])
+        except:
+            print("=================================================================================")
+            print("Something went wrong!\n Unable to fetch data from database.")
+            print("=================================================================================")
+
+        else:
+            return JsonResponse(device_list, safe=False)
+    elif request.POST.get("device_type") == "OPS":
+        try:
+            device_list=[]
+            data = equinixops.objects.all()
+            for i in data:
+                device_list.append([i.opsname, i.opsport, i.opsip, i.opsusername, i.opspassword])
+        except:
+            print("=================================================================================")
+            print("Something went wrong!\n Unable to fetch data from database.")
+            print("=================================================================================")
+
+        else:
+            return JsonResponse(device_list, safe=False)
+
+def delete_device(request):
+    device_type = request.POST.get("device_type")
+    devices = request.POST.get("devices")
+    devices_list = devices.split(",")
+    if device_type == "T600":
+        try:
+            for device in devices_list:
+                del_device = equinixtransponder.objects.get(transpondername=device)
+                equinixgroups.objects.filter(transpondername=device).delete()
+                del_device.delete()
+        except Exception as e:
+            print(e)
+            return HttpResponse("fail")
+        else:
+            return HttpResponse("success")
+    elif device_type == "OPS":
+        try:
+            for device in devices_list:
+                del_device = equinixops.objects.get(opsname=device)
+                equinixgroups.objects.filter(opsname=device).delete()
+                del_device.delete()
+        except Exception as e:
+            print(e)
+            return HttpResponse("fail")
+        else:
+            return HttpResponse("success")

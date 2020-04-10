@@ -7,7 +7,6 @@
   .head {
     font-size: 24px;
   }
-
   .splitform input {
     width: 32%;
     font-size: 15px;
@@ -124,3 +123,9 @@ input {
   content:" *";
   color: red;
 }
+
+/* .edit-area-template{
+  height: 500px !important;
+  width: 300px !important;
+  background-color: red !important;
+} */

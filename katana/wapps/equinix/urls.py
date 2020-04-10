@@ -18,5 +18,9 @@ urlpatterns = [
     url(r'^edit_ops/$', views.edit_ops, name='edit_ops'),
     url(r'^get_list_of_transponders/$', views.get_list_of_transponders, name='ediget_list_of_transponderst_ops'),
     url(r'^get_list_of_ops/$', views.get_list_of_ops, name='get_list_of_ops'),
+    url(r'^fetch_all_groups/$', views.fetch_all_groups, name='fetch_all_groups'),
+    url(r'^delete_group/$', views.delete_group, name='delete_group'),
+    url(r'^fetch_devices_details_for_table/$', views.fetch_devices_details_for_table, name='fetch_devices_details_for_table'),
+    url(r'^delete_device/$', views.delete_device, name='delete_device'),
     
 ]
