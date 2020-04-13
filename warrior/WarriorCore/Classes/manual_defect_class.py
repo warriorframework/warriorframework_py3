@@ -60,7 +60,7 @@ class ManualDefectClass(object):
 
     def manual_defects(self, paths):
         """parse file list and create jira issue for each failures"""
-        print_info("manual-create defects")
+        # print_info("manual-create defects")
 
         if self.path_type == "dir":
             defects_json_list = []

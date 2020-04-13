@@ -149,7 +149,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:
         if step.find("runmode").get("attempt") == 1:
-            print_info("\n----------------- Start of Step Runmode Execution -----------------\n")
+            print_info("\n----------- Start of Step Runmode Execution -------\n")
         print_info("KEYWORD ATTEMPT: {0}".format(
             step.find("runmode").get("attempt")))
     # print keyword to result file
@@ -203,8 +203,8 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
         onerror = onerror + " step " + step_goto_value
     if keyword_status is False and step_onError_action and \
             step_onError_action.upper() == 'ABORT_AS_ERROR' and skip_invoked:
-        print_info("Keyword status will be marked as ERROR as onError action is set to"
-                   "'abort_as_error'")
+        # print_info("Keyword status will be marked as ERROR as onError action is set to"
+        #            "'abort_as_error'")
         keyword_status = "ERROR"
     Utils.testcase_Utils.reportKeywordStatus(keyword_status, keyword)
     # print_info("step number: {0}".format(step_num))

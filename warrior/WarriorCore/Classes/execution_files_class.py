@@ -234,10 +234,10 @@ class ExecFilesClass(object):
             elif self.filetype == "proj":
                 datafile = False
         elif str(datafile).strip().upper() == "DEFAULT":
-            print_info("This testcase will be executed using the default InputDataFile")
+            # print_info("This testcase will be executed using the default InputDataFile")
             datafile = get_default_xml_datafile(self.filepath)
         elif str(datafile).strip().upper() == 'NO_DATA':
-            print_info('This test case will be run without any InputDataFile')
+            # print_info('This test case will be run without any InputDataFile')
             datafile = "NO_DATA"
 
         elif datafile is not None and datafile is not False:
@@ -246,7 +246,7 @@ class ExecFilesClass(object):
 
         if str(datafile).strip().upper() != 'NO_DATA' and datafile is not False:
             if not file_Utils.fileExists(datafile):
-                print_info('\n')
+                # print_info('\n')
                 print_error("!!! *** InputDataFile does not exist in provided path:"\
                             "{0} *** !!!".format(datafile))
         return datafile
@@ -258,7 +258,7 @@ class ExecFilesClass(object):
         data_type = xml_Utils.getChildTextbyParentTag(self.filepath, 'Details', 'Datatype')
         if str(datafile).upper().strip() == 'NO_DATA':
             data_type = 'CUSTOM'
-            print_info('This test case will be run without any InputDataFile')
+            # print_info('This test case will be run without any InputDataFile')
 
         elif data_type is None or data_type is False or\
         str(data_type).strip() == "":
