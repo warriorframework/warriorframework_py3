@@ -63,13 +63,14 @@ elif args.type == "netconf":
             \n--ip_addr='localhost' -np='netconf_port'\n")
         sys.exit()
 elif args.type == "rest":
-    if args.tc_name:
+    if args.tc_name and not args.username and not args.password and not args.ip_addr\
+     and not args.cli_port and not args.dip_port and not args.snmp_port and not args.netconf_port:
         pass
     else:
         print("\n****************************** Error ************************************")
         print("\nfor rest operation required format and arguments is: ./Warrior(or)Warrior -tc_gen\
-            \n--type='rest' --tc_name='tc_name.xml' (--username = 'username' and --password = 'password'\
-             are optional)")
+        \n--type='rest' --tc_name='tc_name.xml' (or) will not accept username, password and any\
+            \ntype of port_numbers for this type")
         sys.exit()        
 
 if args.verbose:
