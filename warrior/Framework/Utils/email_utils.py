@@ -20,7 +20,6 @@ from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from xml.etree import ElementTree as ET
-from warrior import Tools
 from warrior.Framework.Utils.print_Utils import print_debug, print_info
 from warrior.Framework.Utils import file_Utils
 from warrior.Framework.Utils.testcase_Utils import pNote
@@ -84,7 +83,8 @@ def get_email_params(mail_on='per_execution'):
     sender = ""
     receivers = ""
     subject = ""
-    warrior_tools_dir = Tools.__path__[0]+os.sep+'w_settings.xml'
+    #warrior_tools_dir = Tools.__path__[0]+os.sep+'w_settings.xml'
+    warrior_tools_dir = os.getenv("WAR_TOOLS_DIR")+os.sep+'w_settings.xml'
     element = ET.parse(warrior_tools_dir)
     setting_elem = element.find("Setting[@name='mail_to']")
     if setting_elem is not None:

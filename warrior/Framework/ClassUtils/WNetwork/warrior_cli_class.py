@@ -20,7 +20,6 @@ import getpass
 import xml.etree.ElementTree as ET
 import ast
 from distutils.version import LooseVersion
-from warrior import Tools
 from warrior.Framework import Utils
 from warrior.Framework.Utils.print_Utils import print_info, print_debug,\
  print_warning, print_exception, print_error, print_without_logging
@@ -961,7 +960,8 @@ class WarriorCli(object):
                 root = Utils.xml_Utils.getRoot(testdatafile)
             system_name = Utils.data_Utils._get_global_var(root, "system_name")
 
-        con_settings_dir = Tools.__path__[0] + os.sep + 'connection' + os.sep
+        #con_settings_dir = Tools.__path__[0] + os.sep + 'connection' + os.sep
+        con_settings_dir = os.getenv("WAR_TOOLS_DIR") + os.sep + 'connection' + os.sep
         con_settings = con_settings_dir + "connect_settings.xml"
 
         if system_name is not None:

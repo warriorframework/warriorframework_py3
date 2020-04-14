@@ -15,7 +15,6 @@ limitations under the License.
 import os
 import xml.etree.ElementTree as ET
 
-from warrior import Tools
 from warrior.Framework.Utils import xml_Utils
 from warrior.Framework.Utils.print_Utils import print_warning, print_info
 
@@ -24,7 +23,9 @@ def create_database_connection(server_type="resultservers", dbsystem=None):
     """ To create object for the database class based on the dbsystem:dbtype
     value of server_type in Tools/database/database_config.xml """
     db_config_fpath = 'database/database_config.xml'
-    db_config_xml = os.path.join(Tools.__path__[0],
+    #db_config_xml = os.path.join(Tools.__path__[0],
+    #                             db_config_fpath)
+    db_config_xml = os.path.join(os.getenv("WAR_TOOLS_DIR"),
                                  db_config_fpath)
 
     db_type_list = get_database_details(db_config_xml, server_type,
