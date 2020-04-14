@@ -289,10 +289,11 @@ def warrior_execute_entry(*args, **kwargs):
             os.system("tc_generator {}".format(" ".join(sys.argv[2:])))
             sys.exit()
         else:
-            current_working_directory = os.getcwd()
+            from os.path import dirname, abspath
+            current_working_directory = dirname(dirname(abspath(__file__)))
             tc_generator_dir_path = "Tools/tc_generator"
             tc_generator_path = os.path.join(current_working_directory, tc_generator_dir_path)
-            os.system("python {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
+            os.system("python3 {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
             sys.exit()
 
     if not kwargs:
