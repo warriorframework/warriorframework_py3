@@ -1651,7 +1651,7 @@ def get_var_by_string_prefix(string, iter_number=None):
     if string.startswith("GEN."):
         keys = string.split('.', 1)
         gen_dict = get_object_from_datarepository('gen_dict')
-        print_info("gen dict is {}".format(gen_dict))
+        #print_info("gen dict is {}".format(gen_dict))
         value = gen_dict[iter_number][keys[1]]
         return str(value)
 

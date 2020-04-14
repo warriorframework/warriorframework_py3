@@ -131,7 +131,7 @@ def file_execution(cli_args, abs_filepath, default_repo):
             abs_filepath, data_repository=default_repo,
             runtype='SEQUENTIAL_KEYWORDS',
             auto_defects=a_defects, jiraproj=jiraproj, jiraid=jiraid)
-        if not Utils.data_Utils.get_object_from_datarepository('gen_dict'):
+        if not Utils.data_Utils.get_object_from_datarepository('genericdatafile'):
             update_jira_by_id(jiraproj, jiraid, os.path.dirname(
                 data_repository['wt_resultsdir']), result)
             email.compose_send_email("Test Case: ", abs_filepath,
@@ -304,7 +304,6 @@ def warrior_execute_entry(*args, **kwargs):
         # Launch from python function call
         filepath, cli_args, overwrite = main(*args)
     livehtmlobj = kwargs.get("livehtmlobj", None)
-
     status = execution(filepath, cli_args, overwrite, livehtmlobj)
     status = {"true": True, "pass": True, "ran": True}.get(str(status).lower())
     # add code to send div finished using katana interface class
@@ -436,6 +435,18 @@ def decide_overwrite_var(namespace):
         overwrite['jobid'] = url + str(namespace.jobid)
     if namespace.pythonpath:
         overwrite['pythonpath'] = namespace.pythonpath
+
+    if namespace.genericdatafile:
+        overwrite['genericdatafile'] = namespace.genericdatafile
+    if namespace.gen_no_of_samples:
+        overwrite['gen_no_of_samples'] = namespace.gen_no_of_samples
+    if namespace.gen_select_rows:
+        overwrite['gen_select_rows'] = namespace.gen_select_rows
+    if namespace.gen_shuffle_columns:
+        overwrite['gen_shuffle_columns'] = namespace.gen_shuffle_columns
+    if namespace.gen_purge_db:
+        overwrite['gen_purge_db'] = namespace.gen_purge_db
+
     return overwrite
 
 

@@ -22,6 +22,7 @@ import os
 import time
 import shutil
 import ast
+import random
 import pandas as pd
 import xml.etree.ElementTree as et
 from json import loads, dumps
@@ -127,6 +128,7 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     #To check the whether data file is a well formed xml file.
     if datafile and datafile is not "NO_DATA":
         Utils.xml_Utils.getRoot(datafile)
+
     # tc_execution_dir = Utils.file_Utils.createDir_addtimestamp(execution_dir, nameonly)
     # datafile, data_type = get_testcase_datafile(testcase_filepath)
     # resultfile, resultsdir = get_testcase_resultfile(testcase_filepath, tc_execution_dir,
@@ -172,7 +174,6 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     data_repository['wt_operating_system'] = operating_system.upper()
     data_repository['wt_def_on_error_action'] = def_on_error_action.upper()
     data_repository['wt_def_on_error_value'] = def_on_error_value
-
     # For custom jira project name
     if 'jiraproj' not in data_repository:
         data_repository['jiraproj'] = jiraproj
@@ -875,21 +876,83 @@ def update_database(tc_status, data_repository):
 
 def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
     """ get iterations from generic data"""
-    if Utils.xml_Utils.nodeExists(testcase_filepath, "GenericDataFile"):
+    '''genericdatafile can be passed to test by below two methods and its priority
+       in order'''
+    #First priority for generic data file through CLI
+    genericdatafile = None
+    if 'genericdatafile' in data_repository:
+        genericdatafile = data_repository['genericdatafile']
+    #Next priority is for genericdatafile in testcase details
+    elif Utils.xml_Utils.nodeExists(testcase_filepath, "GenericDataFile"):
         genericdatafile = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, \
                     'Details', 'GenericDataFile')
-        if not genericdatafile:
-            return False
+    if genericdatafile:
         abs_cur_dir = os.path.dirname(testcase_filepath)
-        abs_genericdatafile = Utils.file_Utils.getAbsPath(genericdatafile, abs_cur_dir)
-        df = pd.read_excel(abs_genericdatafile)
-        generic_data_dict = df.to_dict('records')
-        #random or boundary logic and verifying persistent db has to be implemented here
-        gen_dict = {"gen_dict" : generic_data_dict}
-        Utils.data_Utils.update_datarepository(gen_dict)
-        return generic_data_dict
+        genericdatafile = Utils.file_Utils.getAbsPath(genericdatafile, abs_cur_dir)
     else:
+        data_repository["genericdatafile"] = None
         return False
+
+    if not Utils.file_Utils.fileExists(genericdatafile):
+        print_error("Given genericdatafile file path doesn't exist. Exiting !!"
+                     " File path - {}".format(genericdatafile))
+        exit(1)
+
+    no_of_samples = data_repository.get('gen_no_of_samples', None)
+    shuffle_columns = data_repository.get('gen_shuffle_columns', False)
+    selected_rows = data_repository.get('gen_select_rows', None)
+    if selected_rows:
+        selected_rows = [int(element.strip()) for element in selected_rows.split(",")]
+        
+    df = pd.read_excel(genericdatafile)
+    generic_data_dict = []
+    if shuffle_columns:
+        df_dict = {}
+        for column in df.columns:
+            df_dict[column] = [x for x in df[column].sample(frac=1) if not pd.isnull(x)]
+        no_of_samples = no_of_samples or 1
+        no_of_samples = int(no_of_samples)
+        for_break = False
+        for x in range(no_of_samples):
+            sample_record = {}
+            for key in df_dict:
+                sample_record[key] = random.choice(df_dict[key])
+            while_count = 0
+            while sample_record in generic_data_dict:
+                for key in df_dict:
+                    sample_record[key] = random.choice(df_dict[key])
+                while_count+=1
+                if while_count > 10:
+                    print_warning("couldn't get required unique records, try reducing gen_no_of_samples" \
+                                   ". test will be executed with less no. of samples")
+                    for_break = True
+                    break
+            else:
+                generic_data_dict.append(sample_record)
+            if for_break:
+                break
+    else:
+        df_fixed = None
+        df_random = None
+        #select user selected rows
+        selected_rows = [index for index in selected_rows if index in df.index]
+        if selected_rows:
+            df_fixed = df.iloc[selected_rows]
+            df = df.drop(selected_rows, axis=0)
+        #drop rows with 'ignore' set to 'yes'
+        if 'ignore' in df.columns:
+            df = df[df["ignore"] != "yes"]
+        #select random samples
+        if no_of_samples:
+            no_of_samples = int(no_of_samples) \
+                    if int(no_of_samples) <= len(df.index) else len(df.index)
+            df_random = df.sample(n=no_of_samples)
+            df = pd.concat([df_fixed, df_random])
+        generic_data_dict = df.to_dict('records')
+    #random or boundary logic and verifying persistent db has to be implemented here
+    gen_dict = {"gen_dict" : generic_data_dict}
+    Utils.data_Utils.update_datarepository(gen_dict)
+    return generic_data_dict
 
 def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
          runtype='SEQUENTIAL_KEYWORDS', tc_parallel=False, auto_defects=False, suite=None,
@@ -901,7 +964,7 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
 
         try:
             Utils.config_Utils.set_datarepository(data_repository)
-            generic_data_dict = get_iterations_from_generic_data(testcase_filepath)
+            generic_data_dict = get_iterations_from_generic_data(testcase_filepath, data_repository)
             if generic_data_dict:
                 tc_status = True
                 for iter_number, _ in enumerate(generic_data_dict):
