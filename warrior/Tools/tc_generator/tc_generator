@@ -5,6 +5,7 @@ import os
 import logging
 import site
 import sys
+from os.path import dirname, abspath
 from xml.etree import ElementTree as et
 
 # Argparser to add command line argumets
@@ -86,7 +87,7 @@ class Warrior_Execution_Setup_Files:
         if not args.tc_name.endswith(".xml"):
             sys.exit("tc_name must end with .xml")
         self.tc_name = args.tc_name.split(".")[0]
-        self.current_working_directory = os.getcwd()
+        self.current_working_directory = dirname(dirname(dirname(abspath(__file__))))
         self.log.debug("current working directory is {}".format(self.current_working_directory))
         site_home_path = os.path.split(site.__file__)[0]
         site_packages_path = "site-packages/warrior/Tools/tc_generator/templates"
