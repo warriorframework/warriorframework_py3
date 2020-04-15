@@ -59,7 +59,7 @@ def execute_sequential_testsuites(testsuite_list, project_repository,
                                                          project_dir)
         else:
             testsuite_path = str(testsuite_rel_path)
-        print_info("\n")
+
         print_debug("<<<< Starting execution of Test suite: {0}>>>>".format(testsuite_path))
         action, testsuite_status = exec_type_driver.main(testsuite)
         testsuite_impact = Utils.testcase_Utils.get_impact_from_xmlfile(testsuite)

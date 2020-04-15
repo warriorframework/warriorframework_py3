@@ -334,7 +334,7 @@ class HybridDriver(object):
     def _execute_step(self, system_executed, step_num, index, goto_stepnum):
         """
         """
-        print_info("\n")
+
         result = (None, None, None, None)
 
         if not self.execute_endoftc:
@@ -414,7 +414,7 @@ class HybridDriver(object):
         config_Utils.set_resultfile(kw_resultfile)
         testcase_Utils.pKeyword(keyword, step.get('Driver'))
         testcase_Utils.reportStatus('Skip')
-        print_info("\n-----------------------------------------------------\n")
+
         self.data_repository['wt_junit_object'].update_count("skipped", "1", "tc",
                                                              self.data_repository['wt_tc_timestamp'])
         self.data_repository['wt_junit_object'].update_count("keywords", "1", "tc",

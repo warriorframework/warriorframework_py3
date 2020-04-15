@@ -107,13 +107,13 @@ def getErrorHandlingParameters(node, def_on_error_action, def_on_error_value, ex
         if action.lower() not in supported_values:
             print_warning("unsupported option '{0}' provided for onError action, supported "
                           "values are {1}".format(action, supported_values))
-            print_info("Hence using default_onError action")
+
             action = def_on_error_action
 
     if value is None or value is False:
         if action == "execute_and_resume":
             print_warning("No step numbers given to go to for execute_and_resume")
-            print_info("Hence using default_onError action")
+
             action = def_on_error_action
         else:
             value = def_on_error_value

@@ -140,7 +140,7 @@ class TestCaseStepsExecutionClass:
             return self.current_step_number, self.go_to_step_number, "continue"
         elif self.current_triggered_action == "SKIP_INVOKED":
             if self.skip_invoked:
-                print_info("Skipping this step as it is an invoked step.")
+
                 return self.current_step_number, self.go_to_step_number, "continue"
         # when 'onError:goto' value is less than the current step num,
         # change the next iteration point to goto value
