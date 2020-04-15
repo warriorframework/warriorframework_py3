@@ -677,8 +677,6 @@ var equinix = {
         if (dlen >= 1) {
             sel_groups = $("[selected=selected]").find("[field=groupname]")
                 .map(function () { return $(this).text(); }).get();
-            console.log("deleting groups...", sel_groups)
-
             $.ajax({
                 headers: {
                     'X-CSRFToken': katana.$activeTab.find('input[name="csrfmiddlewaretoken"]').attr('value')
@@ -901,7 +899,7 @@ var equinix = {
                         equinix.fetch_devices_for_table()
                     }
                     else if (data == "duplicate") {
-                        equinix.alert("Error!", "device name already exists.", "error")
+                        equinix.alert("Error!", "Device name already exists.", "error")
                     }
                     else {
                         equinix.alert("Error!", "Failed to edit a device.", "error")
@@ -942,28 +940,29 @@ var equinix = {
         dlen = $("[selected=selected]").length
         let sel_devices = []
         if (dlen >= 1) {
-            const swalWithBootstrapButtons = Swal.mixin({
-                customClass: {
-                  confirmButton: 'btn btn-success',
-                  cancelButton: 'btn btn-danger'
-                },
-                buttonsStyling: false
-              })
+            equinix.deletedeviceintable()
+            // const swalWithBootstrapButtons = Swal.mixin({
+            //     customClass: {
+            //       confirmButton: 'btn btn-success',
+            //       cancelButton: 'btn btn-danger'
+            //     },
+            //     buttonsStyling: false
+            //   })
               
-              swalWithBootstrapButtons.fire({
-                title: 'Are you sure?',
-                text: 'This action will also delete the groups, which are linked with the device(s)!',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes',
-                cancelButtonText: 'No',
-                reverseButtons: true
-              }).then((result) => {
-                if (result.value) {
-                //   call delete function here
-                equinix.deletedeviceintable()
-                } 
-              })
+            //   swalWithBootstrapButtons.fire({
+            //     title: 'Are you sure?',
+            //     text: 'This action will also delete the groups, which are linked with the device(s)!',
+            //     icon: 'warning',
+            //     showCancelButton: true,
+            //     confirmButtonText: 'Yes',
+            //     cancelButtonText: 'No',
+            //     reverseButtons: true
+            //   }).then((result) => {
+            //     if (result.value) {
+            //     //   call delete function here
+                
+            //     } 
+            //   })
 
         }
         else if (dlen < 1) {

@@ -19,6 +19,7 @@ from katana.wapps.cases.cases_utils.get_drivers import GetDriversActions
 from katana.wapps.cases.cases_utils.verify_case_file import VerifyCaseFile
 from katana.wapps.equinix.models import equinixgroups, equinixtransponder, equinixops
 from katana.wapps.equinix.forms import equinixgroupsForm, equinixtransponderForum, equinixopsForum
+from django.db.models import Q
 navigator = Navigator()
 equinix_measure_data_json_path = join_path(navigator.get_katana_dir(), "wapps/equinix/equinix_measure_data.json")
 equinix_set_data_json_path = join_path(navigator.get_katana_dir(), "wapps/equinix/equinix_set_data.json")
@@ -32,11 +33,11 @@ class EquinixView(View):
         group_list=["None"]
         try:
             group_list=[]
-            data = equinixgroups.objects.all()
+            data = equinixgroups.objects.filter(~Q(transpondername="None(deleted)") & ~Q(opsname="None(deleted)"))
             if len(data):
                 for i in data:
                     group_list.append(i.groupname)
-        except:
+        except Exception as e:
             print("=================================================================================")
             print("Something went wrong!\n Unable to fetch data from database.")
             print("=================================================================================")
@@ -355,6 +356,7 @@ def edit_transponder(request):
                     device_detail = equinixtransponder.objects.get(transpondername = request.POST.get("seldevname"))  
                     device_detail.delete()
             edit_device_data.save()
+            equinixgroups.objects.filter(transpondername=request.POST.get("seldevname")).update(transpondername=request.POST.get("transpondername"))
             response = "success"
     except Exception as e:
         print(str(e))
@@ -379,6 +381,7 @@ def edit_ops(request):
                     device_detail = equinixops.objects.get(opsname = request.POST.get("seldevname"))  
                     device_detail.delete()
             edit_device_data.save()
+            equinixgroups.objects.filter(opsname=request.POST.get("seldevname")).update(opsname=request.POST.get("opsname"))
             response = "success"
     except Exception as e:
         print(str(e))
@@ -471,7 +474,7 @@ def delete_device(request):
         try:
             for device in devices_list:
                 del_device = equinixtransponder.objects.get(transpondername=device)
-                equinixgroups.objects.filter(transpondername=device).delete()
+                equinixgroups.objects.filter(transpondername=device).update(transpondername="None(deleted)")
                 del_device.delete()
         except Exception as e:
             print(e)
@@ -482,7 +485,7 @@ def delete_device(request):
         try:
             for device in devices_list:
                 del_device = equinixops.objects.get(opsname=device)
-                equinixgroups.objects.filter(opsname=device).delete()
+                equinixgroups.objects.filter(opsname=device).update(opsname="None(deleted)")
                 del_device.delete()
         except Exception as e:
             print(e)
