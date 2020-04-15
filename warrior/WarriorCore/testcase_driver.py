@@ -24,6 +24,8 @@ import shutil
 import ast
 import random
 import pandas as pd
+import sqlite3
+import json
 import xml.etree.ElementTree as et
 from json import loads, dumps
 from warrior.WarriorCore.defects_driver import DefectsDriver
@@ -869,15 +871,95 @@ def check_robot_wrapper_case(testcase_filepath):
             break
     return isRobotWrapperCase
 
-def update_database(tc_status, data_repository):
+def update_generic_database(testcase_name, sample_records):
     """ update tc generic iteration results in persistent db"""
     #code to connect db and persist iteration results
-    pass
+    db_path = os.getenv("WAR_TOOLS_DIR") + "/generic_samples.db"
+    con = sqlite3.connect(db_path)
+    con.execute("INSERT into GEN_RESULTS_TABLE values(NULL,?,?,?)", (testcase_name, sample_records, 'done'))
+    con.commit()
+    con.close()
 
-def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
-    """ get iterations from generic data"""
-    '''genericdatafile can be passed to test by below two methods and its priority
-       in order'''
+def delete_samples_generic_database(testcase_name):
+    """ delete existing samples of given testcase """
+    db_path = os.getenv("WAR_TOOLS_DIR") + "/generic_samples.db"
+    con = sqlite3.connect(db_path)
+    con.execute("DELETE from GEN_RESULTS_TABLE where NAME == ?", (testcase_name, ))
+    con.commit()
+    con.close()
+
+def get_samples_from_generic_db(testcase_name):
+    """ get existing samples from generic db"""
+    all_samples = []
+    db_path = os.getenv("WAR_TOOLS_DIR") + "/generic_samples.db"
+    con = sqlite3.connect(db_path)
+    records = con.execute("SELECT json from GEN_RESULTS_TABLE where name == ?", (testcase_name, ))
+    for record in records:
+        all_samples.extend(json.loads(record[0]))
+    return all_samples
+
+def get_samples_shuffle_columns(df, no_of_samples, records_in_generic_db):
+    """ get samples for shuffle columns"""
+    df_dict = {}
+    generic_data_dict = []
+    for column in df.columns:
+        df_dict[column] = [x for x in df[column].sample(frac=1) if not pd.isnull(x)]
+    no_of_samples = no_of_samples or 1
+    no_of_samples = int(no_of_samples)
+    for_break = False
+    for x in range(no_of_samples):
+        sample_record = {}
+        for key in df_dict:
+            sample_record[key] = random.choice(df_dict[key])
+        while_count = 0
+        while sample_record in generic_data_dict or sample_record in records_in_generic_db:
+            for key in df_dict:
+                sample_record[key] = random.choice(df_dict[key])
+            while_count+=1
+            if while_count > 10:
+                print_warning("couldn't get required unique records, try reducing gen_no_of_samples" \
+                              " or use gen_purge_db. test will be executed with less no. of samples")
+                for_break = True
+                break
+        else:
+            generic_data_dict.append(sample_record)
+        if for_break:
+            break
+    return generic_data_dict
+
+def get_samples(df, selected_rows, no_of_samples, records_in_generic_db):
+    """ get samples without shuffling columns """
+    df_fixed = None
+    df_random = None
+    generic_data_dict = []
+    #select user selected rows
+    if selected_rows:
+        selected_rows = [index for index in selected_rows if index in df.index]
+        df_fixed = df.iloc[selected_rows]
+        df = df.drop(selected_rows, axis=0)
+    #drop rows with 'ignore' set to 'yes'
+    if 'ignore' in df.columns:
+        df = df[df["ignore"] != "yes"]
+    #do not select already existig rows present in generic db
+    df_dict = df.to_dict('records')
+    for record in records_in_generic_db:
+        if record in df_dict:
+            df_dict.remove(record)
+    df = pd.DataFrame(df_dict)
+    #select random samples
+    if no_of_samples.strip().lower() == 'all':
+        df_random = df.sample(frac=1)
+    elif int(no_of_samples) > len(df.index):
+        df_random = df.sample(frac=1)
+    else:
+        no_of_samples = int(no_of_samples)
+        df_random = df.sample(n=no_of_samples)
+    df = pd.concat([df_fixed, df_random])
+    generic_data_dict = df.to_dict('records')
+    return generic_data_dict
+
+def get_generic_datafile(testcase_filepath, data_repository):
+    """ get generic data file"""
     #First priority for generic data file through CLI
     genericdatafile = None
     if 'genericdatafile' in data_repository:
@@ -889,69 +971,60 @@ def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
     if genericdatafile:
         abs_cur_dir = os.path.dirname(testcase_filepath)
         genericdatafile = Utils.file_Utils.getAbsPath(genericdatafile, abs_cur_dir)
-    else:
-        data_repository["genericdatafile"] = None
-        return False
+        if not Utils.file_Utils.fileExists(genericdatafile):
+            print_error("Given genericdatafile file path doesn't exist. Exiting !!"
+                        " File path - {}".format(genericdatafile))
+            exit(1)
+    data_repository["genericdatafile"] = genericdatafile
+    return genericdatafile
+ 
 
-    if not Utils.file_Utils.fileExists(genericdatafile):
-        print_error("Given genericdatafile file path doesn't exist. Exiting !!"
-                     " File path - {}".format(genericdatafile))
-        exit(1)
-
-    no_of_samples = data_repository.get('gen_no_of_samples', None)
-    shuffle_columns = data_repository.get('gen_shuffle_columns', False)
-    selected_rows = data_repository.get('gen_select_rows', None)
-    if selected_rows:
-        selected_rows = [int(element.strip()) for element in selected_rows.split(",")]
-        
-    df = pd.read_excel(genericdatafile)
+def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
+    """ get iterations from generic data"""
+    '''genericdatafile can be passed to test by below two methods and its priority
+       in order'''
     generic_data_dict = []
-    if shuffle_columns:
-        df_dict = {}
-        for column in df.columns:
-            df_dict[column] = [x for x in df[column].sample(frac=1) if not pd.isnull(x)]
-        no_of_samples = no_of_samples or 1
-        no_of_samples = int(no_of_samples)
-        for_break = False
-        for x in range(no_of_samples):
-            sample_record = {}
-            for key in df_dict:
-                sample_record[key] = random.choice(df_dict[key])
-            while_count = 0
-            while sample_record in generic_data_dict:
-                for key in df_dict:
-                    sample_record[key] = random.choice(df_dict[key])
-                while_count+=1
-                if while_count > 10:
-                    print_warning("couldn't get required unique records, try reducing gen_no_of_samples" \
-                                   ". test will be executed with less no. of samples")
-                    for_break = True
-                    break
+    genericdatafile = get_generic_datafile(testcase_filepath, data_repository)
+    if genericdatafile:
+        while_count = 0
+        no_of_samples = data_repository.get('gen_no_of_samples', '1')
+        shuffle_columns = data_repository.get('gen_shuffle_columns', False)
+        selected_rows = data_repository.get('gen_select_rows', None)
+        purge_db = data_repository.get("gen_purge_db", None)
+        if no_of_samples.strip().lower() == 'all':
+            purge_db = True
+        if no_of_samples.strip().lower() == 'all' and shuffle_columns:
+            print_warning("gen_no_of_samples:all not supported with shuffle columns."
+                          " setting it to 1")
+            no_of_samples = '1'
+        while not generic_data_dict:
+            #db operations
+            if purge_db:
+                delete_samples_generic_database(testcase_filepath)
+            records_in_generic_db = get_samples_from_generic_db(testcase_filepath) 
+            if selected_rows:
+                selected_rows = [int(element.strip()) for element in selected_rows.split(",")]
+            df = pd.read_excel(genericdatafile)
+            if shuffle_columns:
+                generic_data_dict = get_samples_shuffle_columns(df, no_of_samples, 
+                                                                records_in_generic_db)
             else:
-                generic_data_dict.append(sample_record)
-            if for_break:
+                generic_data_dict = get_samples(df, selected_rows, no_of_samples, 
+                                                records_in_generic_db)
+            if not generic_data_dict:
+                #purge db if no samples are selected and try again
+                purge_db = True
+                while_count += 1
+            
+            if while_count >= 2:
                 break
-    else:
-        df_fixed = None
-        df_random = None
-        #select user selected rows
-        selected_rows = [index for index in selected_rows if index in df.index]
-        if selected_rows:
-            df_fixed = df.iloc[selected_rows]
-            df = df.drop(selected_rows, axis=0)
-        #drop rows with 'ignore' set to 'yes'
-        if 'ignore' in df.columns:
-            df = df[df["ignore"] != "yes"]
-        #select random samples
-        if no_of_samples:
-            no_of_samples = int(no_of_samples) \
-                    if int(no_of_samples) <= len(df.index) else len(df.index)
-            df_random = df.sample(n=no_of_samples)
-            df = pd.concat([df_fixed, df_random])
-        generic_data_dict = df.to_dict('records')
-    #random or boundary logic and verifying persistent db has to be implemented here
-    gen_dict = {"gen_dict" : generic_data_dict}
-    Utils.data_Utils.update_datarepository(gen_dict)
+    
+        if not generic_data_dict:
+            print_warning("couldn't get samples from given xls for repetitive testing!!"
+                          " Please check data in given genericdatafile. Exiting!!")
+            exit(1)
+        gen_dict = {"gen_dict" : generic_data_dict}
+        Utils.data_Utils.update_datarepository(gen_dict)
     return generic_data_dict
 
 def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
@@ -970,21 +1043,19 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
                 for iter_number, _ in enumerate(generic_data_dict):
                     Utils.data_Utils.update_datarepository({"gen_iter_number" : iter_number})
                     data_key = "gen_" + str(iter_number)
-                    #print_info("data repo is : {}".format(data_repository))
                     data_repository[data_key] = {'db_obj': False, 'war_file_type': 'Case'}
                     gen_tc_status, gen_data_repository = execute_testcase(testcase_filepath,
                                                                   data_repository[data_key], tc_context, runtype,
                                                                   tc_parallel, queue, auto_defects, suite,
                                                                   jiraproj, tc_onError_action, iter_ts_sys)
-                    #print_info("gen data repo is : {}".format(gen_data_repository))
                     print_info("Result of {} : {}".format(data_key, tc_status))
                     tc_status = tc_status and gen_tc_status
-                    update_database(tc_status, data_repository[data_key])
                     warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, os.path.dirname(
                                      data_repository[data_key]['wt_resultsdir']), gen_tc_status)
                     email.compose_send_email("Test Case: ", testcase_filepath,
                                  data_repository[data_key]['wt_logsdir'],
                                  data_repository[data_key]['wt_resultsdir'], gen_tc_status)
+                update_generic_database(testcase_filepath, json.dumps(generic_data_dict))
             else:
                 tc_status, data_repository = execute_testcase(testcase_filepath,
                                                               data_repository, tc_context, runtype,
