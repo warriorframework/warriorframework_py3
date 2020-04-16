@@ -36,7 +36,6 @@ install:
       pip3 install djangorestframework==3.9.4;
       pip3 install xmltodict==0.12.0;
       pip3 install pandas;
-      pip3 install db-sqlite3;
     fi
 script:
   - if [[ -z ${TRAVIS_PULL_REQUEST_BRANCH} ]]; then
