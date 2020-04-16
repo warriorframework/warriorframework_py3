@@ -16,6 +16,7 @@ limitations under the License.
 It in turn calls the custom_sequential/custom_parallel/iterative_sequential/
 iterative_parallel drivers according to the  data_type and run_type of the testcase"""
 #pylint: disable=wrong-import-position
+#pylint: disable=invalid-name
 
 import sys
 import os
@@ -23,11 +24,10 @@ import time
 import shutil
 import ast
 import random
-import pandas as pd
 import sqlite3
 import json
 import xml.etree.ElementTree as et
-from json import loads, dumps
+import pandas as pd
 from warrior.WarriorCore.defects_driver import DefectsDriver
 from warrior.WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
 from warrior.WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
@@ -690,7 +690,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
         print_warning("setting tc status to WARN as cleanup failed")
         tc_status = "WARN"
 
-    if step_list and tc_status == False and tc_onError_action and tc_onError_action.upper() == 'ABORT_AS_ERROR':
+    if step_list and tc_status == False and tc_onError_action \
+            and tc_onError_action.upper() == 'ABORT_AS_ERROR':
         print_info("Testcase status will be marked as ERROR as onError "
                    "action is set to 'abort_as_error'")
         tc_status = "ERROR"
@@ -755,7 +756,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
 
         ip_port = ["{}:{}".format(ip_address, ssh_port)]
         data.update({"bootstrap_servers": ip_port})
-        data.update({"value_serializer": lambda x: dumps(x).encode('utf-8')})
+        data.update({"value_serializer": lambda x: json.dumps(x).encode('utf-8')})
         try:
             producer = WarriorKafkaProducer(**data)
             producer.send_messages('warrior_results', suite_details.items())
@@ -876,7 +877,8 @@ def update_generic_database(testcase_name, sample_records):
     #code to connect db and persist iteration results
     db_path = os.getenv("WAR_TOOLS_DIR") + "/generic_samples.db"
     con = sqlite3.connect(db_path)
-    con.execute("INSERT into GEN_RESULTS_TABLE values(NULL,?,?,?)", (testcase_name, sample_records, 'done'))
+    con.execute("INSERT into GEN_RESULTS_TABLE values(NULL,?,?,?)", \
+            (testcase_name, sample_records, 'done'))
     con.commit()
     con.close()
 
@@ -912,13 +914,16 @@ def get_samples_shuffle_columns(df, no_of_samples, records_in_generic_db):
         for key in df_dict:
             sample_record[key] = random.choice(df_dict[key])
         while_count = 0
-        while sample_record in generic_data_dict or sample_record in records_in_generic_db:
+        while sample_record in generic_data_dict or \
+                sample_record in records_in_generic_db:
             for key in df_dict:
                 sample_record[key] = random.choice(df_dict[key])
-            while_count+=1
+            while_count += 1
             if while_count > 10:
-                print_warning("couldn't get required unique records, try reducing gen_no_of_samples" \
-                              " or use gen_purge_db. test will be executed with less no. of samples")
+                print_warning("couldn't get required unique records," \
+                              "try reducing gen_no_of_samples" \
+                              " or use gen_purge_db. test will be" \
+                              " executed with less no. of samples")
                 for_break = True
                 break
         else:
@@ -977,7 +982,6 @@ def get_generic_datafile(testcase_filepath, data_repository):
             exit(1)
     data_repository["genericdatafile"] = genericdatafile
     return genericdatafile
- 
 
 def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
     """ get iterations from generic data"""
@@ -1001,24 +1005,23 @@ def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
             #db operations
             if purge_db:
                 delete_samples_generic_database(testcase_filepath)
-            records_in_generic_db = get_samples_from_generic_db(testcase_filepath) 
+            records_in_generic_db = get_samples_from_generic_db(testcase_filepath)
             if selected_rows:
                 selected_rows = [int(element.strip()) for element in selected_rows.split(",")]
             df = pd.read_excel(genericdatafile)
             if shuffle_columns:
-                generic_data_dict = get_samples_shuffle_columns(df, no_of_samples, 
+                generic_data_dict = get_samples_shuffle_columns(df, no_of_samples,
                                                                 records_in_generic_db)
             else:
-                generic_data_dict = get_samples(df, selected_rows, no_of_samples, 
+                generic_data_dict = get_samples(df, selected_rows, no_of_samples,
                                                 records_in_generic_db)
             if not generic_data_dict:
                 #purge db if no samples are selected and try again
                 purge_db = True
                 while_count += 1
-            
             if while_count >= 2:
                 break
-    
+
         if not generic_data_dict:
             print_warning("couldn't get samples from given xls for repetitive testing!!"
                           " Please check data in given genericdatafile. Exiting!!")
@@ -1044,23 +1047,23 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
                     Utils.data_Utils.update_datarepository({"gen_iter_number" : iter_number})
                     data_key = "gen_" + str(iter_number)
                     data_repository[data_key] = {'db_obj': False, 'war_file_type': 'Case'}
-                    gen_tc_status, gen_data_repository = execute_testcase(testcase_filepath,
-                                                                  data_repository[data_key], tc_context, runtype,
-                                                                  tc_parallel, queue, auto_defects, suite,
-                                                                  jiraproj, tc_onError_action, iter_ts_sys)
+                    gen_tc_status, gen_data_repository = execute_testcase(testcase_filepath,\
+                                            data_repository[data_key], tc_context, runtype,\
+                                            tc_parallel, queue, auto_defects, suite,\
+                                            jiraproj, tc_onError_action, iter_ts_sys)
                     print_info("Result of {} : {}".format(data_key, tc_status))
                     tc_status = tc_status and gen_tc_status
-                    warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, os.path.dirname(
-                                     data_repository[data_key]['wt_resultsdir']), gen_tc_status)
-                    email.compose_send_email("Test Case: ", testcase_filepath,
-                                 data_repository[data_key]['wt_logsdir'],
+                    warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, os.path.dirname(\
+                                data_repository[data_key]['wt_resultsdir']), gen_tc_status)
+                    email.compose_send_email("Test Case: ", testcase_filepath,\
+                                 data_repository[data_key]['wt_logsdir'],\
                                  data_repository[data_key]['wt_resultsdir'], gen_tc_status)
                 update_generic_database(testcase_filepath, json.dumps(generic_data_dict))
             else:
-                tc_status, data_repository = execute_testcase(testcase_filepath,
-                                                              data_repository, tc_context, runtype,
-                                                              tc_parallel, queue, auto_defects, suite,
-                                                              jiraproj, tc_onError_action, iter_ts_sys)
+                tc_status, data_repository = execute_testcase(testcase_filepath,\
+                                                        data_repository, tc_context, runtype,\
+                                                        tc_parallel, queue, auto_defects, suite,\
+                                                        jiraproj, tc_onError_action, iter_ts_sys)
         except Exception as exception:
             print_exception(exception)
             tc_status = False

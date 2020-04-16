@@ -348,21 +348,21 @@ class WarriorCliClass(object):
 
         warrior_arg.add_argument('-genericdatafile', action='store', nargs='?',\
             dest="genericdatafile", help="generic data file for repetitive testing")
-        
+
         warrior_arg.add_argument('-gen_no_of_samples', action='store', nargs='?',\
             dest="gen_no_of_samples", help="number of random rows to \
             select from generic data file")
-        
+
         warrior_arg.add_argument('-gen_select_rows', action='store', nargs='?',\
             dest="gen_select_rows", help="rows to select from generic data file. \
             give comma seperated row index values")
-        
+
         warrior_arg.add_argument('-gen_purge_db', action='store_true', default=False,\
             help="purge generic db")
-        
+
         warrior_arg.add_argument('-gen_shuffle_columns', action='store_true', default=False,\
             help="shuffle columns and select random rows")
-        
+
         warrior_arg.add_argument('-decrypt', action='store', nargs='*',\
             dest="decrypt", help="decrypt data string")
 
