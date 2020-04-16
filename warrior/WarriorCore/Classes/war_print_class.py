@@ -22,21 +22,16 @@ as it will lead to cyclic imports.
 
 """
 import sys
-import re
 import os
 import socket
 import logging
 import re
 import io
-import psutil
 import multiprocessing
 
 def py_logger(message, print_type, color_message=None, log_level="INFO", *args, **kwargs):
     host_name = socket.gethostname()
-    process = psutil.Process(os.getpid())
-    pname = str(process.name())
-    # "pname": pname,
-    # "current_process": current_process,
+
     cur_process = multiprocessing.current_process().name
     extra_msg = {"cur_process": cur_process, "host_name": host_name}
     formatter = logging.Formatter('%(asctime)-15s %(host_name)s %(cur_process)-8s %(levelname)s ::%(message)s','%Y-%m-%d %H:%M:%S')
@@ -46,7 +41,7 @@ def py_logger(message, print_type, color_message=None, log_level="INFO", *args, 
     ch = logging.StreamHandler(log_capture_string)
     ch.setFormatter(formatter)
     logger.setLevel(logging.INFO)
-    # import pdb;pdb.set_trace()
+
     if print_type == "":
         print(message)
     elif print_type != "":
