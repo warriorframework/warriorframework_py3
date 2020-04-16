@@ -27,7 +27,6 @@ import random
 import sqlite3
 import json
 import xml.etree.ElementTree as et
-import pandas as pd
 from warrior.WarriorCore.defects_driver import DefectsDriver
 from warrior.WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
 from warrior.WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
@@ -42,6 +41,10 @@ from warrior.Framework.Utils.data_Utils import getSystemData, _get_system_or_sub
 import warrior.Framework.Utils.email_utils as email
 from warrior.WarriorCore import warrior_cli_driver
 
+try:
+    import pandas as pd
+except Exception as exception:
+    print_exception(exception)
 
 def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     """Gets all the details of the Testcase

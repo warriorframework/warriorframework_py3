@@ -37,14 +37,13 @@ setup(
     },
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: Apache Software License',
-                 'Programming Language :: Python :: 3.6',
-                 ],
+                 'Programming Language :: Python :: 3.6',],
     install_requires=["pexpect==4.8.0", "requests==2.21.0", "selenium==3.8.0",
                       "lxml==4.4.1", "paramiko==2.4.2", "pysnmp==4.4.9",
                       "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6",
                       "cloudshell-automation-api==9.3.0.175525",
                       "pycryptodome==3.6.1", "Django==2.1.2", "xmltodict==0.12.0",
-                      "python-ldap", "django_auth_ldap", "pandas", "db-sqlite3",
+                      "python-ldap", "django_auth_ldap", "pandas", "db", "db-sqlite3",
                       "djangorestframework==3.10.3", "gcg==0.2.0", "termcolor==1.1.0",]
 
 )
