@@ -727,7 +727,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                         break
     except:
         pass
-    if system_name:
+    test_case_details = suite_details.findall("testcase")
+    if system_name and test_case_details:
         junit_file_obj = data_repository['wt_junit_object']
         root = junit_file_obj.root
         suite_details = root.findall("testsuite")[0]
