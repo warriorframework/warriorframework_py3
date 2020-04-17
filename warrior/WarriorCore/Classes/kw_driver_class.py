@@ -14,7 +14,8 @@ import inspect
 import traceback
 from warrior.Framework import Utils
 from warrior.Framework.Utils import data_Utils
-from warrior.Framework.Utils.print_Utils import print_info, print_error, print_exception, print_debug
+from warrior.Framework.Utils.print_Utils import print_info, print_error,\
+     print_exception, print_debug
 from warrior.Framework.Utils.testcase_Utils import pNote_level
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 """Driver utils module which handles gathers the argument
@@ -118,7 +119,8 @@ class ModuleOperations(object):
             if element.__name__ == keyword:
                 if WarriorCliClass.mock or WarriorCliClass.sim:
                     if element.__dict__.get("mockready") is None:
-                        pNote_level("The selected keyword {} isn't supported in trial mode".format(element.__name__), "ERROR")
+                        pNote_level("The selected keyword {} isn't supported in trial \
+                                    mode".format(element.__name__), "ERROR")
                     else:
                         pNote_level("Keyword {} is being mocked".format(element.__name__), "INFO")
                         match_list.append(element)
@@ -241,7 +243,7 @@ class KeywordOperations(object):
             else:
                 arg_kv[args] = self.default_dict[args]
                 print_debug("executing with default value '{0}' for optional "
-                           "argument '{1}'".format(arg_kv[args], args))
+                            "argument '{1}'".format(arg_kv[args], args))
         for args in self.optional_args_list:
             # requires another loop since system_name may not be at beginning
             if args != 'system_name' and 'system_name' in arg_kv:

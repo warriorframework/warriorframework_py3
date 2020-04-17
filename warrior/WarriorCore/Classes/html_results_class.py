@@ -12,14 +12,10 @@ limitations under the License.
 """
 
 import os
-
 import json
-import getpass
 import multiprocessing
 from warrior.Framework.Utils import xml_Utils, file_Utils, data_Utils
-from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.Utils.print_Utils import print_info
-from warrior.Framework.Utils.xml_Utils import getElementWithTagAttribValueMatch
 import warrior.WarriorCore.Classes.katana_interface_class as katana_interface_class
 
 __author__ = 'Keenan Jabri'
@@ -58,24 +54,16 @@ class LineResult:
 #         defects_path = line.get("defects") if line.get("defects") else ''
         status_name = line.get("status") if line.get("status") else ''
 
-        #
-        #katana-click='execution.resultsViewer.openLogs'
-
-        # There won't be results link in html anymore as we decided we will not be linking xml files in our html results
-#         results_span = "<span style='padding-left:10px; padding-right: 10px;'>"\
-#                         "<a  name='results-link' href='{0}' target='_blank' >"\
-#                         "<i name='results-icon' class='fa fa-line-chart'  data-logPath='{0}' katana-click='execution.resultsViewer.openLogs'> </i>"\
-#                         "</a>"\
-#                         "</span>".format(result_path)
-
-        # the link to logs should only be applied to a testcase and it will open the console logs of the testcase
+        # the link to logs should only be applied to a testcase and
+        # it will open the console logs of the testcase
         logs_span = "<span style='padding-left:10px; padding-right: 10px;'>"\
                     "<a  name='results-link' href='{0}' target='_blank' >"\
                     "<i name='logs-icon' class='fa fa-book'  data-logPath='{0}' katana-click='execution.resultsViewer.openConsoleLogFile' > </i>"\
                     "</a>"\
                     "</span>".format(line.get("console_logfile")) if line.get("console_logfile") else ''
 
-        # link to defects will only be applied to a keyword and it will open the defects json file in a popup
+        # link to defects will only be applied to a keyword and
+        # it will open the defects json file in a popup
         defects_span = "<span style='padding-left:10px; padding-right: 10px;'>"\
                         "<a name='bug-link' href='{0}' target='_blank' >"\
                         "<i name='bug-icon' class='fa fa-bug'  data-logPath='{0}' katana-click='execution.resultsViewer.openDefectsJson'> </i>"\
@@ -284,9 +272,8 @@ class WarriorHtmlResults:
             livehtmllocn["html_result"] = live_final_string
 
     def write_live_results(self, junitObj, givenPath, is_final):
-        """ build the html givenPath: added this feature in case of later down the line calling from outside junit
-        file ( no actual use as of now )
-        """
+        """ build the html givenPath: added this feature in case of later down
+        the line calling from outside junit file ( no actual use as of now )"""
         if junitObj:
             self.junit_file = junitObj
             self.junit_root = xml_Utils.getRoot(self.junit_file)
@@ -320,9 +307,8 @@ class WarriorHtmlResults:
             print_info("+++++++++++++++++++++++++")
 
     def generate_html(self, junitObj, givenPath, is_final):
-        """ build the html givenPath: added this feature in case of later down the line calling from outside junit
-        file ( no actual use as of now )
-        """
+        """ build the html givenPath: added this feature in case of
+        later down the line calling from outside junit file ( no actual use as of now )"""
         if junitObj:
             self.junit_file = junitObj
             self.junit_root = xml_Utils.getRoot(self.junit_file)

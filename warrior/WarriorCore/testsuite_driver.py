@@ -269,7 +269,6 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
             if not exec_node:
                 exec_node = ElementTree.SubElement(testcase, "Execute")
             exec_node.set("ExecType", 'no')
-            
     execution_type = suite_repository['suite_exectype'].upper()
     no_of_tests = str(len(testcase_list))
 
@@ -614,7 +613,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
 def main(testsuite_filepath, data_repository={}, from_project=False, auto_defects=False,
          jiraproj=None, res_startdir=None, logs_startdir=None, ts_onError_action=None,
          queue=None, ts_parallel=False):
-    """Executes a test suite """ 
+    """Executes a test suite """
     try:
         test_suite_status, suite_repository = execute_testsuite(testsuite_filepath,
                                                                 data_repository, from_project,

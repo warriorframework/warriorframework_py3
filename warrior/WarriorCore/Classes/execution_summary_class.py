@@ -103,7 +103,6 @@ class ExecutionSummary():
                     # suite junit element will not have resultsdir attrib for case execution
                     if suite_result_dir is None or suite_result_dir == case_result_dir:
                         suite_tc_list.append(["Cleanup", cleanup_name, cleanup_status, cleanup_location])
-                        
         # suite_tc_list appends suites and test cases as per execution order
         return suite_tc_list
 

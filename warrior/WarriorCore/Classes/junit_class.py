@@ -14,7 +14,6 @@ limitations under the License.
 
 import xml.etree.ElementTree as ET
 import os
-from warrior.Framework.Utils.print_Utils import print_info
 from warrior.Framework.Utils import file_Utils
 from warrior.WarriorCore.Classes.html_results_class import WarriorHtmlResults
 from warrior.WarriorCore.Classes.execution_summary_class import ExecutionSummary
@@ -26,7 +25,8 @@ class Junit(object):
     def __init__(self, filename, **kwargs):
         """constructor """
         #self.junit_xslt = "{0}{1}Reporting{1}junit_to_html.xsl".format(Tools.__path__[0], os.sep)
-        self.junit_xslt = "{0}{1}Reporting{1}junit_to_html.xsl".format(os.getenv("WAR_TOOLS_DIR"), os.sep)
+        self.junit_xslt = "{0}{1}Reporting{1}junit_to_html.xsl".format(os.getenv("WAR_TOOLS_DIR"),
+                                                                       os.sep)
         self.root = self.create_element("testsuites", tests="0", suites="0",
                                         **self.init_arg(**kwargs))
         self.filename = filename

@@ -23,7 +23,7 @@ import time
 import shutil
 import ast
 import xml.etree.ElementTree as et
-from json import loads, dumps
+from json import dumps
 from warrior.WarriorCore.defects_driver import DefectsDriver
 from warrior.WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
 from warrior.WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
@@ -34,7 +34,7 @@ from warrior.Framework.Utils.testcase_Utils import convertLogic
 from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error,\
     print_debug, print_exception
 from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
-from warrior.Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
+from warrior.Framework.Utils.data_Utils import _get_system_or_subsystem
 import warrior.Framework.Utils.email_utils as email
 
 
@@ -685,7 +685,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
         print_warning("setting tc status to WARN as cleanup failed")
         tc_status = "WARN"
 
-    if step_list and tc_status == False and tc_onError_action and tc_onError_action.upper() == 'ABORT_AS_ERROR':
+    if step_list and tc_status == False and tc_onError_action and \
+            tc_onError_action.upper() == 'ABORT_AS_ERROR':
         print_info("Testcase status will be marked as ERROR as onError "
                    "action is set to 'abort_as_error'")
         tc_status = "ERROR"

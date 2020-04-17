@@ -67,6 +67,3 @@ def main(parameter_list):
     else:
         print_error("Files failed Warrior Ironclaw validation\n")
     return valid
-
-
-    

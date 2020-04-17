@@ -100,9 +100,9 @@ def execute_sequential_testcases(testcase_list, suite_repository,
         tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(testcase)
         tc_context = Utils.testcase_Utils.get_context_from_xmlfile(testcase)
         suite_step_data_file = testsuite_utils.get_data_file_at_suite_step(
-                                                testcase, suite_repository)
+            testcase, suite_repository)
         tc_onError_action = Utils.xml_Utils.get_attributevalue_from_directchildnode(
-                                            testcase, 'onError', 'action')
+            testcase, 'onError', 'action')
         tc_onError_action = tc_onError_action if tc_onError_action else suite_error_action
         if suite_step_data_file is not None:
             data_file = Utils.file_Utils.getAbsPath(suite_step_data_file,
@@ -142,10 +142,9 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                     tc_duration = tc_result[1]
                 except Exception:
                     print_error('unexpected error {0}'.format(
-                                                    traceback.format_exc()))
+                        traceback.format_exc()))
                     tc_status, tc_duration = False, False
-                    tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(
-                                                                    testcase)
+                    tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(testcase)
 
             elif goto_tc and goto_tc == str(tests) and action is True:
 
@@ -163,22 +162,17 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                     goto_tc = False
 
                 except Exception:
-                    print_error('unexpected error {0}'.format(
-                                                    traceback.format_exc()))
+                    print_error('unexpected error {0}'.format(traceback.format_exc()))
                     tc_status, tc_duration = False, False
-                    tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(
-                                                                    testcase)
+                    tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(testcase)
 
             else:
                 print_info('skipped testcase %s ' % tc_name)
                 skipped += 1
                 testsuite_utils.pSuite_testcase_skip(junit_resultfile)
-                testsuite_utils.pSuite_update_suite_attributes(
-                                junit_resultfile, str(errors), str(skipped),
-                                str(tests), str(failures), time='0')
-                data_repository['wt_junit_object'].update_count(
-                                "skipped", "1", "ts",
-                                data_repository['wt_ts_timestamp'])
+                testsuite_utils.pSuite_update_suite_attributes(junit_resultfile, str(errors),
+                                                               str(skipped), str(tests), str(failures), time='0')
+                data_repository['wt_junit_object'].update_count("skipped", "1", "ts", data_repository['wt_ts_timestamp'])
                 data_repository['wt_junit_object'].update_count(
                                 "tests", "1", "ts",
                                 data_repository['wt_ts_timestamp'])

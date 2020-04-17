@@ -315,9 +315,6 @@ def warrior_execute_entry(*args, **kwargs):
         sys.exit(1)
 
 
-"""Handle all the cli command, new functions may be added later"""
-
-
 def decide_runcat_actions(w_cli_obj, namespace):
     """Decide the actions to be taken for runcat tag """
     filepath = namespace.filepath

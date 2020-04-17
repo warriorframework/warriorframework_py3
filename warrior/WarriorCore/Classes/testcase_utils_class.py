@@ -24,14 +24,9 @@ import xml.etree.ElementTree as ET
 import inspect
 import re
 import traceback
+from warrior.Framework.Utils.print_Utils import print_info, print_debug, print_warning,\
+        print_error, print_exception, print_sub, print_notype, print_without_logging
 
-from warrior.Framework.Utils.print_Utils import  print_info, print_debug, print_warning,\
-print_error, print_exception, print_sub, print_notype, print_without_logging
-from warrior.Framework.Utils import config_Utils 
-
-#import warrior.Framework.Utils.file_Utils as file_Utils
-#import warrior.Framework.Utils.config_Utils as config_Utils
-#import warrior.Framework.Utils.xml_Utils as xml_Utils
 
 class TestcaseUtils(object):
     """testcase utils class"""
@@ -39,7 +34,6 @@ class TestcaseUtils(object):
         """
             set default value
         """
-        #self.resultfile = config_Utils.resultfile
         self.root = None
         self.current_pointer = None
         self.gkeyword = {}
@@ -232,7 +226,7 @@ class TestcaseUtils(object):
         """Remove non_printable ascii control characters """
         #Removes the ascii escape chars
         try:
-            txt = re.sub(r'[^\x20-\x7E|\x09-\x0A]','',txt)
+            txt = re.sub(r'[^\x20-\x7E|\x09-\x0A]', '', txt)
             # remove non-ascii characters
             # txt = repr(txt)[1:-1]
         except Exception as exception:

@@ -15,7 +15,6 @@ limitations under the License.
 import os
 import time
 import traceback
-
 from warrior.Framework import Utils
 from warrior.WarriorCore import testsuite_utils, common_execution_utils
 from warrior.Framework.Utils.print_Utils import print_info, print_error, print_debug, print_warning
