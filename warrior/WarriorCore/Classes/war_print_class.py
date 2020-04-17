@@ -28,7 +28,7 @@ import multiprocessing
 
 
 def py_logger(
-    message, print_type, log_level="INFO", *args, **kwargs
+        message, print_type, log_level="INFO", *args, **kwargs
 ):
     """this function uses python logging technique to print logs """
     host_name = socket.gethostname()
@@ -188,9 +188,9 @@ class RedirectPrint(object):
             self.file.write(data)
             self.file.flush()
         if (
-            self.katana_obj is not None
-            and "console_full_log" in self.katana_obj
-            and "console_add" in self.katana_obj
+                self.katana_obj is not None
+                and "console_full_log" in self.katana_obj
+                and "console_add" in self.katana_obj
         ):
             self.katana_obj["console_full_log"] += data
             self.katana_obj["console_add"] += data
