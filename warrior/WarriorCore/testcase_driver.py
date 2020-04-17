@@ -727,41 +727,43 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                         break
     except:
         pass
-    test_case_details = suite_details.findall("testcase")
-    if system_name and test_case_details:
+
+    if system_name :
         junit_file_obj = data_repository['wt_junit_object']
         root = junit_file_obj.root
         suite_details = root.findall("testsuite")[0]
-        test_case_details = suite_details.findall("testcase")[0]
-        print_info("kafka server is presented in Inputdata file..")
-        system_details = _get_system_or_subsystem(data_file, system_name)
-        data = {}
-        for item in system_details.getchildren():
-            if item.tag == "kafka_port":
-                ssh_port = item.text
-                continue
-            if item.tag == "ip":
-                ip_address = item.text
-                continue
-            try:
-                value = ast.literal_eval(item.text)
-            except ValueError:
-                value = item.text
-            data.update({item.tag: value})
+        test_case_details = suite_details.findall("testcase")
+        if test_case_details:
+            test_case_details = suite_details.findall("testcase")[0]
+            print_info("kafka server is presented in Inputdata file..")
+            system_details = _get_system_or_subsystem(data_file, system_name)
+            data = {}
+            for item in system_details.getchildren():
+                if item.tag == "kafka_port":
+                    ssh_port = item.text
+                    continue
+                if item.tag == "ip":
+                    ip_address = item.text
+                    continue
+                try:
+                    value = ast.literal_eval(item.text)
+                except ValueError:
+                    value = item.text
+                data.update({item.tag: value})
 
-        ip_port = ["{}:{}".format(ip_address, ssh_port)]
-        data.update({"bootstrap_servers": ip_port})
-        data.update({"value_serializer": lambda x: dumps(x).encode('utf-8')})
-        try:
-            producer = WarriorKafkaProducer(**data)
-            producer.send_messages('warrior_results', suite_details.items())
-            producer.send_messages('warrior_results', test_case_details.items())
-            print_info("message published to topic: warrior_results {}".format(
-                suite_details.items()))
-            print_info("message published to topic: warrior_results {}".format(
-                test_case_details.items()))
-        except:
-            print_warning("Unable to connect kafka server !!")
+            ip_port = ["{}:{}".format(ip_address, ssh_port)]
+            data.update({"bootstrap_servers": ip_port})
+            data.update({"value_serializer": lambda x: dumps(x).encode('utf-8')})
+            try:
+                producer = WarriorKafkaProducer(**data)
+                producer.send_messages('warrior_results', suite_details.items())
+                producer.send_messages('warrior_results', test_case_details.items())
+                print_info("message published to topic: warrior_results {}".format(
+                    suite_details.items()))
+                print_info("message published to topic: warrior_results {}".format(
+                    test_case_details.items()))
+            except:
+                print_warning("Unable to connect kafka server !!")
 
     report_testcase_result(tc_status, data_repository, tag=steps_tag)
     if not from_ts:
