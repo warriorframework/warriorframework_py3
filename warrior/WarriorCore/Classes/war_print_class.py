@@ -1,4 +1,4 @@
-"""
+'''
 Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -9,7 +9,7 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-"""
+'''
 
 """
 This class will trap stdout and redirects the message to logfile and stdout
@@ -19,17 +19,17 @@ DO NOT import any modules from warrior/Framework package that uses
 warrior/Framework/Utils/print_Utils.py at module level into this module
 as it will lead to cyclic imports.
 """
+
+
+
+
 import sys
 import socket
 import logging
 import re
 import io
 import multiprocessing
-
-
-def py_logger(
-        message, print_type, log_level="INFO", *args, **kwargs
-):
+def py_logger(message, print_type, log_level="INFO", **kwargs):
     """this function uses python logging technique to print logs """
     host_name = socket.gethostname()
     cur_process = multiprocessing.current_process().name
@@ -40,8 +40,8 @@ def py_logger(
     )
     logger = logging.getLogger(__name__)
     log_capture_string = io.StringIO()
-    ch = logging.StreamHandler(log_capture_string)
-    ch.setFormatter(formatter)
+    cha = logging.StreamHandler(log_capture_string)
+    cha.setFormatter(formatter)
     logger.setLevel(logging.INFO)
     if print_type == "":
         print(message)
@@ -58,15 +58,15 @@ def py_logger(
             logger.setLevel(logging.NOTSET)
         elif log_level == "CRITICAL":
             logger.setLevel(logging.CRITICAL)
-    logger.addHandler(ch)
+    logger.addHandler(cha)
     logger = logging.LoggerAdapter(logger, extra_msg)
     if print_type == "-I-":
         matched = (
-            re.match("^=+", message)
-            or re.match("^\++", message)
-            or re.match("^\*+", message)
-            or re.match("^\n<<", message)
-            or re.match("^\n\**", message)
+            re.match(r"^=+", message)
+            or re.match(r"^\++", message)
+            or re.match(r"^\*+", message)
+            or re.match(r"^\n<<", message)
+            or re.match(r"^\n\**", message)
         )
         if matched:
             print(message.strip())
@@ -79,7 +79,7 @@ def py_logger(
             logger.info(message, extra=extra_msg)
     elif print_type == "\x1b[1;33m-W-\x1b[0m":
         logger.warning(message, extra=extra_msg)
-    elif print_type == "-E-" or print_type == "\x1b[1;33m-E-\x1b[0m":
+    elif print_type in ["-E-", "\x1b[1;33m-E-\x1b[0m"]:
         logger.error(message, extra=extra_msg)
     elif print_type == "-N-":
         logger.info(message, extra=extra_msg)
@@ -90,12 +90,12 @@ def py_logger(
     log_contents = log_capture_string.getvalue()
     if log_contents != "":
         if isinstance(sys.stdout, RedirectPrint):
-            sys.stdout.write((log_contents), logging=kwargs.get("logging", True))
+            sys.stdout.write(
+                (log_contents), logging=kwargs.get("logging", True))
         else:
             sys.stdout.write(log_contents)
         sys.stdout.flush()
         from warrior.Framework.Utils.testcase_Utils import TCOBJ
-
         if TCOBJ.pnote is False:
             TCOBJ.p_note_level(log_contents, print_type)
         return log_contents
@@ -140,9 +140,11 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
                 **kwargs
             )
         else:
-            py_logger(print_string, print_type, color_message=None, *args, **kwargs)
+            py_logger(print_string, print_type,
+                      color_message=None, *args, **kwargs)
     else:
-        py_logger(print_string, print_type, color_message=None, *args, **kwargs)
+        py_logger(print_string, print_type,
+                  color_message=None, *args, **kwargs)
 
 
 class RedirectPrint(object):
