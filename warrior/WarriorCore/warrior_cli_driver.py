@@ -53,6 +53,7 @@ except:
 import re
 import sys
 import multiprocessing
+from os.path import dirname, abspath
 from warrior.Framework.Utils import config_Utils, file_Utils, xml_Utils
 from warrior.Framework.Utils.data_Utils import get_credentials
 import warrior.Framework.Utils.encryption_utils as Encrypt
@@ -279,20 +280,20 @@ def warrior_execute_entry(*args, **kwargs):
         livehtmllocn:
     """
     if sys.argv[1] == "-tc_gen":
-        print_info("initializing tc generator tool !!")
+        print_info("Initializing tc generator tool !!")
 
-        site_home_path = os.path.split(site.__file__)[0]
-        site_packages_path = "site-packages/warrior/Tools/tc_generator/templates"
-        template_path = os.path.join(site_home_path, site_packages_path)
-        if os.path.exists(template_path):
-            os.system("tc_generator {}".format(" ".join(sys.argv[2:])))
-            sys.exit()
-        else:
-            current_working_directory = os.getcwd()
-            tc_generator_dir_path = "Tools/tc_generator"
-            tc_generator_path = os.path.join(current_working_directory, tc_generator_dir_path)
-            os.system("python {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
-            sys.exit()
+        tc_generator_dir_path = "WarriorTools/tc_generator"
+        current_working_directory = dirname(dirname(abspath(__file__)))
+        tc_generator_path = os.path.join(current_working_directory, tc_generator_dir_path)
+        os.system("python {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
+        sys.exit()
+
+    if sys.argv[1] == "-warrior_py3_migration_tool":
+        print_info("Initializing tc warrior_py3_migration_tool tool !!")
+        war_path = dirname(dirname(abspath(__file__)))
+        warrior_py3_migration_tool_path = "{}/WarriorTools/warrior_py3_migration_tools".format(war_path)
+        os.system("python {}/warrior_py3_migration_tool {}".format(warrior_py3_migration_tool_path, " ".join(sys.argv[2:])))
+        sys.exit()
 
     if not kwargs:
         # Launch from terminal/cli exeuction
