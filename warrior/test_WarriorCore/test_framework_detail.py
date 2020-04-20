@@ -12,8 +12,6 @@ limitations under the License.
 """
 
 import sys
-import os
-from unittest.mock import MagicMock
 from os.path import abspath, dirname
 try:
     import warrior
