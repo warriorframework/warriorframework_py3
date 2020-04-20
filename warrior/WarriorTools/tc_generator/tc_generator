@@ -89,19 +89,11 @@ class Warrior_Execution_Setup_Files:
         self.tc_name = args.tc_name.split(".")[0]
         self.current_working_directory = os.getcwd()
         self.log.debug("current working directory is {}".format(self.current_working_directory))
-        # site_home_path = os.path.split(site.__file__)[0]
-        # site_packages_path = "site-packages/warrior/Tools/tc_generator/templates"
-        # self.template_path = os.path.join(site_home_path, site_packages_path)
-        # if os.path.exists(self.template_path):
-        #     pass
-        # else:
-        # import pdb
-        # pdb.set_trace()
+
         war_path = dirname(dirname(dirname(abspath(__file__))))
         print('war_pathhhhhhhhhhhhhhhhh',war_path)
         tc_generator_dir_path = "WarriorTools/tc_generator/templates"
         self.template_path = os.path.join(war_path, tc_generator_dir_path)
-        # self.template_path = "{}/WarriorTools/tc_generator/templates".format(war_path)
 
         if args.type == "cli":
             self.input_data_file = "id_{}.xml".format(self.tc_name)
