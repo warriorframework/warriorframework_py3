@@ -7,6 +7,7 @@ import threading
 from katana.utils.navigator_util import Navigator
 import sys
 from django.conf import settings
+from cryptography.fernet import Fernet
 try:
     import ldap
     from django_auth_ldap.config import LDAPSearch, GroupOfNamesType, PosixGroupType, LDAPSearchUnion
@@ -528,3 +529,31 @@ class EMAILSettings:
             setattr(settings, k, v)
         # Add to email backends
         setattr(settings, "EMAIL_BACKEND", 'django.core.mail.backends.smtp.EmailBackend')
+
+class ENCRYPT_SETTINGS:
+    def __init__(self, key):
+        self.key = key
+
+    def encrypt_file(self, plaintext_file, encrypt_file):
+        """ encrypt plaintext file and store in encrypt file"""
+        f = Fernet(self.key)
+        with open(plaintext_file, "rb") as file:
+        # read all file data
+            file_data = file.read()
+        # encrypt data
+        encrypted_data = f.encrypt(file_data)
+        # write the encrypted file
+        with open(encrypt_file, "wb") as file:
+            file.write(encrypted_data)
+
+    def decrypt_file(self, encrypt_file, plaintext_file):
+        """ decrypt encryptedfile and store in plaintext file"""
+        f = Fernet(self.key)
+        with open(encrypt_file, "rb") as file:
+            # read the encrypted data
+            encrypted_data = file.read()
+        # decrypt data
+        decrypted_data = f.decrypt(encrypted_data)
+        # write the original file
+        with open(plaintext_file, "wb") as file:
+            file.write(decrypted_data)

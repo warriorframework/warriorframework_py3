@@ -104,7 +104,7 @@ REST_FRAMEWORK = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, 'katana_configs', 'db.sqlite3'),
     }
 }
 
@@ -128,7 +128,12 @@ LOGGING = settings_logging.get_log_config()
 
 # LDAP Settings (if available)
 CONFIG_FILE = os.path.join(BASE_DIR, 'wui', 'config.ini')
+ENCRYPTED_CONFIG_FILE = os.path.join(BASE_DIR, 'katana_configs', 'en_config.ini')
 
+if os.getenv("KATANA_CRYPTO_KEY", None) and os.path.exists(ENCRYPTED_CONFIG_FILE):
+    key = os.getenv("KATANA_CRYPTO_KEY")
+    encrypt_settings = core_settings.ENCRYPT_SETTINGS(key)
+    encrypt_settings.decrypt_file(ENCRYPTED_CONFIG_FILE, CONFIG_FILE)
 
 try:
     LOGGING['loggers']['django_auth_ldap'] = {
