@@ -10,12 +10,14 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
+import datetime
+import xml.etree.ElementTree as ET
 
 import sys
 import os
 from unittest.mock import MagicMock
 from os.path import abspath, dirname
-from unittest import TestCase
+
 try:
     import warrior
     # except ModuleNotFoundError as error:
@@ -27,10 +29,6 @@ except Exception as e:
 sys.modules['warrior.WarriorCore.Classes.argument_datatype_class'] = MagicMock(return_value=None)
 
 from warrior.WarriorCore.multiprocessing_utils import update_tc_junit_resultfile
-import datetime
-import xml.dom.minidom
-import xml.etree.ElementTree as ET
-from xml.etree import ElementTree as et
 
 from warrior.WarriorCore import custom_parallel_kw_driver
 
@@ -49,8 +47,10 @@ def test_main():
 
     step_list = tree.findall('Steps/step')
     tc_status = False
-    data_repository = {'wt_junit_object':None, 'wt_tc_timestamp':timestamp, 'wt_resultfile':wt_resultfile}
+    data_repository = {'wt_junit_object':None, 'wt_tc_timestamp':timestamp,\
+     'wt_resultfile':wt_resultfile}
 
-    result = custom_parallel_kw_driver.main(step_list, data_repository, tc_status, system_name=None)
+    result = custom_parallel_kw_driver.main(step_list, data_repository, tc_status,\
+     system_name=None)
     assert result == False
 
