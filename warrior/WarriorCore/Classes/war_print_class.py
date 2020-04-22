@@ -20,22 +20,18 @@ warrior/Framework/Utils/print_Utils.py at module level into this module
 as it will lead to cyclic imports.
 """
 
-
-
-
 import sys
 import socket
 import logging
 import re
 import io
-import multiprocessing
+
 def py_logger(message, print_type, log_level="INFO", **kwargs):
     """this function uses python logging technique to print logs """
     host_name = socket.gethostname()
-    cur_process = multiprocessing.current_process().name
-    extra_msg = {"cur_process": cur_process, "host_name": host_name}
+    extra_msg = {"host_name": host_name}
     formatter = logging.Formatter(
-        "%(asctime)-15s %(host_name)s %(cur_process)-8s %(levelname)s ::%(message)s",
+        "%(asctime)-15s %(host_name)s %(levelname)s ::%(message)s",
         "%Y-%m-%d %H:%M:%S",
     )
     logger = logging.getLogger(__name__)
