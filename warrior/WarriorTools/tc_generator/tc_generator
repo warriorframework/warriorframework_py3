@@ -91,7 +91,6 @@ class Warrior_Execution_Setup_Files:
         self.log.debug("current working directory is {}".format(self.current_working_directory))
 
         war_path = dirname(dirname(dirname(abspath(__file__))))
-        print('war_pathhhhhhhhhhhhhhhhh',war_path)
         tc_generator_dir_path = "WarriorTools/tc_generator/templates"
         self.template_path = os.path.join(war_path, tc_generator_dir_path)
 
