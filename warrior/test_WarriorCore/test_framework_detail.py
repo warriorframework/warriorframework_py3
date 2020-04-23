@@ -16,11 +16,11 @@ from os.path import abspath, dirname
 try:
     import warrior
     # except ModuleNotFoundError as error:
-except Exception as e:
+except Exception:
     WARRIORDIR = dirname(dirname(dirname(abspath(__file__))))
-    print(WARRIORDIR)
     sys.path.append(WARRIORDIR)
     import warrior
+
 from warrior.WarriorCore import framework_detail
 
 def test_warrior_banner():
