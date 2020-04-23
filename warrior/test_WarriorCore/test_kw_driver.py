@@ -29,6 +29,14 @@ from xml.etree import ElementTree as et
 from warrior.WarriorCore import kw_driver
 import warrior.Actions.CommonActions
 
+def test_get_package_name_list():
+    """Take a list of package loaders and returns
+    a list of package names """
+
+    package_list = [warrior.Actions.CommonActions]
+    result = kw_driver.get_package_name_list(package_list)
+    assert type(result) == list
+
 def test_execute_keyword():
     """ Executes the keyword provided by product driver
     1. searches for class methods in the package list
@@ -44,7 +52,6 @@ def test_execute_keyword():
 
     package_list = [warrior.Actions.CommonActions]
     warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock()
-    input_dict = {"loop_iter_number":None}
     warrior.Framework.Utils.config_Utils.data_repository = MagicMock(return_value=data_repository)
     result = kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)
     assert result == {'db_obj': False, 'war_file_type': 'Case', 'wt_results_execdir': None,\
@@ -68,7 +75,6 @@ def test_execute_keyword_empty_package_list():
 
     package_list = []
     warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock()
-    input_dict = {"loop_iter_number":None}
     warrior.Framework.Utils.config_Utils.data_repository = MagicMock(return_value=data_repository)
     result = kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)
     assert result == {'db_obj': False, 'war_file_type': 'Case', 'wt_results_execdir': None,\
