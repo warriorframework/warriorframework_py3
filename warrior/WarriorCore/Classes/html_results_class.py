@@ -351,5 +351,5 @@ class WarriorHtmlResults:
         print_info("++++ Results Summary ++++")
         print_info("Open the Results summary file given below in a browser to "
                    "view results summary for this execution")
-        print_info("Results sumary file: {0}".format(self.get_path()))
+        print_info("Results summary file: {0}".format(self.get_path()))
         print_info("+++++++++++++++++++++++++")
