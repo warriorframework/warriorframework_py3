@@ -65,7 +65,7 @@ otherwise the step will be executed on the current iterating system.
 from warrior.Framework.Utils import data_Utils, xml_Utils, config_Utils, \
                         testcase_Utils, file_Utils
 from warrior.Framework.Utils.testcase_Utils import pNote
-from warrior.Framework.Utils.print_Utils import print_debug, print_info
+from warrior.Framework.Utils.print_Utils import print_debug
 from warrior.WarriorCore import step_driver, common_execution_utils
 import warrior.WarriorCore.onerror_driver as onerror_driver
 import warrior.WarriorCore.exec_type_driver as exec_type_driver
@@ -178,8 +178,8 @@ class HybridDriver(object):
     def _compute_system_status(self, system_executed):
         """
         """
-        system_status = testcase_Utils.compute_status_using_impact(
-                                self.step_status_list, self.step_impact_list)
+        system_status = testcase_Utils.compute_status_using_impact(self.step_status_list,
+                                                                   self.step_impact_list)
         system_resultfile = self.compute_system_resultfile(self.kw_resultfile_list,
                                                            self.data_repository['wt_resultsdir'],
                                                            system_executed)
@@ -191,8 +191,7 @@ class HybridDriver(object):
     def _compute_testcase_status(self):
         """
         """
-        tc_status = testcase_Utils.compute_status_without_impact(
-                                                    self.system_status_list)
+        tc_status = testcase_Utils.compute_status_without_impact(self.system_status_list)
         print_debug("Updating Testcase result file...")
         testcase_Utils.append_result_files(self.data_repository['wt_resultfile'],
                                            self.system_resultfile_list)
@@ -334,7 +333,7 @@ class HybridDriver(object):
     def _execute_step(self, system_executed, step_num, index, goto_stepnum):
         """
         """
-        print_info("\n")
+
         result = (None, None, None, None)
 
         if not self.execute_endoftc:
@@ -414,7 +413,7 @@ class HybridDriver(object):
         config_Utils.set_resultfile(kw_resultfile)
         testcase_Utils.pKeyword(keyword, step.get('Driver'))
         testcase_Utils.reportStatus('Skip')
-        print_info("\n-----------------------------------------------------\n")
+
         self.data_repository['wt_junit_object'].update_count("skipped", "1", "tc",
                                                              self.data_repository['wt_tc_timestamp'])
         self.data_repository['wt_junit_object'].update_count("keywords", "1", "tc",
