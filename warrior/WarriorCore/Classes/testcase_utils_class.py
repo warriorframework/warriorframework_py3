@@ -27,11 +27,7 @@ import traceback
 
 from warrior.Framework.Utils.print_Utils import  print_info, print_debug, print_warning,\
 print_error, print_exception, print_sub, print_notype, print_without_logging
-from warrior.Framework.Utils import config_Utils 
 
-#import warrior.Framework.Utils.file_Utils as file_Utils
-#import warrior.Framework.Utils.config_Utils as config_Utils
-#import warrior.Framework.Utils.xml_Utils as xml_Utils
 
 class TestcaseUtils(object):
     """testcase utils class"""
@@ -39,7 +35,6 @@ class TestcaseUtils(object):
         """
             set default value
         """
-        #self.resultfile = config_Utils.resultfile
         self.root = None
         self.current_pointer = None
         self.gkeyword = {}
@@ -59,6 +54,7 @@ class TestcaseUtils(object):
         """
         import warrior.Framework.Utils.file_Utils as file_utils
         return file_utils
+
     def xml_utils(self):
         """
         """
@@ -110,7 +106,7 @@ class TestcaseUtils(object):
 
         self.p_testcase()
         self.gkeywordloop = self.gkeywordloop+1
-        print_info("\n********************* Keyword: %s *********************\n" % keyword_txt)
+        print_info("\n************* Keyword: %s *************\n" % keyword_txt)
         self.gkeyword[self.gkeywordloop] = ET.SubElement(self.root, "Keyword")
         self.current_pointer = self.gkeyword[self.gkeywordloop]
         name = ET.SubElement(self.gkeyword[self.gkeywordloop], "Name")
@@ -121,8 +117,8 @@ class TestcaseUtils(object):
     def p_subkeyword(self, keyword_txt):
         """ Creates a Keyword tag as the child node to the <SubStep> tag """
         self.gsubkeyloop = self.gsubkeyloop+1
-        print_info("\n***************Sub-Keyword: %s "
-                   "***************\n" % keyword_txt)
+        print_info("\n*********Sub-Keyword: %s "
+                   "**********\n" % keyword_txt)
         self.gsubkey[self.gsubkeyloop] = ET.SubElement(\
                 self.gstep[self.gsteploop], "Keyword")
         self.current_pointer = self.gsubkey[self.gsubkeyloop]
@@ -440,7 +436,7 @@ class TestcaseUtils(object):
             None
         """
         print_info("\n<< Substep status >>")
-        self.report_warning(status)
+        # self.report_warning(status)
 
     def report_keyword_status(self, status, kw_name=''):
         """ Same as reportStatus: changed function name to be more meaningful

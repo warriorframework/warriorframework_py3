@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-"""for uploading jira issues in cli interface"""
+
 import json
 import os
 from warrior.Framework.Utils import file_Utils
@@ -60,7 +60,6 @@ class ManualDefectClass(object):
 
     def manual_defects(self, paths):
         """parse file list and create jira issue for each failures"""
-        print_info("manual-create defects")
 
         if self.path_type == "dir":
             defects_json_list = []
@@ -90,7 +89,6 @@ class ManualDefectClass(object):
                 check_file = self.check_defect_file(path)
                 if check_file is not None:
                     defects_json_list.append(check_file)
-                print_info("\n")
 
         if len(defects_json_list) == 0:
             print_info("No defect json files found")
