@@ -120,16 +120,13 @@ class ExecFilesClass(object):
             logs_location = xml_Utils.getChildTextbyParentTag(self.filepath, 'Details', 'Logsdir')
             results_location = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                                  'Details', 'Resultsdir')
-            #get default logs and results directory
-            #default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml' 
-            default_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml' 
-            default_logsdir = get_credentials(default_xml, 'def_dir',['Logsdir'], 'Setting')
-            default_resultsdir = get_credentials(default_xml, 'def_dir',['Resultsdir'], 'Setting')
+            default_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml'
+            default_logsdir = get_credentials(default_xml, 'def_dir', ['Logsdir'], 'Setting')
+            default_resultsdir = get_credentials(default_xml, 'def_dir', ['Resultsdir'], 'Setting')
             #use the default directory if user didn't define it in test case/test suite/project
             if results_location is None or results_location is False:
                 if default_resultsdir['Resultsdir'] is not None:
                     results_location = default_resultsdir['Resultsdir']
- 
             if logs_location is None or logs_location is False:
                 if default_logsdir['Logsdir'] is not None:
                     logs_location = default_logsdir['Logsdir']
@@ -235,10 +232,10 @@ class ExecFilesClass(object):
             elif self.filetype == "proj":
                 datafile = False
         elif str(datafile).strip().upper() == "DEFAULT":
-            print_info("This testcase will be executed using the default InputDataFile")
+
             datafile = get_default_xml_datafile(self.filepath)
         elif str(datafile).strip().upper() == 'NO_DATA':
-            print_info('This test case will be run without any InputDataFile')
+
             datafile = "NO_DATA"
 
         elif datafile is not None and datafile is not False:
@@ -247,7 +244,7 @@ class ExecFilesClass(object):
 
         if str(datafile).strip().upper() != 'NO_DATA' and datafile is not False:
             if not file_Utils.fileExists(datafile):
-                print_info('\n')
+
                 print_error("!!! *** InputDataFile does not exist in provided path:"\
                             "{0} *** !!!".format(datafile))
         return datafile
@@ -259,7 +256,7 @@ class ExecFilesClass(object):
         data_type = xml_Utils.getChildTextbyParentTag(self.filepath, 'Details', 'Datatype')
         if str(datafile).upper().strip() == 'NO_DATA':
             data_type = 'CUSTOM'
-            print_info('This test case will be run without any InputDataFile')
+
 
         elif data_type is None or data_type is False or\
         str(data_type).strip() == "":
@@ -283,14 +280,14 @@ class ExecFilesClass(object):
         if xml_Utils.nodeExists(self.filepath, 'Runtype'):
             run_type = xml_Utils.getChildTextbyParentTag(self.filepath, 'Details', 'Runtype')
             if run_type is not None and run_type is not False:
-               run_type = str(run_type).strip()
-               supported_values = ['sequential_keywords', 'parallel_keywords']
-               if run_type.lower() not in supported_values:
-                   print_warning("unsupported value '{0}' provided for run_type,"
-                                 "supported values are "\
+                run_type = str(run_type).strip()
+                supported_values = ['sequential_keywords', 'parallel_keywords']
+                if run_type.lower() not in supported_values:
+                    print_warning("unsupported value '{0}' provided for run_type,"
+                                  "supported values are "\
                                 "'{1}' and case-insensitive".format(run_type, supported_values))
-                   print_info("Hence using default value for run_type which is 'sequential_keywords'")
-                   run_type = 'SEQUENTIAL_KEYWORDS'
+                    print_info("Hence using default value for run_type which is 'sequential_keywords'")
+                    run_type = 'SEQUENTIAL_KEYWORDS'
         else:
             run_type = "SEQUENTIAL_KEYWORDS"
         return run_type
