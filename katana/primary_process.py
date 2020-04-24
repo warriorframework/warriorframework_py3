@@ -15,6 +15,7 @@ import shutil
 import json
 import sys
 import base64
+from termcolor import colored
 from os.path import abspath, dirname
 from git import Repo
 
@@ -133,7 +134,15 @@ def install_custom_app(app, app_url):
         if os.path.exists(tempdir):
             shutil.rmtree(tempdir)
         os.mkdir(tempdir)
-        Repo.clone_from(repo_url, tempdir, branch=user_branch)
+        try:
+            Repo.clone_from(repo_url, tempdir, branch=user_branch)
+        except:
+               try:
+                   print(colored("\nFailed to fetch "+app+" app data from git due to poor internet connection, retrying in a moment...", "red"))
+                   time.sleep(4)
+                   Repo.clone_from(repo_url, tempdir, branch=user_branch)
+               except:
+                     raise
         source = os.path.join(tempdir, directory)
         destination = os.path.join(wapps_dir_path, directory)
         if os.path.exists(destination):

@@ -242,27 +242,49 @@ if __name__ == "__main__":
             create_log("Installing: " + name)
             print("Checking Compatability for:" + name)
             create_log("Checking Compatability for: " + name)
-            time.sleep(11)
+            time.sleep(10)
             try:
                 url = 'http://127.0.0.1:' + PORT + '/'
                 resp = requests.get(url)
             except:
-                create_log(
+                try:
+                   time.sleep(5)
+                   url = 'http://127.0.0.1:' + PORT + '/'
+                   resp = requests.get(url)
+                except:
+                   try:
+                      time.sleep(5)
+                      url = 'http://127.0.0.1:' + PORT + '/'
+                      resp = requests.get(url)
+                   except:
+                       create_log(
                     name + " app is not compatible with katana, so it is not going to be installed.")
-                print(colored(
+                       print(colored(
                     name + " app is not compatible with katana, so it is not going to be installed.", "red"))
-                clean_data = read_config_file_data()
-                clean_data["__READ_ACCESS__"] = "True"
-                with open(app_config_file, "w") as f:
-                    f.write(json.dumps(clean_data, indent=4))
-                remove_appurl_from_urls_custom(name, "wapps")
-                remove_app_from_settings_custom(name, "wapps")
-                remove_cust_app_source(name, "wapps")
-                clean_data = read_config_file_data()
-                del clean_data["user_custom_apps"][name]
-                with open(app_config_file, "w") as f:
-                    f.write(json.dumps(clean_data, indent=4))
-                thread_function_to_kill("")
+                       clean_data = read_config_file_data()
+                       clean_data["__READ_ACCESS__"] = "True"
+                       with open(app_config_file, "w") as f:
+                           f.write(json.dumps(clean_data, indent=4))
+                       remove_appurl_from_urls_custom(name, "wapps")
+                       remove_app_from_settings_custom(name, "wapps")
+                       remove_cust_app_source(name, "wapps")
+                       clean_data = read_config_file_data()
+                       del clean_data["user_custom_apps"][name]
+                       with open(app_config_file, "w") as f:
+                           f.write(json.dumps(clean_data, indent=4))
+                       thread_function_to_kill("")
+                   else:
+                       create_log(name + " app installed successfully.")
+                       print(colored(name + " app installed successfully.", "green"))
+                       fnull = open(os.devnull, 'w')
+                       retcodee = subprocess.call(
+                    ['fuser', '-k', PORT+'/tcp'], stdout=fnull, stderr=subprocess.STDOUT)
+                else:
+                       create_log(name + " app installed successfully.")
+                       print(colored(name + " app installed successfully.", "green"))
+                       fnull = open(os.devnull, 'w')
+                       retcodee = subprocess.call(
+                    ['fuser', '-k', PORT+'/tcp'], stdout=fnull, stderr=subprocess.STDOUT)
             else:
                 create_log(name + " app installed successfully.")
                 print(colored(name + " app installed successfully.", "green"))
@@ -329,8 +351,8 @@ if __name__ == "__main__":
                     clean_data["__READ_ACCESS__"] = "False"
                     with open(app_config_file, "w") as f:
                         f.write(json.dumps(clean_data, indent=4))
-                    install_custom_app(app, app_url)
-                except:
+                        install_custom_app(app, app_url)
+                except Exception as e:
                     clean_data = read_config_file_data()
                     clean_data["__READ_ACCESS__"] = "False"
                     with open(app_config_file, "w") as f:
@@ -341,10 +363,10 @@ if __name__ == "__main__":
                     if os.path.exists(tempdir):
                         shutil.rmtree(tempdir)
                     print(colored(
-                        "Error:"+app +
-                        " is not going to be installed!. There might be something wrong in the app-name (or) git-url in the input json file (or) may be the app your trying to install is incompatible with warrior framework.","red"))
+                        "Error: "+app +
+                        " app is not going to be installed!. The possible reasons are:\n1. Poor internet connection\n2. There might be something wrong in the app-name (or) git-url in the input json file\n3. wf_config.json file is missing in the "+app+" app.","red"))
                     create_log(
-                        "Error:"+app+" is not going to be installed!. There might be something wrong in the app-name (or) git-url in the input json file (or) may be the app your trying to install is incompatible with warrior framework.")
+                        "Error: "+app+" is not going to be installed!. There might be something wrong in the app-name (or) git-url in the input json file (or) may be the app your trying to install is incompatible with warrior framework.")
                     del clean_data["user_custom_apps"][app]
                     clean_data["__READ_ACCESS__"] = "True"
                     with open(app_config_file, "w") as f:
@@ -353,8 +375,11 @@ if __name__ == "__main__":
                     x.start()
                     FNULL = open(os.devnull, 'w')
                     retcode = subprocess.call(
+                ['fuser', '-k', PORT+'/tcp'], stdout=FNULL, stderr=subprocess.STDOUT)
+                    retcode = subprocess.call(
                         ['python3', 'manage.py', 'runserver', PORT], stdout=FNULL,
                         stderr=subprocess.STDOUT)
+                    x.join()
             function_to_give_read_access()
             print("[100%]\nDone!")
         else:
