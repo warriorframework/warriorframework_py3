@@ -18,7 +18,8 @@ import traceback
 from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
 from warrior.Framework import Utils
 from warrior.Framework.Utils import file_Utils
-from warrior.Framework.Utils.print_Utils import print_info, print_debug, print_error, print_exception
+from warrior.Framework.Utils.print_Utils import print_info, \
+    print_debug, print_error, print_exception
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 def get_arguments(step):
