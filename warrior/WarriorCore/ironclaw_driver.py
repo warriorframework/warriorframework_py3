@@ -60,8 +60,7 @@ def main(parameter_list):
     else:
         print_error("No input files provided to be validated")
         valid = False
-    print_info('\n')
-    print_info("Validation Completed:")
+
     if valid:
         print_info("Files are compatible with WARRIOR \n")
 
@@ -69,5 +68,3 @@ def main(parameter_list):
         print_error("Files failed Warrior Ironclaw validation\n")
     return valid
 
-
-    

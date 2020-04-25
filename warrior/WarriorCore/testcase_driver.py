@@ -23,7 +23,7 @@ import time
 import shutil
 import ast
 import xml.etree.ElementTree as et
-from json import loads, dumps
+from json import dumps
 from warrior.WarriorCore.defects_driver import DefectsDriver
 from warrior.WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
 from warrior.WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
@@ -266,7 +266,7 @@ def report_testcase_result(tc_status, data_repository, tag="Steps"):
             elif fail_count > 1:
                 print_info("{0:15} {1:45} {2:10}".format(str(step_num), tag+"-"+str(kw_name),
                                                          str(kw_status)))
-    print_info("=================== END OF TESTCASE ===========================")
+    print_info("=================== END OF TESTCASE ======================")
 
 
 def get_system_list(datafile, node_req=False, iter_req=False):
@@ -404,7 +404,7 @@ def execute_steps(data_type, runtype, data_repository, step_list, tc_junit_objec
                                        data_repository, step_list)
     elif data_type.upper() == 'ITERATIVE' and \
                 runtype.upper() == 'SEQUENTIAL_KEYWORDS':
-        print_info("iterative sequential")
+
         system_list = get_system_list(data_repository['wt_datafile'],\
                                           iter_req=True) \
             if iter_ts_sys is None else [iter_ts_sys]
@@ -422,7 +422,7 @@ def execute_steps(data_type, runtype, data_repository, step_list, tc_junit_objec
                 runtype.upper() == 'PARALLEL_KEYWORDS':
         tc_junit_object.remove_html_obj()
         data_repository["war_parallel"] = True
-        print_info("iterative parallel")
+
         system_list = get_system_list(data_repository['wt_datafile'],\
                                           iter_req=True) \
         if iter_ts_sys is None else [iter_ts_sys]
@@ -437,7 +437,7 @@ def execute_steps(data_type, runtype, data_repository, step_list, tc_junit_objec
             tc_status = iterative_parallel_kw_driver.main(\
                  step_list, data_repository, tc_status, system_list)
     elif data_type.upper() == "HYBRID":
-        print_info("Hybrid")
+
         system_list, system_node_list = get_system_list(\
              data_repository['wt_datafile'], node_req=True)
             # call the hybrid driver here
@@ -693,9 +693,9 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     defectsdir = data_repository['wt_defectsdir']
     check_and_create_defects(tc_status, auto_defects, data_repository, tc_junit_object)
 
-    print_info("\n")
+
     tc_end_time = Utils.datetime_utils.get_current_timestamp()
-    print_info("[{0}] Testcase execution completed".format(tc_end_time))
+
     tc_duration = Utils.datetime_utils.get_time_delta(tc_start_time)
     hms = Utils.datetime_utils.get_hms_for_seconds(tc_duration)
     print_info("Testcase duration= {0}".format(hms))

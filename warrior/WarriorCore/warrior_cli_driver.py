@@ -316,9 +316,6 @@ def warrior_execute_entry(*args, **kwargs):
         sys.exit(1)
 
 
-"""Handle all the cli command, new functions may be added later"""
-
-
 def decide_runcat_actions(w_cli_obj, namespace):
     """Decide the actions to be taken for runcat tag """
     filepath = namespace.filepath
@@ -430,7 +427,7 @@ def decide_overwrite_var(namespace):
         if job_url['url'] is not None:
             url = job_url['url']
         else:
-            print_info("jobid is specified but no job url found in w_settings")
+
             print_info("Using jobid only in JUnit file")
             url = ""
         overwrite['jobid'] = url + str(namespace.jobid)
