@@ -27,7 +27,7 @@ from katana.utils.json_utils import read_json_data
 from katana.utils.navigator_util import Navigator
 from katana.wui.core.apps import AppInformation
 from katana.wui.users.views import PublicView
-from .core_utils.core_settings import FileSettings, LDAPSettings, Restart, EMAILSettings
+from .core_utils.core_settings import FileSettings, LDAPSettings, Restart, EMAILSettings, ENCRYPT_SETTINGS
 
 nav_obj = Navigator()
 BASE_DIR = nav_obj.get_katana_dir()
@@ -237,6 +237,14 @@ class SiteSettingsView(UserPassesTestMixin, View,):
             if 'EMAIL_USE_TLS' not in new_configs:
                 new_configs['EMAIL_USE_TLS'] = False
             email_settings.update(new_configs)
+
+        if os.getenv("KATANA_CRYPTO_KEY", None):
+            config_file = os.path.join(BASE_DIR, 'wui', 'config.ini')
+            encrypted_config_file = os.path.join(BASE_DIR, 'katana_configs', 'en_config.ini')
+            key = os.getenv("KATANA_CRYPTO_KEY")
+            encrypt_settings = ENCRYPT_SETTINGS(key)
+            encrypt_settings.encrypt_file(config_file, encrypted_config_file)
+
         context = {
             'is_site_settings': True,
             'ldap_settings': ldap_settings.configs_to_strings(),
