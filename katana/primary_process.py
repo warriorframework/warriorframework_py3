@@ -6,6 +6,7 @@ import json
 import base64
 from git import Repo
 from termcolor import colored
+from os.path import abspath, dirname
 
 try:
     import katana
