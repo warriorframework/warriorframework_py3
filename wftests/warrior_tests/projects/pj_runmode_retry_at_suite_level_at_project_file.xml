@@ -27,13 +27,13 @@
             <impact>impact</impact>
         </Testsuite>
         <!-- RUP support at suite level -->
-        <Testsuite>
-            <path>../suites/framework_tests/ts_runmode_rup_at_suite_level.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <runmode type="rup" value="2"/>
-            <impact>impact</impact>
-        </Testsuite>
+<!--        <Testsuite>-->
+<!--            <path>../suites/framework_tests/ts_runmode_rup_at_suite_level.xml</path>-->
+<!--            <Execute ExecType="Yes"/>-->
+<!--            <onError action="next" value=""/>-->
+<!--            <runmode type="rup" value="2"/>-->
+<!--            <impact>impact</impact>-->
+<!--        </Testsuite>-->
         <!-- Verify runmode -->
         <Testsuite> 
             <path>../suites/framework_tests/ts_verify_runmode_at_suite_level.xml</path>
