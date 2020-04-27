@@ -78,50 +78,35 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
                             ' example : <Loop id="1" file="filename">')
                 return False
             json_file = child_node.get("file")
-            dict_json_key = child_node.get("dict_json")
-            if json_file and dict_json_key :
-                print_error("only one attribute is mandatory  you can use file or dict_json attribute")
+            if json_file is None:
+                print_error('`file` attribute is mandatory in Loop tag.'
+                            ' example : <Loop id="1" file="filename">')
                 return False
-            if json_file is None and dict_json_key is None:
-                print_error("at least one attribute is mandatory you can use file or dict_json attribute")
-                return False
-            # if json_file is None:
-            #     print_error('`file` attribute is mandatory in Loop tag.'
-            #                 ' example : <Loop id="1" file="filename">')
-            #     return False
             loop_count = loop_count.strip()
-            if json_file:
-                json_file = json_file.strip()
-                json_file = Utils.data_Utils.sub_from_env_var(json_file)
-                print_info("file is {}".format(json_file))
+            json_file = json_file.strip()
+            json_file = Utils.data_Utils.sub_from_env_var(json_file)
+            print_info("file is {}".format(json_file))
             loop_steps = child_node.findall(sub_step_tag)
             testcasefile_path = get_object_from_datarepository('wt_testcase_filepath')
             valid_json = True
             try:
-                if json_file:
-                    filepath = getAbsPath(json_file, os.path.dirname(testcasefile_path))
-                    with open(filepath, "r") as json_handle:
-                        json_doc = json.load(json_handle)
-                        loop_json = {"loop_json" : json_doc}
-                        update_datarepository(loop_json)
-
-                if dict_json_key:
-                    dict_json_value =  get_object_from_datarepository(dict_json_key)
-                    json_doc = dict_json_value
-                    loop_json = {"loop_json": dict_json_value}
+                filepath = getAbsPath(json_file, os.path.dirname(testcasefile_path))
+                with open(filepath, "r") as json_handle:
+                    json_doc = json.load(json_handle)
+                    loop_json = {"loop_json" : json_doc}
                     update_datarepository(loop_json)
-                if not isinstance(json_doc, list):
-                    valid_json = False
-                    print_error('invalid json format specified,'
-                                'valid format : [{"arg1":"value"}, {"arg2":"value"}]')
-                else:
-                    for blob in json_doc:
-                        if not isinstance(blob, dict):
-                            valid_json = False
-                            print_error("element is {}. should be dict".format(type(blob)))
-                            print_error('invalid json format specified,'
-                                        'blob should be dict, valid format : '
-                                        '[{"arg1":"value"}, {"arg2":"value"}]')
+                    if not isinstance(json_doc, list):
+                        valid_json = False
+                        print_error('invalid json format specified,'
+                                    'valid format : [{"arg1":"value"}, {"arg2":"value"}]')
+                    else:
+                        for blob in json_doc:
+                            if not isinstance(blob, dict):
+                                valid_json = False
+                                print_error("element is {}. should be dict".format(type(blob)))
+                                print_error('invalid json format specified,'
+                                            'blob should be dict, valid format : '
+                                            '[{"arg1":"value"}, {"arg2":"value"}]')
             except ValueError:
                 valid_json = False
                 print_error('The file {0} is not a valid json '
