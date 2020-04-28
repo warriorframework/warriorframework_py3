@@ -10,12 +10,12 @@
         <default_onError action="next"/>
     </Details>
     <Testsuites>
-<!--        <Testsuite>-->
-<!--            <path>../suites/framework_tests/ts_framework_tests.xml</path>-->
-<!--            <Execute ExecType="Yes"/>-->
-<!--            <onError action="next" value=""/>-->
-<!--            <impact>impact</impact>-->
-<!--        </Testsuite>-->
+        <Testsuite>
+            <path>../suites/framework_tests/ts_framework_tests.xml</path>
+            <Execute ExecType="Yes"/>
+            <onError action="next" value=""/>
+            <impact>impact</impact>
+        </Testsuite>
 <!--        <Testsuite>-->
 <!--            <path>invalid/suite/path</path>-->
 <!--            <Execute ExecType="No"/>-->

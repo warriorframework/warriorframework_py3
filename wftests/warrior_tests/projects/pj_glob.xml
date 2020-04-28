@@ -10,13 +10,13 @@
                 <default_onError action="next"/>
         </Details>
         <Testsuites>
-<!--                <Testsuite>-->
-<!--                        <path>../suites/framework_tests/glob_tests/*</path>-->
-<!--                        <Execute ExecType="Yes">-->
-<!--                                <Rule Condition="" Condvalue="" Else="next" Elsevalue=""/>-->
-<!--                        </Execute>-->
-<!--                        <onError action="next" value=""/>-->
-<!--                        <impact>impact</impact>-->
-<!--                </Testsuite>-->
+                <Testsuite>
+                        <path>../suites/framework_tests/glob_tests/*</path>
+                        <Execute ExecType="Yes">
+                                <Rule Condition="" Condvalue="" Else="next" Elsevalue=""/>
+                        </Execute>
+                        <onError action="next" value=""/>
+                        <impact>impact</impact>
+                </Testsuite>
         </Testsuites>
 </Project>
