@@ -446,6 +446,10 @@ def decide_overwrite_var(namespace):
         overwrite['gen_shuffle_columns'] = namespace.gen_shuffle_columns
     if namespace.gen_purge_db:
         overwrite['gen_purge_db'] = namespace.gen_purge_db
+    if namespace.gen_exec_tag:
+        overwrite['gen_exec_tag'] = namespace.gen_exec_tag
+    if namespace.gen_report:
+        overwrite['gen_report'] = namespace.gen_report
 
     return overwrite
 
