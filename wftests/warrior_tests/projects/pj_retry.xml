@@ -10,17 +10,17 @@
         <default_onError action="next"/>
     </Details>
     <Testsuites>
-        <Testsuite>
-            <path>../suites/framework_tests/ts_retry.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/ts_retry_at_tclevel.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
+<!--        <Testsuite>-->
+<!--            <path>../suites/framework_tests/ts_retry.xml</path>-->
+<!--            <Execute ExecType="Yes"/>-->
+<!--            <onError action="next" value=""/>-->
+<!--            <impact>impact</impact>-->
+<!--        </Testsuite>-->
+<!--        <Testsuite>-->
+<!--            <path>../suites/framework_tests/ts_retry_at_tclevel.xml</path>-->
+<!--            <Execute ExecType="Yes"/>-->
+<!--            <onError action="next" value=""/>-->
+<!--            <impact>impact</impact>-->
+<!--        </Testsuite>-->
     </Testsuites>
 </Project>
