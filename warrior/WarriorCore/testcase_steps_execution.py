@@ -78,6 +78,10 @@ class TestCaseStepsExecutionClass:
         #store loop iter number in data repository
         loop_iter_number = self.current_step.get("loop_iter_number", None)
         Utils.data_Utils.update_datarepository({"loop_iter_number" : loop_iter_number})
+
+        #store loop id in data repository
+        loop_id = self.current_step.get("loopid", None)
+        Utils.data_Utils.update_datarepository({"loopid" : loop_id})
         # Incrementing current_step_number for printing purposes.
         self.current_step_number = current_step_number + 1
 

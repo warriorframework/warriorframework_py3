@@ -93,8 +93,9 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
                 filepath = getAbsPath(json_file, os.path.dirname(testcasefile_path))
                 with open(filepath, "r") as json_handle:
                     json_doc = json.load(json_handle)
-                    loop_json = {"loop_json" : json_doc}
+                    loop_json = {loop_count : {"loop_json" : json_doc}}
                     update_datarepository(loop_json)
+                    update_datarepository({"loopid": loop_count})
                     if not isinstance(json_doc, list):
                         valid_json = False
                         print_error('invalid json format specified,'
@@ -127,6 +128,7 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
                     copy_step.set("loop_id", "Loop:{}-Step:{}-Iter:{}".\
                             format(loop_count, step_number+1, iter_number+1))
                     copy_step.set("loop_iter_number", iter_number)
+                    copy_step.set("loopid", loop_count)
                     arguments = copy_step.find('Arguments')
                     if arguments is not None and arguments is not False:
                         for argument in arguments.findall('argument'):
