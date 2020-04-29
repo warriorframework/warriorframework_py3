@@ -114,6 +114,9 @@ if __name__ == "__main__":
     else:
         if int(PORT) < 1024:
             __port_error__()
+
+    with open("log.txt", "w") as f:
+        f.writelines("")
             
     if len(sys.argv) >= 2 and sys.argv[0].split("/")[-1] == \
             "appmanage.py" and sys.argv[1] == "appconfig":
@@ -228,6 +231,14 @@ if __name__ == "__main__":
             clean_data["__READ_ACCESS__"] = "True"
             with open(app_config_file, "w") as f:
                 f.write(json.dumps(clean_data, indent=4))
+            
+        def wait_for(sec):
+            i = sec
+            while i>0:
+                print("{0} {1} {2}".format("Re-checking server status in:", i, "seconds"),  end="  \r")
+                time.sleep(1)
+                i = i-1
+            print("{0}".format(" "*50),  end="  \r")
 
         def thread_function_to_kill(name):
             """this function is used to kill the server"""
@@ -242,18 +253,24 @@ if __name__ == "__main__":
             create_log("Installing: " + name)
             print("Checking Compatability for:" + name)
             create_log("Checking Compatability for: " + name)
-            time.sleep(10)
+            time.sleep(11)
             try:
                 url = 'http://127.0.0.1:' + PORT + '/'
                 resp = requests.get(url)
             except:
                 try:
-                   time.sleep(5)
+                   create_log("Server is taking too long to respond, retrying in a moment...(First retry)")
+                   print(colored("Server is taking too long to respond    ", "yellow"))
+                   wait_for(20)
                    url = 'http://127.0.0.1:' + PORT + '/'
                    resp = requests.get(url)
                 except:
                    try:
-                      time.sleep(5)
+                      time.sleep(3)
+                      create_log("Server is taking too long to respond, retrying in a moment...(Second retry)")
+                      print(colored("Server is taking too long to respond    ", "yellow"))
+                      wait_for(20)
+                      time.sleep(3)
                       url = 'http://127.0.0.1:' + PORT + '/'
                       resp = requests.get(url)
                    except Exception as e:
