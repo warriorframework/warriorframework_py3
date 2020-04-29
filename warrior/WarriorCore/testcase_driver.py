@@ -23,11 +23,8 @@ import os
 import time
 import shutil
 import ast
-import random
-import sqlite3
 import json
 import xml.etree.ElementTree as et
-from itertools import product
 from warrior.WarriorCore.defects_driver import DefectsDriver
 from warrior.WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
 from warrior.WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
@@ -41,11 +38,6 @@ from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
 from warrior.Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
 import warrior.Framework.Utils.email_utils as email
 from warrior.WarriorCore import warrior_cli_driver
-
-try:
-    import pandas as pd
-except Exception as exception:
-    print_exception(exception)
 
 def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     """Gets all the details of the Testcase
@@ -102,7 +94,6 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
 
     res_startdir = data_repository['wt_results_execdir']
     logs_startdir = data_repository['wt_logs_execdir']
-
     efile_obj = execution_files_class.ExecFilesClass(testcase_filepath, "tc", res_startdir,
                                                      logs_startdir)
     resultfile = efile_obj.resultfile
@@ -110,7 +101,6 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     logfile = efile_obj.logfile
     logsdir = efile_obj.logsdir
     defectsdir = efile_obj.get_defect_files()
-
     """Data files can be passed on to a test by four methods, below are the
        four methods and its priority in order.
        By this feature we allow the user to run the same testcases, with
@@ -841,7 +831,6 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     # main need tc_status and data_repository values to unpack
     return tc_status, data_repository
 
-
 def execute_custom(datatype, runtype, driver, data_repository, step_list):
     """
     Execute a custom testcase
@@ -876,230 +865,6 @@ def check_robot_wrapper_case(testcase_filepath):
             break
     return isRobotWrapperCase
 
-def update_generic_database(exec_tag, testcase_name, sample_records):
-    """ update tc generic iteration results in persistent db"""
-    #code to connect db and persist iteration results
-    db_path = os.getenv("WAR_TOOLS_DIR") + "/generic_samples.db"
-    con = sqlite3.connect(db_path)
-    sql_create_table = """ CREATE TABLE IF NOT EXISTS GEN_RESULTS_TABLE (
-                                        id integer PRIMARY KEY,
-                                        tag text NOT NULL,
-                                        testcase text NOT NULL,
-                                        records text
-                                    ); """
-    con.execute(sql_create_table)
-    records = con.execute("SELECT records from GEN_RESULTS_TABLE where tag == ? \
-            and testcase == ?", (exec_tag, testcase_name, ))
-    db_samples = []
-    for record in records:
-        db_samples.extend(json.loads(record[0]))
-    if db_samples:
-        for rec in sample_records:
-            if rec in db_samples:
-                db_samples.remove(rec)
-        sample_records.extend(db_samples)
-        con.execute("UPDATE GEN_RESULTS_TABLE set records=? where tag == ? and testcase == ?", \
-            (json.dumps(sample_records), exec_tag, testcase_name))
-    else:
-        con.execute("INSERT into GEN_RESULTS_TABLE values(NULL,?,?,?)", \
-            (exec_tag, testcase_name, json.dumps(sample_records)))
-    con.commit()
-    con.close()
-
-def delete_samples_generic_database(exec_tag, testcase_name=None):
-    """ delete existing samples of given testcase """
-    db_path = os.getenv("WAR_TOOLS_DIR") + "/generic_samples.db"
-    con = sqlite3.connect(db_path)
-    statement = "SELECT name FROM sqlite_master WHERE type='table';"
-    if ('GEN_RESULTS_TABLE',) in con.execute(statement).fetchall():
-        if exec_tag and testcase_name:
-            con.execute("DELETE from GEN_RESULTS_TABLE where tag == ? and \
-                testcase == ?", (exec_tag, testcase_name, ))
-        else:
-            con.execute("DELETE from GEN_RESULTS_TABLE where tag == ?", (exec_tag, ))
-        con.commit()
-    con.close()
-
-def get_samples_from_generic_db(exec_tag, testcase_name=None):
-    """ get existing samples from generic db"""
-    all_samples = []
-    records = []
-    db_path = os.getenv("WAR_TOOLS_DIR") + "/generic_samples.db"
-    con = sqlite3.connect(db_path)
-    statement = "SELECT name FROM sqlite_master WHERE type='table';"
-    if ('GEN_RESULTS_TABLE',) in con.execute(statement).fetchall():
-        if exec_tag and testcase_name:
-            records = con.execute("SELECT records from GEN_RESULTS_TABLE where tag == ? \
-                    and testcase == ?", (exec_tag, testcase_name, ))
-        else:
-            records = con.execute("SELECT records from GEN_RESULTS_TABLE where tag == ?", (exec_tag, ))
-    for record in records:
-        all_samples.extend(json.loads(record[0]))
-    for sample in all_samples:
-        del sample['log_file']
-        del sample['duration_in_seconds']
-        del sample['result']
-    return all_samples
-
-def generate_report_from_generic_db(exec_tag, testcase_name=None):
-    """ get existing samples from generic db"""
-    all_samples = []
-    records = []
-    db_path = os.getenv("WAR_TOOLS_DIR") + "/generic_samples.db"
-    con = sqlite3.connect(db_path)
-    statement = "SELECT name FROM sqlite_master WHERE type='table';"
-    if ('GEN_RESULTS_TABLE',) in con.execute(statement).fetchall():
-        if exec_tag and testcase_name:
-            file_name = "/home/sekhar/{}_{}_report.xlsx".format(exec_tag, os.path.basename(testcase_name))
-            records = con.execute("SELECT records from GEN_RESULTS_TABLE where tag == ? \
-                    and testcase == ?", (exec_tag, testcase_name, ))
-        else:
-            file_name = "{}_report.xlsx".format(exec_tag)
-            records = con.execute("SELECT records from GEN_RESULTS_TABLE where tag == ?", (exec_tag, ))
-    for record in records:
-        all_samples.extend(json.loads(record[0]))
-    df = pd.DataFrame(all_samples)
-    df.to_excel("{}".format(file_name))
-    return file_name
-
-def get_samples_shuffle_columns(df, no_of_samples, records_in_db):
-    """ get samples for shuffle columns"""
-    generic_data_dict = []
-    all_dict = []
-    df_dict = {}
-    for column in df.columns:
-        df_dict[column] = [x for x in df[column].sample(frac=1) if not pd.isnull(x)]
-    column_names = df_dict.keys()
-    column_values = df_dict.values()
-    for tup in product(*column_values):
-        dict1 = {}
-        i = 0
-        for column_name in column_names:
-            dict1[column_name] = tup[i]
-            i+=1
-        all_dict.append(dict1)
-    print_info("================================================================================")
-    print_info("Total no. of combinations found in variable xls file : {}".format(len(all_dict)))
-    print_info("Total no. of combinations already tested : {}".format(len(records_in_db)))
-    print_info("Total no. of combinations remaining to test : {}".format(len(all_dict) - len(records_in_db)))
-    print_info("Total no. of random combinations selected in this test : {}".format(no_of_samples))
-    print_info("================================================================================")
-    #get samples not in db.
-    for db_sample in records_in_db:
-        if db_sample in all_dict:
-            all_dict.remove(db_sample)
-    if no_of_samples <= len(all_dict):
-        generic_data_dict = random.sample(all_dict, no_of_samples)
-    else:
-        print_error("given no_of_samples {} is greater than remaining samples to test {}." \
-                    "please reduce no. of samples".format(no_of_samples, len(all_dict)))
-    print_info("selected samples : {}".format(generic_data_dict))
-    print_info("================================================================================")
-    return generic_data_dict
-
-def get_samples(df, selected_rows, no_of_samples, records_in_db):
-    """ get samples without shuffling columns """
-    df_fixed = None
-    df_random = None
-    generic_data_dict = []
-    #select user selected rows
-    if selected_rows:
-        selected_rows = [row-1 for row in selected_rows] 
-        df_fixed = df.iloc[selected_rows]
-        df = df.drop(selected_rows, axis=0)
-    #drop rows with 'ignore' set to 'yes'
-    if 'ignore' in df.columns:
-        df = df[df["ignore"] != "yes"]
-        df = df.drop(['ignore'], axis = 1)
-    print_info("================================================================================")
-    print_info("Total no. of samples found in variable xls file : {}".format(len(df.index)))
-    print_info("Total no. of samples already tested : {}".format(len(records_in_db)))
-    print_info("Total no. of samples remaining to test : {}".format(len(df.index) - len(records_in_db)))
-    print_info("Total no. of random samples selected in this test : {}".format(no_of_samples))
-    if selected_rows:
-        print_info("Selected rows to test : {}".format(selected_rows))
-    print_info("================================================================================")
-    #select records in df which are not in db_df
-    db_df = pd.DataFrame(records_in_db)
-    if db_df.columns.tolist():
-        df = df.merge(db_df, how = 'outer' ,indicator=True).\
-                loc[lambda x : x['_merge']=='left_only']
-        df = df.drop(['_merge'], axis = 1)
-    if no_of_samples and no_of_samples <= len(df.index):
-        #select random samples
-        df_random = df.sample(n=no_of_samples)
-    elif no_of_samples and no_of_samples > len(df.index):
-        print_error("Given no. of samples {} is greater than remaining samples to" \
-                " test {}. please reduce no. of samples".format(no_of_samples, len(df.index)))
-        exit(1)
-    df = pd.concat([df_fixed, df_random])
-    generic_data_dict = df.to_dict('records')
-    print_info("selected samples : {}".format(generic_data_dict))
-    print_info("================================================================================")
-    return generic_data_dict
-
-def get_generic_datafile(testcase_filepath, data_repository):
-    """ get generic data file"""
-    #First priority for generic data file through CLI
-    genericdatafile = None
-    if 'genericdatafile' in data_repository:
-        genericdatafile = data_repository['genericdatafile']
-    #Next priority is for genericdatafile in testcase details
-    elif Utils.xml_Utils.nodeExists(testcase_filepath, "GenericDataFile"):
-        genericdatafile = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, \
-                    'Details', 'GenericDataFile')
-    if genericdatafile:
-        abs_cur_dir = os.path.dirname(testcase_filepath)
-        genericdatafile = Utils.file_Utils.getAbsPath(genericdatafile, abs_cur_dir)
-        if not Utils.file_Utils.fileExists(genericdatafile):
-            print_error("Given genericdatafile file path doesn't exist. Exiting !!"
-                        " File path - {}".format(genericdatafile))
-            exit(1)
-    data_repository["genericdatafile"] = genericdatafile
-    return genericdatafile
-
-def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
-    """ get iterations from generic data"""
-    '''genericdatafile can be passed to test by below two methods and its priority
-       in order'''
-    generic_data_dict = []
-    genericdatafile = data_repository.get('genericdatafile', None)
-    no_of_samples = data_repository.get('gen_no_of_samples', None)
-    shuffle_columns = data_repository.get('gen_shuffle_columns', False)
-    selected_rows = data_repository.get('gen_select_rows', None)
-    purge_db = data_repository.get("gen_purge_db", None)
-    exec_tag = data_repository.get("gen_exec_tag", 'default')
-    gen_report = data_repository.get("gen_report", None)
-    #set default random samples to 1
-    if not selected_rows and not no_of_samples:
-        no_of_samples = 1
-    df = pd.read_excel(genericdatafile)
-    if selected_rows:
-        selected_rows = [int(element.strip()) for element in selected_rows.split(",")]
-        invalid_index = [index for index in selected_rows if index-1 not in df.index]
-        if invalid_index:
-            print_error("selected rows {} not present \
-                         in given xls file. please give valid comma seperated \
-                         index no's in --select_rows".format(invalid_index))
-            exit(1)
-    #db operations
-    if purge_db:
-        delete_samples_generic_database(exec_tag, testcase_filepath)
-    records_in_generic_db = get_samples_from_generic_db(exec_tag, testcase_filepath)
-    if shuffle_columns:
-        generic_data_dict = get_samples_shuffle_columns(df, no_of_samples,
-                                                        records_in_generic_db)
-    else:
-        generic_data_dict = get_samples(df, selected_rows, no_of_samples,
-                                        records_in_generic_db)
-    if not generic_data_dict:
-        print_warning("couldn't get samples from given xls for repetitive testing!!"
-                      " Please check data in given genericdatafile. Exiting!!")
-        exit(1)
-    gen_dict = {"gen_dict" : generic_data_dict}
-    Utils.data_Utils.update_datarepository(gen_dict)
-    return generic_data_dict
-
 def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
          runtype='SEQUENTIAL_KEYWORDS', tc_parallel=False, auto_defects=False, suite=None,
          tc_onError_action=None, iter_ts_sys=None, queue=None, jiraproj=None, jiraid=None):
@@ -1109,10 +874,10 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
     if Utils.file_Utils.fileExists(testcase_filepath):
         try:
             Utils.config_Utils.set_datarepository(data_repository)
-            if get_generic_datafile(testcase_filepath, data_repository):
+            if Utils.testrandom_utils.get_generic_datafile(testcase_filepath, data_repository):
                 exec_tag = data_repository.get("gen_exec_tag", 'default')
                 print_info("Execution tag : {}".format(exec_tag))
-                generic_data_dict = get_iterations_from_generic_data(testcase_filepath, data_repository)
+                generic_data_dict = Utils.testrandom_utils.get_iterations_from_generic_data(testcase_filepath, data_repository)
                 tc_status = True
                 for iter_number, _ in enumerate(generic_data_dict):
                     gentc_start_time = Utils.datetime_utils.get_current_timestamp()
@@ -1133,11 +898,11 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
                                  data_repository[data_key]['wt_resultsdir'], gen_tc_status)
                     gen_tc_duration = Utils.datetime_utils.get_time_delta(gentc_start_time)
                     dict_to_update_in_db = generic_data_dict[iter_number]
-                    dict_to_update_in_db["result"] = str(gen_tc_status)
+                    dict_to_update_in_db["result"] = "PASS" if gen_tc_status else "FAIL"
                     dict_to_update_in_db["duration_in_seconds"] = gen_tc_duration
                     dict_to_update_in_db["log_file"] = data_repository[data_key]['wt_logsdir']
-                    update_generic_database(exec_tag, testcase_filepath, [dict_to_update_in_db])
-                report_file = generate_report_from_generic_db(exec_tag, testcase_filepath)
+                    Utils.testrandom_utils.update_generic_database(exec_tag, testcase_filepath, [dict_to_update_in_db])
+                report_file = Utils.testrandom_utils.generate_report_from_generic_db(exec_tag, testcase_filepath)
                 print_info("Report file : {}".format(report_file))
             else:
                 tc_status, data_repository = execute_testcase(testcase_filepath,\
