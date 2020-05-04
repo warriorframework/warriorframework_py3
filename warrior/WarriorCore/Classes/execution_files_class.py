@@ -15,7 +15,6 @@ limitations under the License.
 
 
 import os
-from warrior import Tools
 from warrior.Framework.Utils import file_Utils as file_Utils
 from warrior.Framework.Utils import xml_Utils as xml_Utils
 from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error, print_exception
@@ -82,7 +81,8 @@ class ExecFilesClass(object):
                                                                  'Details', 'Resultsdir')
 
             #get default results directory
-            default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+            #default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+            default_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml'
             default_resultsdir = get_credentials(default_xml, 'def_dir', ['Resultsdir'], 'Setting')
             #use the default directory if user didn't define it in test case/test suite/project
             if results_location is None or results_location is False:
@@ -121,7 +121,8 @@ class ExecFilesClass(object):
             results_location = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                                  'Details', 'Resultsdir')
             #get default logs and results directory
-            default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml' 
+            #default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml' 
+            default_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml' 
             default_logsdir = get_credentials(default_xml, 'def_dir',['Logsdir'], 'Setting')
             default_resultsdir = get_credentials(default_xml, 'def_dir',['Resultsdir'], 'Setting')
             #use the default directory if user didn't define it in test case/test suite/project
