@@ -35,7 +35,6 @@ install:
       pip3 install django==2.0.13;
       pip3 install djangorestframework==3.9.4;
       pip3 install xmltodict==0.12.0;
-      pip3 install pandas;
     fi
 script:
   - if [[ -z ${TRAVIS_PULL_REQUEST_BRANCH} ]]; then

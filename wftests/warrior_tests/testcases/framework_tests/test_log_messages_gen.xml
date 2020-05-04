@@ -21,8 +21,8 @@
         <Steps>
                 <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
                         <Arguments>
-                                <argument name="datavar" value="fruit"/>
-				<argument name="datavalue" value="${GEN.fruit}"/>
+                                <argument name="datavar" value="a"/>
+				<argument name="datavalue" value="${XLSCOL.a}"/>
                         </Arguments>
                         <Execute ExecType="Yes"/>
                         <onError action="next"/>
@@ -34,8 +34,112 @@
                 </step>
                 <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
                         <Arguments>
-                                <argument name="datavar" value="vegetable"/>
-				<argument name="datavalue" value="${GEN.vegetable}"/>
+                                <argument name="datavar" value="b"/>
+				<argument name="datavalue" value="${XLSCOL.b}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="c"/>
+				<argument name="datavalue" value="${XLSCOL.c}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="d"/>
+				<argument name="datavalue" value="${XLSCOL.d}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="e"/>
+				<argument name="datavalue" value="${XLSCOL.e}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="f"/>
+				<argument name="datavalue" value="${XLSCOL.f}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="g"/>
+				<argument name="datavalue" value="${XLSCOL.g}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="h"/>
+				<argument name="datavalue" value="${XLSCOL.h}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="i"/>
+				<argument name="datavalue" value="${XLSCOL.i}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="j"/>
+				<argument name="datavalue" value="${XLSCOL.j}"/>
                         </Arguments>
                         <Execute ExecType="Yes"/>
                         <onError action="next"/>
@@ -47,7 +151,7 @@
                 </step>
                 <step Driver="log_driver" Keyword="log_message" TS="4" draft="no">
                         <Arguments>
-                                <argument name="dict_message" value="{'my first preference' : 'fruit', 'my next preference' : 'vegetable'}"/>
+                                <argument name="dict_message" value="{'a' : 'a', 'b' : 'b', 'c':'c','d':'d','e':'e','f':'f','g':'g','h':'h','i':'i','j':'j'}"/>
                                 <argument name="type" value="INFO"/>
                         </Arguments>
                         <Execute ExecType="Yes"/>

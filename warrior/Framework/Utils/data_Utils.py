@@ -1648,7 +1648,7 @@ def get_var_by_string_prefix(string, iter_number=None):
         loop_json = get_object_from_datarepository('loop_json')
         value = loop_json[iter_number][keys[1]]
         return str(value)
-    if string.startswith("GEN."):
+    if string.startswith("XLSCOL."):
         keys = string.split('.', 1)
         gen_dict = get_object_from_datarepository('gen_dict')
         #print_info("gen dict is {}".format(gen_dict))
@@ -1673,7 +1673,7 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
     source could be environment or datarepository for now.
     """
     error_msg1 = ("Could not find any %s variable {0!r} corresponding to {1!r}"
-                  " provided in input data/testdata/loopjson/gen dict file.\nWill default to "
+                  " provided in input data/testdata/loopjson/variable xls file.\nWill default to "
                   "None") % (prefix)
     error_msg2 = ("Unable to substitute %s variable {0!r} corresponding to "
                   "{1!r} provided in input data/testdata file.\nThe value "
@@ -1762,7 +1762,7 @@ def sub_from_loop_json(raw_value, iter_number, start_pattern="${", end_pattern="
 def sub_from_gen_dict(raw_value, iter_number, start_pattern="${", end_pattern="}"):
     """wrapper function for subst_var_patterns_by_prefix"""
     return subst_var_patterns_by_prefix(raw_value, start_pattern, end_pattern,
-                                        prefix="GEN", iter_number=iter_number)
+                                        prefix="XLSCOL", iter_number=iter_number)
 
 def substitute_var_patterns(raw_value, start_pattern="${", end_pattern="}"):
     """substitute variable inside start and end pattern

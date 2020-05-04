@@ -43,7 +43,7 @@ def get_arguments(step):
                 if arg_value:
                     if "${REPO." in arg_value:
                         arg_value = Utils.data_Utils.sub_from_data_repo(arg_value)
-                    if "${GEN." in arg_value:
+                    if "${XLSCOL." in arg_value:
                         general_iter_number = Utils.data_Utils.get_object_from_datarepository("gen_iter_number")
                         arg_value = Utils.data_Utils.sub_from_gen_dict(arg_value, general_iter_number)
                 arg_datatype_object.arg_name = arg_name
