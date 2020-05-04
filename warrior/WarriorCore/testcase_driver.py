@@ -902,7 +902,8 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
                     dict_to_update_in_db["duration_in_seconds"] = gen_tc_duration
                     dict_to_update_in_db["log_file"] = data_repository[data_key]['wt_logsdir']
                     Utils.testrandom_utils.update_generic_database(exec_tag, testcase_filepath, [dict_to_update_in_db])
-                report_file = Utils.testrandom_utils.generate_report_from_generic_db(exec_tag, testcase_filepath)
+                report_file = Utils.testrandom_utils.generate_report_from_generic_db(exec_tag, testcase_filepath,
+                                                                                     data_repository)
                 print_info("Report file : {}".format(report_file))
             else:
                 tc_status, data_repository = execute_testcase(testcase_filepath,\

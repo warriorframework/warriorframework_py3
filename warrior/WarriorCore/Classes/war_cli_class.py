@@ -361,11 +361,12 @@ class WarriorCliClass(object):
             dest="gen_select_rows", help="rows to select from variable data xls file. \
             give comma seperated row valuesi. example --select_rows 1,2,3")
 
-        varxls_arg.add_argument('--reset_results', action='store_true', default=False,\
+        varxls_arg.add_argument('--reset_execution', action='store_true', default=False,\
             dest="gen_purge_db", help="reset results of previous executions and restart test")
 
         varxls_arg.add_argument('--select_random_values', action='store_true', default=False,\
-            dest='gen_shuffle_columns', help="selects variables randomly from columns instead of selection rows")
+            dest='gen_shuffle_columns', help="selects variables randomly from columns instead of \
+            selecting given rows")
 
         varxls_arg.add_argument('--execution_tag', action='store', nargs='?',\
             dest='gen_exec_tag', help="user defined tag to tag executions")

@@ -109,10 +109,25 @@ def get_samples_from_generic_db(exec_tag, testcase_name=None):
         all_samples = df.to_dict('records')
     return all_samples
 
-def generate_report_from_generic_db(exec_tag, testcase_name=None):
+def generate_report_from_generic_db(exec_tag, testcase_name, data_repository):
     """ get existing samples from generic db"""
     all_samples = []
     records = []
+    genericdatafile = data_repository.get('genericdatafile', None)
+    df = pd.read_excel(genericdatafile)
+    shuffle_columns = data_repository.get('gen_shuffle_columns', False)
+    no_of_combinations = 1
+    if shuffle_columns:
+        df_dict = {}
+        for column in df.columns:
+            df_dict[column] = [x for x in df[column].sample(frac=1) if not pd.isnull(x)]
+            no_of_combinations *= len(df_dict[column])
+    else:
+        #drop rows with 'ignore' set to 'yes'
+        if 'ignore' in df.columns:
+            df = df[df["ignore"] != "yes"]
+            df = df.drop(['ignore'], axis = 1)
+        no_of_combinations = len(df.index)
     db_path = os.getenv("WAR_TOOLS_DIR") + "/generic_samples.db"
     con = sqlite3.connect(db_path)
     statement = "SELECT name FROM sqlite_master WHERE type='table';"
@@ -130,7 +145,8 @@ def generate_report_from_generic_db(exec_tag, testcase_name=None):
     writer = pd.ExcelWriter("{}".format(file_name))
     df_db = pd.DataFrame(all_samples)
     df_summary = pd.DataFrame([{"Testcase" : os.path.basename(testcase_name),
-                                "Total Samples":len(df_db.index),
+                                "Total Samples": no_of_combinations,
+                                "Total Samples Executed":len(df_db.index),
                                 "Passed" :(df_db.result == 'PASS').sum(),
                                 "Failed" : (df_db.result == 'FAIL').sum()}])
     df_summary.to_excel(writer, index=False, sheet_name='summary')
@@ -144,7 +160,7 @@ def get_samples_shuffle_columns(df, no_of_samples, records_in_db):
     generic_data_dict = []
     all_dict = []
     df_dict = {}
-    supported_combinations = 2000
+    supported_combinations = 100000
     no_of_combinations = 1
     for column in df.columns:
         df_dict[column] = [x for x in df[column].sample(frac=1) if not pd.isnull(x)]
@@ -263,7 +279,8 @@ def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
     exec_tag = data_repository.get("gen_exec_tag", 'default')
     gen_report = data_repository.get("gen_report", None)
     if gen_report:
-        report_file = generate_report_from_generic_db(exec_tag, testcase_filepath)
+        report_file = generate_report_from_generic_db(exec_tag, testcase_filepath,
+                                                      data_repository)
         print_info("Report file : {}".format(report_file))
         exit(0)
     #set default random samples to 1
