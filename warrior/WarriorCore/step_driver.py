@@ -141,6 +141,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     data_repository['wt_step_impact'] = step_impact
     data_repository['wt_step_context'] = context
     data_repository['wt_step_description'] = step_description
+    data_repository['step_%s_impact' % step_num] = step_impact.upper()
 
     kw_resultfile = get_keyword_resultfile(
         data_repository, system_name, step_num, keyword)
