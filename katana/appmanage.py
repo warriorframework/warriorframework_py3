@@ -52,6 +52,7 @@ wapps_dir = BASE_DIR + "/wapps"
 native_dir = BASE_DIR + "/native"
 settings_file = BASE_DIR + "/wui/settings.py"
 app_config_file = BASE_DIR + "/app_config.json"
+manage_py = os.path.join(BASE_DIR, "manage.py")
 urls_file = BASE_DIR + "/wui/urls.py"
 wapps_content = os.listdir(wapps_dir)
 wapp_ignore = ["__init__.py", "__pycache__", "readme.txt"]
@@ -395,7 +396,7 @@ if __name__ == "__main__":
                     retcode = subprocess.call(
                 ['fuser', '-k', PORT+'/tcp'], stdout=FNULL, stderr=subprocess.STDOUT)
                     retcode = subprocess.call(
-                        ['python3', 'manage.py', 'runserver', PORT], stdout=FNULL,
+                        ['python3', manage_py, 'runserver', PORT], stdout=FNULL,
                         stderr=subprocess.STDOUT)
                     x.join()
             function_to_give_read_access()
@@ -430,7 +431,7 @@ if __name__ == "__main__":
             y.start()
             FNULL = open(os.devnull, 'w')
             retcode = subprocess.call(
-                ['python3', 'manage.py', 'runserver', PORT], stdout=FNULL,
+                ['python3', manage_py, 'runserver', PORT], stdout=FNULL,
                 stderr=subprocess.STDOUT)
             print("[100%]\nDone!")
     else:
