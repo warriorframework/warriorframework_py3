@@ -18,7 +18,6 @@
 		<Testcase TS="1">
 			<path>exmp_testcase_file.xml</path>
 			<InputDataFile></InputDataFile>
-			<runtype>sequential_keywords</runtype>
 			<Execute ExecType="Yes">
 			</Execute>
 			<runmode type="standard"></runmode>
@@ -29,7 +28,7 @@
 		<Testcase TS="2">
 			<path>exmp_testcase_file.xml</path>
 			<InputDataFile></InputDataFile>
-			<runtype>sequential_keywords</runtype>
+			<runtype>sequeial_keywords</runtype>
 			<Execute ExecType="Yes">
 			</Execute>
 			<runmode type="standard"></runmode>
