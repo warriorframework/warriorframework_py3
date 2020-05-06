@@ -36,5 +36,26 @@
 			<impact>impact</impact>
 			<onError action="next"></onError>
 		</Testcase>
+		<Testcase TS="3">
+			<InputDataFile></InputDataFile>
+			<runtype>sequeial_keywords</runtype>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testcase>
+		<Testcase TS="4">
+			<InputDataFile></InputDataFile>
+			<runtype>sequeial_keywords</runtype>
+			<jiraid>WAR-123</jiraid>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testcase>
 	</Testcases>
 </TestSuite>
