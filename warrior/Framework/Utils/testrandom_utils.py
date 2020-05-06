@@ -191,7 +191,7 @@ def get_samples_shuffle_columns(df, no_of_samples, records_in_db):
         if db_sample in all_dict:
             all_dict.remove(db_sample)
     if len(all_dict) == 0:
-        print_error("All the samples are tested. use --reset_results to restart test again")
+        print_error("All the samples are tested. use --reset_execution to restart test again")
         exit(1)
     if no_of_samples <= len(all_dict):
         generic_data_dict = random.sample(all_dict, no_of_samples)
@@ -231,7 +231,7 @@ def get_samples(df, selected_rows, no_of_samples, records_in_db):
                 loc[lambda x : x['_merge']=='left_only']
         df = df.drop(['_merge'], axis = 1)
     if no_of_samples and len(df.index) == 0:
-        print_error("All the samples are tested. use --reset_results to restart test again")
+        print_error("All the samples are tested. use --reset_execution to restart test again")
         exit(1)
     if no_of_samples and no_of_samples <= len(df.index):
         #select random samples
@@ -260,7 +260,7 @@ def get_generic_datafile(testcase_filepath, data_repository):
         abs_cur_dir = os.path.dirname(testcase_filepath)
         genericdatafile = Utils.file_Utils.getAbsPath(genericdatafile, abs_cur_dir)
         if not Utils.file_Utils.fileExists(genericdatafile):
-            print_error("Given genericdatafile file path doesn't exist. Exiting !!"
+            print_error("Given variables excel file path doesn't exist. Exiting !!"
                         " File path - {}".format(genericdatafile))
             exit(1)
     data_repository["genericdatafile"] = genericdatafile
@@ -307,7 +307,7 @@ def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
                                         records_in_generic_db)
     if not generic_data_dict:
         print_warning("couldn't get samples from given xls for repetitive testing!!"
-                      " Please check data in given genericdatafile. Exiting!!")
+                      " Please check data in given variables excel file. Exiting!!")
         exit(1)
     gen_dict = {"gen_dict" : generic_data_dict}
     Utils.data_Utils.update_datarepository(gen_dict)
