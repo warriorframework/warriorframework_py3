@@ -132,23 +132,33 @@ def generate_report_from_generic_db(exec_tag, testcase_name, data_repository):
     con = sqlite3.connect(db_path)
     statement = "SELECT name FROM sqlite_master WHERE type='table';"
     if ('GEN_RESULTS_TABLE',) in con.execute(statement).fetchall():
+        output_dir = os.path.expanduser("~")
+        if data_repository.get("xml_results_dir"):
+            output_dir = data_repository["xml_results_dir"]
+        elif data_repository.get("ow_resultdir"):
+            output_dir = data_repository["ow_resultdir"]
         if exec_tag and testcase_name:
-            file_name = "{}/{}_{}_report.xlsx".format(os.path.expanduser("~"),\
+            file_name = "{}/{}_{}_report.xlsx".format(output_dir,\
                         exec_tag, os.path.basename(testcase_name).strip('.xml'))
             records = con.execute("SELECT records from GEN_RESULTS_TABLE where tag == ? \
                     and testcase == ?", (exec_tag, testcase_name, ))
         else:
-            file_name = "{}_report.xlsx".format(exec_tag)
+            file_name = "{}/{}_report.xlsx".format(output_dir, exec_tag)
             records = con.execute("SELECT records from GEN_RESULTS_TABLE where tag == ?", (exec_tag, ))
     for record in records:
         all_samples.extend(json.loads(record[0]))
     writer = pd.ExcelWriter("{}".format(file_name))
     df_db = pd.DataFrame(all_samples)
+    passed = 0
+    failed = 0
+    if len(df_db.index):
+        passed = (df_db.result == 'PASS').sum()
+        failed = (df_db.result == 'FAIL').sum()
     df_summary = pd.DataFrame([{"Testcase" : os.path.basename(testcase_name),
                                 "Total Samples": no_of_combinations,
                                 "Total Samples Executed":len(df_db.index),
-                                "Passed" :(df_db.result == 'PASS').sum(),
-                                "Failed" : (df_db.result == 'FAIL').sum()}])
+                                "Passed" : passed,
+                                "Failed" : failed}])
     df_summary.to_excel(writer, index=False, sheet_name='summary')
     df_db.to_excel(writer, index=False, sheet_name=os.path.basename(testcase_name))
     writer.save()

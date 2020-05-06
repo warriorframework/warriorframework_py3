@@ -24,6 +24,7 @@ import time
 import shutil
 import ast
 import json
+import copy
 import xml.etree.ElementTree as et
 from warrior.WarriorCore.defects_driver import DefectsDriver
 from warrior.WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
@@ -875,6 +876,7 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
         try:
             Utils.config_Utils.set_datarepository(data_repository)
             if Utils.testrandom_utils.get_generic_datafile(testcase_filepath, data_repository):
+                init_datarepository = copy.deepcopy(data_repository)
                 exec_tag = data_repository.get("gen_exec_tag", 'default')
                 print_info("Execution tag : {}".format(exec_tag))
                 generic_data_dict = Utils.testrandom_utils.get_iterations_from_generic_data(testcase_filepath, data_repository)
@@ -884,23 +886,24 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
                     print_info("testcase execution starts with variables : {}"\
                             .format(generic_data_dict[iter_number]))
                     Utils.data_Utils.update_datarepository({"gen_iter_number" : iter_number})
-                    data_key = "gen_" + str(iter_number)
-                    data_repository[data_key] = {'db_obj': False, 'war_file_type': 'Case'}
+                    tc_data_repository = copy.deepcopy(init_datarepository)
                     gen_tc_status, gen_data_repository = execute_testcase(testcase_filepath,\
-                                            data_repository[data_key], tc_context, runtype,\
+                                            tc_data_repository, tc_context, runtype,\
                                             tc_parallel, queue, auto_defects, suite,\
                                             jiraproj, tc_onError_action, iter_ts_sys)
                     tc_status = tc_status and gen_tc_status
                     warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, os.path.dirname(\
-                                data_repository[data_key]['wt_resultsdir']), gen_tc_status)
+                                tc_data_repository['wt_resultsdir']), gen_tc_status)
                     email.compose_send_email("Test Case: ", testcase_filepath,\
-                                 data_repository[data_key]['wt_logsdir'],\
-                                 data_repository[data_key]['wt_resultsdir'], gen_tc_status)
+                                 tc_data_repository['wt_logsdir'],\
+                                 tc_data_repository['wt_resultsdir'], gen_tc_status)
+                    data_repository["xml_results_dir"] = os.path.dirname(os.path.dirname(\
+                            tc_data_repository['wt_logsdir']))
                     gen_tc_duration = Utils.datetime_utils.get_time_delta(gentc_start_time)
                     dict_to_update_in_db = generic_data_dict[iter_number]
                     dict_to_update_in_db["result"] = "PASS" if gen_tc_status else "FAIL"
                     dict_to_update_in_db["duration_in_seconds"] = gen_tc_duration
-                    dict_to_update_in_db["log_file"] = data_repository[data_key]['wt_logsdir']
+                    dict_to_update_in_db["log_file"] = tc_data_repository['wt_logsdir']
                     Utils.testrandom_utils.update_generic_database(exec_tag, testcase_filepath, [dict_to_update_in_db])
                 report_file = Utils.testrandom_utils.generate_report_from_generic_db(exec_tag, testcase_filepath,
                                                                                      data_repository)
