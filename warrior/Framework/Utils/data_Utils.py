@@ -1631,7 +1631,7 @@ def get_filepath_from_system(datafile, system_name, *args):
     return abspath_lst
 
 
-def get_var_by_string_prefix(string, iter_number=None):
+def get_var_by_string_prefix(string, iter_number=None, loop_id = None):
     """Get value from Environment variable or data repo
     """
     if string.startswith("ENV."):
@@ -1645,7 +1645,7 @@ def get_var_by_string_prefix(string, iter_number=None):
             return value
     if string.startswith("LOOP."):
         keys = string.split('.', 1)
-        loop_json = get_object_from_datarepository('loop_json')
+        loop_json = get_object_from_datarepository('{}.loop_json'.format(loop_id))
         value = loop_json[iter_number][keys[1]]
         return str(value)
     if string.startswith("XLSCOL."):
@@ -1657,7 +1657,7 @@ def get_var_by_string_prefix(string, iter_number=None):
 
 
 def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
-                                 end_pattern="}", prefix="ENV", iter_number=None):
+                                 end_pattern="}", prefix="ENV", iter_number=None, loop_id = None):
     """Takes a key value pair or string (value) as input in raw_value,
         if the value has a pattern matching ${ENV.env_variable_name}.
     Searches for the env_variable_name in the environment and replaces
@@ -1693,11 +1693,11 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
                         if isinstance(raw_value[k], str):
                                 raw_value[k] = raw_value[k].replace(start_pattern+string+end_pattern,
                                                                     get_var_by_string_prefix(string,
-                                                                                             iter_number))
+                                                                                             iter_number, loop_id))
                         elif isinstance(raw_value[k], (list, dict)):
                                 raw_value[k] = str(raw_value[k]).replace(start_pattern+string+end_pattern,
                                                                          get_var_by_string_prefix(string,
-                                                                                                  iter_number))
+                                                                                                  iter_number, loop_id))
                                 raw_value[k] = ast.literal_eval(raw_value[k])
                         else:
                             print_error("Unsupported format - " +
@@ -1736,7 +1736,7 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
             for string in extracted_var:
                 try:
                     raw_value = raw_value.replace(start_pattern+string+end_pattern,
-                                                  get_var_by_string_prefix(string, iter_number))
+                                                  get_var_by_string_prefix(string, iter_number, loop_id))
                 except KeyError:
                     print_error(error_msg1.format(string, raw_value))
                     raw_value = None
@@ -1756,8 +1756,9 @@ def sub_from_data_repo(raw_value, start_pattern="${", end_pattern="}"):
 
 def sub_from_loop_json(raw_value, iter_number, start_pattern="${", end_pattern="}"):
     """wrapper function for subst_var_patterns_by_prefix"""
+    loop_id = get_object_from_datarepository("loopid")
     return subst_var_patterns_by_prefix(raw_value, start_pattern, end_pattern,
-                                        prefix="LOOP", iter_number=iter_number)
+                                        prefix="LOOP", iter_number=iter_number, loop_id=loop_id)
 
 def sub_from_gen_dict(raw_value, iter_number, start_pattern="${", end_pattern="}"):
     """wrapper function for subst_var_patterns_by_prefix"""
