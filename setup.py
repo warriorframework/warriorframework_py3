@@ -56,6 +56,7 @@ setup(
                       "cloudshell-automation-api==9.3.0.175525", "pytest",
                       "pycryptodome==3.6.1", "Django==2.1.2", "xmltodict==0.12.0",
                       "python-ldap", "django_auth_ldap",
+                      "xlrd==1.2.0", "openpyxl==3.0.3", "pandas==1.0.3",
                       "djangorestframework==3.10.3", "gcg==0.2.0", "termcolor==1.1.0",]
 
 )
