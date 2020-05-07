@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TestSuite>
+	<Details>
+		<Name>ts_microapp_actions</Name>
+		<Title>ts_microapp_actions</Title>
+		<State>New</State>
+		<Engineer>venkat</Engineer>
+		<Date>04/21/2017</Date>
+		<Time>12:14:26</Time>
+		<type exectype="sequential_testcases" Number_Attempts=""></type>
+		<default_onError action="next" value=""></default_onError>
+		<InputDataFile>No_Data</InputDataFile>
+		<Resultsdir></Resultsdir>
+	</Details>
+	<Requirements>
+	</Requirements>
+	<Testcases>
+		<Testcase TS="1">
+			<path>../../../testcases/framework_tests/microapp_actions/tc_micro_app_positive.xml</path>
+			<InputDataFile></InputDataFile>
+			<runtype>sequential_keywords</runtype>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testcase>
+		<Testcase TS="2">
+			<path>../../../testcases/framework_tests/microapp_actions/tc_micro_app_negative.xml</path>
+			<InputDataFile></InputDataFile>
+			<runtype>sequential_keywords</runtype>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testcase>
+	</Testcases>
+</TestSuite>

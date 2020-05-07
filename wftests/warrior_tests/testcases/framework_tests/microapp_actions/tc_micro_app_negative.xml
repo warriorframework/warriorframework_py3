@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testcase>
+	<Details>
+		<Name>tc_micro_app_negative</Name>
+		<Title>tc_micro_app_negative</Title>
+		<Category></Category>
+		<State>New</State>
+		<Engineer>venkat</Engineer>
+		<Date>2020-4-30</Date>
+		<Time>10:16</Time>
+		<default_onError action="next" value=""></default_onError>
+		<InputDataFile>No_Data</InputDataFile>
+		<Datatype>Custom</Datatype>
+		<Logsdir></Logsdir>
+		<Resultsdir></Resultsdir>
+		<ExpectedResults></ExpectedResults>
+	</Details>
+	<Requirements>
+	</Requirements>
+	<Steps>
+		<step TS="1" Repo="warrior" Driver="cli_driver" Keyword="connect">
+			<Description>testing the get_warrior_result</Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>noimpact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="system_name" value="NE1"></argument>
+				<argument name="session_name" value="test"></argument>
+			</Arguments>
+		</step>
+		<step TS="2" Repo="warrior" Driver="cli_driver" Keyword="disconnect">
+			<Description>testing the get_warrior_result</Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>noimpact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="system_name" value="NE1"></argument>
+				<argument name="session_name" value="test"></argument>
+			</Arguments>
+		</step>
+		<step TS="3" Repo="warrior" Driver="microapps_driver" Keyword="get_warrior_result">
+			<Description>testing the get_warrior_result</Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+			</Arguments>
+		</step>
+	</Steps>
+</Testcase>
