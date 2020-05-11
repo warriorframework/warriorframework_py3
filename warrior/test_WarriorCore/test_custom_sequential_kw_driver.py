@@ -44,7 +44,7 @@ except OSError as error:
     pass
 
 
-def test_execute_custom_sequential():
+def test_execute_custom_sequential_positive():
     """ Takes a list of steps as input and executes"""
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     with open(result_dir+ "/" +'custom_seq_resultfile.xml', 'w'):
@@ -65,6 +65,30 @@ def test_execute_custom_sequential():
     result = custom_sequential_kw_driver.execute_custom_sequential(step_list, data_repository,\
      tc_status, system_name)
     assert result == True
+    del testcase_steps_execution.main
+    del Utils.data_Utils.update_datarepository
+
+def test_execute_custom_sequential_negative():
+    """ Takes a list of steps as input and executes"""
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    with open(result_dir+ "/" +'custom_seq_resultfile.xml', 'w'):
+        pass
+    wt_resultfile = os.path.join(result_dir, 'custom_seq_resultfile.xml')
+    tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_custom_seq.xml"))
+    # get root element
+    root = tree.getroot()
+    # getting steps
+    step_list = root.findall("Steps")
+    data_repository = {'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'jiraproj',\
+     'wt_logsdir':path, 'wt_resultfile':wt_resultfile, 'wt_step_impact': 'impact',\
+      'wt_kw_results_dir':result_dir, 'wt_keyword':'wait_for_timeout', 'wt_tc_timestamp':timestamp}
+    Utils.data_Utils.update_datarepository = MagicMock()
+    testcase_steps_execution.main = MagicMock(return_value=([False], [wt_resultfile], ['impact']))
+    tc_status = False
+    system_name = None
+    result = custom_sequential_kw_driver.execute_custom_sequential(step_list, data_repository,\
+     tc_status, system_name)
+    assert result == False
     del testcase_steps_execution.main
     del Utils.data_Utils.update_datarepository
 
