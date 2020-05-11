@@ -22,12 +22,17 @@ import unittest
 
 try:
     import warrior
-except Exception as e:
+except Exception:
     WARRIORDIR = dirname(dirname(dirname(abspath(__file__))))
     sys.path.append(WARRIORDIR)
     import warrior
 
 sys.modules['warrior.WarriorCore.Classes.argument_datatype_class'] = MagicMock(return_value=None)
+
+from warrior.WarriorCore import custom_sequential_kw_driver
+from warrior.WarriorCore import testcase_steps_execution
+from warrior.WarriorCore import step_driver
+from warrior.Framework import Utils
 
 temp_cwd = os.path.split(__file__)[0]
 path = os.path.join(temp_cwd, 'UT_results')
@@ -38,15 +43,11 @@ try:
 except OSError as error:
     pass
 
-from warrior.WarriorCore import custom_sequential_kw_driver
-from warrior.WarriorCore import testcase_steps_execution
-from warrior.WarriorCore import step_driver
-from warrior.Framework import Utils
 
 def test_execute_custom_sequential():
     """ Takes a list of steps as input and executes"""
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    with open(result_dir+ "/" +'custom_seq_resultfile.xml', 'w') as fp:
+    with open(result_dir+ "/" +'custom_seq_resultfile.xml', 'w'):
         pass
     wt_resultfile = os.path.join(result_dir, 'custom_seq_resultfile.xml')
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_custom_seq.xml"))
@@ -71,7 +72,7 @@ def test_main_pasitive():
     """Executes the list of keyword in sequential order
     Computes and returns the testcase status"""
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    with open(result_dir+ "/" +'custom_seq_resultfile.xml', 'w') as fp:
+    with open(result_dir+ "/" +'custom_seq_resultfile.xml', 'w'):
         pass
     wt_resultfile = os.path.join(result_dir, 'custom_seq_resultfile.xml')
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_custom_seq.xml"))
@@ -96,7 +97,7 @@ def test_main_negative():
     Computes and returns the testcase status"""
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_custom_seq.xml"))
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    with open(result_dir+"/"+'custom_seq_resultfile.txt', 'w') as fp:
+    with open(result_dir+"/"+'custom_seq_resultfile.txt', 'w'):
         pass
     wt_resultfile = os.path.join(result_dir, 'custom_seq_resultfile.txt')
     step_list = tree.findall('Steps')
