@@ -290,7 +290,7 @@ def warrior_execute_entry(*args, **kwargs):
         os.system("python {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
         sys.exit()
 
-    if sys.argv[1] == "-warrior_py3_migration_tool":
+    if sys.argv[1:] == "-warrior_py3_migration_tool":
         print_info("Initializing tc warrior_py3_migration_tool tool !!")
         war_path = dirname(dirname(abspath(__file__)))
         warrior_py3_migration_tool_path = "{}/WarriorTools/warrior_py3_migration_tools".format(war_path)
