@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TestSuite>
+	<Details>
+		<Name>Untitled</Name>
+		<Title>Untitled</Title>
+		<State>New</State>
+		<Engineer>Untitled</Engineer>
+		<Date>2020-4-1</Date>
+		<Time>12:18</Time>
+		<type exectype="sequential_testcases" Number_Attempts=""></type>
+		<default_onError action="next" value=""></default_onError>
+		<InputDataFile>No_Data</InputDataFile>
+		<Resultsdir></Resultsdir>
+	</Details>
+	<Requirements>
+	</Requirements>
+	<Testcases>
+		<Testcase TS="1">
+			<path>exmp_testcase_file.xml</path>
+			<InputDataFile></InputDataFile>
+			<runtype>sequential_keywords</runtype>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testcase>
+		<Testcase TS="2">
+			<path>exmp_testcase_file.xml</path>
+			<InputDataFile></InputDataFile>
+			<runtype>sequential_keywords</runtype>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testcase>
+	</Testcases>
+</TestSuite>
