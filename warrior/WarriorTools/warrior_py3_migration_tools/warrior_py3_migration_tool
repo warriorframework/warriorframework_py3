@@ -61,8 +61,15 @@ class Migrate_keyword_repo():
                                                 "testcase_repositories")
         self.numbers_dict = {"1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six",
                              "7": "seven", "8": "eight", "9": "nine"}
-        logging.basicConfig(level=logging.DEBUG, format="", filename="conversion.log")
         self.log = logging.getLogger()
+        self.log.setLevel(logging.INFO)
+
+        fileHandler = logging.FileHandler("{0}/{1}.log".format(self.current_working_directory, "conversion"))
+        self.log.addHandler(fileHandler)
+
+        consoleHandler = logging.StreamHandler()
+        self.log.addHandler(consoleHandler)
+
         self.not_modified_statements = []
         self.output_dir = output_dir
         self.keyword_summary = {}
@@ -318,7 +325,39 @@ class Migrate_keyword_repo():
                         filedesc = open(root + "/" + file, "r+")
                         file_lines = filedesc.readlines()
                         for fline in file_lines:
-                            if (fline.startswith("import") or fline.startswith("from")) and "*" in fline:
+                            if "Warrior" in fline :
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["converted"] += 1
+                                repo_name = "warrior"
+
+                                new_line = re.sub("Warrior", "warrior", fline)
+
+                                af = """sed -i 's/{}/{}/g' {}""".format(fline, repo_name, new_line,
+                                    root + "/" + file)
+                                try:
+                                    self.log.info("[Before] {}".format(fline.strip()))
+                                    os.system(af)
+                                    # import pdb
+                                    # pdb.set_trace()
+                                    self.log.info("[after] {}".format(
+                                        fline.replace("Warrior", "{}".format(repo_name), 1)))
+
+
+                                except:
+                                    impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
+                                    os.system(impo)
+                                    self.keyword_summary[directory_name]["not_converted"] += 1
+                                    self.log.info(
+                                        "[NotModified]{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
+                                                                                              file_name,
+                                                                                              statement))
+                                    self.not_modified_statements.append(
+                                        "[NotModified]:::{}::{}::{}".format(
+                                            converting_repo_name,
+                                            file_name,
+                                            statement))
+
+                            elif (fline.startswith("import") or fline.startswith("from")) and "*" in fline:
                                 self.not_modified_statements.append("[NotModified] as it is contain * in import statement {} {}".
                                            format(fline.strip(), file))
                                 self.keyword_summary[directory_name]["found"] += 1
@@ -340,8 +379,6 @@ class Migrate_keyword_repo():
                                     fline = fline[:-2]
                                 else:
                                     fline = fline[:-1]
-
-
                                 repo_name = self.check_for_statement_is_available_in_user_repo(
                                     fline, self.user_repo_path)
 
@@ -457,8 +494,7 @@ class Migrate_keyword_repo():
                                         import pdb
                                         #pdb.set_trace()
                                         actual_line = statement.split("[")[-1].split("]")[0]
-                                        ffline = re.sub("Actions", "{}.Actions".format(
-                                            repo_name), statement, 1)
+
                                         af = """sed -i 's/\[{}\]/\[{}.{}\]/g' {}""".format(
                                             actual_line, repo_name,actual_line,
                                             root + "/" + file)
@@ -492,19 +528,19 @@ class Migrate_keyword_repo():
             print("path not found")
 
     def pretty_print_test(self):
-        print("=" * 83)
-        print("| {:<20} | {:<12} | {:<10} | {:<15} | ".format('REPO NAME', 'LINES FOUND', 'CONVERTED',
+        self.log.info("=" * 83)
+        self.log.info("| {:<20} | {:<12} | {:<10} | {:<15} | ".format('REPO NAME', 'LINES FOUND', 'CONVERTED',
                                                                       'NOT CONVERTED', ))
-        print("=" * 83)
+        self.log.info("=" * 83)
 
         # print each data item.
         for name, attr in self.keyword_summary.items():
 
-            print("| {:<20} | {:<12} | {:<10} | {:<15} |".format(name, attr['found'],
+            self.log.info("| {:<20} | {:<12} | {:<10} | {:<15} |".format(name, attr['found'],
                                                                           attr['converted'],
                                                                           attr['not_converted'],
                                                                           ))
-        print("=" * 83)
+        self.log.info("=" * 83)
 
 
 class migrate_testrepo(Migrate_keyword_repo):
@@ -602,20 +638,21 @@ class migrate_testrepo(Migrate_keyword_repo):
         if os.path.exists(self.output_dir):
             shutil.rmtree(self.output_dir)
         destination = shutil.copytree(self.testcase_dirpath, self.output_dir)
+        self.log.info(destination)
 
     def pretty_print(self):
-        print("=" * 83)
-        print("| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format('REPO NAME', 'STEPS FOUND', 'CONVERTED',
+        self.log.info("=" * 83)
+        self.log.info("| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format('REPO NAME', 'STEPS FOUND', 'CONVERTED',
                                                                       'NOT CONVERTED', 'HAS REPO'))
-        print("=" * 83)
+        self.log.info("=" * 83)
 
         # print each data item.
         for name, attr in self.test_summary.items():
-            print("| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format(name, attr['steps_found'],
+            self.log.info("| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format(name, attr['steps_found'],
                                                                           attr['steps_converted'],
                                                                           attr['steps_not_converted'],
                                                                           attr['steps_has_repo_already']))
-        print("=" * 83)
+        self.log.info("=" * 83)
 
 
 
@@ -635,11 +672,11 @@ m.modifying_warrior_framework_folder()
 # print(parse_obj.keyword_repourls)
 
 
-# mig_obj = migrate_testrepo(m.keyword_repos_path, m.testcase_repos_path, parse_obj.output_dir)
-# mig_obj.migrate_testcase_repositories()
+mig_obj = migrate_testrepo(m.keyword_repos_path, m.testcase_repos_path, parse_obj.output_dir)
+mig_obj.migrate_testcase_repositories()
 
 # pretty print
-# mig_obj.pretty_print()
+mig_obj.pretty_print()
 m.pretty_print_test()
 
 
