@@ -53,7 +53,7 @@ except:
 import re
 import sys
 import multiprocessing
-from warrior import Tools
+from os.path import dirname, abspath
 from warrior.Framework.Utils import config_Utils, file_Utils, xml_Utils
 from warrior.Framework.Utils.data_Utils import get_credentials
 import warrior.Framework.Utils.encryption_utils as Encrypt
@@ -130,12 +130,13 @@ def file_execution(cli_args, abs_filepath, default_repo):
         result, _, data_repository = testcase_driver.main(
             abs_filepath, data_repository=default_repo,
             runtype='SEQUENTIAL_KEYWORDS',
-            auto_defects=a_defects, jiraproj=jiraproj)
-        update_jira_by_id(jiraproj, jiraid, os.path.dirname(
-            data_repository['wt_resultsdir']), result)
-        email.compose_send_email("Test Case: ", abs_filepath,
-                                 data_repository['wt_logsdir'],
-                                 data_repository['wt_resultsdir'], result)
+            auto_defects=a_defects, jiraproj=jiraproj, jiraid=jiraid)
+        if not Utils.data_Utils.get_object_from_datarepository('genericdatafile'):
+            update_jira_by_id(jiraproj, jiraid, os.path.dirname(
+                data_repository['wt_resultsdir']), result)
+            email.compose_send_email("Test Case: ", abs_filepath,
+                                     data_repository['wt_logsdir'],
+                                     data_repository['wt_resultsdir'], result)
     elif Utils.xml_Utils.getRoot(abs_filepath).tag == 'TestSuite':
         default_repo['war_file_type'] = "Suite"
         result, suite_repository = testsuite_driver.main(
@@ -279,21 +280,22 @@ def warrior_execute_entry(*args, **kwargs):
         dbsystem:
         livehtmllocn:
     """
-    if sys.argv[1:] == "-tc_gen":
-        print_info("initializing tc generator tool !!")
 
-        site_home_path = os.path.split(site.__file__)[0]
-        site_packages_path = "site-packages/warrior/Tools/tc_generator/templates"
-        template_path = os.path.join(site_home_path, site_packages_path)
-        if os.path.exists(template_path):
-            os.system("tc_generator {}".format(" ".join(sys.argv[2:])))
-            sys.exit()
-        else:
-            current_working_directory = os.getcwd()
-            tc_generator_dir_path = "Tools/tc_generator"
-            tc_generator_path = os.path.join(current_working_directory, tc_generator_dir_path)
-            os.system("python {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
-            sys.exit()
+    if sys.argv[1:] == "-tc_gen":
+        print_info("Initializing tc generator tool !!")
+
+        tc_generator_dir_path = "WarriorTools/tc_generator"
+        current_working_directory = dirname(dirname(abspath(__file__)))
+        tc_generator_path = os.path.join(current_working_directory, tc_generator_dir_path)
+        os.system("python {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
+        sys.exit()
+
+    if sys.argv[1] == "-warrior_py3_migration_tool":
+        print_info("Initializing tc warrior_py3_migration_tool tool !!")
+        war_path = dirname(dirname(abspath(__file__)))
+        warrior_py3_migration_tool_path = "{}/WarriorTools/warrior_py3_migration_tools".format(war_path)
+        os.system("python {}/warrior_py3_migration_tool {}".format(warrior_py3_migration_tool_path, " ".join(sys.argv[2:])))
+        sys.exit()
 
     if not kwargs:
         # Launch from terminal/cli exeuction
@@ -303,7 +305,6 @@ def warrior_execute_entry(*args, **kwargs):
         # Launch from python function call
         filepath, cli_args, overwrite = main(*args)
     livehtmlobj = kwargs.get("livehtmlobj", None)
-
     status = execution(filepath, cli_args, overwrite, livehtmlobj)
     status = {"true": True, "pass": True, "ran": True}.get(str(status).lower())
     # add code to send div finished using katana interface class
@@ -424,7 +425,8 @@ def decide_overwrite_var(namespace):
         print_error("outputdir shouldn't be used with resultdir or logdir")
         exit(1)
     if namespace.jobid:
-        settings_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+        #settings_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+        settings_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml'
         job_url = get_credentials(settings_xml, 'job_url', ['url'], 'Setting')
         if job_url['url'] is not None:
             url = job_url['url']
@@ -435,6 +437,22 @@ def decide_overwrite_var(namespace):
         overwrite['jobid'] = url + str(namespace.jobid)
     if namespace.pythonpath:
         overwrite['pythonpath'] = namespace.pythonpath
+
+    if namespace.genericdatafile:
+        overwrite['genericdatafile'] = namespace.genericdatafile
+    if namespace.gen_no_of_samples:
+        overwrite['gen_no_of_samples'] = namespace.gen_no_of_samples
+    if namespace.gen_select_rows:
+        overwrite['gen_select_rows'] = namespace.gen_select_rows
+    if namespace.gen_shuffle_columns:
+        overwrite['gen_shuffle_columns'] = namespace.gen_shuffle_columns
+    if namespace.gen_purge_db:
+        overwrite['gen_purge_db'] = namespace.gen_purge_db
+    if namespace.gen_exec_tag:
+        overwrite['gen_exec_tag'] = namespace.gen_exec_tag
+    if namespace.gen_report:
+        overwrite['gen_report'] = namespace.gen_report
+
     return overwrite
 
 
@@ -478,9 +496,10 @@ def decide_action(w_cli_obj, namespace):
         else:
             # If secret key has not been given, checks for the existence of the
             # secret.key file
-            path = file_Utils.get_parent_dir(os.path.realpath(__file__),
-                                             "WarriorCore")
-            path = os.path.join(path, "Tools", "admin", "secret.key")
+            #path = file_Utils.get_parent_dir(os.path.realpath(__file__),
+            #                                 "WarriorCore")
+            #path = os.path.join(path, "Tools", "admin", "secret.key")
+            path = os.path.join(os.getenv("WAR_TOOLS_DIR"), "admin", "secret.key")
             if not os.path.exists(path):
                 print_error("Could not find the secret.key file in Tools/Admin!"
                             " Please use '-secretkey your_key_text' in the "
@@ -509,9 +528,10 @@ def decide_action(w_cli_obj, namespace):
         else:
             # If secret key has not been given, checks for the existence of the
             # secret.key file
-            path = file_Utils.get_parent_dir(os.path.realpath(__file__),
-                                             "WarriorCore")
-            path = os.path.join(path, "Tools", "admin", "secret.key")
+            #path = file_Utils.get_parent_dir(os.path.realpath(__file__),
+            #                                 "WarriorCore")
+            #path = os.path.join(path, "Tools", "admin", "secret.key")
+            path = os.path.join(os.getenv("WAR_TOOLS_DIR"), "admin", "secret.key")
             if not os.path.exists(path):
                 print_error("Could not find the secret.key file in Tools/Admin!"
                             " Please use '-secretkey your_key_text' in the "

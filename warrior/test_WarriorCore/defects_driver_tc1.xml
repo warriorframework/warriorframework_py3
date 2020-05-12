@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testcase>
+	<Details>
+		<Name>Untitled</Name>
+		<Title>Untitled</Title>
+		<Category></Category>
+		<State>New</State>
+		<Engineer>Untitled</Engineer>
+		<Date>2020-4-1</Date>
+		<Time>12:17</Time>
+		<default_onError action="next" value=""></default_onError>
+		<InputDataFile>No_Data</InputDataFile>
+		<Datatype>Custom</Datatype>
+		<Logsdir></Logsdir>
+		<Resultsdir></Resultsdir>
+		<ExpectedResults></ExpectedResults>
+	</Details>
+	<Requirements>
+	</Requirements>
+	<Steps>
+
+	</Steps>
+</Testcase>

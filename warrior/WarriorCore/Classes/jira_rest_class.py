@@ -14,7 +14,6 @@ limitations under the License.
 import json
 import os
 
-from warrior import Tools
 from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning
 from warrior.Framework.Utils import xml_Utils
 
@@ -34,7 +33,8 @@ class Jira(object):
 
     def __init__(self, jiraproj):
         """Constructor"""
-        jira_dir = Tools.__path__[0] + os.sep + 'jira' + os.sep
+        #jira_dir = Tools.__path__[0] + os.sep + 'jira' + os.sep
+        jira_dir = os.getenv("WAR_TOOLS_DIR") + os.sep + 'jira' + os.sep
         self.jira_template_xml = jira_dir + os.sep + 'jira_config.xml'
         self.jiraproj = jiraproj
         credentials = self.get_jira_system_creds(self.jira_template_xml, self.jiraproj,

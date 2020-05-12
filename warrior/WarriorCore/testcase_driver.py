@@ -16,14 +16,16 @@ limitations under the License.
 It in turn calls the custom_sequential/custom_parallel/iterative_sequential/
 iterative_parallel drivers according to the  data_type and run_type of the testcase"""
 #pylint: disable=wrong-import-position
+#pylint: disable=invalid-name
 
 import sys
 import os
 import time
 import shutil
 import ast
+import json
+import copy
 import xml.etree.ElementTree as et
-from json import loads, dumps
 from warrior.WarriorCore.defects_driver import DefectsDriver
 from warrior.WarriorCore import custom_sequential_kw_driver, custom_parallel_kw_driver
 from warrior.WarriorCore import iterative_sequential_kw_driver, iterative_parallel_kw_driver,\
@@ -36,7 +38,7 @@ from warrior.Framework.Utils.print_Utils import print_info, print_warning, print
 from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
 from warrior.Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
 import warrior.Framework.Utils.email_utils as email
-
+from warrior.WarriorCore import warrior_cli_driver
 
 def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     """Gets all the details of the Testcase
@@ -45,7 +47,7 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     by user assigns default values.
     """
 
-    Utils.config_Utils.set_datarepository(data_repository)
+    #Utils.config_Utils.set_datarepository(data_repository)
     name = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Name')
     title = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details', 'Title')
     expResults = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, 'Details',\
@@ -93,7 +95,6 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
 
     res_startdir = data_repository['wt_results_execdir']
     logs_startdir = data_repository['wt_logs_execdir']
-
     efile_obj = execution_files_class.ExecFilesClass(testcase_filepath, "tc", res_startdir,
                                                      logs_startdir)
     resultfile = efile_obj.resultfile
@@ -101,7 +102,6 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     logfile = efile_obj.logfile
     logsdir = efile_obj.logsdir
     defectsdir = efile_obj.get_defect_files()
-
     """Data files can be passed on to a test by four methods, below are the
        four methods and its priority in order.
        By this feature we allow the user to run the same testcases, with
@@ -125,6 +125,7 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     #To check the whether data file is a well formed xml file.
     if datafile and datafile is not "NO_DATA":
         Utils.xml_Utils.getRoot(datafile)
+
     # tc_execution_dir = Utils.file_Utils.createDir_addtimestamp(execution_dir, nameonly)
     # datafile, data_type = get_testcase_datafile(testcase_filepath)
     # resultfile, resultsdir = get_testcase_resultfile(testcase_filepath, tc_execution_dir,
@@ -170,7 +171,6 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     data_repository['wt_operating_system'] = operating_system.upper()
     data_repository['wt_def_on_error_action'] = def_on_error_action.upper()
     data_repository['wt_def_on_error_value'] = def_on_error_value
-
     # For custom jira project name
     if 'jiraproj' not in data_repository:
         data_repository['jiraproj'] = jiraproj
@@ -685,7 +685,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
         print_warning("setting tc status to WARN as cleanup failed")
         tc_status = "WARN"
 
-    if step_list and tc_status == False and tc_onError_action and tc_onError_action.upper() == 'ABORT_AS_ERROR':
+    if step_list and tc_status == False and tc_onError_action \
+            and tc_onError_action.upper() == 'ABORT_AS_ERROR':
         print_info("Testcase status will be marked as ERROR as onError "
                    "action is set to 'abort_as_error'")
         tc_status = "ERROR"
@@ -750,7 +751,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
 
         ip_port = ["{}:{}".format(ip_address, ssh_port)]
         data.update({"bootstrap_servers": ip_port})
-        data.update({"value_serializer": lambda x: dumps(x).encode('utf-8')})
+        data.update({"value_serializer": lambda x: json.dumps(x).encode('utf-8')})
         try:
             producer = WarriorKafkaProducer(**data)
             producer.send_messages('warrior_results', suite_details.items())
@@ -831,7 +832,6 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     # main need tc_status and data_repository values to unpack
     return tc_status, data_repository
 
-
 def execute_custom(datatype, runtype, driver, data_repository, step_list):
     """
     Execute a custom testcase
@@ -866,20 +866,53 @@ def check_robot_wrapper_case(testcase_filepath):
             break
     return isRobotWrapperCase
 
-
 def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
          runtype='SEQUENTIAL_KEYWORDS', tc_parallel=False, auto_defects=False, suite=None,
-         tc_onError_action=None, iter_ts_sys=None, queue=None, jiraproj=None):
+         tc_onError_action=None, iter_ts_sys=None, queue=None, jiraproj=None, jiraid=None):
 
     """ Executes a testcase """
     tc_start_time = Utils.datetime_utils.get_current_timestamp()
     if Utils.file_Utils.fileExists(testcase_filepath):
-
         try:
-            tc_status, data_repository = execute_testcase(testcase_filepath,
-                                                          data_repository, tc_context, runtype,
-                                                          tc_parallel, queue, auto_defects, suite,
-                                                          jiraproj, tc_onError_action, iter_ts_sys)
+            Utils.config_Utils.set_datarepository(data_repository)
+            if Utils.testrandom_utils.get_generic_datafile(testcase_filepath, data_repository):
+                init_datarepository = copy.deepcopy(data_repository)
+                exec_tag = data_repository.get("gen_exec_tag", 'default')
+                print_info("Execution tag : {}".format(exec_tag))
+                generic_data_dict = Utils.testrandom_utils.get_iterations_from_generic_data(testcase_filepath, data_repository)
+                tc_status = True
+                for iter_number, _ in enumerate(generic_data_dict):
+                    gentc_start_time = Utils.datetime_utils.get_current_timestamp()
+                    print_info("testcase execution starts with variables : {}"\
+                            .format(generic_data_dict[iter_number]))
+                    Utils.data_Utils.update_datarepository({"gen_iter_number" : iter_number})
+                    tc_data_repository = copy.deepcopy(init_datarepository)
+                    gen_tc_status, gen_data_repository = execute_testcase(testcase_filepath,\
+                                            tc_data_repository, tc_context, runtype,\
+                                            tc_parallel, queue, auto_defects, suite,\
+                                            jiraproj, tc_onError_action, iter_ts_sys)
+                    tc_status = tc_status and gen_tc_status
+                    warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, os.path.dirname(\
+                                tc_data_repository['wt_resultsdir']), gen_tc_status)
+                    email.compose_send_email("Test Case: ", testcase_filepath,\
+                                 tc_data_repository['wt_logsdir'],\
+                                 tc_data_repository['wt_resultsdir'], gen_tc_status)
+                    data_repository["xml_results_dir"] = os.path.dirname(os.path.dirname(\
+                            tc_data_repository['wt_logsdir']))
+                    gen_tc_duration = Utils.datetime_utils.get_time_delta(gentc_start_time)
+                    dict_to_update_in_db = generic_data_dict[iter_number]
+                    dict_to_update_in_db["result"] = "PASS" if gen_tc_status else "FAIL"
+                    dict_to_update_in_db["duration_in_seconds"] = gen_tc_duration
+                    dict_to_update_in_db["log_file"] = tc_data_repository['wt_logsdir']
+                    Utils.testrandom_utils.update_generic_database(exec_tag, testcase_filepath, [dict_to_update_in_db])
+                report_file = Utils.testrandom_utils.generate_report_from_generic_db(exec_tag, testcase_filepath,
+                                                                                     data_repository)
+                print_info("Report file : {}".format(report_file))
+            else:
+                tc_status, data_repository = execute_testcase(testcase_filepath,\
+                                                        data_repository, tc_context, runtype,\
+                                                        tc_parallel, queue, auto_defects, suite,\
+                                                        jiraproj, tc_onError_action, iter_ts_sys)
         except Exception as exception:
             print_exception(exception)
             tc_status = False

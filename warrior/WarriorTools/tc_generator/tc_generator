@@ -1,10 +1,11 @@
 #!/usr/bin/env/python3
 
-import argparse
 import os
-import logging
 import site
 import sys
+import argparse
+import logging
+from os.path import dirname, abspath
 from xml.etree import ElementTree as et
 
 # Argparser to add command line argumets
@@ -63,13 +64,14 @@ elif args.type == "netconf":
             \n--ip_addr='localhost' -np='netconf_port'\n")
         sys.exit()
 elif args.type == "rest":
-    if args.tc_name:
+    if args.tc_name and not args.username and not args.password and not args.ip_addr\
+     and not args.cli_port and not args.dip_port and not args.snmp_port and not args.netconf_port:
         pass
     else:
         print("\n****************************** Error ************************************")
         print("\nfor rest operation required format and arguments is: ./Warrior(or)Warrior -tc_gen\
-            \n--type='rest' --tc_name='tc_name.xml' (--username = 'username' and --password = 'password'\
-             are optional)")
+        \n--type='rest' --tc_name='tc_name.xml' (or) will not accept username, password and any\
+            \ntype of port_numbers for this type")
         sys.exit()        
 
 if args.verbose:
@@ -87,14 +89,10 @@ class Warrior_Execution_Setup_Files:
         self.tc_name = args.tc_name.split(".")[0]
         self.current_working_directory = os.getcwd()
         self.log.debug("current working directory is {}".format(self.current_working_directory))
-        site_home_path = os.path.split(site.__file__)[0]
-        site_packages_path = "site-packages/warrior/Tools/tc_generator/templates"
-        self.template_path = os.path.join(site_home_path, site_packages_path)
-        if os.path.exists(self.template_path):
-            pass
-        else:
-            tc_generator_dir_path = "Tools/tc_generator/templates"
-            self.template_path = os.path.join(self.current_working_directory, tc_generator_dir_path)
+
+        war_path = dirname(dirname(dirname(abspath(__file__))))
+        tc_generator_dir_path = "WarriorTools/tc_generator/templates"
+        self.template_path = os.path.join(war_path, tc_generator_dir_path)
 
         if args.type == "cli":
             self.input_data_file = "id_{}.xml".format(self.tc_name)
