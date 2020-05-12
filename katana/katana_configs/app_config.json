@@ -4,6 +4,7 @@
     "panel_color": "",
     "katana_default_apps": "True",
     "user_custom_apps": {},
+    "katana_default_apps_branch": "",
     "__READ_ACCESS__": "True",
     "__userconfigured__": "False",
     "__normal_run__": "False"

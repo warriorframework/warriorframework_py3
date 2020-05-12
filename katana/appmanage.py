@@ -52,7 +52,7 @@ wapps_dir_path = BASE_DIR + "/wapps/"
 wapps_dir = BASE_DIR + "/wapps"
 native_dir = BASE_DIR + "/native"
 settings_file = BASE_DIR + "/wui/settings.py"
-app_config_file = BASE_DIR + "/app_config.json"
+app_config_file = os.path.join(BASE_DIR, "katana_configs", "app_config.json")
 manage_py = os.path.join(BASE_DIR, "manage.py")
 urls_file = BASE_DIR + "/wui/urls.py"
 wapps_content = os.listdir(wapps_dir)
@@ -62,6 +62,10 @@ native_content = os.listdir(native_dir)
 native_app = list(set(native_content) - set(wapp_ignore))
 Updated_Apps_list = []
 json_path = ""
+PORT = '6352'
+app_config_data = {}
+input_json_data = {}
+final_input_json_data = {}
 invalid_json_path = "false"
 
 if __name__ == "__main__":
@@ -104,7 +108,7 @@ if __name__ == "__main__":
     def read_config_file_data():
         """this function reads the data from appconfig.json file"""
         config_file_path = join_path(
-            nav_obj.get_katana_dir(), "app_config.json")
+            nav_obj.get_katana_dir(), "katana_configs", "app_config.json")
         data = read_json_data(config_file_path)
         return data
     app_config_data = read_config_file_data()
@@ -119,248 +123,232 @@ if __name__ == "__main__":
 
     with open("log.txt", "w") as f:
         f.writelines("")
-            
-    if len(sys.argv) >= 2 and sys.argv[0].split("/")[-1] == \
-            "appmanage.py" and sys.argv[1] == "appconfig":
-        program_name = sys.argv[0].split("/")[-1]
-        command = sys.argv[1]
-        if command == "appconfig" and len(sys.argv) > 2:
-            if not os.path.exists(sys.argv[2]):
-                invalid_json_path = "true"
-                print(colored("Invalid json path", "red"))
-                create_log("Invalid json path")
-                sys.exit()
-            else:
-                json_path = sys.argv[2]
-        elif command == "appconfig" and len(sys.argv) == 2:
+
+    if len(sys.argv) > 2 and sys.argv[0].split("/")[-1] == "appmanage.py" and sys.argv[1] == "appconfig":
+        if not os.path.exists(sys.argv[2]):
             invalid_json_path = "true"
-            print(colored(
-                "E: json path is missing. Usage: python3 appmanage.py appconfig <json path>", "red"))
-            create_log(
-                "E: json path is missing. Usage: python3 appmanage.py appconfig <json path>")
+            print(colored("Invalid json path", "red"))
+            create_log("Invalid json path")
             sys.exit()
-        input_json_data = {}
-        final_input_json_data = {}
-        if command == "appconfig" and program_name == "appmanage.py" and \
-                invalid_json_path == "false":
-            if not os.path.exists(json_path):
-                print(colored("Invalid json path", "red"))
-                create_log("Invalid json path")
+        else:
+            json_path = sys.argv[2]
+            try:
+                with open(json_path) as f:
+                    input_json_data = json.loads(f.read())
+            except:
+                print(colored("Input json file format is not valid!", "red"))
+                create_log("Input json file format is not valid")
                 sys.exit()
             else:
-                try:
-                    with open(json_path) as f:
-                        input_json_data = json.loads(f.read())
-                except:
-                    print(colored("Input json file format is not valid!", "red"))
-                    create_log("Input json file format is not valid")
-                    sys.exit()
+                app_config_data = read_config_file_data()
+                with open(json_path) as f:
+                    input_json_data = json.loads(f.read())
+                if "app_title" in input_json_data:
+                    final_input_json_data["app_title"] = input_json_data["app_title"]
                 else:
-                    with open(json_path) as f:
-                        input_json_data = json.loads(f.read())
-                    if "app_title" in input_json_data:
-                        final_input_json_data["app_title"] = input_json_data["app_title"]
-                    else:
-                        final_input_json_data["app_title"] = ""
-                    if "custom_logo_path" in input_json_data:
-                        final_input_json_data["custom_logo_path"] = \
-                            input_json_data["custom_logo_path"]
-                    else:
-                        final_input_json_data["custom_logo_path"] = ""
-                    if "panel_color" in input_json_data:
-                        final_input_json_data["panel_color"] = input_json_data["panel_color"]
-                    else:
-                        final_input_json_data["panel_color"] = ""
-                    if "katana_default_apps" in input_json_data:
-                        final_input_json_data["katana_default_apps"] = \
-                            input_json_data["katana_default_apps"]
-                    else:
-                        final_input_json_data["katana_default_apps"] = ""
-                    if "user_custom_apps" in input_json_data:
-                        final_input_json_data["user_custom_apps"] = \
-                            input_json_data["user_custom_apps"]
-                    else:
-                        final_input_json_data["user_custom_apps"] = {}
-                    if "katana_default_apps_branch" in input_json_data:
-                        final_input_json_data["katana_default_apps_branch"] = \
-                            input_json_data["katana_default_apps_branch"]
-                    else:
-                        final_input_json_data["katana_default_apps_branch"] = ""
+                    final_input_json_data["app_title"] = ""
+                if "custom_logo_path" in input_json_data:
+                    final_input_json_data["custom_logo_path"] = input_json_data["custom_logo_path"]
+                else:
+                    final_input_json_data["custom_logo_path"] = ""
+                if "panel_color" in input_json_data:
+                    final_input_json_data["panel_color"] = input_json_data["panel_color"]
+                else:
+                    final_input_json_data["panel_color"] = ""
+                if "katana_default_apps" in input_json_data:
+                    final_input_json_data["katana_default_apps"] = input_json_data["katana_default_apps"]
+                else:
+                    final_input_json_data["katana_default_apps"] = ""
+                if "user_custom_apps" in input_json_data:
+                    final_input_json_data["user_custom_apps"] = input_json_data["user_custom_apps"]
+                else:
+                    final_input_json_data["user_custom_apps"] = {}
+                if "katana_default_apps_branch" in input_json_data:
+                    final_input_json_data["katana_default_apps_branch"] = input_json_data["katana_default_apps_branch"]
+                else:
+                    final_input_json_data["katana_default_apps_branch"] = ""
 
-                    if app_config_data["__READ_ACCESS__"] == "True":
-                        app_config_json_path = os.path.join(
-                            BASE_DIR, "app_config.json")
-                        final_input_json_data["__READ_ACCESS__"] = "True"
-                        final_input_json_data["__userconfigured__"] = "True"
-                        final_input_json_data["__normal_run__"] = "True"
-                        with open(app_config_json_path, "w") as f:
-                            json.dump(final_input_json_data, f)
-                        print(
-                            "======================================================================================")
-                        print(colored(
-                            "Configuring katana apps...\nPlease do not quit (or) kill this process manually !", "yellow"))
-                        print(
-                            "======================================================================================")
-                        with open("log.txt", "w") as f:
-                            f.writelines("")
+                if app_config_data["__READ_ACCESS__"] == "True":
+                    app_config_json_path = os.path.join(BASE_DIR, "katana_configs", "app_config.json")
+                    final_input_json_data["__READ_ACCESS__"] = "True"
+                    final_input_json_data["__userconfigured__"] = "True"
+                    final_input_json_data["__normal_run__"] = "True"
+                    with open(app_config_json_path, "w") as f:
+                        json.dump(final_input_json_data, f)
+                        print("======================================================================================")
+                        print(colored("configuring katana apps...\nPlease do not quit (or) kill the server manually, wait until the server closes itself...!", "yellow"))
+                        print("======================================================================================")
+    elif len(sys.argv) == 2 and sys.argv[0].split("/")[-1] == "appmanage.py" and sys.argv[1] == "appconfig":
+        invalid_json_path = "true"
+        print(colored("E: json path is missing. Usage: python3 appmanage.py appconfig <json path>", "red"))
+        create_log("E: json path is missing. Usage: python3 appmanage.py appconfig <json path>")
+        sys.exit()
+    elif(len(sys.argv) == 1 and sys.argv[0].split("/")[-1] == "appmanage.py"):
+        print(colored("Restoring katana configuration...", "yellow"))
+    else:
+        print("Usage:\n1. To make new configuration: python3 appmanage.py appconfig <json file path>\n2. To restore: python3 appmanage.py")
+        sys.exit()
 
-        app_config_data = read_config_file_data()
-        if app_config_data["__READ_ACCESS__"] == "True":
-            config_apps = app_config_data["user_custom_apps"].keys()
-        else:
-            config_apps = []
-        if app_config_data["katana_default_apps"] == "True" or \
-                app_config_data["katana_default_apps"] == "true":
-            deafault_wapps = ["cases", "assembler", "cli_data", "execution",
-                              "projects", "suites", "testwrapper",
-                              "wdf_edit"]
-            cust_wapps = list(set(wapps_app) - set(deafault_wapps))
-            deleted_Apps_list = list(set(cust_wapps) - set(config_apps))
-            deleted_Apps_list = list(
-                set(deleted_Apps_list) - set(["__init__.py", "__pycache__"]))
-        else:
-            deleted_Apps_list = list(set(wapps_app) - set(config_apps))
-            deleted_Apps_list = list(
-                set(deleted_Apps_list).union(set(native_app)))
-            deleted_Apps_list = list(
-                set(deleted_Apps_list) - set(["__init__.py", "__pycache__"]))
-        if app_config_data["__READ_ACCESS__"] == "True":
-            __appmanager__(deleted_Apps_list)
 
-        def function_to_give_read_access():
-            """removes the temporary lock and enable the read access of appconfig.json file"""
-            clean_data = read_config_file_data()
-            clean_data["__READ_ACCESS__"] = "True"
-            with open(app_config_file, "w") as f:
-                f.write(json.dumps(clean_data, indent=4))
+    app_config_data = read_config_file_data()
+    if app_config_data["__READ_ACCESS__"] == "True":
+        config_apps = app_config_data["user_custom_apps"].keys()
+    else:
+        config_apps = []
+    if app_config_data["katana_default_apps"] == "True" or \
+            app_config_data["katana_default_apps"] == "true":
+        deafault_wapps = ["cases", "assembler", "cli_data", "execution",
+                            "projects", "suites", "testwrapper",
+                            "wdf_edit"]
+        cust_wapps = list(set(wapps_app) - set(deafault_wapps))
+        deleted_Apps_list = list(set(cust_wapps) - set(config_apps))
+        deleted_Apps_list = list(
+            set(deleted_Apps_list) - set(["__init__.py", "__pycache__"]))
+    else:
+        deleted_Apps_list = list(set(wapps_app) - set(config_apps))
+        deleted_Apps_list = list(
+            set(deleted_Apps_list).union(set(native_app)))
+        deleted_Apps_list = list(
+            set(deleted_Apps_list) - set(["__init__.py", "__pycache__"]))
+    if app_config_data["__READ_ACCESS__"] == "True":
+        __appmanager__(deleted_Apps_list)
+
+    def function_to_give_read_access():
+        """removes the temporary lock and enable the read access of appconfig.json file"""
+        clean_data = read_config_file_data()
+        clean_data["__READ_ACCESS__"] = "True"
+        with open(app_config_file, "w") as f:
+            f.write(json.dumps(clean_data, indent=4))
             
-        def wait_for(sec):
-            i = sec
-            while i>0:
-                print("{0} {1} {2}".format("Re-checking server status in:", i, "seconds"),  end="  \r")
-                time.sleep(1)
-                i = i-1
-            print("{0}".format(" "*50),  end="  \r")
+    def wait_for(sec):
+        i = sec
+        while i>0:
+            print("{0} {1} {2}".format("Re-checking server status in:", i, "seconds"),  end="  \r")
+            time.sleep(1)
+            i = i-1
+        print("{0}".format(" "*50),  end="  \r")
 
-        def thread_function_to_kill(name):
-            """this function is used to kill the server"""
+    def thread_function_to_kill(name):
+        """this function is used to kill the server"""
+        time.sleep(5)
+        FNULL = open(os.devnull, 'w')
+        retcode = subprocess.call(
+            ['fuser', '-k', PORT+'/tcp'], stdout=FNULL, stderr=subprocess.STDOUT)
+
+    def thread_function_to_ping(name):
+        """this function is used to ping server"""
+        print("Installing: " + name)
+        create_log("Installing: " + name)
+        print("Checking Compatability for:" + name)
+        create_log("Checking Compatability for: " + name)
+        time.sleep(11)
+        try:
             time.sleep(5)
-            FNULL = open(os.devnull, 'w')
-            retcode = subprocess.call(
-                ['fuser', '-k', PORT+'/tcp'], stdout=FNULL, stderr=subprocess.STDOUT)
-
-        def thread_function_to_ping(name):
-            """this function is used to ping server"""
-            print("Installing: " + name)
-            create_log("Installing: " + name)
-            print("Checking Compatability for:" + name)
-            create_log("Checking Compatability for: " + name)
-            time.sleep(11)
+            url = 'http://127.0.0.1:' + PORT + '/'
+            resp = requests.get(url)
+        except:
             try:
+                create_log("Server is taking too long to respond, retrying in a moment...(First retry)")
+                print(colored("Server is taking too long to respond    ", "yellow"))
+                wait_for(20)
                 url = 'http://127.0.0.1:' + PORT + '/'
                 resp = requests.get(url)
             except:
                 try:
-                   create_log("Server is taking too long to respond, retrying in a moment...(First retry)")
-                   print(colored("Server is taking too long to respond    ", "yellow"))
-                   wait_for(20)
-                   url = 'http://127.0.0.1:' + PORT + '/'
-                   resp = requests.get(url)
-                except:
-                   try:
-                      time.sleep(3)
-                      create_log("Server is taking too long to respond, retrying in a moment...(Second retry)")
-                      print(colored("Server is taking too long to respond    ", "yellow"))
-                      wait_for(20)
-                      time.sleep(3)
-                      url = 'http://127.0.0.1:' + PORT + '/'
-                      resp = requests.get(url)
-                   except Exception as e:
-                       create_log(str(e))
-                       create_log(
-                    name + " app is not compatible with katana, so it is not going to be installed.")
-                       print(colored(
-                    name + " app is not compatible with katana, so it is not going to be installed.", "red"))
-                       clean_data = read_config_file_data()
-                       clean_data["__READ_ACCESS__"] = "True"
-                       with open(app_config_file, "w") as f:
-                           f.write(json.dumps(clean_data, indent=4))
-                       remove_appurl_from_urls_custom(name, "wapps")
-                       remove_app_from_settings_custom(name, "wapps")
-                       remove_cust_app_source(name, "wapps")
-                       clean_data = read_config_file_data()
-                       del clean_data["user_custom_apps"][name]
-                       with open(app_config_file, "w") as f:
-                           f.write(json.dumps(clean_data, indent=4))
-                       thread_function_to_kill("")
-                   else:
-                       create_log(name + " app installed successfully.")
-                       print(colored(name + " app installed successfully.", "green"))
-                       fnull = open(os.devnull, 'w')
-                       retcodee = subprocess.call(
-                    ['fuser', '-k', PORT+'/tcp'], stdout=fnull, stderr=subprocess.STDOUT)
+                    time.sleep(3)
+                    create_log("Server is taking too long to respond, retrying in a moment...(Second retry)")
+                    print(colored("Server is taking too long to respond    ", "yellow"))
+                    wait_for(20)
+                    time.sleep(3)
+                    url = 'http://127.0.0.1:' + PORT + '/'
+                    resp = requests.get(url)
+                except Exception as e:
+                    create_log(str(e))
+                    create_log(
+                name + " app is not compatible with katana, so it is not going to be installed.")
+                    print(colored(
+                name + " app is not compatible with katana, so it is not going to be installed.", "red"))
+                    clean_data = read_config_file_data()
+                    clean_data["__READ_ACCESS__"] = "True"
+                    with open(app_config_file, "w") as f:
+                        f.write(json.dumps(clean_data, indent=4))
+                    remove_appurl_from_urls_custom(name, "wapps")
+                    remove_app_from_settings_custom(name, "wapps")
+                    remove_cust_app_source(name, "wapps")
+                    clean_data = read_config_file_data()
+                    del clean_data["user_custom_apps"][name]
+                    with open(app_config_file, "w") as f:
+                        f.write(json.dumps(clean_data, indent=4))
+                    thread_function_to_kill("")
                 else:
-                       create_log(name + " app installed successfully.")
-                       print(colored(name + " app installed successfully.", "green"))
-                       fnull = open(os.devnull, 'w')
-                       retcodee = subprocess.call(
-                    ['fuser', '-k', PORT+'/tcp'], stdout=fnull, stderr=subprocess.STDOUT)
+                    create_log(name + " app installed successfully.")
+                    print(colored(name + " app installed successfully.", "green"))
+                    fnull = open(os.devnull, 'w')
+                    retcodee = subprocess.call(
+                ['fuser', '-k', PORT+'/tcp'], stdout=fnull, stderr=subprocess.STDOUT)
             else:
-                create_log(name + " app installed successfully.")
-                print(colored(name + " app installed successfully.", "green"))
-                fnull = open(os.devnull, 'w')
-                retcodee = subprocess.call(
-                    ['fuser', '-k', PORT+'/tcp'], stdout=fnull, stderr=subprocess.STDOUT)
+                    create_log(name + " app installed successfully.")
+                    print(colored(name + " app installed successfully.", "green"))
+                    fnull = open(os.devnull, 'w')
+                    retcodee = subprocess.call(
+                ['fuser', '-k', PORT+'/tcp'], stdout=fnull, stderr=subprocess.STDOUT)
+        else:
+            create_log(name + " app installed successfully.")
+            print(colored(name + " app installed successfully.", "green"))
+            fnull = open(os.devnull, 'w')
+            retcodee = subprocess.call(
+                ['fuser', '-k', PORT+'/tcp'], stdout=fnull, stderr=subprocess.STDOUT)
 
-        if app_config_data["__READ_ACCESS__"] == "True":
-            if app_config_data["app_title"].strip() != "":
-                frame_name = app_config_data["app_title"]
-                update_fname(frame_name)
-            if app_config_data["custom_logo_path"].strip() != "":
-                logo_path = app_config_data["custom_logo_path"]
-                update_logo(logo_path)
-            if app_config_data["panel_color"].strip() != "":
-                panel_color = app_config_data["panel_color"]
-                update_panel_color(panel_color)
-            else:
-                update_panel_color("#343a40")
-            if app_config_data["katana_default_apps"] == "True" or \
-                    app_config_data["katana_default_apps"] == "true":
-                default_apps_list = ["cases", "assembler", "cli_data", "execution",
-                                     "projects", "suites", "testwrapper",
-                                     "wdf_edit", "microservice_store", "settings",
-                                     "wapp_management", "wappstore"]
-                all_inst_apps = list(set(wapps_app).union(set(native_app)))
-                check_def_apps = list(
-                    set(default_apps_list) - set(all_inst_apps))
-                if len(check_def_apps) > 0:
-                    install_default_apps(
-                        app_config_data['katana_default_apps_branch'])
-                else:
-                    print("\n")
-                    print("\n")
-                    create_log("Default apps are installed.")
-
-            elif app_config_data["katana_default_apps"] == "False" or \
-                    app_config_data["katana_default_apps"] == "false":
-                create_log(
-                    "Default Apps value has set to False in app_config.json, so no Default Apps will be installed in the framework.")
-                if not os.path.exists(wapps_dir_path):
-                    os.mkdir(wapps_dir)
-                if not os.path.exists(native_dir):
-                    os.mkdir(native_dir)
+    if app_config_data["__READ_ACCESS__"] == "True":
+        if app_config_data["app_title"].strip() != "":
+            frame_name = app_config_data["app_title"]
+            update_fname(frame_name)
+        if app_config_data["custom_logo_path"].strip() != "":
+            logo_path = app_config_data["custom_logo_path"]
+            update_logo(logo_path)
+        if app_config_data["panel_color"].strip() != "":
+            panel_color = app_config_data["panel_color"]
+            update_panel_color(panel_color)
+        else:
+            update_panel_color("#343a40")
+        if app_config_data["katana_default_apps"] == "True" or \
+                app_config_data["katana_default_apps"] == "true":
             default_apps_list = ["cases", "assembler", "cli_data", "execution",
-                                 "projects", "suites", "testwrapper", "wdf_edit"]
-            if app_config_data["katana_default_apps"] == "True" or \
-                    app_config_data["katana_default_apps"] == "true":
-                cust_wapps = list(set(wapps_app) - set(default_apps_list))
-                Updated_Apps_list = list(set(config_apps) - set(cust_wapps))
-                Updated_Apps_list = list(
-                    set(Updated_Apps_list) - set(default_apps_list))
+                                    "projects", "suites", "testwrapper",
+                                    "wdf_edit", "microservice_store", "settings",
+                                    "wapp_management", "wappstore"]
+            all_inst_apps = list(set(wapps_app).union(set(native_app)))
+            check_def_apps = list(
+                set(default_apps_list) - set(all_inst_apps))
+            if len(check_def_apps) > 0:
+                install_default_apps(
+                    app_config_data['katana_default_apps_branch'])
             else:
-                Updated_Apps_list = list(set(config_apps) - set(wapps_app))
-                Updated_Apps_list = list(
-                    set(Updated_Apps_list) - set(default_apps_list))
+                print("\n")
+                print("\n")
+                create_log("Default apps are installed.")
+
+        elif app_config_data["katana_default_apps"] == "False" or \
+            app_config_data["katana_default_apps"] == "false":
+            create_log(
+                "Default Apps value has set to False in app_config.json, so no Default Apps will be installed in the framework.")
+            if not os.path.exists(wapps_dir_path):
+                os.mkdir(wapps_dir)
+            if not os.path.exists(native_dir):
+                os.mkdir(native_dir)
+        default_apps_list = ["cases", "assembler", "cli_data", "execution", 
+                                "projects", "suites", "testwrapper", "wdf_edit"]
+        if app_config_data["katana_default_apps"] == "True" or \
+            app_config_data["katana_default_apps"] == "true":
+            cust_wapps = list(set(wapps_app) - set(default_apps_list))
+            Updated_Apps_list = list(set(config_apps) - set(cust_wapps))
+            Updated_Apps_list = list(
+                set(Updated_Apps_list) - set(default_apps_list))
+        else:
+            Updated_Apps_list = list(set(config_apps) - set(wapps_app))
+            Updated_Apps_list = list(
+                set(Updated_Apps_list) - set(default_apps_list))
+    
         if len(Updated_Apps_list) >= 1:
             for app in Updated_Apps_list:
                 app_url = app_config_data["user_custom_apps"][app]
@@ -435,5 +423,3 @@ if __name__ == "__main__":
                 ['python3', manage_py, 'runserver', PORT], stdout=FNULL,
                 stderr=subprocess.STDOUT)
             print("[100%]\nDone!")
-    else:
-        print("Invalid command\nUsage: python3 appmanage.py appconfig <json file path>")
