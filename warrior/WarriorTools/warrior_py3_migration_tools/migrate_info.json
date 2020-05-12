@@ -1,0 +1,4 @@
+{"keyword_repositories": ["ssh://git@rtx-swtl-git.fnc.net.local:7999/warkey/ulp.git","ssh://git@rtx-swtl-git.fnc.net.local:7999/warkey/kw_lseries.git", "ssh://git@rtx-swtl-git.fnc.net.local:7999/warkey/1finity.git"],
+ "testcase_repositories": ["ssh://git@rtx-swtl-git.fnc.net.local:7999/was/1finity.git"],
+ "output_dir": "/data/users/apathapa/junk"
+}

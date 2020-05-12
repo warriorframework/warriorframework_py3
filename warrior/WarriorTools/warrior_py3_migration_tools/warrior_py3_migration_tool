@@ -14,14 +14,10 @@ limitations under the License.
 '''
 
 import sys
-import os
 import re
-import ast
 import time
-import argparse
 import subprocess
 import logging
-from datetime import datetime
 import os
 import xml.etree.ElementTree as et
 import shutil
@@ -39,10 +35,10 @@ class parse_json():
             self.test_repourls = json_doc.get("testcase_repositories")
             self.output_dir = json_doc.get("output_dir")
             if not self.keyword_repourls or not self.test_repourls:
-                print("keyword_repositories and testcase_repositories keys mandatory in given json file")
+                self.log.info("keyword_repositories and testcase_repositories keys mandatory in given json file")
                 exit(1)
             elif not type(self.keyword_repourls) == list and not type(self.test_repourls == list):
-                print("keyword_repositories and testcase_repositories should be type of list")
+                self.log.info("keyword_repositories and testcase_repositories should be type of list")
                 exit(1)
 
 
@@ -69,13 +65,20 @@ class Migrate_keyword_repo():
         self.log = logging.getLogger()
         self.not_modified_statements = []
         self.output_dir = output_dir
+        self.keyword_summary = {}
+
     def add_log(self):
         for not_converted_line in self.not_modified_statements:
             self.log.info(not_converted_line)
         destination = shutil.copytree(self.keyword_repos_path, os.path.join(self.output_dir, "keyword_repositories"))
 
         shutil.copyfile(os.path.join(self.current_working_directory, "conversion.log"), os.path.join(self.output_dir, "conversion.log" ))
-        print (destination)
+        self.log.info (destination)
+
+    def modifying_warrior_framework_folder(self):
+        os.system("mv {} {}".format(os.path.join(self.keyword_repos_path, "warriorframework_py3", "warrior"), os.path.join(self.keyword_repos_path)))
+        os.system("rm -rf {}".format(os.path.join(self.keyword_repos_path, "warriorframework_py3")))
+
 
     def creating_directories(self):
         if not os.path.exists(os.path.join(self.current_working_directory, self.temp_directory_name)):
@@ -212,9 +215,6 @@ class Migrate_keyword_repo():
         for user_keyword_repo in self.keyword_repos_with_path:
             self.verify_import_statements(user_keyword_repo)
 
-    #     verify = Verify_Import_Statements(self.user_repo_path)
-    #     verify.verify_import_statements(self.user_repo_path)
-
     def check_for_statement_is_available_in_user_repo(self, line, user_repo_path):
         """
         This function will checks the statemnts are present in the user repo or not
@@ -229,10 +229,17 @@ class Migrate_keyword_repo():
             self.keyword_repos_in_order.insert(0, user_repo_path)
 
         line = line.strip()
+        flag1 = False
+        flag2 = False
+        d  = {}
         for directory_path in self.keyword_repos_in_order:
             if line.startswith("from"):
                 import_words = line.split()[1].split(".")
-
+                after_import_words = [line.split()[-1]]
+                if "," in after_import_words:
+                    after_import_words = after_import_words.split(",")[-1]
+                for word in after_import_words:
+                    import_words.append(word)
 
                 abs_path = "/".join(import_words)
                 if os.path.split(directory_path)[-1] == "warriorframework_py3":
@@ -242,10 +249,13 @@ class Migrate_keyword_repo():
                     actual_path = os.path.join(directory_path, abs_path)
                     directory_name = os.path.split(directory_path)[-1]
 
-                if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)):
-                    # print("directory name {}".format(directory_name))
+                if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)) :
+                    flag1 = True
+                    d.update({"flag1": directory_name})
 
-                    return directory_name
+                elif os.path.exists(os.path.split(actual_path)[0]) or os.path.exists("{}.py".format(os.path.split(actual_path)[0])):
+                    flag2 = True
+                    d.update({"flag2" : directory_name})
 
             elif line.strip().startswith("import"):
                 import_words = line.strip("import").strip().split(".")
@@ -268,6 +278,10 @@ class Migrate_keyword_repo():
                         directory_name = os.path.split(directory_path)[-1]
                         if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)):
                             return directory_name
+            if d.get("flag1"):
+                return d["flag1"]
+            elif d.get("flag2"):
+                return d["flag2"]
 
         return False
 
@@ -277,27 +291,38 @@ class Migrate_keyword_repo():
         :param user_repo_path:
         :return:
         """
+
         self.user_repo_path = user_repo_path
         if os.path.exists(self.user_repo_path):
             directory_name = os.path.split(self.user_repo_path)[-1]
+            self.keyword_summary[directory_name]  = {}
+            self.keyword_summary[directory_name]["found"] = 0
+            self.keyword_summary[directory_name]["converted"] = 0
+            self.keyword_summary[directory_name]["not_converted"] = 0
+            self.log.info("********************************")
+            self.log.info("repo name : {}".format(directory_name))
+            self.log.info("********************************")
             for root, _, files in os.walk(self.user_repo_path):
                 if root.endswith(directory_name) and "__init__py" not in files:
                     cmd = "touch  {}/__init__.py".format(self.user_repo_path)
                     os.system(cmd)
 
                 for file in files:
-
                     if file == "__init__.py":
                         pass
                     elif file.endswith(".py"):
+                        self.log.info("********************************")
+                        self.log.info("filename : {}".format(file))
+                        self.log.info("********************************")
 
                         filedesc = open(root + "/" + file, "r+")
                         file_lines = filedesc.readlines()
                         for fline in file_lines:
-
                             if (fline.startswith("import") or fline.startswith("from")) and "*" in fline:
                                 self.not_modified_statements.append("[NotModified] as it is contain * in import statement {} {}".
                                            format(fline.strip(), file))
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["not_converted"] += 1
                             elif fline.strip() == "import Framework.Utils as Utils" or re.search(
                                     r"\s*import Framework.Utils as Utils", fline.strip()):
 
@@ -305,9 +330,11 @@ class Migrate_keyword_repo():
                                        "warrior.Framework.Utils as Utils/g' {}".format(
                                     root + "/" + file)
                                 os.system(impo)
-
+                                self.keyword_summary[directory_name]["converted"] += 1
+                                self.keyword_summary[directory_name]["found"] += 1
                             elif ("Framework" in fline or "Actions" in fline) and (
                                     fline.strip().startswith("import") or fline.strip().startswith("from")):
+                                self.keyword_summary[directory_name]["found"] += 1
 
                                 if "\r" in fline:
                                     fline = fline[:-2]
@@ -322,24 +349,24 @@ class Migrate_keyword_repo():
                                 file_name = file
                                 statement = fline
                                 if repo_name:
-                                    if fline.startswith("from"):
+                                    if fline.strip().startswith("from"):
 
 
                                             impo = "sed -i 's/{}/from {}.{}/g' {}".format(fline, repo_name,
                                                                                           fline.split("from")[-1].lstrip(),
                                                                                           root + "/" + file)
                                             try :
+                                                self.log.info("[Before] {}".format(fline.strip()))
                                                 os.system(impo)
-                                                self.log.info(
-                                                    "[Modified]:::{}::{}::{}--After conversion from :: {} :::{}".format(converting_repo_name,
-                                                                                                       file_name,
-                                                                                                       statement, repo_name,
-                                                                                                       "from {}.{}".format(
-                                                                                                           repo_name,
-                                                                                                           fline.split(
-                                                                                                               "from")[
-                                                                                                               -1].lstrip())))
+
+                                                self.log.info("[After]  {}".format("from {}.{}".format(
+                                                    repo_name,
+                                                    fline.split( "from")[-1].strip())))
+                                                self.keyword_summary[directory_name]["converted"] += 1
+
+
                                             except:
+
                                                 impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline,
                                                                                           root + "/" + file)
                                                 os.system(impo)
@@ -351,20 +378,18 @@ class Migrate_keyword_repo():
                                                                                              file_name,
                                                                                              statement))
 
-                                    elif fline.startswith("import"):
+                                    elif fline.strip().startswith("import"):
                                         impo = "sed -i 's/{}/import {}.{}/g' {}".format(fline, repo_name,
                                                                                         fline.split("import")[
                                                                                             -1].lstrip(),
                                                                                         root + "/" + file)
                                         try :
+                                            self.log.info("[Before] {}".format(fline.strip()))
                                             os.system(impo)
-                                            self.log.info(
-                                                "[Modified]:::{}::{}::{}--After conversion::: {}".format(converting_repo_name, file_name,
-                                                                                            statement, repo_name,
-                                                                                        "from {}.{}".format(repo_name,
-                                                                                                            fline.split(
-                                                                                                                "from")[
-                                                                                                                -1].lstrip())))
+
+                                            self.log.info("[After]  {}".format("import {}.{}".format(repo_name, fline.split( "import")[-1].strip())))
+                                            self.keyword_summary[directory_name]["converted"] += 1
+
                                         except:
                                             impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
                                             os.system(impo)
@@ -382,19 +407,16 @@ class Migrate_keyword_repo():
                                 else:
 
                                         impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
+                                        self.log.info("[Before] {} ".format(statement))
                                         os.system(impo)
-                                        self.log.info(
-                                            "[NotModified]:::{}::{}::{}-- replaced with @@@@".format(converting_repo_name, file_name,
-                                                                                    statement))
-                                        self.not_modified_statements.append(
-                                            "[NotModified]:::{}::{}::{}".format(
-                                                converting_repo_name,
-                                                file_name,
-                                                statement))
+                                        self.log.info("[After] {} @404@".format(statement))
+                                        self.keyword_summary[directory_name]["not_converted"] += 1
+                                        self.not_modified_statements.append("[After] {} @404@".format(statement))
 
                             elif "WarriorCore" in fline.strip():
-                                import pdb
-                                # pdb.set_trace()
+
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["converted"] += 1
                                 converting_repo_name = self.user_repo_path.split("/")[-1].split(".")[0]
                                 file_name = file
                                 statement = fline.strip()
@@ -402,16 +424,17 @@ class Migrate_keyword_repo():
                                 if fline.split(" ",1)[-1].strip().startswith("WarriorCore"):
                                     impo = "sed -i 's/{}/{} warrior.{}/g' {}".format(fline.strip(), fline.strip().split(" ", 1)[0].lstrip(), fline.strip().split(" ", 1)[-1].lstrip(), root + "/" + file)
                                     try:
+                                        self.log.info("[Before] {}".format(fline.strip()))
                                         os.system(impo)
-                                        self.log.info(
-                                            "[Modified]{}::{}::{}--After conversion::: {}".format(converting_repo_name,
-                                                                                        file_name,
-                                                                                        statement, "warrior",
-                                                                                        fline.split(" ", 1)[
-                                                                                            0].lstrip()))
+                                        self.log.info("[after] {} {}.{}".format(fline.split(" ", 1)[0].strip(), "warrior", fline.split(" ", 1)[-1].strip()))
+
+
                                     except:
                                         impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
                                         os.system(impo)
+                                        self.keyword_summary[directory_name]["not_converted"] += 1
+
+                                        #self.keyword_summary[directory_name]["not_converted"] += 1
                                         self.log.info(
                                             "[NotModified]{}::{}::{}-- replaced with @@@@".format(converting_repo_name, file_name,
                                                                                      statement))
@@ -421,8 +444,9 @@ class Migrate_keyword_repo():
                                                 file_name,
                                                 statement))
                             elif "[Actions" in fline:
-                                # import pdb
-                                # pdb.set_trace()
+
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["converted"] += 1
                                 repo_name = self.check_for_statement_is_available_in_user_repo(
                                     fline, self.user_repo_path)
 
@@ -439,19 +463,17 @@ class Migrate_keyword_repo():
                                             actual_line, repo_name,actual_line,
                                             root + "/" + file)
                                         try:
+                                            self.log.info("[Before] {}".format(fline.strip()))
                                             os.system(af)
-                                            self.log.info(
-                                                "[Modified]{}::{}::{}--After conversion from :: {} :::{}".format(converting_repo_name,
-                                                                                                       file_name,
-                                                                                                       statement, repo_name,
-                                                                                                       "from {}.{}".format(
-                                                                                                           repo_name,
-                                                                                                           fline.split(
-                                                                                                               "from")[
-                                                                                                               -1].lstrip())))
+                                            # import pdb
+                                            # pdb.set_trace()
+                                            self.log.info("[after] {}".format(fline.replace("Actions", "{}.Actions".format(repo_name), 1)))
+
+
                                         except:
                                             impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
                                             os.system(impo)
+                                            self.keyword_summary[directory_name]["not_converted"] += 1
                                             self.log.info(
                                                 "[NotModified]{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
                                                                                          file_name,
@@ -461,22 +483,28 @@ class Migrate_keyword_repo():
                                                     converting_repo_name,
                                                     file_name,
                                                     statement))
-
-
-
-
+                                # else:
+                                #     count = count + 1
+                                #     self.keyword_summary[directory_name]["found"] += 1
+                                #     self.keyword_summary[directory_name]["not_converted"] = +1
 
         else:
             print("path not found")
 
+    def pretty_print_test(self):
+        print("=" * 83)
+        print("| {:<20} | {:<12} | {:<10} | {:<15} | ".format('REPO NAME', 'LINES FOUND', 'CONVERTED',
+                                                                      'NOT CONVERTED', ))
+        print("=" * 83)
 
+        # print each data item.
+        for name, attr in self.keyword_summary.items():
 
-
-
-
-
-
-
+            print("| {:<20} | {:<12} | {:<10} | {:<15} |".format(name, attr['found'],
+                                                                          attr['converted'],
+                                                                          attr['not_converted'],
+                                                                          ))
+        print("=" * 83)
 
 
 class migrate_testrepo(Migrate_keyword_repo):
@@ -489,7 +517,9 @@ class migrate_testrepo(Migrate_keyword_repo):
         self.keyword_dirpath = keyword_dirpath
         self.testcase_dirpath = testcase_dirpath
         self.output_dir = output_dir or os.path.join(os.getcwd(), "migrated_repositories")
-        self.log  = logging.getLogger("Migrate_keyword_repo")
+        self.test_summary = {}
+        self.current_testrepo = None
+        self.log = logging.getLogger("Migrate_keyword_repo")
 
     def modify_testfile(self, filename, drivers_dict):
         """
@@ -498,8 +528,10 @@ class migrate_testrepo(Migrate_keyword_repo):
         root = tree.getroot()
         steps = []
         loops = []
+        file_message = None
+        step_messages = []
         if root.tag == "Testcase" or root.tag == "TestWrapper":
-            self.log.info("[testfile] Adding Repo to steps in file [{}] ".format(filename))
+            file_message = "Processing testfile [{}] ".format(filename)
             if root.tag == "Testcase":
                 step_tags = ["Steps"]
             elif root.tag == "TestWrapper":
@@ -511,34 +543,39 @@ class migrate_testrepo(Migrate_keyword_repo):
                     loops.extend([node for node in nodes if node.tag == "Loop"])
             for loop_node in loops:
                 steps.extend(loop_node.findall("step"))
-        else:
-            self.log.info("[Not Modified] xml file [{}] is not testcase xml, ignoring for conversion".format(filename))
         for step in steps:
+            self.test_summary[self.current_testrepo]["steps_found"] += 1
             if not step.get("Repo"):
                 repo = False
                 driver_file = "{}.py".format(step.get("Driver"))
                 for key, value in drivers_dict.items():
                     if driver_file in value:
                         repo = True
-                        self.log.info("[Modified] Adding Repo [{}] to step [{}]".format(key, step.get("TS")))
                         step.set("Repo", key)
+                        step_messages.append("[+] Added Repo [{}] to step [{}]".format(key, step.get("TS")))
+                        self.test_summary[self.current_testrepo]["steps_converted"] += 1
                         break
                 if not repo:
-                    step.set("Repo", "404")
-                    self.log.info("[Needs Attention] Couldn't Add Repo to step [{}]".format(step.get("TS")))
+                    step.set("Repo", "@404@")
+                    self.test_summary[self.current_testrepo]["steps_not_converted"] += 1
+                    step_messages.append(
+                        "[-] @404@ Couldn't Add Repo to step [{}]. Needs Attention".format(step.get("TS")))
             else:
-                self.log.info("[Not Modified] Repo [{}] already found in step [{}]".format(step.get("Repo"), step.get("TS")))
-        tree.write(filename)
+                if step.get('Repo') == '@404@':
+                    step_messages.append("[-] @404@ Repo found in step [{}]. Needs Attention".format(step.get("TS")))
+                self.test_summary[self.current_testrepo]["steps_has_repo_already"] += 1
+        if step_messages:
+            self.log.info(file_message)
+            for line in step_messages:
+                self.log.info(line)
+            tree.write(filename)
 
     def get_productdrivers_info(self):
         """
         """
         drivers_dict = {}
         for key_repo in os.listdir(self.keyword_dirpath):
-            if key_repo == "warriorframework_py3":
-                pd_path = os.path.join(self.keyword_dirpath, key_repo, "warrior", "ProductDrivers")
-            else:
-                pd_path = os.path.join(self.keyword_dirpath, key_repo, "ProductDrivers")
+            pd_path = os.path.join(self.keyword_dirpath, key_repo, "ProductDrivers")
             drivers_dict[key_repo] = os.listdir(pd_path)
         return drivers_dict
 
@@ -546,30 +583,63 @@ class migrate_testrepo(Migrate_keyword_repo):
         """
         """
         drivers_dict = self.get_productdrivers_info()
-        for path, dirs, files in os.walk(self.testcase_dirpath):
-            for f in files:
-                filename = os.path.join(path, f)
-                try:
-                    self.modify_testfile(filename, drivers_dict)
-                except Exception as e:
-                    self.log.info("[Not Modified] file [{}] is not xml file, ignoring for conversion".format(filename))
+        test_repo_dirs = os.listdir(self.testcase_dirpath)
+        for test_repo_dir in test_repo_dirs:
+            self.current_testrepo = test_repo_dir
+            self.test_summary[self.current_testrepo] = {}
+            self.test_summary[self.current_testrepo]["steps_found"] = 0
+            self.test_summary[self.current_testrepo]["steps_converted"] = 0
+            self.test_summary[self.current_testrepo]["steps_not_converted"] = 0
+            self.test_summary[self.current_testrepo]["steps_has_repo_already"] = 0
+            walk_path = os.path.join(self.testcase_dirpath, test_repo_dir)
+            for path, dirs, files in os.walk(walk_path):
+                for f in files:
+                    filename = os.path.join(path, f)
+                    try:
+                        self.modify_testfile(filename, drivers_dict)
+                    except Exception as e:
+                        pass
         if os.path.exists(self.output_dir):
             shutil.rmtree(self.output_dir)
         destination = shutil.copytree(self.testcase_dirpath, self.output_dir)
-        print(destination)
 
+    def pretty_print(self):
+        print("=" * 83)
+        print("| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format('REPO NAME', 'STEPS FOUND', 'CONVERTED',
+                                                                      'NOT CONVERTED', 'HAS REPO'))
+        print("=" * 83)
+
+        # print each data item.
+        for name, attr in self.test_summary.items():
+            print("| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format(name, attr['steps_found'],
+                                                                          attr['steps_converted'],
+                                                                          attr['steps_not_converted'],
+                                                                          attr['steps_has_repo_already']))
+        print("=" * 83)
 
 
 
 parse_obj = parse_json("migrate_info.json")
 print(parse_obj.keyword_repourls)
 
-
 m = Migrate_keyword_repo(parse_obj.keyword_repourls, parse_obj.test_repourls, parse_obj.output_dir)
 m.creating_directories()
+m.modifying_warrior_framework_folder()
 
 
-mig_obj = migrate_testrepo(m.keyword_repos_path, m.testcase_repos_path, parse_obj.output_dir)
-mig_obj.migrate_testcase_repositories()
-m.add_log()
+# mig_obj = migrate_testrepo(m.keyword_repos_path, m.testcase_repos_path, parse_obj.output_dir)
+# mig_obj.migrate_testcase_repositories()
+# m.add_log()
 # m.verify_import_statements("/home/apathapa/Documents/warriorframework_py3/warrior/WarriorTools/warrior_py3_migration_tools/conversion/keyword_repositories/kw_lseries")
+# parse_obj = parse_json("migrate_info.json")
+# print(parse_obj.keyword_repourls)
+
+
+# mig_obj = migrate_testrepo(m.keyword_repos_path, m.testcase_repos_path, parse_obj.output_dir)
+# mig_obj.migrate_testcase_repositories()
+
+# pretty print
+# mig_obj.pretty_print()
+m.pretty_print_test()
+
+
