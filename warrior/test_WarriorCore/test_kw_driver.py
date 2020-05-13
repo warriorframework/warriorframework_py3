@@ -10,8 +10,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 """
-
-import os, sys
+import sys
+import os
 from unittest.mock import MagicMock
 from os.path import abspath, dirname
 try:
@@ -22,9 +22,14 @@ except Exception as e:
     sys.path.append(WARRIORDIR)
     import warrior
 
-import xml.dom.minidom
-import xml.etree.ElementTree as ET
-from xml.etree import ElementTree as et
+temp_cwd = os.path.split(__file__)[0]
+path = os.path.join(temp_cwd, 'UT_results')
+
+try:
+    os.makedirs(path, exist_ok=True)
+    result_dir = os.path.join(dirname(abspath(__file__)), 'UT_results')
+except OSError as error:
+    pass
 
 from warrior.WarriorCore import kw_driver
 import warrior.Actions.CommonActions
@@ -39,10 +44,6 @@ def test_get_package_name_list():
 
 def test_execute_keyword():
     """ Executes the keyword provided by product driver
-    1. searches for class methods in the package list
-    2. searches for independent functions in the package list
-    3. If class method matching the keyword is found in the actions package executes it
-        else searches for independent fucntions matching the keyword name and executes it
     """
     keyword = 'store_in_repo'
     data_repository = {'db_obj': False, 'war_file_type': 'Case', 'wt_results_execdir': None,\
@@ -51,7 +52,7 @@ def test_execute_keyword():
     warrior.Framework.Utils.testcase_Utils.pStep = MagicMock(return_value=None)
 
     package_list = [warrior.Actions.CommonActions]
-    warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock()
+    warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     warrior.Framework.Utils.config_Utils.data_repository = MagicMock(return_value=data_repository)
     result = kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)
     assert result == {'db_obj': False, 'war_file_type': 'Case', 'wt_results_execdir': None,\
@@ -62,10 +63,6 @@ def test_execute_keyword():
 
 def test_execute_keyword_empty_package_list():
     """ Executes the keyword provided by product driver
-    1. searches for class methods in the package list
-    2. searches for independent functions in the package list
-    3. If class method matching the keyword is found in the actions package executes it
-        else searches for independent fucntions matching the keyword name and executes it
     """
     keyword = ''
     data_repository = {'db_obj': False, 'war_file_type': 'Case', 'wt_results_execdir': None,\
@@ -74,7 +71,7 @@ def test_execute_keyword_empty_package_list():
     warrior.Framework.Utils.testcase_Utils.pStep = MagicMock(return_value=None)
 
     package_list = []
-    warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock()
+    warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     warrior.Framework.Utils.config_Utils.data_repository = MagicMock(return_value=data_repository)
     result = kw_driver.execute_keyword(keyword, data_repository, args_repository, package_list)
     assert result == {'db_obj': False, 'war_file_type': 'Case', 'wt_results_execdir': None,\
