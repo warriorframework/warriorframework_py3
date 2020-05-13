@@ -75,12 +75,14 @@ class Migrate_keyword_repo():
         self.keyword_summary = {}
 
     def add_log(self):
-        for not_converted_line in self.not_modified_statements:
-            self.log.info(not_converted_line)
+
         destination = shutil.copytree(self.keyword_repos_path, os.path.join(self.output_dir, "keyword_repositories"))
+        destination = shutil.copytree(self.testcase_repos_path, os.path.join(self.output_dir, "testcase_repositories"))
 
         shutil.copyfile(os.path.join(self.current_working_directory, "conversion.log"), os.path.join(self.output_dir, "conversion.log" ))
-        self.log.info (destination)
+        shutil.rmtree(os.path.join(self.current_working_directory, self.temp_directory_name))
+        os.remove(os.path.join(self.current_working_directory, "conversion.log"))
+        self.log.info ("Location of output directory : {}".format(self.output_dir))
 
     def modifying_warrior_framework_folder(self):
         os.system("mv {} {}".format(os.path.join(self.keyword_repos_path, "warriorframework_py3", "warrior"), os.path.join(self.keyword_repos_path)))
@@ -180,20 +182,43 @@ class Migrate_keyword_repo():
 
         # cloning warrior framework
         self.log.info("cloning warrior framework")
-        git.Git(self.keyword_repos_path).clone(self.warrior_framework_url)
+        # import pdb
+        # pdb.set_trace()
+        repo = git.Repo.clone_from(self.warrior_framework_url, os.path.join(self.keyword_repos_path,"warriorframework_py3"), branch='master')
+
+        #git.Git(self.keyword_repos_path).clone(self.warrior_framework_url)
         self.log.info("warrior framework cloned successfully")
         warrior_repository_name = self.warrior_framework_url.split("/")[-1].split(".")[0]
 
         for keyword_url in self.keyword_repos_url:
             self.log.info("cloning keyword repository : {}".format(keyword_url))
 
-            git.Git(self.keyword_repos_path).clone(keyword_url)
-            repository_name = keyword_url.split("/")[-1].split(".")[0]
+            #git.Git(self.keyword_repos_path).clone(keyword_url["url"])
+            repository_name = keyword_url["url"].split("/")[-1].split(".")[0]
+            commit_id = ""
+            branch = ""
+            if keyword_url.get("commitid"):
+                commit_id = keyword_url["commitid"]
+                branch = "master"
+
+            if not branch :
+                if keyword_url.get("branch"):
+                    branch = keyword_url["branch"]
+                else:
+                    branch = "master"
+            keyword_repo_instance = git.Repo.clone_from(keyword_url["url"], os.path.join(self.keyword_repos_path, repository_name),branch=branch)
+
+            if commit_id:
+                keyword_repo_instance.git.checkout(commit_id)
+
+
 
             pattern1 = r'(\d)'
             match1 = re.match(pattern1, repository_name)
             match1_flag = False
             if match1:
+                # import pdb
+                # pdb.set_trace()
                 existing_path = os.path.join(self.keyword_repos_path, repository_name)
                 modified_path = "{}{}".format(self.numbers_dict[match1.group(1)],
                                               repository_name.split(match1.group(1))[-1])
@@ -208,16 +233,36 @@ class Migrate_keyword_repo():
                 self.keyword_repos_with_path.append(os.path.join(self.keyword_repos_path, repository_name))
                 self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, repository_name))
 
+            # import pdb
+            # pdb.set_trace()
+
             self.log.info("successfully cloned keyword repository {}".format(keyword_url))
             # path = self.imp_url.split("/")[-1].split(".")[0]
         self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, warrior_repository_name))
 
         for testcase_url in self.testcase_repos_url:
+            repository_name = keyword_url["url"].split("/")[-1].split(".")[0]
+            commit_id = ""
+            branch = ""
+            if testcase_url.get("commitid"):
+                commit_id = keyword_url["commitid"]
+                branch = "master"
+
+            if not branch:
+                if keyword_url.get("branch"):
+                    branch = keyword_url["branch"]
+                else:
+                    branch = "master"
+
             self.log.info("cloning keyword repository : {}".format(testcase_url))
-            git.Git(self.testcase_repos_path).clone(testcase_url)
+            testcase_repo_instance= git.Repo.clone_from(testcase_url["url"], os.path.join(self.testcase_repos_path, repository_name),branch=branch)
             self.log.info("successfully cloned keyword repository {}".format(testcase_url))
+            if commit_id:
+                testcase_repo_instance.git.checkout(commit_id)
 
         self.log.info(self.keyword_repos_in_order)
+        # import pdb
+        # pdb.set_trace()
 
         for user_keyword_repo in self.keyword_repos_with_path:
             self.verify_import_statements(user_keyword_repo)
@@ -344,7 +389,7 @@ class Migrate_keyword_repo():
 
 
                                 except:
-                                    impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
+                                    impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
                                     os.system(impo)
                                     self.keyword_summary[directory_name]["not_converted"] += 1
                                     self.log.info(
@@ -404,7 +449,7 @@ class Migrate_keyword_repo():
 
                                             except:
 
-                                                impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline,
+                                                impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline,
                                                                                           root + "/" + file)
                                                 os.system(impo)
                                                 self.log.info(
@@ -428,7 +473,7 @@ class Migrate_keyword_repo():
                                             self.keyword_summary[directory_name]["converted"] += 1
 
                                         except:
-                                            impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
+                                            impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
                                             os.system(impo)
                                             self.log.info(
                                                 "[Not Modified]:::{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
@@ -443,7 +488,7 @@ class Migrate_keyword_repo():
 
                                 else:
 
-                                        impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
+                                        impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
                                         self.log.info("[Before] {} ".format(statement))
                                         os.system(impo)
                                         self.log.info("[After] {} @404@".format(statement))
@@ -467,7 +512,7 @@ class Migrate_keyword_repo():
 
 
                                     except:
-                                        impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
+                                        impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
                                         os.system(impo)
                                         self.keyword_summary[directory_name]["not_converted"] += 1
 
@@ -507,7 +552,7 @@ class Migrate_keyword_repo():
 
 
                                         except:
-                                            impo = "sed -i 's/{}/@@@@{}/g' {}".format(fline, fline, root + "/" + file)
+                                            impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
                                             os.system(impo)
                                             self.keyword_summary[directory_name]["not_converted"] += 1
                                             self.log.info(
@@ -637,8 +682,8 @@ class migrate_testrepo(Migrate_keyword_repo):
                         pass
         if os.path.exists(self.output_dir):
             shutil.rmtree(self.output_dir)
-        destination = shutil.copytree(self.testcase_dirpath, self.output_dir)
-        self.log.info(destination)
+        #destination = shutil.copytree(self.testcase_dirpath, self.output_dir)
+        #self.log.info(destination)
 
     def pretty_print(self):
         self.log.info("=" * 83)
@@ -678,5 +723,6 @@ mig_obj.migrate_testcase_repositories()
 # pretty print
 mig_obj.pretty_print()
 m.pretty_print_test()
+m.add_log()
 
 
