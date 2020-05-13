@@ -325,7 +325,7 @@ class Migrate_keyword_repo():
                         filedesc = open(root + "/" + file, "r+")
                         file_lines = filedesc.readlines()
                         for fline in file_lines:
-                            if "Warrior" in fline :
+                            if "Warrior." in fline :
                                 self.keyword_summary[directory_name]["found"] += 1
                                 self.keyword_summary[directory_name]["converted"] += 1
                                 repo_name = "warrior"
