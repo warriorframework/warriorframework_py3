@@ -627,14 +627,19 @@ class Migrate_keyword_repo():
 
     def pretty_print_test(self):
         self.log.info("=" * 83)
-        self.log.info("| {:<20} | {:<12} | {:<10} | {:<15} | ".format('REPO NAME', 'LINES FOUND', 'CONVERTED',
+        self.log.info("                  Summary of keyword repositories                 ")
+
+        self.log.info("=" * 83)
+        self.log.info("| {:<5} | {:<15} | {:<15} | {:<10} | {:<15} | ".format("S NO",'REPO NAME', 'LINES FOUND', 'CONVERTED',
                                                                       'NOT CONVERTED', ))
         self.log.info("=" * 83)
 
         # print each data item.
+        count = 0
         for name, attr in self.keyword_summary.items():
+            count += 1
 
-            self.log.info("| {:<20} | {:<12} | {:<10} | {:<15} |".format(name, attr['found'],
+            self.log.info("| {:<5} | {:<15} | {:<12} | {:<10} | {:<15} |".format(count, name, attr['found'],
                                                                           attr['converted'],
                                                                           attr['not_converted'],
                                                                           ))
@@ -740,13 +745,17 @@ class migrate_testrepo(Migrate_keyword_repo):
 
     def pretty_print(self):
         self.log.info("=" * 83)
-        self.log.info("| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format('REPO NAME', 'STEPS FOUND', 'CONVERTED',
+        self.log.info("                     SUMMARY OF TESTCASE REPOSITORIES                     ")
+        self.log.info("=" * 83)
+        self.log.info("| {:<5} | {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format("S NO", 'REPO NAME', 'STEPS FOUND', 'CONVERTED',
                                                                       'NOT CONVERTED', 'HAS REPO'))
         self.log.info("=" * 83)
 
         # print each data item.
+        testcase_repo_count = 0
         for name, attr in self.test_summary.items():
-            self.log.info("| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format(name, attr['steps_found'],
+            testcase_repo_count += 1
+            self.log.info("| {:<5} | {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format(testcase_repo_count, name, attr['steps_found'],
                                                                           attr['steps_converted'],
                                                                           attr['steps_not_converted'],
                                                                           attr['steps_has_repo_already']))
