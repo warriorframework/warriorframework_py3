@@ -17,7 +17,6 @@ import xml.etree.ElementTree as ET
 import sys
 import os
 import unittest
-from pathlib import Path
 from unittest.mock import MagicMock
 from os.path import abspath, dirname
 
@@ -35,7 +34,6 @@ except ImportError:
 from warrior.Framework import Utils
 from warrior.WarriorCore import step_driver
 from warrior.WarriorCore.Classes.junit_class import Junit
-from warrior.WarriorCore.Classes import testcase_utils_class
 from warrior.WarriorCore.Classes.testcase_utils_class import TestcaseUtils
 
 temp_cwd = os.path.split(__file__)[0]
@@ -68,7 +66,6 @@ class test_execute_step(unittest.TestCase):
         step = steps.find('step')
         step_num = 1
         testcasename = "step_driver_testcase"
-        homepath = str(Path.home())
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename,
@@ -109,7 +106,6 @@ class test_execute_step(unittest.TestCase):
         step = steps.find('step')
         step_num = 1
         testcasename = "step_driver_testcase"
-        homepath = str(Path.home())
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename, timestamp=timestamp, name='customProject_independant_testcase_execution',
@@ -148,7 +144,6 @@ class test_execute_step(unittest.TestCase):
         step = steps.find('step')
         step_num = 1
         testcasename = "step_driver_testcase"
-        homepath = str(Path.home())
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename, timestamp=timestamp,
@@ -187,7 +182,6 @@ class test_execute_step(unittest.TestCase):
         step = steps.find('step')
         step_num = 1
         testcasename = "step_driver_testcase"
-        homepath = str(Path.home())
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename, timestamp=timestamp, name='customProject_independant_testcase_execution',
@@ -267,19 +261,15 @@ def test_send_keyword_to_productdriver2():
 
 def test_get_keyword_resultfile():
     data_repository = {}
-    homepath = str(Path.home())
-    testcasename = "step_driver_testcase.xml"
     data_repository['wt_kw_results_dir'] = result_dir
     system_name = None
     step_num = 1
     keyword = 'wait_for_timeout'
     result = step_driver.get_keyword_resultfile(data_repository, system_name, step_num, keyword)
-    check1 = homepath in result
     check2 = result_dir in result
     check3 = result.endswith('.xml')
     check4 = 'step-1_' in result
     check5 = keyword in result
-    assert check1 == True
     assert check2 == True
     assert check3 == True
     assert check4 == True
@@ -287,19 +277,15 @@ def test_get_keyword_resultfile():
 
 def test_get_keyword_resultfile_else_condition():
     data_repository = {}
-    homepath = str(Path.home())
-    testcasename = "step_driver_testcase.xml"
     data_repository['wt_kw_results_dir'] = result_dir
     system_name = 'ut_test'
     step_num = 1
     keyword = 'wait_for_timeout'
     result = step_driver.get_keyword_resultfile(data_repository, system_name, step_num, keyword)
-    check1 = homepath in result
     check2 = result_dir in result
     check3 = result.endswith('.xml')
     check4 = 'step-1_' in result
     check5 = keyword in result
-    assert check1 == True
     assert check2 == True
     assert check3 == True
     assert check4 == True
