@@ -293,8 +293,10 @@ def warrior_execute_entry(*args, **kwargs):
         if sys.argv[1] == "-warrior_py3_migration_tool":
             print_info("Initializing tc warrior_py3_migration_tool tool !!")
             war_path = dirname(dirname(abspath(__file__)))
-            warrior_py3_migration_tool_path = "{}/WarriorTools/warrior_py3_migration_tools".format(war_path)
-            os.system("python {}/warrior_py3_migration_tool {}".format(warrior_py3_migration_tool_path, " ".join(sys.argv[2:])))
+            warrior_py3_migration_tool_path = "{}/WarriorTools/warrior_py3_migration_tools".\
+            format(war_path)
+            os.system("python {}/warrior_py3_migration_tool {}".format(warrior_py3_migration_tool_path,\
+             " ".join(sys.argv[2:])))
             sys.exit()
 
     if not kwargs:
