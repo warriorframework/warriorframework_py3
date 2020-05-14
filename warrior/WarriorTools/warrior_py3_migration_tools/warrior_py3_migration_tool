@@ -25,7 +25,7 @@ import json
 import argparse
 #Argparser to add command line argumets
 parser = argparse.ArgumentParser(description="This tool is used to add fully qualified imports to keyword repositories and repo name for test case repositoires")
-parser.add_argument('--file_name', "-f",  action="store_true", required=True, help="Absolute path of json file" )
+parser.add_argument('--file_name', "-f",  action="store", required=True, help="Absolute path of json file" )
 # parser.add_argument("--help", "-h", help="This tool is used to add fully qualified imports to keyword repositories and repo name for test case repositoires")
 args = parser.parse_args()
 
@@ -346,6 +346,9 @@ class Migrate_keyword_repo():
                     d.update({"flag2" : directory_name})
 
             elif line.strip().startswith("import"):
+                if " as " in line:
+
+                    line = line.split(" as ")[0]
                 import_words = line.strip("import").strip().split(".")
                 abs_path = "/".join(import_words)
                 actual_path = os.path.join(directory_path, abs_path)
@@ -564,7 +567,7 @@ class Migrate_keyword_repo():
                             elif "[Actions" in fline:
 
                                 self.keyword_summary[directory_name]["found"] += 1
-                                self.keyword_summary[directory_name]["converted"] += 1
+
                                 repo_name = self.check_for_statement_is_available_in_user_repo(
                                     fline, self.user_repo_path)
 
@@ -574,6 +577,7 @@ class Migrate_keyword_repo():
                                 if repo_name:
                                         import pdb
                                         #pdb.set_trace()
+                                        self.keyword_summary[directory_name]["converted"] += 1
                                         actual_line = statement.split("[")[-1].split("]")[0]
 
                                         af = """sed -i 's/\[{}\]/\[{}.{}\]/g' {}""".format(
@@ -584,7 +588,7 @@ class Migrate_keyword_repo():
                                             os.system(af)
                                             # import pdb
                                             # pdb.set_trace()
-                                            self.log.info("[after] {}".format(fline.replace("Actions", "{}.Actions".format(repo_name), 1)))
+                                            self.log.info("[after] {}".format(fline.strip().replace("Actions", "{}.Actions".format(repo_name), 1)))
 
 
                                         except:
@@ -600,11 +604,17 @@ class Migrate_keyword_repo():
                                                     converting_repo_name,
                                                     file_name,
                                                     statement))
-                                # else:
+                                else:
+
                                 #     count = count + 1
                                 #     self.keyword_summary[directory_name]["found"] += 1
-                                #     self.keyword_summary[directory_name]["not_converted"] = +1
-
+                                    self.keyword_summary[directory_name]["not_converted"] = +1
+                                    impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                    self.log.info("[Before] {}".format(fline.strip()))
+                                    os.system(impo)
+                                    # import pdb
+                                    # pdb.set_trace()
+                                    self.log.info("[after] {}@404@".format(fline.strip()))
         else:
             print("path not found")
 
