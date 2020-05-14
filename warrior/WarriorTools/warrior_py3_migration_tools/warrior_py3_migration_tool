@@ -22,6 +22,12 @@ import os
 import xml.etree.ElementTree as et
 import shutil
 import json
+import argparse
+#Argparser to add command line argumets
+parser = argparse.ArgumentParser(description="This tool is used to add fully qualified imports to keyword repositories and repo name for test case repositoires")
+parser.add_argument('--file_name', "-f",  action="store_true", required=True, help="Absolute path of json file" )
+# parser.add_argument("--help", "-h", help="This tool is used to add fully qualified imports to keyword repositories and repo name for test case repositoires")
+args = parser.parse_args()
 
 class parse_json():
     """
@@ -191,7 +197,9 @@ class Migrate_keyword_repo():
         # cloning warrior framework
         self.log.info("cloning warrior framework")
         repo = git.Repo.clone_from(self.warrior_framework_url, os.path.join(self.keyword_repos_path,"warriorframework_py3"), branch='master')
-        self.wait_for(10)
+        self.log.info("waiting for 5 seconds")
+        time.sleep(5)
+        # self.wait_for(5)
 
         #git.Git(self.keyword_repos_path).clone(self.warrior_framework_url)
         self.log.info("warrior framework cloned successfully")
@@ -214,16 +222,23 @@ class Migrate_keyword_repo():
                 else:
                     branch = "master"
             keyword_repo_instance = git.Repo.clone_from(keyword_url["url"], os.path.join(self.keyword_repos_path, repository_name),branch=branch)
-            self.wait_for(10)
+            # self.wait_for(10)
 
+            self.log.info("waiting for 5 seconds")
+            time.sleep(5)
             if commit_id:
                 try :
 
                     keyword_repo_instance.git.checkout(commit_id)
                 except:
-                    self.wait_for(10)
+                    # self.wait_for(10)
+                    self.log.info("waiting for 5 seconds")
+                    time.sleep(5)
                     try :
-                        self.wait_for(10)
+
+                        # self.wait_for(10)
+                        self.log.info("waiting for 5 seconds")
+                        time.sleep(5)
                         keyword_repo_instance.git.checkout(commit_id)
                     except:
                         pass
@@ -273,7 +288,9 @@ class Migrate_keyword_repo():
 
             self.log.info("cloning testcase repository : {}".format(testcase_url))
             testcase_repo_instance= git.Repo.clone_from(testcase_url["url"], os.path.join(self.testcase_repos_path, repository_name),branch=branch)
-            self.wait_for(10)
+            # self.wait_for(10)
+            self.log.info("waiting for 5 seconds")
+            time.sleep(5)
             self.log.info("successfully cloned testcase repository {}".format(testcase_url))
 
             if commit_id:
@@ -719,8 +736,8 @@ class migrate_testrepo(Migrate_keyword_repo):
         self.log.info("=" * 83)
 
 
-
-parse_obj = parse_json("migrate_info.json")
+file_path = args.file_name
+parse_obj = parse_json(file_path)
 print(parse_obj.keyword_repourls)
 
 m = Migrate_keyword_repo(parse_obj.keyword_repourls, parse_obj.test_repourls, parse_obj.output_dir)
