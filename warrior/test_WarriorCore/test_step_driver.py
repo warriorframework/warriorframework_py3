@@ -204,6 +204,7 @@ class test_execute_step(unittest.TestCase):
         assert check2 == False
 
 def test_get_arguments():
+    '''testcase for get_arguments'''
     root = ET.parse(os.path.dirname(os.path.abspath(__file__))+"/step_driver_testcase.xml").\
     getroot()
     steps = root.find('Steps')
@@ -212,6 +213,7 @@ def test_get_arguments():
     assert type(result) == dict
 
 def test_get_arguments_with_env_variables():
+    '''testcase for get_arguments'''
     root = ET.parse(os.path.dirname(os.path.abspath(__file__))+"/step_driver_testcase1.xml").\
     getroot()
     steps = root.find('Steps')
@@ -220,6 +222,7 @@ def test_get_arguments_with_env_variables():
     assert type(result) == dict
 
 def test_send_keyword_to_productdriver1():
+    '''testcase for send_keyword_to_productdriver'''
     TestcaseUtils.p_step = MagicMock()
     driver_name = 'common_driver'
     plugin_name = None
@@ -234,7 +237,7 @@ def test_send_keyword_to_productdriver1():
     assert result['step_num'] == 1
 
 def test_send_keyword_to_productdriver2():
-    from warrior.WarriorCore.Classes.testcase_utils_class import TestcaseUtils
+    '''testcase for send_keyword_to_productdriver'''
     TestcaseUtils.p_step = MagicMock()
     warriorpath = "/".join((os.path.abspath(__file__).split('/')[:-2]))
     driver_name = 'common_driver'
@@ -260,6 +263,7 @@ def test_send_keyword_to_productdriver2():
     assert check4 == True
 
 def test_get_keyword_resultfile():
+    '''testcase for get_keyword_resultfile'''
     data_repository = {}
     data_repository['wt_kw_results_dir'] = result_dir
     system_name = None
@@ -276,6 +280,7 @@ def test_get_keyword_resultfile():
     assert check5 == True
 
 def test_get_keyword_resultfile_else_condition():
+    '''testcase for get_keyword_resultfile'''
     data_repository = {}
     data_repository['wt_kw_results_dir'] = result_dir
     system_name = 'ut_test'
