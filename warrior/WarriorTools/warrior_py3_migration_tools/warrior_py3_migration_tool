@@ -165,6 +165,14 @@ class Migrate_keyword_repo():
         except OSError:
             return False
 
+    def wait_for(self, sec):
+        i = sec
+        while i > 0:
+            print("waiting for {}".format(i))
+            time.sleep(1)
+            i = i - 1
+        print("{0}".format(" " * 50), end="\r")
+
     def cloning_the_repositories(self):
         git_status = self.check_git_status()
         if git_status:
@@ -182,9 +190,8 @@ class Migrate_keyword_repo():
 
         # cloning warrior framework
         self.log.info("cloning warrior framework")
-        # import pdb
-        # pdb.set_trace()
         repo = git.Repo.clone_from(self.warrior_framework_url, os.path.join(self.keyword_repos_path,"warriorframework_py3"), branch='master')
+        self.wait_for(10)
 
         #git.Git(self.keyword_repos_path).clone(self.warrior_framework_url)
         self.log.info("warrior framework cloned successfully")
@@ -207,9 +214,19 @@ class Migrate_keyword_repo():
                 else:
                     branch = "master"
             keyword_repo_instance = git.Repo.clone_from(keyword_url["url"], os.path.join(self.keyword_repos_path, repository_name),branch=branch)
+            self.wait_for(10)
 
             if commit_id:
-                keyword_repo_instance.git.checkout(commit_id)
+                try :
+
+                    keyword_repo_instance.git.checkout(commit_id)
+                except:
+                    self.wait_for(10)
+                    try :
+                        self.wait_for(10)
+                        keyword_repo_instance.git.checkout(commit_id)
+                    except:
+                        pass
 
 
 
@@ -241,22 +258,24 @@ class Migrate_keyword_repo():
         self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, warrior_repository_name))
 
         for testcase_url in self.testcase_repos_url:
-            repository_name = keyword_url["url"].split("/")[-1].split(".")[0]
+            repository_name = testcase_url["url"].split("/")[-1].split(".")[0]
             commit_id = ""
             branch = ""
             if testcase_url.get("commitid"):
-                commit_id = keyword_url["commitid"]
+                commit_id = testcase_url["commitid"]
                 branch = "master"
 
             if not branch:
-                if keyword_url.get("branch"):
-                    branch = keyword_url["branch"]
+                if testcase_url.get("branch"):
+                    branch = testcase_url["branch"]
                 else:
                     branch = "master"
 
-            self.log.info("cloning keyword repository : {}".format(testcase_url))
+            self.log.info("cloning testcase repository : {}".format(testcase_url))
             testcase_repo_instance= git.Repo.clone_from(testcase_url["url"], os.path.join(self.testcase_repos_path, repository_name),branch=branch)
-            self.log.info("successfully cloned keyword repository {}".format(testcase_url))
+            self.wait_for(10)
+            self.log.info("successfully cloned testcase repository {}".format(testcase_url))
+
             if commit_id:
                 testcase_repo_instance.git.checkout(commit_id)
 
