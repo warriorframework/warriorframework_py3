@@ -45,6 +45,7 @@ setup(
                       "cloudshell-automation-api==9.3.0.175525",
                       "pycryptodome==3.6.1", "Django==2.1.2", "xmltodict==0.12.0",
                       "python-ldap", "django_auth_ldap",
-                      "djangorestframework==3.10.3", "gcg==0.2.0", "termcolor==1.1.0",]
+                      "djangorestframework==3.10.3", "gcg==0.2.0", "termcolor==1.1.0",
+                      "cryptography==2.9.2","psycopg2==2.8.5",]
 
 )
