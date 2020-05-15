@@ -42,11 +42,10 @@ if __name__ == "__main__":
         raise
     nav_obj = Navigator()
     BASE_DIR = nav_obj.get_katana_dir()
-    app_config_json_path = os.path.join(BASE_DIR, "app_config.json")
+    app_config_json_path = os.path.join(BASE_DIR, "katana_configs", "app_config.json")
     def read_config_file_data():
             nav_obj = Navigator()
-            config_file_path = join_path(nav_obj.get_katana_dir(), "app_config.json")
-            data = read_json_data(config_file_path)
+            data = read_json_data(app_config_json_path)
             return data
     app_config_data = read_config_file_data()
     if app_config_data["__userconfigured__"] == "False" and app_config_data["__normal_run__"] == "False":
@@ -58,7 +57,7 @@ if __name__ == "__main__":
     if app_config_data["__userconfigured__"] == "True":
         if os.path.exists("log.txt"):
             print("=============================KATANA CONFIGURATION LOG================================")
-            os.system("tail -n +3 log.txt")
+            os.system("cat log.txt")
             print("======================================================================================")
             print("\n\n")
     execute_from_command_line(sys.argv)
