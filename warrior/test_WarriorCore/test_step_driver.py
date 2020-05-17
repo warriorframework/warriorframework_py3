@@ -17,6 +17,7 @@ import xml.etree.ElementTree as ET
 import sys
 import os
 import unittest
+from pathlib import Path
 from unittest.mock import MagicMock
 from os.path import abspath, dirname
 
@@ -34,6 +35,7 @@ except ImportError:
 from warrior.Framework import Utils
 from warrior.WarriorCore import step_driver
 from warrior.WarriorCore.Classes.junit_class import Junit
+from warrior.WarriorCore.Classes import testcase_utils_class
 from warrior.WarriorCore.Classes.testcase_utils_class import TestcaseUtils
 
 temp_cwd = os.path.split(__file__)[0]
@@ -66,6 +68,7 @@ class test_execute_step(unittest.TestCase):
         step = steps.find('step')
         step_num = 1
         testcasename = "step_driver_testcase"
+        homepath = str(Path.home())
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename,
@@ -75,6 +78,7 @@ class test_execute_step(unittest.TestCase):
 
         Utils.testcase_Utils.update_step_num = MagicMock(return_value=None)
         Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
+        Utils.testcase_Utils.pStep = MagicMock(return_value=None)
         Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
 
         system_name = None
@@ -95,6 +99,7 @@ class test_execute_step(unittest.TestCase):
         assert check2 == True
 
         del Utils.testcase_Utils.pSubStep
+        del Utils.testcase_Utils.pStep
         del Utils.testcase_Utils.update_step_num
         del Utils.testcase_Utils.report_substep_status
 
@@ -106,6 +111,7 @@ class test_execute_step(unittest.TestCase):
         step = steps.find('step')
         step_num = 1
         testcasename = "step_driver_testcase"
+        homepath = str(Path.home())
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename, timestamp=timestamp, name='customProject_independant_testcase_execution',
@@ -113,6 +119,7 @@ class test_execute_step(unittest.TestCase):
 
         Utils.testcase_Utils.update_step_num = MagicMock(return_value=None)
         Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
+        Utils.testcase_Utils.pStep = MagicMock(return_value=None)
         Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
         system_name = None
         kw_parallel = False
@@ -131,6 +138,7 @@ class test_execute_step(unittest.TestCase):
         assert check1 == True
         assert check2 == True
 
+        del Utils.testcase_Utils.pStep
         del Utils.testcase_Utils.pSubStep
         del Utils.testcase_Utils.update_step_num
         del Utils.testcase_Utils.report_substep_status
@@ -144,6 +152,7 @@ class test_execute_step(unittest.TestCase):
         step = steps.find('step')
         step_num = 1
         testcasename = "step_driver_testcase"
+        homepath = str(Path.home())
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename, timestamp=timestamp,
@@ -151,6 +160,7 @@ class test_execute_step(unittest.TestCase):
 
         Utils.testcase_Utils.update_step_num = MagicMock(return_value=None)
         Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
+        Utils.testcase_Utils.pStep = MagicMock(return_value=None)
         Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
 
         system_name = None
@@ -170,6 +180,7 @@ class test_execute_step(unittest.TestCase):
         assert check1 == True
         assert check2 == True
 
+        del Utils.testcase_Utils.pStep
         del Utils.testcase_Utils.pSubStep
         del Utils.testcase_Utils.update_step_num
         del Utils.testcase_Utils.report_substep_status
@@ -182,6 +193,7 @@ class test_execute_step(unittest.TestCase):
         step = steps.find('step')
         step_num = 1
         testcasename = "step_driver_testcase"
+        homepath = str(Path.home())
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename, timestamp=timestamp, name='customProject_independant_testcase_execution',
@@ -204,26 +216,33 @@ class test_execute_step(unittest.TestCase):
         assert check2 == False
 
 def test_get_arguments():
-    '''testcase for get_arguments'''
+    '''testcase for get_argumets'''
     root = ET.parse(os.path.dirname(os.path.abspath(__file__))+"/step_driver_testcase.xml").\
     getroot()
     steps = root.find('Steps')
     step = steps.find('step')
     result = step_driver.get_arguments(step)
-    assert type(result) == dict
+    check1 = 'notify_count' in result
+    check2 = 'timeout' in result 
+    assert check1 == True
+    assert check2 == True
 
 def test_get_arguments_with_env_variables():
-    '''testcase for get_arguments'''
+    '''get_arguments_with_env_variables'''
     root = ET.parse(os.path.dirname(os.path.abspath(__file__))+"/step_driver_testcase1.xml").\
     getroot()
     steps = root.find('Steps')
     step = steps.find('step')
     result = step_driver.get_arguments(step)
-    assert type(result) == dict
+    check1 = 'notify_count' in result
+    check2 = 'timeout' in result 
+    assert check1 == True
+    assert check2 == True
 
 def test_send_keyword_to_productdriver1():
-    '''testcase for send_keyword_to_productdriver'''
-    TestcaseUtils.p_step = MagicMock()
+    '''testcase for send_keyword_to_productdriver1'''
+    TestcaseUtils.p_step = MagicMock(return_value=None)
+    Utils.testcase_Utils.pStep = MagicMock(return_value=None)
     driver_name = 'common_driver'
     plugin_name = None
     keyword = 'wait_for_timeout'
@@ -235,9 +254,12 @@ def test_send_keyword_to_productdriver1():
         driver_name, plugin_name, keyword,
         data_repository, args_repository, repo_name)
     assert result['step_num'] == 1
+    del TestcaseUtils.p_step
 
 def test_send_keyword_to_productdriver2():
-    '''testcase for send_keyword_to_productdriver'''
+    '''testcase for send_keyword_to_productdriver2'''
+    from warrior.WarriorCore.Classes.testcase_utils_class import TestcaseUtils
+    Utils.testcase_Utils.pStep = MagicMock(return_value=None)
     TestcaseUtils.p_step = MagicMock()
     warriorpath = "/".join((os.path.abspath(__file__).split('/')[:-2]))
     driver_name = 'common_driver'
@@ -261,36 +283,46 @@ def test_send_keyword_to_productdriver2():
     assert check2 == True
     assert check3 == True
     assert check4 == True
+    del TestcaseUtils.p_step
+    del Utils.testcase_Utils.pStep
 
 def test_get_keyword_resultfile():
     '''testcase for get_keyword_resultfile'''
     data_repository = {}
+    homepath = str(Path.home())
+    testcasename = "step_driver_testcase.xml"
     data_repository['wt_kw_results_dir'] = result_dir
     system_name = None
     step_num = 1
     keyword = 'wait_for_timeout'
     result = step_driver.get_keyword_resultfile(data_repository, system_name, step_num, keyword)
+    check1 = homepath in result
     check2 = result_dir in result
     check3 = result.endswith('.xml')
     check4 = 'step-1_' in result
     check5 = keyword in result
+    assert check1 == True
     assert check2 == True
     assert check3 == True
     assert check4 == True
     assert check5 == True
 
 def test_get_keyword_resultfile_else_condition():
-    '''testcase for get_keyword_resultfile'''
+    '''testcase for get_keyword_resultfile_else_condition'''
     data_repository = {}
+    homepath = str(Path.home())
+    testcasename = "step_driver_testcase.xml"
     data_repository['wt_kw_results_dir'] = result_dir
     system_name = 'ut_test'
     step_num = 1
     keyword = 'wait_for_timeout'
     result = step_driver.get_keyword_resultfile(data_repository, system_name, step_num, keyword)
+    check1 = homepath in result
     check2 = result_dir in result
     check3 = result.endswith('.xml')
     check4 = 'step-1_' in result
     check5 = keyword in result
+    assert check1 == True
     assert check2 == True
     assert check3 == True
     assert check4 == True
