@@ -40,7 +40,8 @@ def test_get_package_name_list():
 
     package_list = [warrior.Actions.CommonActions]
     result = kw_driver.get_package_name_list(package_list)
-    assert type(result) == list
+    check1 = 'warrior.Actions.CommonActions' in result
+    assert check1 == True
 
 def test_execute_keyword():
     """ Executes the keyword provided by product driver
@@ -78,3 +79,4 @@ def test_execute_keyword_empty_package_list():
     'wt_logs_execdir': None, 'wt_name': 'test', 'step_num': None, 'step-None_status': 'ERROR'}
     del warrior.Framework.Utils.data_Utils.update_datarepository
     del warrior.Framework.Utils.config_Utils.data_repository
+    del warrior.Framework.Utils.testcase_Utils.pStep
