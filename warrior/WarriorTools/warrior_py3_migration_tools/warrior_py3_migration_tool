@@ -39,8 +39,10 @@ args = parser.parse_args()
 class parse_json():
     """
     """
+    start_time = time.time()
 
     def __init__(self, json_file):
+
         filepath = os.path.abspath(json_file.strip())
         with open(filepath, "r") as json_handle:
             json_doc = json.load(json_handle)
@@ -56,7 +58,7 @@ class parse_json():
 
 
 
-class Migrate_keyword_repo():
+class Migrate_keyword_repo(parse_json):
 
     def __init__(self, keyword_repos, testcase_repos, output_dir=None):
         self.keyword_repos_url = keyword_repos
@@ -630,7 +632,7 @@ class Migrate_keyword_repo():
         self.log.info("                  Summary of keyword repositories                 ")
 
         self.log.info("=" * 83)
-        self.log.info("| {:<5} | {:<15} | {:<15} | {:<10} | {:<15} | ".format("S NO",'REPO NAME', 'LINES FOUND', 'CONVERTED',
+        self.log.info("|{:>5}| {:<15} | {:<15} | {:<10} | {:<15} | ".format("S NO",'REPO NAME', 'LINES FOUND', 'CONVERTED',
                                                                       'NOT CONVERTED', ))
         self.log.info("=" * 83)
 
@@ -639,11 +641,13 @@ class Migrate_keyword_repo():
         for name, attr in self.keyword_summary.items():
             count += 1
 
-            self.log.info("| {:<5} | {:<15} | {:<12} | {:<10} | {:<15} |".format(count, name, attr['found'],
+            self.log.info("|{:>5}| {:<15} | {:<12} | {:<10} | {:<15} |".format(count, name, attr['found'],
                                                                           attr['converted'],
                                                                           attr['not_converted'],
                                                                           ))
         self.log.info("=" * 83)
+        self.end_time = time.time()
+        self.log.info("Total execution time in seconds: {}".format(self.end_time - parse_json.start_time))
 
 
 class migrate_testrepo(Migrate_keyword_repo):
@@ -747,7 +751,7 @@ class migrate_testrepo(Migrate_keyword_repo):
         self.log.info("=" * 83)
         self.log.info("                     SUMMARY OF TESTCASE REPOSITORIES                     ")
         self.log.info("=" * 83)
-        self.log.info("| {:<5} | {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format("S NO", 'REPO NAME', 'STEPS FOUND', 'CONVERTED',
+        self.log.info("|{:>5}| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format("SNO", 'REPO NAME', 'STEPS FOUND', 'CONVERTED',
                                                                       'NOT CONVERTED', 'HAS REPO'))
         self.log.info("=" * 83)
 
@@ -755,7 +759,7 @@ class migrate_testrepo(Migrate_keyword_repo):
         testcase_repo_count = 0
         for name, attr in self.test_summary.items():
             testcase_repo_count += 1
-            self.log.info("| {:<5} | {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format(testcase_repo_count, name, attr['steps_found'],
+            self.log.info("|{:>5}| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format(testcase_repo_count, name, attr['steps_found'],
                                                                           attr['steps_converted'],
                                                                           attr['steps_not_converted'],
                                                                           attr['steps_has_repo_already']))
