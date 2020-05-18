@@ -728,7 +728,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                         break
     except:
         pass
-    if system_name:
+    test_case_details = suite_details.findall("testcase")
+    if system_name and test_case_details:
         junit_file_obj = data_repository['wt_junit_object']
         root = junit_file_obj.root
         suite_details = root.findall("testsuite")[0]
@@ -739,9 +740,11 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
         for item in system_details.getchildren():
             if item.tag == "kafka_port":
                 ssh_port = item.text
+                ssh_port = Utils.data_Utils.sub_from_env_var(ssh_port)
                 continue
             if item.tag == "ip":
                 ip_address = item.text
+                ip_address = Utils.data_Utils.sub_from_env_var(ip_address)
                 continue
             try:
                 value = ast.literal_eval(item.text)
