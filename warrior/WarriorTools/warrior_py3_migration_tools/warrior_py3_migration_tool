@@ -14,690 +14,110 @@ limitations under the License.
 '''
 
 import sys
-import os
 import re
-import ast
 import time
-import argparse
 import subprocess
-from datetime import datetime
-
-"""
-This script add the user repository name according to the drivers in Testcase file and adds
-the import statements according to repo
-This script requires arguments to run
-
-add Repo name under step section in Testcase:
-ex : pre = <Step Driver="cli_driver" Keyword="connect">
-    after = <Step Driver="cli_driver" Repo="warrior" Keyword="connect">
-
-    for acheving this we need to pass arguments as:
-    1. for finding drivers need warriorsapce directory/bitbucket url
-        python warrior_py3_migration_tool.py --add_repo_war_repos_path "directory"
-        python warrior_py3_migration_tool.py --add_repo_warrior_url "bitbucket url"
-    2. for finding repo names need keywords directory/bitbucket url of keywords
-        python warrior_py3_migration_tool.py --add_repo_kw_repos_path "directory"
-        python warrior_py3_migration_tool.py --add_repo_keyword_url "bitbucket_url1 bitbucket_url2"
-    3. if need to provide the dir/results directory
-        --add_repo_output_dir "dir to store results"
-
-Verify import statemts in keywords user repository:
-ex : pre = import Framework.Utils.print_info
-    after = import warrior.Framework.Utils.print_info
-
-    1.for finding keywords need keywords directory/bitbucket url
-        python warrior_py3_migration_tool.py --imp_user_repo_path "directory"
-        python warrior_py3_migration_tool.py --imp_url "bitbucket url"
-    2. if need to provide the path dir/results directory
-        --imp_user_repo_path "dir to store results"
-"""
-
-CURRENT_WORKING_DIRECTORY = os.getcwd()
-
-WARRIOR_ACTIONS = ["CiRegressionActions", "CliActions", "CloudshellActions", "CommonActions",
-                   "DemoActions", "ExampleActions", "FileActions", "GnmiActions", "KafkaActions",
-                   "LogActions", "NetconfActions", "NetworkActions", "RestActions",
-                   "SeleniumActions", "ServerActions", "SnmpActions", "WappActions"]
-WARRIOR_ACTIONS_CLASSES = ["ci_regression_actions", "cli_actions", "cloudshell_actions",
-                           "common_actions", "demo_actions", "example_actions", "file_actions",
-                           "gnmi_actions", "kafka_actions", "log_actions", "netconf_Actions",
-                           "connection_actions", "diagnostics_actions", "file_ops_actions",
-                           "rest_actions", "browser_actions", "elementlocator_actions",
-                           "elementoperation_actions", "verify_actions", "wait_actions",
-                           "server_actions", "common_snmp_actions", "wapp_reporting_actions"]
-WARRIOR_UTILS = ["cli_Utils", "config_Utils", "csv_Utils", "data_Utils", "datetime_utils",
-                 "demo_utils", "dict_Utils", "driver_Utils", "email_utils", "encryption_utils",
-                 "file_Utils", "import_utils", "list_Utils", "print_Utils", "rest_Utils",
-                 "selenium_Utils", "snmp_utils", "string_Utils", "telnet_Utils", "testcase_Utils",
-                 "xml_Utils"]
-WARRIOR_FRAMEWORK_CLASSES = ["configuration_element_class", "database_utils_class",
-                             "gnmi_utils_class", "json_utils_class", "kafka_utils_class",
-                             "netconf_utils_class", "rest_server_class", "rest_utils_class",
-                             "snmp_utility_class", "ssh_util_class", "testdata_class",
-                             "xl_utils_class"]
-BUILTIN_MODULES = ["os", "collections", "pexpect", "time", ""]
-WARRIOR_CLI_UTILS = ["base_class", "connection", "diagnostics", "file_ops", "loging",
-                     "network_class", "warrior_cli_class"]
+import logging
+import os
+import xml.etree.ElementTree as et
+import shutil
+import json
+import argparse
 
 
-def print_info(message, *args):
-    """Print an info message to the terminal """
-    print_type = "-I-"
-    if len(args) > 0:
-        for arg in args:
-            message += str(arg) + ", "
-    color_message = None
-    
-
-    print_main(message, print_type, color_message)
-    return message
-
-def print_main(message, print_type, color_message=None, *args, **kwargs):
-    """The main print function will be called by other print functions
-    """
-    if color_message is not None:
-        print_string = print_type + " " + str(color_message)
-    elif color_message is None:
-        print_string = print_type + " " + str(message)
-    if args:
-        print_string = (print_type + " " + str(message) + str(args))
-
-    sys.stdout.write(print_string + '\n')
-
-
-class addRepoinStepSection():
-    """
-    This class will adds the repo name under xml files
-    """
-
-    def __init__(self, warrior_repo=None, Keyword_repos=None, add_repo_output=None,
-        add_repo_war_repos_path=None, add_repo_kw_repos_path=None):
-        """
-        This init function will accept the parameters 
-        """
-        self.warrior_repo = warrior_repo
-        self.keyword_repos = Keyword_repos
-        self.add_repo_output = add_repo_output
-        self.add_repo_war_repos_path = add_repo_war_repos_path
-        self.add_repo_kw_repos_path = add_repo_kw_repos_path
-        self.numbers_dict = {"1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six",
-                             "7": "seven", "8": "eight", "9": "nine"}
-
-    def add_repo_in_step(self):
-        '''
-        This definition will add the repo name under the step section
-        '''
-        if self.add_repo_war_repos_path:
-            print_info("add_repo_war_repos_path", self.add_repo_war_repos_path)
-            path = self.add_repo_war_repos_path
-        else:
-            path = self.warr_repo_name
-        print_info("Provided path :", path)
-        print_info("Finding the xml files.....")
-        for root, _, files in os.walk(path):
-            for file in files:
-                if file.endswith('.xml'):
-
-                    #heare opening the file which ends with .xml
-                    with open((root +"/"+ file), "r") as reading_file:
-                        print_info("Found the xml file to read", file)
-                        lines = reading_file.read()
-
-                        stp = re.findall('<step Driver="([a-zA-Z0-9_]+)" Keyword=', lines)
-                        self.drivers = list(set(stp))
-
-                        #heare passing the driver to the get_repo_name definition and
-                        # collecting the dictionary
-                        repo_driver_dict = self.get_repo_name()
-
-                        print_info("Adding the repo name under step section")
-
-                        #heare adding the repo in mathced places
-                        for driver_item in repo_driver_dict:
-                            if repo_driver_dict[driver_item] != "warroir":
-                                exist_str = '<step Driver="%s"' % driver_item
-                                new_str = '<step Driver="%s" Repo="%s"' %(
-                                    driver_item, repo_driver_dict[driver_item])
-                                lines = re.sub(exist_str, new_str, lines)
-
-                    #here writing modified lines into .xml file
-                    with open((root +"/"+ file), "w") as writing_file:
-                        writing_file.write(lines)
-        print_info("successfully completed the adding Repo under all Testcase files.")
-        print_info("The results present in ", self.add_repo_output)
-
-
-    def get_repo_name(self):
-        '''
-        In this function finding the repo name of respective drivers
-        '''
-        path = self.add_repo_output
-        driver_repo_dict = {}
-
-        for driver in self.drivers:
-            print_info("Found the Driver present in xml file", driver)
-            driver_file = driver+".py"
-            for root, _, files in os.walk(path):
-                for file in files:
-                    if file.endswith('.py') and file != "__init__.py":
-                        if file == driver_file:
-                            driver_repo = (os.path.abspath(os.path.join(root, os.pardir)))
-                            driver_repo_name = driver_repo.split('/')[-1]
-                            driver_repo_dict[driver] = driver_repo_name
-                            print_info("Found the repo name of the Driver", driver_repo_name)
-        return driver_repo_dict
-
-
-    def repo_clone(self):
-        """This definition will do the cloning the repo in the output directory  """
-
-        self.warrior_repo_name = self.warrior_repo.split("/")[-1].split(".")[0]
-        keyword_repo_names = ast.literal_eval(self.keyword_repos)
-        keyword_repo_name = ", ".join(repr(e) for e in keyword_repo_names)
-        self.all_kw_repos_names = []
-        repo_names = keyword_repo_name.split(' ')
-        for repo in repo_names:
-            rep = repo.replace('"', '').replace("'", '')
-            kw_dir_name = rep.split("/")[-1].split(".")[0]
-            self.all_kw_repos_names.append(kw_dir_name)
-
-        print_info("warrior_repo_name", self.warrior_repo_name)
-        print_info("all_kw_repos_names", self.all_kw_repos_names)
-
-        def get_immediate_subdirectories_in_output_dir(self):
-            """
-            this function will finds the sub dirs present in the output directory
-            """
-            try:
-                current_wkdir = os.getcwd()
-                print_info("current working directory is", current_wkdir)
-
-                dir_names = []
-                counter = 0
-                for name in os.listdir(current_wkdir):
-                    dir_names.append(name)
-                    counter = counter + 1
-
-                for dir_name in dir_names:
-                    if dir_name == self.warrior_repo_name:
-                        self.war_dir_path = os.getcwd()+"/"+dir_name
-                        print_info("warrior directory path is ", self.war_dir_path)
-                return self.war_dir_path
-            except Exception as ex_er:
-                print_info("No cloned repos are presented in current directory!!!")
-                print_info("Error is ", ex_er)
-
-
-        if self.add_repo_output == None:
-            new_dir = os.path.join(os.getcwd(),
-                                   "Add_repo_name_"+datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
-
-            try:
-                os.mkdir(new_dir)
-                os.chdir(new_dir)
-                self.add_repo_output = os.getcwd()
-                print_info("Created result directory is ", self.add_repo_output)
-                print_info("**************************************************************************"
-                      "****")
-                print_info("Result directory is ", new_dir)
-                print_info("**************************************************************************"
-                      "****")
-            except Exception as ex_er:
-                print_info("directory already present. Please try with different!!!", ex_er)
-
-        try:
-            out_dir = self.add_repo_output
-            os.chdir(out_dir)
-            print_info("Provided output directory is", self.add_repo_output)
-            print_info("******************************************************************************")
-            print_info("Result directory is ", os.getcwd())
-            print_info("******************************************************************************")
-        except Exception as ex_er:
-            print_info("provded directory is not present. Please try with diffrent directory!!!")
-            print_info("Erropr is ", ex_er)
-            raise
-
-        try:
-            print_info(" warrior repo is ", self.warrior_repo)
-            print_info("cloning Warror/warroirspace repository. Please wait....")
-            war_repo_name  = self.warrior_repo.split("/")[-1].split(".")[0]
-            pattern3 = r'(\d)'
-            match3 = re.match(pattern3, war_repo_name)
-            match_flag3 = False
-            if match3:
-                existing_name = war_repo_name
-                mod_path = "{}{}".format(self.numbers_dict[match3.group(1)], war_repo_name.split(match3.group(1))[-1])
-                match_flag3 = True
-                war_repo_name = mod_path
-            self.warr_repo_name = os.path.join(os.getcwd(), war_repo_name)
-            if os.path.exists(os.path.join( self.add_repo_output, war_repo_name)):
-                timestamp = time.time()
-                new_directory_name = "{}_{}".format(war_repo_name, int(timestamp))
-                pattern = r'(\d)'
-                match7 = re.match(pattern, new_directory_name)
-                match_flag7 = False
-                if match7:
-                    existing_name = new_directory_name
-                    mod_path = "{}{}".format(self.numbers_dict[match7.group(1)], new_directory_name.split(
-                        match7.group(1))[-1])
-                    match_flag7 = True
-                    new_directory_name = mod_path
-                self.add_repo_output = os.path.join(self.add_repo_output, new_directory_name)
-                os.mkdir(self.add_repo_output)
-            gitimpo.Git(self.add_repo_output).clone(self.warrior_repo)
-            if match_flag3:
-                os.system("mv {}/ {}".format(existing_name, mod_path))
-            print_info("successfully cloned Warror/warroirspace repository")
-            print_info("cloning Keywords repositories")
-
-            list_kw_urls = self.keyword_repos.split(" ")
-            all_kw_dirs = []
-            i = 0
-            for _ in list_kw_urls:
-                kw_url = list_kw_urls[i]
-                u_r_l = kw_url.replace('[', '').replace(']', '').replace("'", '').replace(',', '')
-                # repo_name = kw_url.split("/")[-1].split(".")[0]
-                print_info("cloning the warrior Keyword repo. Please wait....")
-                print_info("clong repo is ", u_r_l)
-                kw_repo_name = u_r_l.split("/")[-1].split(".")[0]
-                gitimpo.Git(self.add_repo_output).clone(u_r_l)
-
-                pattern4 = r'(\d)'
-                match4 = re.match(pattern4, kw_repo_name)
-                match_flag4 = False
-                if match4:
-                    existing_name = kw_repo_name
-                    mod_path = "{}{}".format(self.numbers_dict[match4.group(1)],
-                                             kw_repo_name.split(match4.group(1))[-1])
-                    match_flag4 = True
-                    kw_repo_name = mod_path
-                if os.path.exists(os.path.join( self.add_repo_output, kw_repo_name)):
-                    timestamp = time.time()
-                    new_directory_name = "{}_{}".format(kw_repo_name, int(timestamp))
-                    new_path = os.path.join(self.add_repo_output, new_directory_name)
-                    os.mkdir(new_path)
-                    all_kw_dirs.append(u_r_l)
-                    if match_flag4:
-                        os.system("mv {}/ {}".format(existing_name, new_directory_name))
-                        os.chdir(os.path.join(os.getcwd(), new_directory_name))
-
-                        pattern5 = r'(\d)'
-                        match5 = re.match(pattern5, os.path.split(os.path.join(os.getcwd(), existing_name))[-1])
-                        match_flag5 = False
-                        if match5:
-                            new_directory_name = existing_name
-                            mod_path = "{}{}".format(self.numbers_dict[match5.group(1)],
-                                                     new_directory_name.split(match5.group(1))[-1])
-                            match_flag5 = True
-
-                        if match_flag5:
-                            os.system("mv {}/ {}".format(existing_name, mod_path))
-
-                else:
-                    if match_flag4:
-                        os.system("mv {}/ {}".format(existing_name, mod_path))
-
-                print_info("successfully cloned Warror Keyword repo", u_r_l)
-                i = i+1
-            print_info("successfully cloned Keywords repository(s)!!")
-        except Exception as ex_er:
-            print_info("################################################################")
-            print_info("repository(s) alredy present in this directory")
-            print_info("#################################################################")
-            print_info("Error ", ex_er)
-            sys.exit()
-        self.add_repo_in_step()
-
-class Verify_Import_Statements():
-    """
-    This class will verify the imports present user repo
-    """
-
-    def __init__(self, user_repo_path):
-
-        """
-        This init function will accept the parameters 
-        """
-        self.user_repo_path = user_repo_path
-        self.numbers_dict = {"1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six",
-                        "7": "seven", "8": "eight", "9": "nine"}
-
-    def check_for_statement_is_available_in_user_repo(self, line, user_repo_path):
-        """
-        This function will checks the statemnts are present in the user repo or not
-        :param line:
-        :param user_repo_path:
-        :return:
-        """
-        self.user_repo_path = user_repo_path
-
-        line = line.strip()
-        if line.startswith("from"):
-            import_words = line.split()[1].split(".")
-            after_imports = line.split()[-1]
-            if "," in after_imports:
-                after_imports = after_imports.split(",")[-1]
-            else:
-                pass
-            if after_imports in WARRIOR_UTILS:
-                return "warrior"
-
-            abs_path = "/".join(import_words)
-            actual_path = os.path.join(self.user_repo_path, abs_path)
-            directory_name = os.path.split(self.user_repo_path)[-1]
-            if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)):
-                return directory_name
-            else:
-                return "warrior"
-        elif line.strip().startswith("import"):
-            import_words = line.strip("import").strip().split(".")
-            abs_path = "/".join(import_words)
-            actual_path = os.path.join(self.user_repo_path, abs_path)
-            directory_name = os.path.split(self.user_repo_path)[-1]
-            if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)):
-                return directory_name
-            else:
-                return "warrior"
-        else:
-            return "not valid"
-
-    def verify_import_statements(self, user_repo_path):
-        """
-        This function will verify the imports present in the provided repo/path
-        :param user_repo_path:
-        :return:
-        """
-        self.user_repo_path = user_repo_path
-        if os.path.exists(self.user_repo_path):
-            directory_name = os.path.split(self.user_repo_path)[-1]
-            for root, _, files in os.walk(self.user_repo_path):
-                if root.endswith(directory_name) and "__init__py" not in files:
-                    cmd = "touch  {}/__init__.py".format(self.user_repo_path)
-                    os.system(cmd)
-
-                for file in files:
-
-                    if file == "__init__.py":
-                        pass
-                    elif file.endswith(".py"):
-
-                        filedesc = open(root + "/" + file, "r+")
-                        file_lines = filedesc.readlines()
-                        for fline in file_lines:
-                            if fline.startswith("class"):
-                                break
-                            if (fline.startswith("import")  or fline.startswith("from")) and "*" in fline :
-                                print_info("Not found  statement {} in user repo or warrior and file name {}".
-                                           format(fline.strip(), file))
-                            elif fline[:-1] == "import Framework.Utils as Utils" or re.search(
-                                    r"\s*import Framework.Utils as Utils", fline[:-1]):
-                                fline = fline[:-1]
-                                impo = "sed -i 's/import Framework.Utils as Utils/import " \
-                                    "warrior.Framework.Utils as Utils/g' {}".format(
-                                        root + "/" + file)
-                                os.system(impo)
-                            elif fline[:-2] == "import Framework.Utils as Utils" or re.search(
-                                    r"\s*import Framework.Utils as Utils", fline[:-2]):
-                                fline = fline[:-2]
-                                impo = "sed -i 's/import Framework.Utils as Utils/import " \
-                                    "warrior.Framework.Utils as Utils/g' {}".format(
-                                        root + "/" + file)
-                                os.system(impo)
-                            elif "Framework" in fline:
-                                if "\r" in fline:
-                                    fline = fline[:-2]
-                                else:
-                                    fline = fline[:-1]
-                                repo_name = self.check_for_statement_is_available_in_user_repo(
-                                    fline, self.user_repo_path)
-                                if repo_name == "warrior":
-                                    warrior_flag = True
-                                    user_repo_flag = False
-                                    other_flag = True
-                                elif repo_name == "not valid":
-                                    other_flag = False
-                                else:
-                                    user_repo_flag = True
-                                    warrior_flag = False
-                                    other_flag = True
-
-                                if "from" in fline:
-                                    chg = fline.split("from")[1]
-                                    if chg.strip().startswith("Framework"):
-                                        portt = fline.split("import")[0].strip().split(".")[-1]
-                                        if (portt in WARRIOR_UTILS or portt in WARRIOR_CLI_UTILS) and \
-                                                warrior_flag:
-                                            ffline = re.sub("Framework", "warrior.Framework",
-                                                            fline, 1)
-                                            impo = """sed -i 's/{}/{}/g' {}""".format(
-                                                fline, ffline, root + "/" + file, )
-                                            os.system(impo)
-                                        elif fline.split()[-1] in WARRIOR_UTILS and warrior_flag:
-                                            ffline = re.sub("Framework", "warrior.Framework",
-                                                            fline, 1)
-                                            a = """sed -i 's/{}/{}/g' {}""".format(
-                                                fline, ffline, root + "/" + file, )
-                                            os.system(a)
-                                        elif fline.split(".")[-1].split()[0] in \
-                                                WARRIOR_FRAMEWORK_CLASSES and warrior_flag:
-                                            ffline = re.sub("Framework", "warrior.Framework",
-                                                            fline, 1)
-                                            a = """sed -i 's/{}/{}/g' {}""".format(
-                                                fline, ffline, root + "/" + file, )
-                                            os.system(a)
-
-                                        elif user_repo_flag:
-                                            ffline = re.sub("Framework",
-                                                            "{}.Framework".format(directory_name),
-                                                            fline, 1)
-                                            a = """sed -i 's/{}/{}/g' {}""".format(
-                                                fline, ffline, root + "/" + file)
-                                            os.system(a)
-                                        elif other_flag:
-                                            print_info("Not found  statement "
-                                                  "{} in user repo or warrior and file name {}".
-                                                  format(fline.strip(), file))
-
-                            elif "Actions" in fline:
-                                if "\r" in fline:
-                                    fline = fline[:-2]
-                                else:
-                                    fline = fline[:-1]
-                                repo_name = self.check_for_statement_is_available_in_user_repo(
-                                    fline, self.user_repo_path)
-                                if repo_name == "warrior":
-                                    warrior_flag = True
-                                    user_repo_flag = False
-
-                                else:
-                                    user_repo_flag = True
-                                    warrior_flag = False
-                                if "from" in fline:
-                                    cd = fline.split("from")[1]
-                                    if cd.strip().startswith("Actions"):
-                                        aa = fline.split("import")[0].strip().split(".")[-1]
-                                        if aa in WARRIOR_ACTIONS or aa in \
-                                                WARRIOR_ACTIONS_CLASSES and warrior_flag:
-                                            ffline = re.sub("Actions", "warrior.Actions", fline, 1)
-                                            a = """sed -i 's/{}/{}/g' {}""".format(
-                                                fline, ffline, root + "/" + file)
-                                            os.system(a)
-                                        elif user_repo_flag:
-                                            ffline = re.sub("Actions", "{}.Actions".format(
-                                                directory_name), fline, 1)
-                                            a = """sed -i 's/{}/{}/g' {}""".format(
-                                                fline, ffline, root + "/" + file)
-                                            os.system(a)
-                                        else:
-                                            print_info("not able too find {} and file {}".format(
-                                                fline, file))
-                                elif fline.startswith("import"):
-                                    if fline.split(".")[-1] in WARRIOR_ACTIONS and warrior_flag:
-                                        ffline = re.sub("Actions", "warrior.Actions".format(
-                                            directory_name), fline, 1)
-                                        a = """sed -i 's/{}/{}/g' {}""".format(
-                                            fline, ffline, root + "/" + file)
-                                        os.system(a)
-                                    elif user_repo_flag:
-                                        ffline = re.sub("Actions", "{}.Actions".format(
-                                            directory_name), fline, 1)
-                                        a = """sed -i 's/{}/{}/g' {}""".format(
-                                            fline, ffline, root + "/" + file)
-                                        os.system(a)
-                                    else:
-
-                                        print_info("not able to find {} and file {}".format(fline,
-                                                                                       file))
-                                else:
-                                    if "[Actions" in fline:
-                                        pattern = r"\s*package_list\s*\=\s*\[Actions.*\.(\w+)\]"
-                                        match = re.search(pattern, fline)
-                                        fline = fline.replace("[", r"\[")
-                                        if match:
-                                            if match.group(1) in WARRIOR_ACTIONS:
-                                                ffline = re.sub("Actions", "warrior.Actions".format(
-                                                    directory_name), fline, 1)
-                                                awe = """sed -i 's/{}/{}/g' {}""".format(
-                                                    fline.strip(), ffline.strip(),
-                                                    root + "/" + file)
-                                                os.system(awe)
-                                            else:
-                                                ffline = re.sub("Actions", "{}.Actions".format(
-                                                    directory_name), fline, 1)
-                                                af = """sed -i 's/{}/{}/g' {}""".format(
-                                                    fline.strip(), ffline.strip(),
-                                                    root + "/" + file)
-                                                os.system(af)
-
-                            elif "WarriorCore" in fline:
-                                if fline.startswith("WarriorCore"):
-                                    if "\r" in fline:
-                                        fline = fline[:-2]
-                                    else:
-                                        fline = fline[:-1]
-                                    ffline = re.sub("WarriorCore", "warrior.WarriorCore", fline, 1)
-                                    a = """sed -i 's/{}/{}/g' {}""".format(
-                                        fline, ffline, root + "/" + file)
-                                    os.system(a)
-                                else:
-                                    if "\r" in fline:
-                                        fline = fline[:-2]
-                                    else:
-                                        fline = fline[:-1]
-                                    ffline = re.sub("WarriorCore", "warrior.WarriorCore", fline, 1)
-                                    a = """sed -i 's/{}/{}/g' {}""".format(
-                                        fline, ffline, root + "/" + file)
-                                    os.system(a)
-
-
-        else:
-            print_info("path not found")
 
 #Argparser to add command line argumets
-parser = argparse.ArgumentParser()
-parser.add_argument('--imp_url', "-iu", type=str, help="git/bitbucket keyword repository cloning url only")
-parser.add_argument('--imp_output_dir', "-iod", type=str, help="to store the output directory ")
-parser.add_argument('--imp_user_repo_path', "-iurp", type=str,
-                    help="user repo name including absolute path")
-
-parser.add_argument("--add_repo_warrior_url", "-arwu", type=str,
-                    help="Enter the absolute url link of user repository of "
-                    "Warrorspace/xml files")
-parser.add_argument("--add_repo_keyword_url", "-arku", nargs='*', type=str,
-                    help="Enter the absolute url link of user repository of Keyword files")
-parser.add_argument("--add_repo_output_dir", "-arod", type=str,
-                    help="Enter the absolute path to create output directory")
-parser.add_argument("--add_repo_war_repos_path", "-arwrp", type=str,
-                    help="Enter the absolute path to create output directory")
-parser.add_argument("--add_repo_kw_repos_path", "-arkrp", type=str,
-                    help="Enter the absolute path to create output directory")
+parser = argparse.ArgumentParser(description="This tool is used to add fully qualified imports to keyword repositories and repo name for test case repositoires")
+# parser.add_argument('--version', action='version',
+#                     version='%(prog)s {version}'.format(version=__version__))
+parser.add_argument('--file_name', "-f",  action="store", required=True, help="Absolute path of json file" )
+parser.add_argument('--version', "-v",action='version', version='%(prog)s 1.0')
+# parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
 
 args = parser.parse_args()
 
-imp_url = args.imp_url
-imp_output_dir = args.imp_output_dir
-user_repo_path = args.imp_user_repo_path
-
-warrior_repo = args.add_repo_warrior_url
-keyword_repos = args.add_repo_keyword_url
-add_repo_war_repos_path = args.add_repo_war_repos_path
-add_repo_kw_repos_path = args.add_repo_kw_repos_path
-add_repo_output = args.add_repo_output_dir
-
-
-class pre_requirements():
+class parse_json():
     """
-    This class is the stating of the tools
     """
+    start_time = time.time()
 
-    def __init__(self, warrior_repo=None, keyword_repos=None, add_repo_output=None, imp_url=None,
-                 user_repo_path=None, imp_output_dir=None, add_repo_war_repos_path=None,
-                 add_repo_kw_repos_path=None):
-        """
-        This init function will accept the parameters 
-        """
-        self.warrior_repo = warrior_repo
-        self.keyword_repos = keyword_repos
-        self.add_repo_output = add_repo_output
-        self.add_repo_war_repos_path = add_repo_war_repos_path
-        self.add_repo_kw_repos_path = add_repo_kw_repos_path
+    def __init__(self, json_file):
 
-        self.imp_url = imp_url
-        self.user_repo_path = user_repo_path
-        self.imp_output_dir = imp_output_dir
+        filepath = os.path.abspath(json_file.strip())
+        with open(filepath, "r") as json_handle:
+            json_doc = json.load(json_handle)
+            self.keyword_repourls = json_doc.get("keyword_repositories")
+            self.test_repourls = json_doc.get("testcase_repositories")
+            self.output_dir = json_doc.get("output_dir")
+            if not self.keyword_repourls or not self.test_repourls:
+                self.log.info("keyword_repositories and testcase_repositories keys mandatory in given json file")
+                exit(1)
+            elif not type(self.keyword_repourls) == list and not type(self.test_repourls == list):
+                self.log.info("keyword_repositories and testcase_repositories should be type of list")
+                exit(1)
+
+
+
+class Migrate_keyword_repo(parse_json):
+
+    def __init__(self, keyword_repos, testcase_repos, output_dir=None):
+        self.keyword_repos_url = keyword_repos
+        self.testcase_repos_url = testcase_repos
+        self.warrior_framework_url = "https://github.com/warriorframework/warriorframework_py3.git"
+        self.keyword_repo = "keyword_repositories"
+        self.testcase_repo = "testcase_repositories"
+        self.current_working_directory = os.getcwd()
+        self.temp_directory_name = "conversion"
+        self.keyword_repos_with_path = []
+        self.keyword_repos_in_order = []
+        self.keyword_repos_path = os.path.join(self.current_working_directory, self.temp_directory_name,
+                                               "keyword_repositories")
+        self.testcase_repos_path = os.path.join(self.current_working_directory, self.temp_directory_name,
+                                                "testcase_repositories")
         self.numbers_dict = {"1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six",
                              "7": "seven", "8": "eight", "9": "nine"}
+        self.log = logging.getLogger()
+        self.log.setLevel(logging.INFO)
 
-    def check_packages(self, str_package):
-        """ Checks if the specified python package is installed.
-        return type: boolean
-        :Arguments:
-        1. str_package (str) = name of the package to be checked
-        :Returns:
-        bool = True/False
-        """
-        try:
-            import imp
-            imp.find_module(str_package)
-            bool_found = True
-        except ImportError:
-            bool_found = False
-        return bool_found
+        fileHandler = logging.FileHandler("{0}/{1}.log".format(self.current_working_directory, "conversion"))
+        self.log.addHandler(fileHandler)
 
-    def check_git_status(self):
-        """
-        this function is for checking the status of the git
-        """
-        try:
-            null = open("/dev/null", "w")
-            sp_output = subprocess.Popen("git", stdout=subprocess.PIPE,
-                                         stderr=subprocess.PIPE,
-                                         stdin=subprocess.PIPE, shell=True)
-            null.close()
-            output = sp_output.stdout.read()
-            print_info(output)
-            return True
+        consoleHandler = logging.StreamHandler()
+        self.log.addHandler(consoleHandler)
 
-        except OSError:
-            return False
+        self.not_modified_statements = []
+        self.output_dir = output_dir
+        self.keyword_summary = {}
 
-    def activate_virtualenv(self):
-        '''Activate virtual environment to add dependencies
-        '''
-        virt_name = "namespace_venv"
-        ve_dest = os.path.join(CURRENT_WORKING_DIRECTORY, virt_name)
-        print_info("ve_name: "+virt_name, )
-        print_info("destination: "+ve_dest,)
-        try:
-            venv_cmd = os.path.expanduser("~/.local/bin/virtualenv")
-            subprocess.check_call([venv_cmd, "--system-site-packages", ve_dest])
-            venv_file = "{}/bin/activate_this.py".format(ve_dest)
-            exec(compile(open(venv_file).read(), venv_file, 'exec'), dict(__file__=venv_file))
-            return True
-        except Exception as e:
-            print_info("Activating virtual env at {} resulted in exception {}".format\
-                (ve_dest, e))
-            return False
+    def add_log(self):
+
+        destination = shutil.copytree(self.keyword_repos_path, os.path.join(self.output_dir, "keyword_repositories"))
+        destination = shutil.copytree(self.testcase_repos_path, os.path.join(self.output_dir, "testcase_repositories"))
+
+        shutil.copyfile(os.path.join(self.current_working_directory, "conversion.log"), os.path.join(self.output_dir, "conversion.log" ))
+        shutil.rmtree(os.path.join(self.current_working_directory, self.temp_directory_name))
+        os.remove(os.path.join(self.current_working_directory, "conversion.log"))
+        self.log.info ("Location of output directory : {}".format(self.output_dir))
+
+    def modifying_warrior_framework_folder(self):
+        os.system("mv {} {}".format(os.path.join(self.keyword_repos_path, "warriorframework_py3", "warrior"), os.path.join(self.keyword_repos_path)))
+        os.system("rm -rf {}".format(os.path.join(self.keyword_repos_path, "warriorframework_py3")))
+
+
+    def creating_directories(self):
+        if not os.path.exists(os.path.join(self.current_working_directory, self.temp_directory_name)):
+            self.log.info("creating directory {}".format(self.temp_directory_name))
+            os.mkdir(self.temp_directory_name)
+        else:
+            self.log.info("removing the existing directory {}".format(self.temp_directory_name))
+            os.system("rm -rf {}".format(self.temp_directory_name))
+            os.mkdir(self.temp_directory_name)
+            self.log.info("creating directory {}".format(self.temp_directory_name))
+        os.chdir(os.path.join(self.current_working_directory, self.temp_directory_name))
+        os.mkdir(self.keyword_repo)
+        os.mkdir(self.testcase_repo)
+        self.cloning_the_repositories()
+
 
     def install_depen(self, dependency, dependency_name):
         """ This function checks if a dependency was installed. If not,
@@ -710,26 +130,26 @@ class pre_requirements():
         pip_cmds = ['pip3', 'install', dependency]
 
         try:
-            print_info("installing "+dependency)
+            self.log.info("installing " + dependency)
             sp_output = subprocess.Popen(pip_cmds, stdout=subprocess.PIPE,
                                          stderr=subprocess.PIPE, stdin=subprocess.PIPE)
 
             output, error = sp_output.communicate()
             output = output.decode("utf-8")
 
-            if "Requirement already satisfied" in output or "Successfully installed GitPython"\
-             in output:
-                print_info(" was able to install " + dependency_name)
+            if "Requirement already satisfied" in output or "Successfully installed GitPython" \
+                    in output:
+                self.log.info(" was able to install " + dependency_name)
                 return True
             return_code = sp_output.returncode
             if return_code > 0:
-                print_info(output, error)
+                self.log.info(output, error)
         except IOError:
             counter = 1
-            print_info("unable to install " + dependency_name)
+            self.log.info("unable to install " + dependency_name)
         except:
             counter = 1
-            print_info("unable to install " + dependency_name)
+            self.log.info("unable to install " + dependency_name)
         if counter == 0:
             try:
                 sp_output = subprocess.Popen(["pip", "show", dependency_name],
@@ -737,332 +157,638 @@ class pre_requirements():
                                              stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 output = sp_output.stdout.read()
                 if output == "":
-                    print_info(dependency_name + " could not be installed!!")
+                    self.log.info(dependency_name + " could not be installed!!")
                 else:
-                    print_info(dependency_name + " installation complete!")
+                    self.log.info(dependency_name + " installation complete!")
             except:
-                print_info("wasn't able to determine if " + dependency_name)
+                self.log.info("wasn't able to determine if " + dependency_name)
 
-    def add_repo_in_step_repos(self):
+    def check_git_status(self):
         """
-        This function will adds the repo name coresponding to the drivers in the xml files
-        :return:
+        this function is for checking the status of the git
         """
-        if (self.add_repo_war_repos_path and self.add_repo_kw_repos_path and
-                self.add_repo_output) or (self.add_repo_war_repos_path and
-                                          self.add_repo_kw_repos_path):
+        try:
+            null = open("/dev/null", "w")
+            sp_output = subprocess.Popen("git", stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         stdin=subprocess.PIPE, shell=True)
+            null.close()
+            output = sp_output.stdout.read()
 
-            print_info("Got the user repo paths. proceeding further!!")
-            print_info("add_repo_war_repos_path is ", self.add_repo_war_repos_path)
-            if self.add_repo_output:
-                try:
-                    rep = self.add_repo_war_repos_path.split("/")[-1]
-                    print_info("Provided output path is", self.add_repo_output)
-                    os.system("cp -r {} {}".format(self.add_repo_war_repos_path,
-                                                   self.add_repo_output))
-                    self.add_repo_war_repos_path = self.add_repo_output+"/"+rep
-                    repos_paths = self.add_repo_kw_repos_path.split(" ")
-                    list_of_keywords = []
-                    for repo_kw in repos_paths:
-                        rep = repo_kw.split("/")[-1]
-                        os.system("cp -r {} {}".format(repo_kw, self.add_repo_output))
-                        elem = str(self.add_repo_output)+"/"+str(rep)
-                        list_of_keywords.append(elem)
-                    self.add_repo_kw_repos_path = list_of_keywords
-                except Exception as err:
-                    print_info("Please provider correct output directory!!")
-                    print_info("Error is ", err)
-            else:
-                new_dir = os.path.join(os.getcwd(),
-                                       "Add_repo_name_in_repos"
-                                       +datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
+            return True
 
-                try:
-                    os.mkdir(new_dir)
-                    os.chdir(new_dir)
-                    self.add_repo_output = os.getcwd()
-                    try:
-                        rep = self.add_repo_war_repos_path.split("/")[-1]
-                        print_info("Provided output path is", self.add_repo_output)
-                        os.system("cp -r {} {}".format(self.add_repo_war_repos_path,
-                                                       self.add_repo_output))
-                        self.add_repo_war_repos_path = self.add_repo_output+"/"+rep
+        except OSError:
+            return False
 
-                        repos_paths = self.add_repo_kw_repos_path.split(" ")
-                        key_repo_path = []
-                        for repo_kw in repos_paths:
-                            rep = repo_kw.split("/")[-1]
-                            os.system("cp -r {} {}".format(repo_kw, self.add_repo_output))
-                            keywrd = str(self.add_repo_output)+"/"+str(rep)
-                            key_repo_path.append(keywrd)
-                        self.add_repo_kw_repos_path = key_repo_path
+    def wait_for(self, sec):
+        i = sec
+        while i > 0:
+            print("waiting for {}".format(i))
+            time.sleep(1)
+            i = i - 1
+        print("{0}".format(" " * 50), end="\r")
 
-                    except Exception as err:
-                        print_info("Please provider correct output directory!!")
-                        print_info("Error is ", err)
-
-                    print_info("Created result directory is ", self.add_repo_output)
-                    print_info("***********************************************************************"
-                          "*******")
-                    print_info("Result directory is ", new_dir)
-                    print_info("***********************************************************************"
-                          "*******")
-                except Exception as err:
-                    print_info("directory already present. Please try with different!!!", err)
-
-            Repo_adding = addRepoinStepSection(self.warrior_repo, self.keyword_repos,
-                                               self.add_repo_output,
-                                               self.add_repo_war_repos_path,
-                                               self.add_repo_kw_repos_path)
-            Repo_adding.add_repo_in_step()
-            sys.exit()
-
-    def add_repo_in_step_starts(self):
-        """
-        this function is the starting of the adding repo under xml files
-        """
-
-        print_info("Got user repo urls. proceeding further!!")
-        print_info("Provided warroir repository link is ", self.warrior_repo)
-        print_info("Provided Keywords repository link is ", self.keyword_repos)
-
-        flag = False
-        packages = ["pip", "git"]
-        if self.warrior_repo and self.keyword_repos:
-            flag = True
-            if hasattr(sys, 'real_prefix'):
-                pass
-                git_status = self.check_git_status()
-                if git_status:
-                    print_info("Git is available proceeding further ")
-                else:
-                    print_info("Git is not installed on the system. "
-                          "Please install git and restart this installation.")
-                self.install_depen("GitPython", "git")
-                import git as gitimpo
-                global gitimpo
-            else:
-                bool_found = self.check_packages("pip")
-                if not bool_found:
-                    print_info("pip is not installed ")
-                else:
-                    print_info("pip is installed proceeding further !!!")
-                git_status = self.check_git_status()
-                if git_status:
-                    print_info("Git is available proceeding further ")
-                else:
-                    print_info("Git is not installed on the system. "
-                          "Please install git and restart this installation.")
-                self.install_depen("virtualenv", "virtualenv")
-                self.activate_virtualenv()
-                self.install_depen("GitPython", "git")
-                import git as gitimpo
-                global gitimpo
-
-
-        Repo_adding = addRepoinStepSection(self.warrior_repo, self.keyword_repos,
-                                           self.add_repo_output)
-        Repo_adding.repo_clone()
-
-    def verify_import_statements_starts(self):
-        """
-        This function will adds the imports according to the repositories
-        :return:
-        """
-        if self.imp_url:
-            print_info("got url as argument ..proceeding further ")
-
-        elif self.user_repo_path:
-
-            print_info("got user_repo_path as argument ..proceeding further ")
-            verify = Verify_Import_Statements(self.user_repo_path)
-            if self.imp_output_dir:
-                if os.path.exists(self.imp_output_dir):
-                    pass
-                else:
-                    print_info("given path not found ")
-                    sys.exit()
-
-                parent_dir = self.user_repo_path.split("/")
-                parent_path = "/".join(parent_dir[:-1])
-                os.chdir(parent_path)
-                os.system("rm -rf results_time")
-                new_dir = "results_time"
-                os.mkdir("results_time")
-                os.system("cp -r {} {}".format(self.user_repo_path.split("/")[-1], new_dir))
-                wew = "{}/{}".format(new_dir, parent_dir[-1])
-                self.user_repo_path = os.path.join(os.getcwd(), wew)
-            verify.verify_import_statements(self.user_repo_path)
-            if self.imp_output_dir:
-                text = self.user_repo_path.split("/")
-                final_path = "/".join(text[:-1])
-                os.system("mv {} {}".format(final_path, self.imp_output_dir))
-                os.system("rm -rf results_time")
-                print_info("The results are stored in {}".format(
-                    os.path.join(self.imp_output_dir, text[-2], text[-1])))
-            else:
-                print_info("The results are stored in {}".format(self.user_repo_path))
+    def cloning_the_repositories(self):
+        git_status = self.check_git_status()
+        if git_status:
+            self.log.info("Git is available proceeding further ")
         else:
-            sys.exit("Need  at least one argument from the user cloning url or user repo path")
+            self.log.info("Git is not installed on the system. "
+                       "Please install git and restart this installation.")
+            sys.exit("Git is mandatory Please install it")
+        dep_install_status = self.install_depen("GitPython", "git")
+        if dep_install_status:
+            self.log.info("Successfully installed package {}".format("GitPython"))
+        else:
+            self.log.info("Not able to install the package {}".format("GitPython"))
+        import git
 
-        flag = False
-        packages = ["pip", "git"]
-        if self.imp_url:
-            flag = True
-            if hasattr(sys, 'real_prefix'):
-                git_status = self.check_git_status()
-                if git_status:
-                    print_info("Git is available proceeding further ")
+        # cloning warrior framework
+        self.log.info("cloning warrior framework")
+        repo = git.Repo.clone_from(self.warrior_framework_url, os.path.join(self.keyword_repos_path,"warriorframework_py3"), branch='master')
+        self.log.info("waiting for 5 seconds")
+        time.sleep(5)
+        # self.wait_for(5)
+
+        #git.Git(self.keyword_repos_path).clone(self.warrior_framework_url)
+        self.log.info("warrior framework cloned successfully")
+        warrior_repository_name = self.warrior_framework_url.split("/")[-1].split(".")[0]
+
+        for keyword_url in self.keyword_repos_url:
+            self.log.info("cloning keyword repository : {}".format(keyword_url))
+
+            #git.Git(self.keyword_repos_path).clone(keyword_url["url"])
+            repository_name = keyword_url["url"].split("/")[-1].split(".")[0]
+            commit_id = ""
+            branch = ""
+            if keyword_url.get("commitid"):
+                commit_id = keyword_url["commitid"]
+                branch = "master"
+
+            if not branch :
+                if keyword_url.get("branch"):
+                    branch = keyword_url["branch"]
                 else:
-                    print_info("Git is not installed on the system. "
-                          "Please install git and restart this installation.")
-                    sys.exit("Git is mandatory Please install it")
-                dep_install_status = self.install_depen("GitPython", "git")
-                if dep_install_status:
-                    print_info("Successfully installed package {}".format("GitPython"))
-                else:
-                    print_info("Not able to install the package {}".format("GitPython"))
-                import git
-                path = self.imp_url.split("/")[-1].split(".")[0]
+                    branch = "master"
+            keyword_repo_instance = git.Repo.clone_from(keyword_url["url"], os.path.join(self.keyword_repos_path, repository_name),branch=branch)
+            # self.wait_for(10)
 
-                pattern = r'(\d)'
-                match9 = re.match(pattern, path)
-                match_flag9 = False
-                if match9:
-                    existing_name= path
-                    mod_path = "{}{}".format(self.numbers_dict[match9.group(1)], path.split(match9.group(1))[-1])
-                    match_flag9 = True
-                    path = mod_path
+            self.log.info("waiting for 5 seconds")
+            time.sleep(5)
+            if commit_id:
+                try :
 
-                user_dir_path_flag = False
-                if self.imp_output_dir:
-                    self.user_repo_path = self.imp_output_dir
-                    if os.path.exists(self.user_repo_path):
-                        os.chdir(self.user_repo_path)
-                    else:
-                        print_info("the provided path {} is not found ".format(self.user_repo_path))
-                        sys.exit()
-                elif os.path.exists(os.path.join(CURRENT_WORKING_DIRECTORY, path)):
-                    user_dir_path_flag = True
-                    import time
-                    timestamp = time.time()
-                    new_directory_name = "{}_{}".format(path, int(timestamp))
-                    self.user_repo_path = os.path.join(CURRENT_WORKING_DIRECTORY,
-                                                       new_directory_name)
-                    os.mkdir(self.user_repo_path)
-                    os.chdir(self.user_repo_path)
-                else:
-                    self.user_repo_path = os.path.join(CURRENT_WORKING_DIRECTORY, path)
-                print_info("cloning the user provided url")
-                git.Git(os.getcwd()).clone(self.imp_url)
-                if match_flag9:
-                    os.system("mv {}/ {}".format(existing_name, mod_path))
+                    keyword_repo_instance.git.checkout(commit_id)
+                except:
+                    # self.wait_for(10)
+                    self.log.info("waiting for 5 seconds")
+                    time.sleep(5)
+                    try :
 
-                if not self.user_repo_path.endswith(path):
-                    self.user_repo_path = os.path.join(self.user_repo_path, path)
+                        # self.wait_for(10)
+                        self.log.info("waiting for 5 seconds")
+                        time.sleep(5)
+                        keyword_repo_instance.git.checkout(commit_id)
+                    except:
+                        pass
 
-                verify = Verify_Import_Statements(self.user_repo_path)
-                verify.verify_import_statements(self.user_repo_path)
-                if user_dir_path_flag:
-                    print_info("The changes will be available in this {} folder".format(
-                        self.user_repo_path))
-                elif self.imp_output_dir:
-                    print_info("The changes will be available in this {} folder".format(
-                        self.user_repo_path))
-                else:
-                    print_info("The changes will be available in this {} folder".format(
-                        self.user_repo_path))
+
+
+            pattern1 = r'(\d)'
+            match1 = re.match(pattern1, repository_name)
+            match1_flag = False
+            if match1:
+                # import pdb
+                # pdb.set_trace()
+                existing_path = os.path.join(self.keyword_repos_path, repository_name)
+                modified_path = "{}{}".format(self.numbers_dict[match1.group(1)],
+                                              repository_name.split(match1.group(1))[-1])
+                os.system("mv {}/ {}".format(existing_path,
+                                             os.path.join(self.current_working_directory, self.temp_directory_name,
+                                                          self.keyword_repo, modified_path)))
+                match1_flag = True
+            if match1_flag:
+                self.keyword_repos_with_path.append(os.path.join(self.keyword_repos_path, modified_path))
+                self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, modified_path))
             else:
-                bool_found = self.check_packages("pip")
-                if not bool_found:
-                    print_info("pip is not installed ")
+                self.keyword_repos_with_path.append(os.path.join(self.keyword_repos_path, repository_name))
+                self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, repository_name))
+
+            # import pdb
+            # pdb.set_trace()
+
+            self.log.info("successfully cloned keyword repository {}".format(keyword_url))
+            # path = self.imp_url.split("/")[-1].split(".")[0]
+        self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, warrior_repository_name))
+
+        for testcase_url in self.testcase_repos_url:
+            repository_name = testcase_url["url"].split("/")[-1].split(".")[0]
+            commit_id = ""
+            branch = ""
+            if testcase_url.get("commitid"):
+                commit_id = testcase_url["commitid"]
+                branch = "master"
+
+            if not branch:
+                if testcase_url.get("branch"):
+                    branch = testcase_url["branch"]
                 else:
-                    print_info("pip is installed proceeding further !!!")
-                git_status = self.check_git_status()
-                if git_status:
-                    print_info("Git is available proceeding further ")
+                    branch = "master"
+
+            self.log.info("cloning testcase repository : {}".format(testcase_url))
+            testcase_repo_instance= git.Repo.clone_from(testcase_url["url"], os.path.join(self.testcase_repos_path, repository_name),branch=branch)
+            # self.wait_for(10)
+            self.log.info("waiting for 5 seconds")
+            time.sleep(5)
+            self.log.info("successfully cloned testcase repository {}".format(testcase_url))
+
+            if commit_id:
+                testcase_repo_instance.git.checkout(commit_id)
+
+        self.log.info(self.keyword_repos_in_order)
+        # import pdb
+        # pdb.set_trace()
+
+        for user_keyword_repo in self.keyword_repos_with_path:
+            self.verify_import_statements(user_keyword_repo)
+
+    def check_for_statement_is_available_in_user_repo(self, line, user_repo_path):
+        """
+        This function will checks the statemnts are present in the user repo or not
+        :param line:
+        :param user_repo_path:
+        :return:
+        """
+
+        # for changing the order of searching
+        if self.keyword_repos_in_order[0] != user_repo_path:
+            self.keyword_repos_in_order.remove(user_repo_path)
+            self.keyword_repos_in_order.insert(0, user_repo_path)
+
+        line = line.strip()
+        flag1 = False
+        flag2 = False
+        d  = {}
+        for directory_path in self.keyword_repos_in_order:
+            if line.startswith("from"):
+                import_words = line.split()[1].split(".")
+                after_import_words = [line.split()[-1]]
+                if "," in after_import_words:
+                    after_import_words = after_import_words.split(",")[-1]
+                for word in after_import_words:
+                    import_words.append(word)
+
+                abs_path = "/".join(import_words)
+                if os.path.split(directory_path)[-1] == "warriorframework_py3":
+                    actual_path = os.path.join(directory_path, "warrior", abs_path)
+                    directory_name = "warrior"
                 else:
-                    print_info("Git is not installed on the system. "
-                          "Please install git and restart this installation.")
-                self.install_depen("virtualenv", "virtualenv")
-                virt_act_status = self.activate_virtualenv()
-                if virt_act_status:
-                    print_info("successfully activated virtualenv")
-                else:
-                    print_info("Not able to activate the virtual env")
-                dep_install_status = self.install_depen("GitPython", "git")
-                if dep_install_status:
-                    print_info("Successfully installed package {}".format("GitPython"))
-                else:
-                    print_info("Not able to install the package {}".format("GitPython"))
-                import git
-                path = self.imp_url.split("/")[-1].split(".")[0]
-                user_dir_path_flag = False
+                    actual_path = os.path.join(directory_path, abs_path)
+                    directory_name = os.path.split(directory_path)[-1]
 
-                if self.imp_output_dir:
-                    self.user_repo_path = self.imp_output_dir
-                    if os.path.exists(self.user_repo_path):
-                        os.chdir(self.user_repo_path)
-                    else:
-                        print_info("the provided path {} is not found ".format(self.user_repo_path))
-                        sys.exit()
-                elif os.path.exists(os.path.join(CURRENT_WORKING_DIRECTORY, path)):
-                    user_dir_path_flag = True
-                    import time
-                    timestamp = time.time()
-                    new_directory_name = "{}_{}".format(path, int(timestamp))
-                    self.user_repo_path = os.path.join(CURRENT_WORKING_DIRECTORY,
-                                                       new_directory_name)
-                    os.mkdir(self.user_repo_path)
-                    os.chdir(self.user_repo_path)
-                    print_info("Found the same name {} directory in current working directory , hence "
-                          "creating new directory {}".format(path, new_directory_name))
-                else:
-                    self.user_repo_path = os.path.join(CURRENT_WORKING_DIRECTORY, path)
-                print_info("cloning the user provided url")
-                git.Git(os.getcwd()).clone(self.imp_url)
-                verify = Verify_Import_Statements(self.user_repo_path)
-                verify.verify_import_statements(self.user_repo_path)
-                if user_dir_path_flag:
-                    print_info("The changes will be available in this {} folder".format(
-                        self.user_repo_path))
-                elif self.imp_output_dir:
-                    print_info("The changes will be available in this {} folder".format(
-                        self.user_repo_path))
-                else:
-                    print_info("The changes will be available in this {} folder".format(
-                        self.user_repo_path))
+                if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)) :
+                    flag1 = True
+                    d.update({"flag1": directory_name})
 
-if sys.version_info < (3, 4):
-    print_info("This script doesn't support Python version lower than 3.4")
-    sys.exit(0)
+                elif os.path.exists(os.path.split(actual_path)[0]) or os.path.exists("{}.py".format(os.path.split(actual_path)[0])):
+                    flag2 = True
+                    d.update({"flag2" : directory_name})
 
-if (imp_url and imp_output_dir) or (user_repo_path and imp_output_dir) or (imp_url) or\
-        (user_repo_path):
-    print_info("Performing operation on Verify Import Statements")
+            elif line.strip().startswith("import"):
+                if " as " in line:
 
-    START_HERE = pre_requirements(warrior_repo, keyword_repos, add_repo_output, imp_url,
-                                  user_repo_path, imp_output_dir, add_repo_war_repos_path,
-                                  add_repo_kw_repos_path)
+                    line = line.split(" as ")[0]
+                import_words = line.strip("import").strip().split(".")
+                abs_path = "/".join(import_words)
+                actual_path = os.path.join(directory_path, abs_path)
+                directory_name = os.path.split(directory_path)[-1]
+                if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)):
+                    return directory_name
 
-    START_HERE.verify_import_statements_starts()
+            elif "[Actions" in line:
+                pattern = r"\s*package_list\s*\=\s*\[(Actions.*\.(\w+))\]"
+                import pdb
+                # pdb.set_trace()
+                match = re.search(pattern, line)
+                line = line.replace("[", r"\[")
 
-elif (warrior_repo and keyword_repos and add_repo_output) or (warrior_repo and keyword_repos):
-    print_info("Performing operation on Add Repo in StepSection")
+                if match:
+                    if match.group(1):
+                        actual_path = os.path.join(directory_path, match.group(1).replace(".", "/"))
+                        directory_name = os.path.split(directory_path)[-1]
+                        if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)):
+                            return directory_name
+            if d.get("flag1"):
+                return d["flag1"]
+            elif d.get("flag2"):
+                return d["flag2"]
 
-    START_HERE = pre_requirements(str(args.add_repo_warrior_url), str(args.add_repo_keyword_url),
-                                  add_repo_output, imp_url, user_repo_path, imp_output_dir,
-                                  add_repo_war_repos_path, add_repo_kw_repos_path)
-    START_HERE.add_repo_in_step_starts()
+        return False
 
-elif (add_repo_war_repos_path and add_repo_kw_repos_path and add_repo_output) or \
-        (add_repo_war_repos_path and add_repo_kw_repos_path):
+    def verify_import_statements(self, user_repo_path):
+        """
+        This function will verify the imports present in the provided repo/path
+        :param user_repo_path:
+        :return:
+        """
 
-    START_HERE = pre_requirements(warrior_repo, keyword_repos, add_repo_output, imp_url,
-                                  user_repo_path, imp_output_dir, str(args.add_repo_war_repos_path),
-                                  str(args.add_repo_kw_repos_path))
-    START_HERE.add_repo_in_step_repos()
-else:
-    print_info("To run this script Arguments Requried")
-    print_info('To know the syntax of argument to be use this command "python warrior_py3_migration_tools --help"')
-    sys.exit()
+        self.user_repo_path = user_repo_path
+        if os.path.exists(self.user_repo_path):
+            directory_name = os.path.split(self.user_repo_path)[-1]
+            self.keyword_summary[directory_name]  = {}
+            self.keyword_summary[directory_name]["found"] = 0
+            self.keyword_summary[directory_name]["converted"] = 0
+            self.keyword_summary[directory_name]["not_converted"] = 0
+            self.log.info("********************************")
+            self.log.info("repo name : {}".format(directory_name))
+            self.log.info("********************************")
+            for root, _, files in os.walk(self.user_repo_path):
+                if root.endswith(directory_name) and "__init__py" not in files:
+                    cmd = "touch  {}/__init__.py".format(self.user_repo_path)
+                    os.system(cmd)
+
+                for file in files:
+                    if file == "__init__.py":
+                        pass
+                    elif file.endswith(".py"):
+                        self.log.info("********************************")
+                        self.log.info("filename : {}".format(file))
+                        self.log.info("********************************")
+
+                        filedesc = open(root + "/" + file, "r+")
+                        file_lines = filedesc.readlines()
+                        for fline in file_lines:
+                            if "Warrior." in fline :
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["converted"] += 1
+                                repo_name = "warrior"
+
+                                new_line = re.sub("Warrior", "warrior", fline)
+
+                                af = """sed -i 's/{}/{}/g' {}""".format(fline, repo_name, new_line,
+                                    root + "/" + file)
+                                try:
+                                    self.log.info("[Before] {}".format(fline.strip()))
+                                    os.system(af)
+                                    # import pdb
+                                    # pdb.set_trace()
+                                    self.log.info("[after] {}".format(
+                                        fline.replace("Warrior", "{}".format(repo_name), 1)))
+
+
+                                except:
+                                    impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                    os.system(impo)
+                                    self.keyword_summary[directory_name]["not_converted"] += 1
+                                    self.log.info(
+                                        "[NotModified]{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
+                                                                                              file_name,
+                                                                                              statement))
+                                    self.not_modified_statements.append(
+                                        "[NotModified]:::{}::{}::{}".format(
+                                            converting_repo_name,
+                                            file_name,
+                                            statement))
+
+                            elif (fline.startswith("import") or fline.startswith("from")) and "*" in fline:
+                                self.not_modified_statements.append("[NotModified] as it is contain * in import statement {} {}".
+                                           format(fline.strip(), file))
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["not_converted"] += 1
+                            elif fline.strip() == "import Framework.Utils as Utils" or re.search(
+                                    r"\s*import Framework.Utils as Utils", fline.strip()):
+
+                                impo = "sed -i 's/import Framework.Utils as Utils/import " \
+                                       "warrior.Framework.Utils as Utils/g' {}".format(
+                                    root + "/" + file)
+                                os.system(impo)
+                                self.keyword_summary[directory_name]["converted"] += 1
+                                self.keyword_summary[directory_name]["found"] += 1
+                            elif ("Framework" in fline or "Actions" in fline) and (
+                                    fline.strip().startswith("import") or fline.strip().startswith("from")):
+                                self.keyword_summary[directory_name]["found"] += 1
+
+                                if "\r" in fline:
+                                    fline = fline[:-2]
+                                else:
+                                    fline = fline[:-1]
+                                repo_name = self.check_for_statement_is_available_in_user_repo(
+                                    fline, self.user_repo_path)
+
+                                converting_repo_name = self.user_repo_path.split("/")[-1].split(".")[0]
+                                file_name = file
+                                statement = fline
+                                if repo_name:
+                                    if fline.strip().startswith("from"):
+
+
+                                            impo = "sed -i 's/{}/from {}.{}/g' {}".format(fline, repo_name,
+                                                                                          fline.split("from")[-1].lstrip(),
+                                                                                          root + "/" + file)
+                                            try :
+                                                self.log.info("[Before] {}".format(fline.strip()))
+                                                os.system(impo)
+
+                                                self.log.info("[After]  {}".format("from {}.{}".format(
+                                                    repo_name,
+                                                    fline.split( "from")[-1].strip())))
+                                                self.keyword_summary[directory_name]["converted"] += 1
+
+
+                                            except:
+
+                                                impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline,
+                                                                                          root + "/" + file)
+                                                os.system(impo)
+                                                self.log.info(
+                                                    "[NotModified]:::{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
+                                                                                             file_name,
+                                                                                             statement))
+                                                self.not_modified_statements.append("[NotModified]:::{}::{}::{}".format(converting_repo_name,
+                                                                                             file_name,
+                                                                                             statement))
+
+                                    elif fline.strip().startswith("import"):
+                                        impo = "sed -i 's/{}/import {}.{}/g' {}".format(fline, repo_name,
+                                                                                        fline.split("import")[
+                                                                                            -1].lstrip(),
+                                                                                        root + "/" + file)
+                                        try :
+                                            self.log.info("[Before] {}".format(fline.strip()))
+                                            os.system(impo)
+
+                                            self.log.info("[After]  {}".format("import {}.{}".format(repo_name, fline.split( "import")[-1].strip())))
+                                            self.keyword_summary[directory_name]["converted"] += 1
+
+                                        except:
+                                            impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                            os.system(impo)
+                                            self.log.info(
+                                                "[Not Modified]:::{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
+                                                                                         file_name,
+                                                                                         statement))
+                                            self.not_modified_statements.append(
+                                                "[NotModified]:::{}::{}::{}".format(
+                                                    converting_repo_name,
+                                                    file_name,
+                                                    statement))
+
+
+                                else:
+
+                                        impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                        self.log.info("[Before] {} ".format(statement))
+                                        os.system(impo)
+                                        self.log.info("[After] {} @404@".format(statement))
+                                        self.keyword_summary[directory_name]["not_converted"] += 1
+                                        self.not_modified_statements.append("[After] {} @404@".format(statement))
+
+                            elif "WarriorCore" in fline.strip():
+
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["converted"] += 1
+                                converting_repo_name = self.user_repo_path.split("/")[-1].split(".")[0]
+                                file_name = file
+                                statement = fline.strip()
+
+                                if fline.split(" ",1)[-1].strip().startswith("WarriorCore"):
+                                    impo = "sed -i 's/{}/{} warrior.{}/g' {}".format(fline.strip(), fline.strip().split(" ", 1)[0].lstrip(), fline.strip().split(" ", 1)[-1].lstrip(), root + "/" + file)
+                                    try:
+                                        self.log.info("[Before] {}".format(fline.strip()))
+                                        os.system(impo)
+                                        self.log.info("[after] {} {}.{}".format(fline.split(" ", 1)[0].strip(), "warrior", fline.split(" ", 1)[-1].strip()))
+
+
+                                    except:
+                                        impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                        os.system(impo)
+                                        self.keyword_summary[directory_name]["not_converted"] += 1
+
+                                        #self.keyword_summary[directory_name]["not_converted"] += 1
+                                        self.log.info(
+                                            "[NotModified]{}::{}::{}-- replaced with @@@@".format(converting_repo_name, file_name,
+                                                                                     statement))
+                                        self.not_modified_statements.append(
+                                            "[NotModified]:::{}::{}::{}".format(
+                                                converting_repo_name,
+                                                file_name,
+                                                statement))
+                            elif "[Actions" in fline:
+
+                                self.keyword_summary[directory_name]["found"] += 1
+
+                                repo_name = self.check_for_statement_is_available_in_user_repo(
+                                    fline, self.user_repo_path)
+
+                                converting_repo_name = self.user_repo_path.split("/")[-1].split(".")[0]
+                                file_name = file
+                                statement = fline
+                                if repo_name:
+                                        import pdb
+                                        #pdb.set_trace()
+                                        self.keyword_summary[directory_name]["converted"] += 1
+                                        actual_line = statement.split("[")[-1].split("]")[0]
+
+                                        af = """sed -i 's/\[{}\]/\[{}.{}\]/g' {}""".format(
+                                            actual_line, repo_name,actual_line,
+                                            root + "/" + file)
+                                        try:
+                                            self.log.info("[Before] {}".format(fline.strip()))
+                                            os.system(af)
+                                            # import pdb
+                                            # pdb.set_trace()
+                                            self.log.info("[after] {}".format(fline.strip().replace("Actions", "{}.Actions".format(repo_name), 1)))
+
+
+                                        except:
+                                            impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                            os.system(impo)
+                                            self.keyword_summary[directory_name]["not_converted"] += 1
+                                            self.log.info(
+                                                "[NotModified]{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
+                                                                                         file_name,
+                                                                                         statement))
+                                            self.not_modified_statements.append(
+                                                "[NotModified]:::{}::{}::{}".format(
+                                                    converting_repo_name,
+                                                    file_name,
+                                                    statement))
+                                else:
+
+                                #     count = count + 1
+                                #     self.keyword_summary[directory_name]["found"] += 1
+                                    self.keyword_summary[directory_name]["not_converted"] = +1
+                                    impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                    self.log.info("[Before] {}".format(fline.strip()))
+                                    os.system(impo)
+                                    # import pdb
+                                    # pdb.set_trace()
+                                    self.log.info("[after] {}@404@".format(fline.strip()))
+        else:
+            print("path not found")
+
+    def pretty_print_test(self):
+        self.log.info("=" * 83)
+        self.log.info("                  Summary of keyword repositories                 ")
+
+        self.log.info("=" * 83)
+        self.log.info("|{:>5}| {:<15} | {:<15} | {:<10} | {:<15} | ".format("S NO",'REPO NAME', 'LINES FOUND', 'CONVERTED',
+                                                                      'NOT CONVERTED', ))
+        self.log.info("=" * 83)
+
+        # print each data item.
+        count = 0
+        for name, attr in self.keyword_summary.items():
+            count += 1
+
+            self.log.info("|{:>5}| {:<15} | {:<12} | {:<10} | {:<15} |".format(count, name, attr['found'],
+                                                                          attr['converted'],
+                                                                          attr['not_converted'],
+                                                                          ))
+        self.log.info("=" * 83)
+        self.end_time = time.time()
+        self.log.info("Total execution time in seconds: {}".format(self.end_time - parse_json.start_time))
+
+
+class migrate_testrepo(Migrate_keyword_repo):
+    """
+    """
+
+    def __init__(self, keyword_dirpath, testcase_dirpath, output_dir=None):
+        """
+        """
+        self.keyword_dirpath = keyword_dirpath
+        self.testcase_dirpath = testcase_dirpath
+        self.output_dir = output_dir or os.path.join(os.getcwd(), "migrated_repositories")
+        self.test_summary = {}
+        self.current_testrepo = None
+        self.log = logging.getLogger("Migrate_keyword_repo")
+
+    def modify_testfile(self, filename, drivers_dict):
+        """
+        """
+        tree = et.parse(filename)
+        root = tree.getroot()
+        steps = []
+        loops = []
+        file_message = None
+        step_messages = []
+        if root.tag == "Testcase" or root.tag == "TestWrapper":
+            file_message = "Processing testfile [{}] ".format(filename)
+            if root.tag == "Testcase":
+                step_tags = ["Steps"]
+            elif root.tag == "TestWrapper":
+                step_tags = ["Setup", "Cleanup", "Debug"]
+            for step_tag in step_tags:
+                nodes = root.find(step_tag)
+                if nodes:
+                    steps.extend([node for node in nodes if node.tag == "step"])
+                    loops.extend([node for node in nodes if node.tag == "Loop"])
+            for loop_node in loops:
+                steps.extend(loop_node.findall("step"))
+        for step in steps:
+            self.test_summary[self.current_testrepo]["steps_found"] += 1
+            if not step.get("Repo"):
+                repo = False
+                driver_file = "{}.py".format(step.get("Driver"))
+                for key, value in drivers_dict.items():
+                    if driver_file in value:
+                        repo = True
+                        step.set("Repo", key)
+                        step_messages.append("[+] Added Repo [{}] to step [{}]".format(key, step.get("TS")))
+                        self.test_summary[self.current_testrepo]["steps_converted"] += 1
+                        break
+                if not repo:
+                    step.set("Repo", "@404@")
+                    self.test_summary[self.current_testrepo]["steps_not_converted"] += 1
+                    step_messages.append(
+                        "[-] @404@ Couldn't Add Repo to step [{}]. Needs Attention".format(step.get("TS")))
+            else:
+                if step.get('Repo') == '@404@':
+                    step_messages.append("[-] @404@ Repo found in step [{}]. Needs Attention".format(step.get("TS")))
+                self.test_summary[self.current_testrepo]["steps_has_repo_already"] += 1
+        if step_messages:
+            self.log.info(file_message)
+            for line in step_messages:
+                self.log.info(line)
+            tree.write(filename)
+
+    def get_productdrivers_info(self):
+        """
+        """
+        drivers_dict = {}
+        for key_repo in os.listdir(self.keyword_dirpath):
+            pd_path = os.path.join(self.keyword_dirpath, key_repo, "ProductDrivers")
+            drivers_dict[key_repo] = os.listdir(pd_path)
+        return drivers_dict
+
+    def migrate_testcase_repositories(self):
+        """
+        """
+        drivers_dict = self.get_productdrivers_info()
+        test_repo_dirs = os.listdir(self.testcase_dirpath)
+        for test_repo_dir in test_repo_dirs:
+            self.current_testrepo = test_repo_dir
+            self.test_summary[self.current_testrepo] = {}
+            self.test_summary[self.current_testrepo]["steps_found"] = 0
+            self.test_summary[self.current_testrepo]["steps_converted"] = 0
+            self.test_summary[self.current_testrepo]["steps_not_converted"] = 0
+            self.test_summary[self.current_testrepo]["steps_has_repo_already"] = 0
+            walk_path = os.path.join(self.testcase_dirpath, test_repo_dir)
+            for path, dirs, files in os.walk(walk_path):
+                for f in files:
+                    filename = os.path.join(path, f)
+                    try:
+                        self.modify_testfile(filename, drivers_dict)
+                    except Exception as e:
+                        pass
+        if os.path.exists(self.output_dir):
+            shutil.rmtree(self.output_dir)
+        #destination = shutil.copytree(self.testcase_dirpath, self.output_dir)
+        #self.log.info(destination)
+
+    def pretty_print(self):
+        self.log.info("=" * 83)
+        self.log.info("                     SUMMARY OF TESTCASE REPOSITORIES                     ")
+        self.log.info("=" * 83)
+        self.log.info("|{:>5}| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format("SNO", 'REPO NAME', 'STEPS FOUND', 'CONVERTED',
+                                                                      'NOT CONVERTED', 'HAS REPO'))
+        self.log.info("=" * 83)
+
+        # print each data item.
+        testcase_repo_count = 0
+        for name, attr in self.test_summary.items():
+            testcase_repo_count += 1
+            self.log.info("|{:>5}| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format(testcase_repo_count, name, attr['steps_found'],
+                                                                          attr['steps_converted'],
+                                                                          attr['steps_not_converted'],
+                                                                          attr['steps_has_repo_already']))
+        self.log.info("=" * 83)
+
+
+file_path = args.file_name
+parse_obj = parse_json(file_path)
+print(parse_obj.keyword_repourls)
+
+m = Migrate_keyword_repo(parse_obj.keyword_repourls, parse_obj.test_repourls, parse_obj.output_dir)
+m.creating_directories()
+m.modifying_warrior_framework_folder()
+
+
+# mig_obj = migrate_testrepo(m.keyword_repos_path, m.testcase_repos_path, parse_obj.output_dir)
+# mig_obj.migrate_testcase_repositories()
+# m.add_log()
+# m.verify_import_statements("/home/apathapa/Documents/warriorframework_py3/warrior/WarriorTools/warrior_py3_migration_tools/conversion/keyword_repositories/kw_lseries")
+# parse_obj = parse_json("migrate_info.json")
+# print(parse_obj.keyword_repourls)
+
+
+mig_obj = migrate_testrepo(m.keyword_repos_path, m.testcase_repos_path, parse_obj.output_dir)
+mig_obj.migrate_testcase_repositories()
+
+# pretty print
+mig_obj.pretty_print()
+m.pretty_print_test()
+m.add_log()
+
+
