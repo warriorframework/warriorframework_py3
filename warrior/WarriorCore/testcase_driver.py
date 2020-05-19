@@ -728,26 +728,31 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                         break
     except:
         pass
+
     if system_name:
         junit_file_obj = data_repository['wt_junit_object']
         root = junit_file_obj.root
         suite_details = root.findall("testsuite")[0]
-        test_case_details = suite_details.findall("testcase")[0]
-        print_info("kafka server is presented in Inputdata file..")
-        system_details = _get_system_or_subsystem(data_file, system_name)
-        data = {}
-        for item in system_details.getchildren():
-            if item.tag == "kafka_port":
-                ssh_port = item.text
-                continue
-            if item.tag == "ip":
-                ip_address = item.text
-                continue
-            try:
-                value = ast.literal_eval(item.text)
-            except ValueError:
-                value = item.text
-            data.update({item.tag: value})
+        test_case_details = suite_details.findall("testcase")
+        if test_case_details:
+            test_case_details = suite_details.findall("testcase")[0]
+            print_info("kafka server is presented in Inputdata file..")
+            system_details = _get_system_or_subsystem(data_file, system_name)
+            data = {}
+            for item in system_details.getchildren():
+                if item.tag == "kafka_port":
+                    ssh_port = item.text
+                    ssh_port = Utils.data_Utils.sub_from_env_var(ssh_port)
+                    continue
+                if item.tag == "ip":
+                    ip_address = item.text
+                    ip_address = Utils.data_Utils.sub_from_env_var(ip_address)
+                    continue
+                try:
+                    value = ast.literal_eval(item.text)
+                except ValueError:
+                    value = item.text
+                data.update({item.tag: value})
 
         ip_port = ["{}:{}".format(ip_address, ssh_port)]
         data.update({"bootstrap_servers": ip_port})
