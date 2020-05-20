@@ -22,7 +22,7 @@
 			<Description>None</Description>
 			<Execute ExecType="Yes">
 			</Execute>
-			<runmode type="standard"></runmode>
+			<runmode type="ruf" value="1"></runmode>
 			<Iteration_type type="standard"></Iteration_type>
 			<context>positive</context>
 			<impact>impact</impact>
@@ -36,7 +36,7 @@
 			<Description>None</Description>
 			<Execute ExecType="Yes">
 			</Execute>
-			<runmode type="standard"></runmode>
+			<runmode type="ruf" value="1"></runmode>
 			<Iteration_type type="standard"></Iteration_type>
 			<context>positive</context>
 			<impact>impact</impact>

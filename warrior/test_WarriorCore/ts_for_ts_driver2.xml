@@ -8,7 +8,7 @@
 		<Date>2020-4-15</Date>
 		<Time>12:29</Time>
 		<type exectype="sequential_testcases" Number_Attempts=""></type>
-		<default_onError action="next" value=""></default_onError>
+		<default_onError action="abort" value=""></default_onError>
 		<InputDataFile>No_Data</InputDataFile>
 		<TestWrapperFile>tw_for_ts1.xml</TestWrapperFile>
 		<Resultsdir></Resultsdir>

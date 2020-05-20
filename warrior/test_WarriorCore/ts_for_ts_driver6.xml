@@ -5,12 +5,11 @@
 		<Title>Untitled</Title>
 		<State>New</State>
 		<Engineer>Untitled</Engineer>
-		<Date>2020-4-20</Date>
-		<Time>12:43</Time>
-		<type exectype="sequential_testcases" Number_Attempts="2"></type>
+		<Date>2020-4-27</Date>
+		<Time>10:31</Time>
+		<type exectype="Run Until Fail" Max_Attempts="2"></type>
 		<default_onError action="next" value=""></default_onError>
 		<InputDataFile>No_Data</InputDataFile>
-		<TestWrapperFile>tw_for_ts1.xml</TestWrapperFile>
 		<Resultsdir></Resultsdir>
 	</Details>
 	<Requirements>
@@ -22,7 +21,18 @@
 			<runtype>sequential_keywords</runtype>
 			<Execute ExecType="Yes">
 			</Execute>
-			<runmode type="ruf" value="1"></runmode>
+			<runmode type="standard"></runmode>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testcase>
+		<Testcase TS="2">
+			<path>tc_for_ts2.xml</path>
+			<InputDataFile></InputDataFile>
+			<runtype>sequential_keywords</runtype>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
 			<context>positive</context>
 			<impact>impact</impact>
 			<onError action="next"></onError>
