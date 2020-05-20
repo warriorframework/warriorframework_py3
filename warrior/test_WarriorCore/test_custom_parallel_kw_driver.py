@@ -21,7 +21,7 @@ from os.path import abspath, dirname
 try:
     import warrior
     # except ModuleNotFoundError as error:
-except Exception as e:
+except Exception:
     WARRIORDIR = dirname(dirname(dirname(abspath(__file__))))
     sys.path.append(WARRIORDIR)
     import warrior
@@ -45,7 +45,7 @@ def test_execute_custom_parallel():
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_custom_par.xml"))
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     tc_timestamp = timestamp
-    with open(result_dir+'/'+'resultfile.txt', 'w') as fp:
+    with open(result_dir+'/'+'resultfile.txt', 'w'):
         pass
     wt_resultfile = os.path.join(result_dir, 'resultfile.txt')
     step_list = tree.findall('Steps/step')
@@ -71,7 +71,7 @@ def test_main():
     Computes and returns the testcase status"""
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_custom_par.xml"))
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    with open(result_dir+'/'+'resultfile.txt', 'w') as fp:
+    with open(result_dir+'/'+'resultfile.txt', 'w'):
         pass
     wt_resultfile = os.path.join(result_dir, 'resultfile.txt')
     step_list = tree.findall('Steps/step')

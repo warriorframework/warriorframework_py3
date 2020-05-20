@@ -24,9 +24,7 @@ except Exception as e:
     sys.path.append(WARRIORDIR)
     import warrior
 
-from warrior.WarriorCore import defects_driver
 from warrior.WarriorCore.defects_driver import DefectsDriver
-from warrior.Framework.Utils import file_Utils
 
 temp_cwd = os.path.split(__file__)[0]
 path = os.path.join(temp_cwd, 'UT_results')
@@ -44,13 +42,12 @@ class test_DefectsDriver(TestCase):
         """Gets the list of defect json files for the testcase execution """
         wt_resultfile = os.path.join(os.path.split(__file__)[0], "defects_driver_results_tc.xml")
         wt_defectsdir = result_dir
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         wt_testcase_filepath = os.path.join(os.path.split(__file__)[0], "defects_driver_tc.xml")
         data_repository = {'wt_resultfile':wt_resultfile, 'wt_defectsdir':wt_defectsdir, \
-        'wt_logsdir':wt_logsdir, 'wt_resultfile':wt_resultfile, 'wt_testcase_filepath':\
-        wt_testcase_filepath, 'jiraproj':None}
+        'wt_logsdir':wt_logsdir, 'wt_testcase_filepath': wt_testcase_filepath, 'jiraproj':None}
         cls_obj = DefectsDriver(data_repository)
         result = cls_obj.get_defect_json_list()
         assert type(result) == list
@@ -60,13 +57,12 @@ class test_DefectsDriver(TestCase):
 
         wt_resultfile = os.path.join(os.path.split(__file__)[0], "defects_driver_results_tc1.xml")
         wt_defectsdir = result_dir
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         wt_testcase_filepath = os.path.join(os.path.split(__file__)[0], "defects_driver_tc1.xml")
         data_repository = {'wt_resultfile':wt_resultfile, 'wt_defectsdir':wt_defectsdir, \
-        'wt_logsdir':wt_logsdir, 'wt_resultfile':wt_resultfile, 'wt_testcase_filepath':\
-        wt_testcase_filepath, 'jiraproj':None}
+        'wt_logsdir':wt_logsdir, 'wt_testcase_filepath': wt_testcase_filepath, 'jiraproj':None}
         cls_obj = DefectsDriver(data_repository)
         result = cls_obj.create_failing_kw_json()
         assert result == None
@@ -75,13 +71,12 @@ class test_DefectsDriver(TestCase):
         """Create a json file each failing keyword """
         wt_resultfile = os.path.join(os.path.split(__file__)[0], "defects_driver_results_tc2.xml")
         wt_defectsdir = result_dir
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         wt_testcase_filepath = os.path.join(os.path.split(__file__)[0], "defects_driver_tc2.xml")
         data_repository = {'wt_resultfile':wt_resultfile, 'wt_defectsdir':wt_defectsdir, \
-        'wt_logsdir':wt_logsdir, 'wt_resultfile':wt_resultfile, 'wt_testcase_filepath':\
-        wt_testcase_filepath, 'jiraproj':None}
+        'wt_logsdir':wt_logsdir, 'wt_testcase_filepath': wt_testcase_filepath, 'jiraproj':None}
         cls_obj = DefectsDriver(data_repository)
         result = cls_obj.create_failing_kw_json()
         assert result == False
@@ -91,13 +86,12 @@ class test_DefectsDriver(TestCase):
 
         wt_resultfile = os.path.join(os.path.split(__file__)[0], "defects_driver_results_tc.xml")
         wt_defectsdir = result_dir
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         wt_testcase_filepath = os.path.join(os.path.split(__file__)[0], "defects_driver_tc.xml")
         data_repository = {'wt_resultfile':wt_resultfile, 'wt_defectsdir':wt_defectsdir, \
-        'wt_logsdir':wt_logsdir, 'wt_resultfile':wt_resultfile, 'wt_testcase_filepath':\
-        wt_testcase_filepath, 'jiraproj':None}
+        'wt_logsdir':wt_logsdir, 'wt_testcase_filepath': wt_testcase_filepath, 'jiraproj':None}
         cls_obj = DefectsDriver(data_repository)
         result = cls_obj.create_failing_kw_json()
         assert result == True

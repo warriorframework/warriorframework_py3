@@ -216,7 +216,7 @@ def test_get_arguments():
     step = steps.find('step')
     result = step_driver.get_arguments(step)
     check1 = 'notify_count' in result
-    check2 = 'timeout' in result 
+    check2 = 'timeout' in result
     assert check1 == True
     assert check2 == True
 
@@ -228,7 +228,7 @@ def test_get_arguments_with_env_variables():
     step = steps.find('step')
     result = step_driver.get_arguments(step)
     check1 = 'notify_count' in result
-    check2 = 'timeout' in result 
+    check2 = 'timeout' in result
     assert check1 == True
     assert check2 == True
 
@@ -304,7 +304,6 @@ def test_get_keyword_resultfile_else_condition():
     '''testcase for get_keyword_resultfile_else_condition'''
     data_repository = {}
     homepath = str(Path.home())
-    testcasename = "step_driver_testcase.xml"
     data_repository['wt_kw_results_dir'] = result_dir
     system_name = 'ut_test'
     step_num = 1
