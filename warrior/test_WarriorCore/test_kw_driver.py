@@ -37,7 +37,6 @@ import warrior.Actions.CommonActions
 def test_get_package_name_list():
     """Take a list of package loaders and returns
     a list of package names """
-
     package_list = [warrior.Actions.CommonActions]
     result = kw_driver.get_package_name_list(package_list)
     check1 = 'warrior.Actions.CommonActions' in result
@@ -51,7 +50,6 @@ def test_execute_keyword():
      'wt_logs_execdir': None, 'wt_name': 'test', 'step_num':None}
     args_repository = {'datavar': 'a', 'datavalue': 'b'}
     warrior.Framework.Utils.testcase_Utils.pStep = MagicMock(return_value=None)
-
     package_list = [warrior.Actions.CommonActions]
     warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     warrior.Framework.Utils.config_Utils.data_repository = MagicMock(return_value=data_repository)
@@ -70,7 +68,6 @@ def test_execute_keyword_empty_package_list():
      'wt_logs_execdir': None, 'wt_name': 'test', 'step_num':None}
     args_repository = {'datavar': 'a', 'datavalue': 'b'}
     warrior.Framework.Utils.testcase_Utils.pStep = MagicMock(return_value=None)
-
     package_list = []
     warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     warrior.Framework.Utils.config_Utils.data_repository = MagicMock(return_value=data_repository)

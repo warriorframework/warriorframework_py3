@@ -41,14 +41,12 @@ def test_append_step_list():
     go_next = 5
     mode = 'runmode'
     tag = 'value'
-
     new_step_list_12 = common_execution_utils.append_step_list(step_list=[], step=sstep,\
      value=value, go_next=go_next, mode=mode, tag=tag)
     assert len(new_step_list_12) == 4
 
 def test_get_step_list_for_steps():
     '''test_get_step_list_for_steps'''
-
     file_path = os.path.join(os.path.split(__file__)[0], "common_exe_utils.xml")
     result = common_execution_utils.get_step_list(filepath=file_path, step_tag="Steps", \
         sub_step_tag="step")
@@ -56,25 +54,20 @@ def test_get_step_list_for_steps():
 
 def test_get_step_list_for_loop_tag_without_loop_id():
     '''test_get_step_list_for_loop_tag_without_loop_id'''
-
     file_path = os.path.join(os.path.split(__file__)[0], "test_loop_datatype_without_loop_id.xml")
-    #common_execution_utils.get_object_from_datarepository = MagicMock(return_value=file_path)
     status = common_execution_utils.get_step_list(filepath=file_path, step_tag="Steps",\
      sub_step_tag="step")
     assert status == False
 
 def test_get_step_list_for_loop_tag_without_file_tag():
     '''test_get_step_list_for_loop_tag_without_file_tag'''
-
     file_path = os.path.join(os.path.split(__file__)[0], "test_loop_datatype_without_file_tag.xml")
-    #common_execution_utils.get_object_from_datarepository = MagicMock(return_value=file_path)
     status = common_execution_utils.get_step_list(filepath=file_path,  step_tag="Steps",\
      sub_step_tag="step")
     assert status == False
 
 def test_get_step_list_for_loop_tag_with_invalid_json():
     '''test_get_step_list_for_loop_tag_with_invalid_json'''
-
     file_path = os.path.join(os.path.split(__file__)[0], "test_loop_datatype.xml")
     json_file_path = os.path.join(os.path.split(__file__)[0], "wrong_1j_loop_datatype.json")
     common_execution_utils.get_object_from_datarepository = MagicMock(return_value=file_path)
@@ -82,19 +75,15 @@ def test_get_step_list_for_loop_tag_with_invalid_json():
     result = common_execution_utils.get_step_list(filepath=file_path,  step_tag="Steps",\
      sub_step_tag="step" )
     assert result == False
-
     del common_execution_utils.get_object_from_datarepository
     del common_execution_utils.getAbsPath
 
 def test_get_step_list_for_loop_tag_with_json_file_not_found():
     '''test_get_step_list_for_loop_tag_with_json_file_not_found'''
-
     file_path = os.path.join(os.path.split(__file__)[0], "test_loop_datatype.xml")
     json_file_path = os.path.join(os.path.split(__file__)[0], "wrong_1j_loop_datatype2.json")
-    # common_execution_utils.update_datarepository = MagicMock(return_value={})
     common_execution_utils.get_object_from_datarepository = MagicMock(return_value=file_path)
     common_execution_utils.getAbsPath = MagicMock(return_value=json_file_path)
-
     result = common_execution_utils.get_step_list(filepath=file_path,  step_tag="Steps", \
         sub_step_tag="step" )
     assert result == False
@@ -113,7 +102,6 @@ def test_get_runmode_from_xmlfile():
     go_next = 5
     mode = 'runmode'
     tag = 'value'
-
     result = common_execution_utils.get_runmode_from_xmlfile(element=sstep)
     assert result[0] == 'RMT'
     assert result[1] == 4

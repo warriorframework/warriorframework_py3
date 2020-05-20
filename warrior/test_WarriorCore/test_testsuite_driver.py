@@ -31,7 +31,9 @@ try:
     result_dir = os.path.join(dirname(abspath(__file__)), 'UT_results')
 except OSError as error:
     pass
+sys.modules['warrior.WarriorCore.Classes.argument_datatype_class'] = MagicMock(return_value=None)
 
+from warrior.WarriorCore import testcase_steps_execution
 from warrior.WarriorCore import testcase_driver
 from warrior.Framework import Utils
 from warrior.WarriorCore import testsuite_driver
@@ -62,6 +64,7 @@ def test_execute_testsuite_parallel_cases():
     os.environ["WAR_TOOLS_DIR"] = tools_dir
     aa = os.getenv("WAR_TOOLS_DIR")
     aa = MagicMock(return_value=tools_dir)
+    testcase_steps_execution.main = MagicMock(return_value=([True],[],['impact']))
     Utils.testcase_Utils.pStep = MagicMock(return_value=None)
     Utils.testcase_Utils.update_step_num = MagicMock(return_value=None)
     Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
@@ -71,7 +74,7 @@ def test_execute_testsuite_parallel_cases():
     data_repository = {'db_obj': False, 'war_file_type': 'Suite', 'wt_ts_impact':'impact'}
     result1, result2 = testsuite_driver.execute_testsuite(testsuite_filepath, data_repository,\
      from_project=False, auto_defects=False, jiraproj=None, res_startdir=None, logs_startdir=None,\
-      ts_onError_action=next, queue=None, ts_parallel=False)
+      ts_onError_action='next', queue=None, ts_parallel=False)
     test1 = 'suite_name' in result2
     assert test1 == True
     assert result1 == True, result2 == dict
@@ -81,6 +84,7 @@ def test_execute_testsuite_parallel_cases():
     del Utils.testcase_Utils.pSubStep
     del Utils.data_Utils.update_datarepository
     del Utils.testcase_Utils.report_substep_status
+    del testcase_steps_execution.main
 
 def test_execute_testsuite_runmode_none():
     """Executes the testsuite (provided as a xml file)
@@ -94,11 +98,12 @@ def test_execute_testsuite_runmode_none():
     Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
     Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
+    testcase_steps_execution.main = MagicMock(return_value=([True, True],[],['impact','impact']))
     testsuite_filepath = os.path.join(os.path.split(__file__)[0], "ts_for_ts_driver2.xml")
     data_repository = {'db_obj': False, 'war_file_type': 'Suite'}
     result1, result2 = testsuite_driver.execute_testsuite(testsuite_filepath, data_repository,\
      from_project=False, auto_defects=False, jiraproj=None, res_startdir=None, logs_startdir=None,\
-      ts_onError_action=next, queue=None, ts_parallel=False)
+      ts_onError_action='next', queue=None, ts_parallel=False)
     test1 = 'suite_name' in result2
     assert test1 == True
     assert result1 == 'ERROR', result2 == dict
@@ -108,6 +113,7 @@ def test_execute_testsuite_runmode_none():
     del Utils.testcase_Utils.pSubStep
     del Utils.data_Utils.update_datarepository
     del Utils.testcase_Utils.report_substep_status
+    del testcase_steps_execution.main
 
 def test_execute_testsuite_runmode_RUF():
     """Executes the testsuite (provided as a xml file)
@@ -121,11 +127,12 @@ def test_execute_testsuite_runmode_RUF():
     Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
     Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
+    testcase_steps_execution.main = MagicMock(return_value=([True, True],[],['impact','impact']))
     testsuite_filepath = os.path.join(os.path.split(__file__)[0], "ts_for_ts_driver3.xml")
     data_repository = {'db_obj': False, 'war_file_type': 'Suite'}
     result1, result2 = testsuite_driver.execute_testsuite(testsuite_filepath, data_repository,\
      from_project=False, auto_defects=False, jiraproj=None, res_startdir=None, logs_startdir=None,\
-      ts_onError_action=next, queue=None, ts_parallel=False)
+      ts_onError_action='next', queue=None, ts_parallel=False)
     test1 = 'suite_name' in result2
     assert test1 == True
     assert result1 == True, result2 == dict
@@ -135,6 +142,7 @@ def test_execute_testsuite_runmode_RUF():
     del Utils.testcase_Utils.pSubStep
     del Utils.data_Utils.update_datarepository
     del Utils.testcase_Utils.report_substep_status
+    del testcase_steps_execution.main
 
 def test_execute_testsuite_exetype_RUF():
     """Executes the testsuite (provided as a xml file)
@@ -148,6 +156,7 @@ def test_execute_testsuite_exetype_RUF():
     Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
     Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
+    testcase_steps_execution.main = MagicMock(return_value=([True],[],['impact']))
     testsuite_filepath = os.path.join(os.path.split(__file__)[0], "ts_for_ts_driver6.xml")
     data_repository = {'db_obj': False, 'war_file_type': 'Suite'}
     result1, result2 = testsuite_driver.execute_testsuite(testsuite_filepath, data_repository,\
@@ -162,6 +171,7 @@ def test_execute_testsuite_exetype_RUF():
     del Utils.testcase_Utils.pSubStep
     del Utils.data_Utils.update_datarepository
     del Utils.testcase_Utils.report_substep_status
+    del testcase_steps_execution.main
 
 def test_execute_testsuite_runmode_RMT():
     """Executes the testsuite (provided as a xml file)
@@ -175,6 +185,7 @@ def test_execute_testsuite_runmode_RMT():
     Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
     Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
+    testcase_steps_execution.main = MagicMock(return_value=([True, True],[],['impact','impact']))
     testsuite_filepath = os.path.join(os.path.split(__file__)[0], "ts_for_ts_driver4.xml")
     data_repository = {'db_obj': False, 'war_file_type': 'Suite'}
     result1, result2 = testsuite_driver.execute_testsuite(testsuite_filepath, data_repository,\
@@ -189,6 +200,7 @@ def test_execute_testsuite_runmode_RMT():
     del Utils.testcase_Utils.pSubStep
     del Utils.data_Utils.update_datarepository
     del Utils.testcase_Utils.report_substep_status
+    del testcase_steps_execution.main
 
 def test_execute_testsuite():
     """Executes the testsuite (provided as a xml file)
@@ -202,11 +214,12 @@ def test_execute_testsuite():
     Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
     Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
+    testcase_steps_execution.main = MagicMock(return_value=([True],[],['impact']))
     testsuite_filepath = os.path.join(os.path.split(__file__)[0], "ts_for_ts_driver1.xml")
     data_repository = {'db_obj': False, 'war_file_type': 'Suite'}
     result1, result2 = testsuite_driver.execute_testsuite(testsuite_filepath, data_repository,\
      from_project=False, auto_defects=False, jiraproj=None, res_startdir=None, logs_startdir=None,\
-      ts_onError_action=next, queue=None, ts_parallel=False)
+      ts_onError_action='next', queue=None, ts_parallel=False)
     test1 = 'suite_name' in result2
     assert result1 == True, result2 == dict
     assert test1 == True
@@ -216,6 +229,7 @@ def test_execute_testsuite():
     del Utils.testcase_Utils.pSubStep
     del Utils.data_Utils.update_datarepository
     del Utils.testcase_Utils.report_substep_status
+    del testcase_steps_execution.main
 
 def test_main_positive():
     """Executes the testsuite (provided as a xml file)
@@ -229,11 +243,12 @@ def test_main_positive():
     Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
     Utils.data_Utils.update_datarepository = MagicMock(return_value=None)
     Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
+    testcase_steps_execution.main = MagicMock(return_value=([True],[],['impact']))
     testsuite_filepath = os.path.join(os.path.split(__file__)[0], "ts_for_ts_driver1.xml")
     data_repository = {'db_obj': False, 'war_file_type': 'Suite'}
     result1, result2 = testsuite_driver.main(testsuite_filepath, data_repository,\
      from_project=False, auto_defects=False, jiraproj=None, res_startdir=None, logs_startdir=None,\
-      ts_onError_action=next, queue=None, ts_parallel=False)
+      ts_onError_action='next', queue=None, ts_parallel=False)
     test1 = 'suite_name' in result2
     assert result1 == True, result2 == dict
     assert test1 == True
@@ -243,6 +258,7 @@ def test_main_positive():
     del Utils.testcase_Utils.pSubStep
     del Utils.data_Utils.update_datarepository
     del Utils.testcase_Utils.report_substep_status
+    del testcase_steps_execution.main
 
 def test_main_negitive():
     """Executes a test suite """
@@ -250,5 +266,6 @@ def test_main_negitive():
     data_repository = {'db_obj': False, 'war_file_type': 'Suite'}
     result1, result2 = testsuite_driver.main(testsuite_filepath, data_repository={},\
      from_project=False, auto_defects=False, jiraproj=None, res_startdir=None, logs_startdir=None,\
-      ts_onError_action=next, queue=None, ts_parallel=False)
+      ts_onError_action='next', queue=None, ts_parallel=False)
     assert result1 == False, result2 == dict
+sys.modules.pop('warrior.WarriorCore.Classes.argument_datatype_class')

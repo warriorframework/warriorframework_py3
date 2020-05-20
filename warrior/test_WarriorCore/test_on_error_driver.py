@@ -14,7 +14,6 @@ limitations under the License.
 import os
 import sys
 import xml.etree.ElementTree as ET
-from unittest.mock import MagicMock
 from os.path import abspath, dirname
 try:
     import warrior
