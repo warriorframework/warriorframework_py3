@@ -32,8 +32,7 @@ try:
 except OSError as error:
     pass
 
-from warrior.WarriorCore.Classes import execution_files_class, junit_class
-from warrior.WarriorCore.Classes.iterative_testsuite_class import IterativeTestsuite
+from warrior.WarriorCore import testcase_driver
 from warrior.Framework import Utils
 from warrior.WarriorCore import testsuite_driver
 from warrior.WarriorCore import testsuite_utils
