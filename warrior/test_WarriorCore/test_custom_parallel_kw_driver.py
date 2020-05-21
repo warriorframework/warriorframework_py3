@@ -21,30 +21,33 @@ from os.path import abspath, dirname
 try:
     import warrior
     # except ModuleNotFoundError as error:
-except Exception as e:
+except Exception:
     WARRIORDIR = dirname(dirname(dirname(abspath(__file__))))
     sys.path.append(WARRIORDIR)
     import warrior
 
 from warrior.WarriorCore.multiprocessing_utils import update_tc_junit_resultfile
 from warrior.WarriorCore.Classes import junit_class
-
 sys.modules['warrior.WarriorCore.Classes.argument_datatype_class'] = MagicMock(return_value=None)
-
 from warrior.WarriorCore import custom_parallel_kw_driver
+
+temp_cwd = os.path.split(__file__)[0]
+path = os.path.join(temp_cwd, 'UT_results')
+
+try:
+    os.makedirs(path, exist_ok=True)
+    result_dir = os.path.join(dirname(abspath(__file__)), 'UT_results')
+except OSError as error:
+    pass
 
 def test_execute_custom_parallel():
     '''testcase for execute_custom_parallel'''
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_custom_par.xml"))
-
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
     tc_timestamp = timestamp
-    temp_logs_dir = os.getcwd()
-
-    with open(temp_logs_dir+'resultfile.txt', 'w') as fp:
+    with open(result_dir+'/'+'resultfile.txt', 'w'):
         pass
-    wt_resultfile = os.path.join(temp_logs_dir, 'resultfile.txt')
-
+    wt_resultfile = os.path.join(result_dir, 'resultfile.txt')
     step_list = tree.findall('Steps/step')
     tc_status = False
     system_name = 'NE1'
@@ -56,32 +59,26 @@ def test_execute_custom_parallel():
                                         display=pj_junit_display)
     data_repository = {'wt_junit_object':tc_junit_object, 'wt_tc_timestamp':timestamp,\
      'wt_resultfile':wt_resultfile, 'wt_filename':'testcase_step_exe',\
-      'wt_step_impact':'impact', 'wt_logsdir':temp_logs_dir}
+      'wt_step_impact':'impact', 'wt_logsdir':result_dir}
     update_tc_junit_resultfile = MagicMock(return_value='')
-
     result = custom_parallel_kw_driver.execute_custom_parallel(step_list, data_repository,\
      tc_status, system_name)
     assert result == True
+    del update_tc_junit_resultfile
 
 def test_main():
     """Executes the list of steps in parallel
     Computes and returns the testcase status"""
-
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_custom_par.xml"))
-
     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    temp_logs_dir = os.getcwd()
-
-    with open(temp_logs_dir+'resultfile.txt', 'w') as fp:
+    with open(result_dir+'/'+'resultfile.txt', 'w'):
         pass
-    wt_resultfile = os.path.join(temp_logs_dir, 'resultfile.txt')
-
+    wt_resultfile = os.path.join(result_dir, 'resultfile.txt')
     step_list = tree.findall('Steps/step')
     tc_status = False
     data_repository = {'wt_junit_object':None, 'wt_tc_timestamp':timestamp,\
      'wt_resultfile':wt_resultfile}
-
     result = custom_parallel_kw_driver.main(step_list, data_repository, tc_status,\
      system_name=None)
     assert result == False
-
+sys.modules.pop('warrior.WarriorCore.Classes.argument_datatype_class')

@@ -28,7 +28,6 @@ except Exception:
     import warrior
 
 sys.modules['warrior.WarriorCore.Classes.argument_datatype_class'] = MagicMock(return_value=None)
-
 from warrior.WarriorCore import custom_sequential_kw_driver
 from warrior.WarriorCore import testcase_steps_execution
 from warrior.WarriorCore import step_driver
@@ -42,7 +41,6 @@ try:
     result_dir = os.path.join(dirname(abspath(__file__)), 'UT_results')
 except OSError as error:
     pass
-
 
 def test_execute_custom_sequential_positive():
     """ Takes a list of steps as input and executes"""

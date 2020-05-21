@@ -75,12 +75,10 @@ class test_execute_step(unittest.TestCase):
             timestamp=timestamp,
             name='customProject_independant_testcase_execution',
             display=False)
-
         Utils.testcase_Utils.update_step_num = MagicMock(return_value=None)
         Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
         Utils.testcase_Utils.pStep = MagicMock(return_value=None)
         Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
-
         system_name = None
         kw_parallel = False
         keyword = 'wait_for_timeout'
@@ -116,7 +114,6 @@ class test_execute_step(unittest.TestCase):
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename, timestamp=timestamp, name='customProject_independant_testcase_execution',
             display=False)
-
         Utils.testcase_Utils.update_step_num = MagicMock(return_value=None)
         Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
         Utils.testcase_Utils.pStep = MagicMock(return_value=None)
@@ -157,12 +154,10 @@ class test_execute_step(unittest.TestCase):
         wt_junit_object = warrior.WarriorCore.Classes.junit_class.Junit(
             testcasename, timestamp=timestamp,
             name='customProject_independant_testcase_execution', display=False)
-
         Utils.testcase_Utils.update_step_num = MagicMock(return_value=None)
         Utils.testcase_Utils.pSubStep = MagicMock(return_value=None)
         Utils.testcase_Utils.pStep = MagicMock(return_value=None)
         Utils.testcase_Utils.report_substep_status = MagicMock(return_value=None)
-
         system_name = None
         keyword = 'wait_for_timeout'
         data_repository = {'wt_junit_object':wt_junit_object, 'wt_filename':\
@@ -170,7 +165,6 @@ class test_execute_step(unittest.TestCase):
         'wt_def_on_error_action':'NEXT', 'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir,\
         'wt_name':'step_driver_testcase', 'war_parallel':True, 'war_file_type':'Case',\
         'wt_step_type':'step'}
-
         result = step_driver.main(step, step_num, data_repository, system_name, kw_parallel=False,\
             queue=None, skip_invoked=True)
         assert result[0] == True
@@ -205,7 +199,6 @@ class test_execute_step(unittest.TestCase):
         'wt_def_on_error_action':'NEXT', 'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir,\
         'wt_name':'step_driver_testcase', 'war_parallel':True, 'war_file_type':'Case',\
         'wt_step_type':'step'}
-
         result = step_driver.main(step, step_num, data_repository, system_name, kw_parallel=False,\
             queue=None, skip_invoked=True)
         assert result[0] == False
@@ -223,7 +216,7 @@ def test_get_arguments():
     step = steps.find('step')
     result = step_driver.get_arguments(step)
     check1 = 'notify_count' in result
-    check2 = 'timeout' in result 
+    check2 = 'timeout' in result
     assert check1 == True
     assert check2 == True
 
@@ -235,7 +228,7 @@ def test_get_arguments_with_env_variables():
     step = steps.find('step')
     result = step_driver.get_arguments(step)
     check1 = 'notify_count' in result
-    check2 = 'timeout' in result 
+    check2 = 'timeout' in result
     assert check1 == True
     assert check2 == True
 
@@ -255,10 +248,10 @@ def test_send_keyword_to_productdriver1():
         data_repository, args_repository, repo_name)
     assert result['step_num'] == 1
     del TestcaseUtils.p_step
+    del Utils.testcase_Utils.pStep
 
 def test_send_keyword_to_productdriver2():
     '''testcase for send_keyword_to_productdriver2'''
-    from warrior.WarriorCore.Classes.testcase_utils_class import TestcaseUtils
     Utils.testcase_Utils.pStep = MagicMock(return_value=None)
     TestcaseUtils.p_step = MagicMock()
     warriorpath = "/".join((os.path.abspath(__file__).split('/')[:-2]))
@@ -311,7 +304,6 @@ def test_get_keyword_resultfile_else_condition():
     '''testcase for get_keyword_resultfile_else_condition'''
     data_repository = {}
     homepath = str(Path.home())
-    testcasename = "step_driver_testcase.xml"
     data_repository['wt_kw_results_dir'] = result_dir
     system_name = 'ut_test'
     step_num = 1
