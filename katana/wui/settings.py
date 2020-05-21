@@ -223,12 +223,3 @@ STATICFILES_DIRS = [
     ]
 DATA_UPLOAD_MAX_MEMORY_SIZE = 10242880
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
-DATA_UPLOAD_MAX_MEMORY_SIZE = 10242880
-
-CHUNK_VALUE = 1000
-CSV_HEADERS = ['target_id', 'gne_ip', 'user_id', 'passwd', 'gne_tid', \
-               'gne_port', 'model', 'region', \
-               'gne_vendor', 'vendor', 'version', 'id', 'list_id', \
-               'ne_status', 'schedule_id', 'gne_model']
-CSV_LIMIT = 20001
-FROM_EMAIL = 'Sushma.Musulla@us.fujitsu.com'
