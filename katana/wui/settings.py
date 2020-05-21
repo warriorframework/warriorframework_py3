@@ -119,9 +119,6 @@ DATABASES = {
 
 DATABASE_ROUTERS = ['katana.dbrouter.DbRouter']
 
-KIBANA_DASHBOARD_URL_HEADER = "/app/kibana#/dashboard/cb1dd160-e401-11e9-a053-fb19855d7d88?embed=true&_g=(refreshInterval:(pause:!f,value:60000),"
-KIBANA_DASHBOARD_URL_FOOTER = ")&_a=(description:'',filters:!(),fullScreenMode:!f,options:(darkTheme:!f,hidePanelTitles:!f,useMargins:!t),panels:!((embeddableConfig:(),gridData:(h:15,i:'2',w:24,x:0,y:7),id:'235f7730-e401-11e9-a053-fb19855d7d88',panelIndex:'2',type:visualization,version:'6.5.4'),(embeddableConfig:(),gridData:(h:15,i:'3',w:24,x:24,y:7),id:'888e05e0-e401-11e9-a053-fb19855d7d88',panelIndex:'3',type:visualization,version:'6.5.4'),(embeddableConfig:(),gridData:(h:15,i:'4',w:24,x:0,y:22),id:'42ce0b40-e410-11e9-a053-fb19855d7d88',panelIndex:'4',type:visualization,version:'6.5.4'),(embeddableConfig:(),gridData:(h:7,i:'5',w:48,x:0,y:0),id:'7a81ca20-e8bd-11e9-a053-fb19855d7d88',panelIndex:'5',type:visualization,version:'6.5.4'),(embeddableConfig:(),gridData:(h:15,i:'6',w:24,x:24,y:22),id:e96da570-e8e6-11e9-a053-fb19855d7d88,panelIndex:'6',type:visualization,version:'6.5.4'),(embeddableConfig:(),gridData:(h:15,i:'7',w:24,x:24,y:37),id:e95fb0d0-e8e8-11e9-a053-fb19855d7d88,panelIndex:'7',type:visualization,version:'6.5.4'),(embeddableConfig:(),gridData:(h:17,i:'9',w:48,x:0,y:52),id:'45720570-ffd8-11e9-8f92-e5d1f5298e95',panelIndex:'9',type:visualization,version:'6.5.4'),(embeddableConfig:(),gridData:(h:15,i:'10',w:24,x:0,y:37),id:a0e81f20-ffd3-11e9-8f92-e5d1f5298e95,panelIndex:'10',type:visualization,version:'6.5.4')),query:(language:lucene,query:''),timeRestore:!f,title:VZ1_BKUP_DASHBOARD,viewMode:view)"
-
 # Authentication settings
 AUTH_USER_MODEL = 'users.User'
 LOGIN_URL = '/katana/login'
