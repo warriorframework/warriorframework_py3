@@ -1,1 +1,0 @@
-Warrior Default Apps would go in this directory
