@@ -13,7 +13,7 @@ limitations under the License.
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = "warriorframework"
-PACKAGE_VERSION = "4.3.0a1"
+PACKAGE_VERSION = "4.3.0"
 
 setup(
     name=PACKAGE_NAME,
@@ -52,7 +52,7 @@ setup(
     install_requires=["pexpect==4.8.0", "requests==2.21.0", "selenium==3.8.0",
                       "lxml==4.4.1", "paramiko==2.4.2", "pysnmp==4.4.9",
                       "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6",
-                      "cloudshell-automation-api==9.3.0.175525", "pytest",
+                      "cloudshell-automation-api==9.3.0.175525",
                       "pycryptodome==3.6.1", "xmltodict==0.12.0",
                       "xlrd==1.2.0", "openpyxl==3.0.3", "pandas==1.0.3",
                       "gcg==0.2.0", "termcolor==1.1.0",]
