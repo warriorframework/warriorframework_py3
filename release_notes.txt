@@ -1,5 +1,5 @@
 Release: Ninja
-Version: warrior-4.2.0
+Version: warrior-4.3.0
 
 ===================
 1: Release details
@@ -9,14 +9,14 @@ This is release Ninja of Warrior Test Automation Framework
 -------------------------------
 1.1: List of available releases
 -------------------------------
-1. Ninja = warrior-4.2.0
+1. Ninja = warrior-4.3.0
 
 ==================
 2. Version Details
 ==================
-You are on Release Ninja, Version warrior-4.1.0 of Warrior Framework.
+You are on Release Ninja, Version warrior-4.3.0 of Warrior Framework.
 
-warrior-4.2.0 is also released as pip installable package.
+warrior-4.3.0 is also released as pip installable package.
 The pre-requiste for installing pip module is python 3.6 version and above.
 
 
@@ -58,7 +58,7 @@ Bugfixes:
     pip install warriorframework
 
 2.Specfic Version warriorframework from PyPI Server
-    pip install warriorframework==4.2.0
+    pip install warriorframework==4.3.0
 
 3. Uninstall warriorframework
     pip uninstall warriorframework
@@ -78,7 +78,7 @@ Bugfixes:
 3. To check the list of versions available, execute "git tag --list" command
 
     $ git tag --list
-    warior-4.2.0
+    warior-4.3.0
 
 
 4. To Check the current version you are at, execute "git branch" command
@@ -92,8 +92,8 @@ Bugfixes:
 
 5. To switch to a specific version from master, execute 'git checkout <version_name>' command.
 
-    $ git checkout warrior-4.2.0
-        Note: checking out 'warrior-4.2.0'.
+    $ git checkout warrior-4.3.0
+        Note: checking out 'warrior-4.3.0'.
 
         You are in 'detached HEAD' state. You can look around, make experimental
         changes and commit them, and you can discard any commits you make in this
@@ -110,9 +110,6 @@ Bugfixes:
 6. Execute git branch command to verify the active version.
 
     $ git branch
-        * (HEAD detached at warrior-4.2.0)
+        * (HEAD detached at warrior-4.3.0)
         master
         - * indicates the active version.
-
-
-
