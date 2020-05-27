@@ -361,6 +361,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         print_info("*****************TESTWRAPPER SETUP EXECUTION START*********************")
         data_repository['suite_testwrapper_file'] = testwrapperfile
         data_repository['wt_data_type'] = j_data_type
+        Utils.config_Utils.set_datarepository(data_repository)
         setup_tc_status, data_repository = testcase_driver.execute_testcase(testwrapperfile,\
                                             data_repository, tc_context='POSITIVE',\
                                             runtype=j_runtype,\
@@ -531,6 +532,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
             print_info("*****************SUITE TESTWRAPPER DEBUG EXECUTION START"
                        "*********************")
             data_repository['wt_data_type'] = j_data_type
+            Utils.config_Utils.set_datarepository(data_repository)
             debug_tc_status, data_repository = testcase_driver.execute_testcase(testwrapperfile,\
                                                          data_repository, tc_context='POSITIVE',\
                                                          runtype=j_runtype,\
@@ -545,6 +547,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
     if testwrapperfile:
         print_info("*****************TESTWRAPPER CLEANUP EXECUTION START*********************")
         data_repository['wt_data_type'] = j_data_type
+        Utils.config_Utils.set_datarepository(data_repository)
         cleanup_tc_status, data_repository = testcase_driver.execute_testcase(testwrapperfile,\
                                                           data_repository, tc_context='POSITIVE',\
                                                           runtype=j_runtype,\
