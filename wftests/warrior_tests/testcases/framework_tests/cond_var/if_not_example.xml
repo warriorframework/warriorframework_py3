@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<Testcase>
+	<Details>
+		<Name>if not example</Name>
+		<Title>This is an example for executetype ifnot </Title>
+		<Engineer>Anil kumar</Engineer>
+		<Date>2020-03-23</Date>
+		<Time>15:53</Time>
+		<State/>
+		<InputDataFile>No_Data</InputDataFile>
+		<Datatype/>
+		<default_onError action="next"/>
+		<Logsdir/>
+		<Resultsdir/>
+		<ExpectedResults/>
+	</Details>
+	<Requirements>
+		<Requirement/>
+	</Requirements>
+	<Steps>
+		<step Driver="ci_regression_driver" Keyword="local_data_test" TS="1">
+			<Arguments>
+				<argument name="desired_status" value="pass"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>local_data_test</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+			<rmt/>
+		</step>
+		<step Driver="log_driver" Keyword="log_message" TS="2">
+			<Arguments>
+				<argument name="message" value="condition met executing the keyword"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>local_data_test</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="If Not">
+				<Rule Condition="step_1_result" Condvalue="FAIL" />
+			</Execute>
+			<context>positive</context>
+			<impact>impact</impact>
+			<rmt/>
+		</step>
+
+		<step Driver="log_driver" Keyword="log_message" TS="3">
+			<Arguments>
+				<argument name="message" value="condition not met not executing the keyword "/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>local_data_test</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="If Not">
+				<Rule Condition="step_1_result" Condvalue="PASS" />
+			</Execute>
+			<context>positive</context>
+			<impact>impact</impact>
+			<rmt/>
+		</step>
+
+
+	</Steps>
+</Testcase>

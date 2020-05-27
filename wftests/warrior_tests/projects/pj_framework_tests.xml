@@ -1,92 +1,113 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project>
-    <Details>
-        <Name>pj_retry</Name>
-        <Title>Project for testing retry tag in test files</Title>
-        <Engineer>Ka</Engineer>
-        <State>New</State>
-        <Date>04/21/2017</Date>
-        <Time>11:59:51</Time>
-        <default_onError action="next"/>
-    </Details>
-    <Testsuites>
-        <Testsuite>
-            <path>../suites/framework_tests/ts_framework_tests.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>invalid/suite/path</path>
-            <Execute ExecType="No"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/invalid_path_tests/ts_sequential.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>noimpact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/invalid_path_tests/ts_parallel.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>noimpact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/invalid_path_tests/ts_iter_seq.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>noimpact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/invalid_path_tests/ts_iter_par.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>noimpact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/on_error_goto/ts_with_on_error_goto_sc1.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/on_error_goto/ts_with_on_error_goto_sc2.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/random_execution/ts_random_runmode_rmt_at_ts_local_level.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/random_execution/ts_random_runmode_ruf_at_ts_local_level.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/random_execution/ts_random_runmode_rup_at_ts_local_level.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/ts_wrapper_with_debug_positive.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>impact</impact>
-        </Testsuite>
-        <Testsuite>
-            <path>../suites/framework_tests/ts_wrapper_with_debug_negative.xml</path>
-            <Execute ExecType="Yes"/>
-            <onError action="next" value=""/>
-            <impact>noimpact</impact>
-        </Testsuite>
-    </Testsuites>
+	<Details>
+		<Name>pj_retry</Name>
+		<Title>Project for testing retry tag in test files</Title>
+		<State>New</State>
+		<Engineer>Ka</Engineer>
+		<Date>04/21/2017</Date>
+		<default_onError action="next" value=""></default_onError>
+		<Resultsdir></Resultsdir>
+		<Time>11:59:51</Time>
+	</Details>
+	<Testsuites>
+		<Testsuite TS="1">
+			<path>../suites/framework_tests/ts_framework_tests.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="2">
+			<path>invalid/suite/path</path>
+			<Execute ExecType="No">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="3">
+			<path>../suites/framework_tests/invalid_path_tests/ts_sequential.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>noimpact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="4">
+			<path>../suites/framework_tests/invalid_path_tests/ts_parallel.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>noimpact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="5">
+			<path>../suites/framework_tests/invalid_path_tests/ts_iter_seq.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>noimpact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="6">
+			<path>../suites/framework_tests/invalid_path_tests/ts_iter_par.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>noimpact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="7">
+			<path>../suites/framework_tests/on_error_goto/ts_with_on_error_goto_sc1.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="8">
+			<path>../suites/framework_tests/on_error_goto/ts_with_on_error_goto_sc2.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="9">
+			<path>../suites/framework_tests/random_execution/ts_random_runmode_rmt_at_ts_local_level.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="10">
+			<path>../suites/framework_tests/random_execution/ts_random_runmode_ruf_at_ts_local_level.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="11">
+			<path>../suites/framework_tests/random_execution/ts_random_runmode_rup_at_ts_local_level.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="12">
+			<path>../suites/framework_tests/ts_wrapper_with_debug_positive.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="13">
+			<path>../suites/framework_tests/ts_wrapper_with_debug_negative.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>noimpact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+		<Testsuite TS="14">
+			<path>../suites/framework_tests/microapp_actions/ts_microapp_actions.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+	</Testsuites>
 </Project>

@@ -1,0 +1,65 @@
+<?xml version="1.0" ?>
+<Testcase>
+	<Details>
+		<Name>cond_var</Name>
+		<Title>If example store in repo</Title>
+		<Engineer>Apathapa</Engineer>
+		<Date>2020-03-23</Date>
+		<Time>15:53</Time>
+		<State/>
+		<InputDataFile>No_Data</InputDataFile>
+		<Datatype/>
+		<default_onError action="next"/>
+		<Logsdir/>
+		<Resultsdir/>
+		<ExpectedResults/>
+	</Details>
+	<Requirements>
+		<Requirement/>
+	</Requirements>
+	<Steps>
+		<step Driver="common_driver" Keyword="store_in_repo" TS="1">
+			<Arguments>
+				<argument name="datavar" value="key"/>
+				<argument name="datavalue" value="warriorframework"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>local_data_test</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="Yes"/>
+			<context>positive</context>
+			<impact>impact</impact>
+			<rmt/>
+		</step>
+
+		<step Driver="log_driver" Keyword="log_message" TS="2">
+			<Arguments>
+				<argument name="message" value=" key found in data repo and value is equal to warriorframework"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>displaying the message</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="If">
+				<Rule Condition="key" Condvalue="warriorframework" Else=""/>
+			</Execute>
+			<context>positive</context>
+			<impact>impact</impact>
+			<rmt/>
+		</step>
+
+		<step Driver="log_driver" Keyword="log_message" TS="3">
+			<Arguments>
+				<argument name="message" value="key is not found  in data repo so not executing"/>
+			</Arguments>
+			<onError action="next"/>
+			<Description>displaying the message</Description>
+			<iteration_type type=""/>
+			<Execute ExecType="If">
+				<Rule Condition="key" Condvalue="value" Else=""/>
+			</Execute>
+			<context>positive</context>
+			<impact>impact</impact>
+			<rmt/>
+		</step>
+	</Steps>
+</Testcase>

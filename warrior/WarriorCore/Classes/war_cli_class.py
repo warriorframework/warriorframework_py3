@@ -346,6 +346,34 @@ class WarriorCliClass(object):
         warrior_arg.add_argument('-encrypt', action='store', nargs='*',\
             dest="encrypt", help="encrypt data string")
 
+        varxls_arg = parser.add_argument_group('args for testing with variabledata xls data')
+
+        varxls_arg.add_argument('--variables_excel_file', action='store', nargs='?',\
+            dest="genericdatafile", \
+            help="variabledata excel file with variable names as column headers")
+
+        varxls_arg.add_argument('--no_of_random_samples', action='store', type=int, nargs='?',\
+            dest="gen_no_of_samples", \
+            help="number of random rows to select from variabledata excel file.\
+            accept int values")
+
+        varxls_arg.add_argument('--select_rows', action='store', nargs='?',\
+            dest="gen_select_rows", help="rows to select from variable data xls file. \
+            give comma seperated row valuesi. example --select_rows 1,2,3")
+
+        varxls_arg.add_argument('--reset_execution', action='store_true', default=False,\
+            dest="gen_purge_db", help="reset results of previous executions and restart test")
+
+        varxls_arg.add_argument('--select_random_values', action='store_true', default=False,\
+            dest='gen_shuffle_columns', help="selects variables randomly from columns instead of \
+            selecting given rows")
+
+        varxls_arg.add_argument('--execution_tag', action='store', nargs='?',\
+            dest='gen_exec_tag', help="user defined tag to tag executions")
+
+        varxls_arg.add_argument('--generate_report', action='store_true', default=False,\
+            dest='gen_report', help="generates excel sheet result report")
+ 
         warrior_arg.add_argument('-decrypt', action='store', nargs='*',\
             dest="decrypt", help="decrypt data string")
 
@@ -424,6 +452,7 @@ class WarriorCliClass(object):
             "to be integrated with Warrior. "\
             "Multiple paths can be provided"\
             "(separated by a colon)")
+
         tools_arg = parser.add_argument_group('warrior tools')
         tools_arg.add_argument('-tc_gen', action='store',\
             help="generate the sample cli/netconf/snmp testcase based on "\

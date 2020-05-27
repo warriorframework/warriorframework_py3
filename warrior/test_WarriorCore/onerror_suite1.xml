@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TestSuite>
+	<Details>
+		<Name>test</Name>
+		<Title>test</Title>
+		<State>New</State>
+		<Engineer>warrior</Engineer>
+		<Date>2020-5-18</Date>
+		<Time>9:18</Time>
+		<type exectype="sequential_testcases" Number_Attempts=""></type>
+		<default_onError action="next" value=""></default_onError>
+		<InputDataFile>No_Data</InputDataFile>
+		<Resultsdir></Resultsdir>
+	</Details>
+	<Requirements>
+	</Requirements>
+	<Testcases>
+		<Testcase TS="1">
+			<path>onerror_test1.xml</path>
+			<InputDataFile></InputDataFile>
+			<runtype>sequential_keywords</runtype>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testcase>
+	</Testcases>
+</TestSuite>
