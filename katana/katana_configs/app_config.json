@@ -5,6 +5,7 @@
     "katana_default_apps": "True",
     "user_custom_apps": {},
     "katana_default_apps_branch": "",
+    "apps_rely_on_postgresdb": [],
     "__READ_ACCESS__": "True",
     "__userconfigured__": "False",
     "__normal_run__": "False"

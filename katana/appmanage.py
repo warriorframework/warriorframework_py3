@@ -167,6 +167,10 @@ if __name__ == "__main__":
                     final_input_json_data["katana_default_apps_branch"] = input_json_data["katana_default_apps_branch"]
                 else:
                     final_input_json_data["katana_default_apps_branch"] = ""
+                if "apps_rely_on_postgresdb" in input_json_data:
+                    final_input_json_data["apps_rely_on_postgresdb"] = input_json_data["apps_rely_on_postgresdb"]
+                else:
+                    final_input_json_data["apps_rely_on_postgresdb"] = []
 
                 if app_config_data["__READ_ACCESS__"] == "True":
                     app_config_json_path = os.path.join(BASE_DIR, "katana_configs", "app_config.json")
