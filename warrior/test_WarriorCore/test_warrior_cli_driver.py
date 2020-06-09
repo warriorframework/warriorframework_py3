@@ -19,6 +19,7 @@ from unittest.mock import patch
 from unittest.mock import MagicMock
 from os.path import abspath, dirname
 from unittest import TestCase
+import multiprocessing
 try:
     import warrior
     # except ModuleNotFoundError as error:
@@ -46,6 +47,78 @@ try:
 except OSError as error:
     pass
 
+def test_update_jira_by_id1():
+    '''
+    Test case for update jira by id.
+    '''
+    jiraproj = None
+    jiraid = False
+    exec_dir = result_dir
+    status = True
+    result = warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, exec_dir, status)
+    assert result == None
+
+def test_update_jira_by_id2():
+    '''
+    Test case for update jira by id.
+    '''
+    import shutil
+    tools_dir = dirname(dirname(abspath(__file__))) + os.sep + "Tools"
+    os.environ["WAR_TOOLS_DIR"] = tools_dir
+    mock_tools = os.getenv("WAR_TOOLS_DIR")
+    mock_tools = MagicMock(return_value=mock_tools)
+    warrior.WarriorCore.Classes.jira_rest_class.Jira.status = "Closed"
+    warrior.WarriorCore.Classes.jira_rest_class.Jira.get_jira_issue_status = \
+    MagicMock(return_value="Closed")
+    warrior.WarriorCore.Classes.jira_rest_class.Jira.set_jira_issue_status = \
+    MagicMock(return_value=None)
+    warrior.WarriorCore.Classes.jira_rest_class.Jira.upload_logfile_to_jira_issue = \
+    MagicMock(return_value=None)
+    warrior.WarriorCore.Classes.jira_rest_class.Jira.update_jira_issue = \
+    MagicMock(return_value=None)
+    shutil.make_archive = MagicMock(return_value="name.zip")
+    jiraproj = None
+    jiraid = "war-123"
+    exec_dir = result_dir
+    status = True
+    result = warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, exec_dir, status)
+    del warrior.WarriorCore.Classes.jira_rest_class.Jira.get_jira_issue_status
+    del warrior.WarriorCore.Classes.jira_rest_class.Jira.set_jira_issue_status
+    del warrior.WarriorCore.Classes.jira_rest_class.Jira.upload_logfile_to_jira_issue
+    del warrior.WarriorCore.Classes.jira_rest_class.Jira.update_jira_issue
+    del shutil.make_archive
+    del mock_tools
+
+def test_update_jira_by_id3(capsys):
+    '''
+    Test case for update jira by id.
+    '''
+    import shutil
+    tools_dir = dirname(dirname(abspath(__file__))) + os.sep + "Tools"
+    os.environ["WAR_TOOLS_DIR"] = tools_dir
+    mock_tools = os.getenv("WAR_TOOLS_DIR")
+    mock_tools = MagicMock(return_value=mock_tools)
+    warrior.WarriorCore.Classes.jira_rest_class.Jira.get_jira_issue_status = \
+    MagicMock(return_value="Clsdosed")
+    warrior.WarriorCore.Classes.jira_rest_class.Jira.set_jira_issue_status = \
+    MagicMock(return_value=None)
+    warrior.WarriorCore.Classes.jira_rest_class.Jira.upload_logfile_to_jira_issue = \
+    MagicMock(return_value=None)
+    warrior.WarriorCore.Classes.jira_rest_class.Jira.update_jira_issue = \
+    MagicMock(return_value=None)
+    shutil.make_archive = MagicMock(return_value="name.zip")
+    jiraproj = None
+    jiraid = "war-123"
+    exec_dir = result_dir
+    status = True
+    result = warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, exec_dir, status)
+    del warrior.WarriorCore.Classes.jira_rest_class.Jira.get_jira_issue_status
+    del warrior.WarriorCore.Classes.jira_rest_class.Jira.set_jira_issue_status
+    del warrior.WarriorCore.Classes.jira_rest_class.Jira.upload_logfile_to_jira_issue
+    del warrior.WarriorCore.Classes.jira_rest_class.Jira.update_jira_issue
+    del shutil.make_archive
+    del mock_tools
+
 def test_decide_overwrite_var_full_path_datafile():
     """options provided in cli get preference over the ones provided inside tests
     """
@@ -57,7 +130,6 @@ def test_decide_overwrite_var_full_path_datafile():
            gen_shuffle_columns=None, gen_purge_db=None, gen_exec_tag=None, gen_report=None)
     result = warrior_cli_driver.decide_overwrite_var(namespace)
     assert result['ow_datafile'] == temp_dir1
-
 
 def test_decide_overwrite_var_dynamic_path_datafile():
     """options provided in cli get preference over the ones provided inside tests
@@ -131,7 +203,6 @@ def test_decide_overwrite_var_dynamic_path_resultdir():
     result = warrior_cli_driver.decide_overwrite_var(namespace)
     assert result['ow_resultdir'] == temp_dir
 
-
 def test_decide_overwrite_var_full_path_logdir():
     """options provided in cli get preference over the ones provided inside tests
     """
@@ -179,6 +250,23 @@ def test_decide_overwrite_var_dynamic_path_outputdir():
     result = warrior_cli_driver.decide_overwrite_var(namespace)
     assert result['ow_resultdir'] == outputdir
     assert result['ow_logdir'] == outputdir
+
+def test_decide_overwrite_var_gen():
+    """options provided in cli get preference over the ones provided inside tests
+    """
+    outputdir = result_dir
+    namespace = Namespace(datafile=None, random_tc_execution=False,\
+     wrapperfile=None, resultdir=None, logdir=None, outputdir=None, jobid=None,\
+      pythonpath=None, genericdatafile=True, gen_no_of_samples=True,\
+       gen_shuffle_columns=True, gen_select_rows=True, gen_purge_db=True,\
+        gen_exec_tag=True, gen_report=True)
+    result = warrior_cli_driver.decide_overwrite_var(namespace)
+    test1 = 'genericdatafile' in result
+    test2 = 'gen_no_of_samples' in result
+    test3 = 'gen_shuffle_columns' in result
+    assert test1 == True
+    assert test2 == True
+    assert test3 == True
 
 def test_decide_action():
     """Prepare filepath and other arguments for Warrior main to use"""
@@ -250,7 +338,6 @@ def test_file_execution_for_project():
     os.environ["WAR_TOOLS_DIR"] = tools_dir
     mock_tools = os.getenv("WAR_TOOLS_DIR")
     mock_tools = MagicMock(return_value=mock_tools)
-    # update_jira_by_id = MagicMock(return_value=None)
     cli_args = Namespace(ad=False, jiraproj=None, jiraid=False,)
     abs_filepath = os.path.join(os.path.split(__file__)[0], "war_project.xml")
     Utils.xml_Utils.getChildAttributebyParentTag = MagicMock(return_value=False)
@@ -271,6 +358,7 @@ def test_group_execution():
     """
     Utils.xml_Utils.getChildAttributebyParentTag = MagicMock(return_value=False)
     parameter_list = [os.path.join(os.path.split(__file__)[0], "war_project.xml")]
+    warrior_cli_driver.file_execution = MagicMock(return_value=True)
     cli_args = Namespace(RMT=0, RUF=0, ad=False, cat=None, create=False, datafile=None,\
     dbsystem=None, ddir=None, decrypt=None, djson=None, encrypt=None, filepath=parameter_list,\
     headless=False, ironclaw=False, jiraid=False, jiraproj=None, jobid=None, kwparallel=False,\
@@ -284,10 +372,38 @@ def test_group_execution():
     livehtmlobj = None
     result = warrior_cli_driver.group_execution(parameter_list, cli_args, db_obj, overwrite,\
      livehtmlobj)
+    assert result == True
+    del Utils.xml_Utils.getChildAttributebyParentTag
+    del warrior_cli_driver.file_execution
+
+def test_group_execution_negative():
+    """
+        Process the parameter list and prepare environment for file_execution
+    """
+    Utils.xml_Utils.getChildAttributebyParentTag = MagicMock(return_value=False)
+    warrior_cli_driver.file_execution = MagicMock(return_value=False)
+    parameter_list = [os.path.join(os.path.split(__file__)[0], "war_project.xml")]
+    cli_args = Namespace(RMT=0, RUF=0, ad=False, cat=None, create=False, datafile=None,\
+    dbsystem=None, ddir=None, decrypt=None, djson=None, encrypt=None, filepath=parameter_list,\
+    headless=False, ironclaw=False, jiraid=False, jiraproj=None, jobid=None, kwparallel=False,\
+    kwsequential=False, livehtmllocn=None, logdir=None, mock=False, outputdir=None,\
+    proj_name=None, pythonpath=None, random_tc_execution=False, resultdir=None, runcat=None,\
+    secretkey=False, sim=False, suite_dest=None, suitename=None, target_time=None, tc_gen=None,\
+    tc_name=None, tcdir=None, tcparallel=False, tcsequential=False, ts_name=None, ujd=False,\
+    version=False, wrapperfile=None)
+    db_obj = False
+    overwrite = {}
+    livehtmlobj = None
+    result = warrior_cli_driver.group_execution(parameter_list, cli_args, db_obj, overwrite,\
+     livehtmlobj)
+    assert result == False
+    del Utils.xml_Utils.getChildAttributebyParentTag
+    del warrior_cli_driver.file_execution
 
 def test_execution():
     '''testcase for execution method'''
     Utils.xml_Utils.getChildAttributebyParentTag = MagicMock(return_value=False)
+    warrior_cli_driver.group_execution = MagicMock(return_value=True)
     parameter_list = [os.path.join(os.path.split(__file__)[0], "war_project.xml")]
     cli_args = Namespace(RMT=0, RUF=0, ad=False, cat=None, create=False, datafile=None,\
         dbsystem=None, ddir=None, decrypt=None, djson=None, encrypt=None, filepath=parameter_list,\
@@ -299,7 +415,95 @@ def test_execution():
         version=False, wrapperfile=None)
     overwrite = {}
     livehtmlobj = None
-    warrior_cli_driver.execution(parameter_list, cli_args, overwrite, livehtmlobj)
+    result = warrior_cli_driver.execution(parameter_list, cli_args, overwrite, livehtmlobj)
+    assert result == True
+    del Utils.xml_Utils.getChildAttributebyParentTag
+    del warrior_cli_driver.group_execution
+
+def test_execution_negative():
+    '''testcase for execution method'''
+    Utils.xml_Utils.getChildAttributebyParentTag = MagicMock(return_value=False)
+    warrior_cli_driver.group_execution = MagicMock(return_value=False)
+    parameter_list = [os.path.join(os.path.split(__file__)[0], "war_project.xml")]
+    cli_args = Namespace(RMT=0, RUF=0, ad=False, cat=None, create=False, datafile=None,\
+        dbsystem=None, ddir=None, decrypt=None, djson=None, encrypt=None, filepath=parameter_list,\
+        headless=False, ironclaw=False, jiraid=False, jiraproj=None, jobid=None, kwparallel=False,\
+        kwsequential=False, livehtmllocn=None, logdir=None, mock=False, outputdir=None,\
+        proj_name=None, pythonpath=None, random_tc_execution=False, resultdir=None, runcat=None,\
+        secretkey=False, sim=False, suite_dest=None, suitename=None, target_time=None, tc_gen=None,\
+        tc_name=None, tcdir=None, tcparallel=False, tcsequential=False, ts_name=None, ujd=False,\
+        version=False, wrapperfile=None)
+    overwrite = {}
+    livehtmlobj = None
+    result = warrior_cli_driver.execution(parameter_list, cli_args, overwrite, livehtmlobj)
+    assert result == False
+    del Utils.xml_Utils.getChildAttributebyParentTag
+    del warrior_cli_driver.group_execution
+
+def test_execution_livehtmlobj():
+    '''testcase for execution method'''
+    Utils.xml_Utils.getChildAttributebyParentTag = MagicMock(return_value=False)
+    config_Utils.redirect_print.katana_console_log = MagicMock(return_value=None)
+    warrior_cli_driver.group_execution = MagicMock(return_value=True)
+    parameter_list = [os.path.join(os.path.split(__file__)[0], "war_project.xml")]
+    cli_args = Namespace(RMT=0, RUF=0, ad=False, cat=None, create=False, datafile=None,\
+        dbsystem=None, ddir=None, decrypt=None, djson=None, encrypt=None, filepath=parameter_list,\
+        headless=False, ironclaw=False, jiraid=False, jiraproj=None, jobid=None, kwparallel=False,\
+        kwsequential=False, livehtmllocn=None, logdir=None, mock=False, outputdir=None,\
+        proj_name=None, pythonpath=None, random_tc_execution=False, resultdir=None, runcat=None,\
+        secretkey=False, sim=False, suite_dest=None, suitename=None, target_time=None, tc_gen=None,\
+        tc_name=None, tcdir=None, tcparallel=False, tcsequential=False, ts_name=None, ujd=False,\
+        version=False, wrapperfile=None)
+    overwrite = {}
+    livehtmlobj = True
+    # with pytest.raises(SystemExit):
+    result = warrior_cli_driver.execution(parameter_list, cli_args, overwrite, livehtmlobj)
+    assert result == True
+    del Utils.xml_Utils.getChildAttributebyParentTag
+    del config_Utils.redirect_print.katana_console_log
+    del warrior_cli_driver.group_execution
+
+def test_execution_version():
+    '''testcase for execution method'''
+    Utils.xml_Utils.getChildAttributebyParentTag = MagicMock(return_value=False)
+    warrior_cli_driver.group_execution = MagicMock(return_value=True)
+    parameter_list = [os.path.join(os.path.split(__file__)[0], "war_project.xml")]
+    cli_args = Namespace(RMT=0, RUF=0, ad=False, cat=None, create=False, datafile=None,\
+        dbsystem=None, ddir=None, decrypt=None, djson=None, encrypt=None, filepath=parameter_list,\
+        headless=False, ironclaw=False, jiraid=False, jiraproj=None, jobid=None, kwparallel=False,\
+        kwsequential=False, livehtmllocn=None, logdir=None, mock=False, outputdir=None,\
+        proj_name=None, pythonpath=None, random_tc_execution=False, resultdir=None, runcat=None,\
+        secretkey=False, sim=False, suite_dest=None, suitename=None, target_time=None, tc_gen=None,\
+        tc_name=None, tcdir=None, tcparallel=False, tcsequential=False, ts_name=None, ujd=False,\
+        version=True, wrapperfile=None)
+    overwrite = {}
+    livehtmlobj = None
+    with pytest.raises(SystemExit):
+        result = warrior_cli_driver.execution(parameter_list, cli_args, overwrite, livehtmlobj)
+        assert result == True
+    del Utils.xml_Utils.getChildAttributebyParentTag
+    del warrior_cli_driver.group_execution
+
+def test_execution_parameter_list():
+    '''testcase for execution method'''
+    Utils.xml_Utils.getChildAttributebyParentTag = MagicMock(return_value=False)
+    warrior_cli_driver.group_execution = MagicMock(return_value=True)
+    parameter_list = None
+    cli_args = Namespace(RMT=0, RUF=0, ad=False, cat=None, create=False, datafile=None,\
+        dbsystem=None, ddir=None, decrypt=None, djson=None, encrypt=None, filepath=parameter_list,\
+        headless=False, ironclaw=False, jiraid=False, jiraproj=None, jobid=None, kwparallel=False,\
+        kwsequential=False, livehtmllocn=None, logdir=None, mock=False, outputdir=None,\
+        proj_name=None, pythonpath=None, random_tc_execution=False, resultdir=None, runcat=None,\
+        secretkey=False, sim=False, suite_dest=None, suitename=None, target_time=None, tc_gen=None,\
+        tc_name=None, tcdir=None, tcparallel=False, tcsequential=False, ts_name=None, ujd=False,\
+        version=False, wrapperfile=None)
+    overwrite = {}
+    livehtmlobj = None
+    with pytest.raises(SystemExit):
+        result = warrior_cli_driver.execution(parameter_list, cli_args, overwrite, livehtmlobj)
+        assert result == True
+    del Utils.xml_Utils.getChildAttributebyParentTag
+    del warrior_cli_driver.group_execution
 
 def test_decide_action_runcat1():
     '''
@@ -314,9 +518,12 @@ def test_decide_action_runcat1():
         encrypt=None, decrypt=None, ujd=None, tc_name=None, suitename=None, proj_name=None,\
          tcdir=None, suite_dest=None, ts_name=None)
     with pytest.raises(SystemExit):
-        warrior_cli_driver.decide_action(w_cli_obj, namespace)
-        assert exit_mock.called
-
+        result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
+        test1 = namespace in result
+        assert type(result) == tuple
+        assert test1 == True
+        assert result[0] == ['war_test1.xml']
+    del w_cli_obj.check_tag
 
 def test_decide_action_create():
     '''
@@ -330,7 +537,11 @@ def test_decide_action_create():
         encrypt=None, decrypt=None, ujd=None, tc_name='war_test1', suitename=None,\
         proj_name=None, tcdir=None, cat=None)
     with pytest.raises(SystemExit):
-        warrior_cli_driver.decide_action(w_cli_obj, namespace)
+        result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
+        test1 = namespace in result
+        assert type(result) == tuple
+        assert test1 == True
+        assert result[0] == ['war_test1.xml']
 
 def test_decide_action_ujd():
     '''
@@ -343,7 +554,11 @@ def test_decide_action_ujd():
         encrypt=None, decrypt=None, ujd=True, tc_name='war_test1', suitename=None,\
         proj_name=None, tcdir=None, cat=None, ddir=True, djson=None, jiraproj=None)
     with pytest.raises(SystemExit):
-        warrior_cli_driver.decide_action(w_cli_obj, namespace)
+        result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
+        test1 = namespace in result
+        assert type(result) == tuple
+        assert test1 == True
+        assert result[0] == ['war_test1.xml']
     del w_cli_obj.manual_defects
 
 def test_decide_action_ujd1():
@@ -357,7 +572,11 @@ def test_decide_action_ujd1():
         encrypt=None, decrypt=None, ujd=True, tc_name='war_test1', suitename=None, proj_name=None,\
         tcdir=None, cat=None, ddir=None, djson=True, jiraproj=None)
     with pytest.raises(SystemExit):
-        warrior_cli_driver.decide_action(w_cli_obj, namespace)
+        result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
+        test1 = namespace in result
+        assert type(result) == tuple
+        assert test1 == True
+        assert result[0] == ['war_test1.xml']
     del w_cli_obj.manual_defects
 
 def test_decide_action_ujd2():
@@ -371,66 +590,9 @@ def test_decide_action_ujd2():
         encrypt=None, decrypt=None, ujd=True, tc_name='war_test1', suitename=None, proj_name=None,\
         tcdir=None, cat=None, ddir=True, djson=True, jiraproj=None)
     with pytest.raises(SystemExit):
-        warrior_cli_driver.decide_action(w_cli_obj, namespace)
+        result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
+        test1 = namespace in result
+        assert type(result) == tuple
+        assert test1 == True
+        assert result[0] == ['war_test1.xml']
     del w_cli_obj.manual_defects
-
-def test_update_jira_by_id1():
-    '''
-    Test case for update jira by id.
-    '''
-    jiraproj = None
-    jiraid = False
-    exec_dir = "some address"
-    status = True
-    result = warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, exec_dir, status)
-
-def test_update_jira_by_id2():
-    '''
-    Test case for update jira by id.
-    '''
-    import shutil
-    warrior.WarriorCore.Classes.jira_rest_class.Jira.status = "Closed"
-    warrior.WarriorCore.Classes.jira_rest_class.Jira.get_jira_issue_status = \
-    MagicMock(return_value="Closed")
-    warrior.WarriorCore.Classes.jira_rest_class.Jira.set_jira_issue_status = \
-    MagicMock(return_value=None)
-    warrior.WarriorCore.Classes.jira_rest_class.Jira.upload_logfile_to_jira_issue = \
-    MagicMock(return_value=None)
-    warrior.WarriorCore.Classes.jira_rest_class.Jira.update_jira_issue = \
-    MagicMock(return_value=None)
-    shutil.make_archive = MagicMock(return_value="name.zip")
-    jiraproj = None
-    jiraid = "adasdsa"
-    exec_dir = "some address"
-    status = True
-    result = warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, exec_dir, status)
-    del warrior.WarriorCore.Classes.jira_rest_class.Jira.get_jira_issue_status
-    del warrior.WarriorCore.Classes.jira_rest_class.Jira.set_jira_issue_status
-    del warrior.WarriorCore.Classes.jira_rest_class.Jira.upload_logfile_to_jira_issue
-    del warrior.WarriorCore.Classes.jira_rest_class.Jira.update_jira_issue
-    del shutil.make_archive
-
-def test_update_jira_by_id3(capsys):
-    '''
-    Test case for update jira by id.
-    '''
-    import shutil
-    warrior.WarriorCore.Classes.jira_rest_class.Jira.get_jira_issue_status = \
-    MagicMock(return_value="Clsdosed")
-    warrior.WarriorCore.Classes.jira_rest_class.Jira.set_jira_issue_status = \
-    MagicMock(return_value=None)
-    warrior.WarriorCore.Classes.jira_rest_class.Jira.upload_logfile_to_jira_issue = \
-    MagicMock(return_value=None)
-    warrior.WarriorCore.Classes.jira_rest_class.Jira.update_jira_issue = \
-    MagicMock(return_value=None)
-    shutil.make_archive = MagicMock(return_value="name.zip")
-    jiraproj = None
-    jiraid = "adasdsa"
-    exec_dir = "some address"
-    status = True
-    result = warrior_cli_driver.update_jira_by_id(jiraproj, jiraid, exec_dir, status)
-    del warrior.WarriorCore.Classes.jira_rest_class.Jira.get_jira_issue_status
-    del warrior.WarriorCore.Classes.jira_rest_class.Jira.set_jira_issue_status
-    del warrior.WarriorCore.Classes.jira_rest_class.Jira.upload_logfile_to_jira_issue
-    del warrior.WarriorCore.Classes.jira_rest_class.Jira.update_jira_issue
-    del shutil.make_archive
