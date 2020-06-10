@@ -13,15 +13,16 @@ limitations under the License.
 
 """Execution files driver """
 
-
 import os
 from warrior.Framework.Utils import file_Utils as file_Utils
 from warrior.Framework.Utils import xml_Utils as xml_Utils
 from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error, print_exception
 from warrior.Framework.Utils.data_Utils import get_credentials
 
+
 class ExecFilesClass(object):
     """Execution Files class """
+
     def __init__(self, filepath, filetype, res_startdir=None, logs_startdir=None):
         """Constructor """
         self.filepath = filepath
@@ -29,23 +30,23 @@ class ExecFilesClass(object):
         self.res_startdir = res_startdir
         self.logs_startdir = logs_startdir
         self.ws_execution = None
-        #calculate filename and nameonly from file path
+        # calculate filename and nameonly from file path
         self.filename = os.path.basename(filepath)
         self.nameonly = file_Utils.getNameOnly(self.filename)
 
-        #resultsdir, resultfile, results_location
+        # resultsdir, resultfile, results_location
         self.resultfile, self.resultsdir, self.results_execdir = self.get_result_files()
 
-        #logsdir, logfile, logs_location
+        # logsdir, logfile, logs_location
         self.logfile, self.logsdir, self.logs_execdir = self.get_log_files()
 
     def create_ws_execution(self):
         """Create execution dir in Warriorspace """
-        #curr_file_locn = os.path.realpath(__file__)
-        #war_locn = os.sep.join(curr_file_locn.split(os.sep)[:-3]) + os.sep + "Warrior"
-        #warriorspace = os.path.dirname(war_locn) + os.sep + "Warriorspace"
+        # curr_file_locn = os.path.realpath(__file__)
+        # war_locn = os.sep.join(curr_file_locn.split(os.sep)[:-3]) + os.sep + "Warrior"
+        # warriorspace = os.path.dirname(war_locn) + os.sep + "Warriorspace"
         warriorspace = os.path.expanduser("~") + os.sep + "Warriorspace"
-        #check_create_warriorspace(warriorspace)
+        # check_create_warriorspace(warriorspace)
         ws_execution = warriorspace + os.sep + "Execution"
 
         try:
@@ -54,7 +55,7 @@ class ExecFilesClass(object):
             execution_dir = ws_execution
             self.ws_execution = file_Utils.createDir_addtimestamp(execution_dir, self.nameonly)
         except OSError as exception:
-            print_error("Unable to create directory/file(s) under Warriorspace "\
+            print_error("Unable to create directory/file(s) under Warriorspace " \
                         "'{0}', hence aborting".format(ws_execution))
             print_exception(exception)
             exit(0)
@@ -69,29 +70,32 @@ class ExecFilesClass(object):
             execdir = self.ws_execution
         return execdir
 
-
     def get_result_files(self):
         """Get execution results dir and files """
 
         if self.res_startdir is not None:
-            results_execdir = file_Utils.createDir_addtimestamp(self.res_startdir, self.nameonly)
-            rfile = self.get_exec_file_by_type("Results", results_execdir)
+            try:
+                results_execdir = file_Utils.createDir_addtimestamp(self.res_startdir, self.nameonly)
+                rfile = self.get_exec_file_by_type("Results", results_execdir)
+            except Exception as e:
+                print_error("Cannot create output dir {}".format(self.res_startdir + self.nameonly))
+                exit(0)
         elif self.res_startdir is None:
             results_location = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                                  'Details', 'Resultsdir')
 
-            #get default results directory
-            #default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+            # get default results directory
+            # default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
             default_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml'
             default_resultsdir = get_credentials(default_xml, 'def_dir', ['Resultsdir'], 'Setting')
-            #use the default directory if user didn't define it in test case/test suite/project
+            # use the default directory if user didn't define it in test case/test suite/project
             if results_location is None or results_location is False:
                 if default_resultsdir['Resultsdir'] is not None:
                     results_location = default_resultsdir['Resultsdir']
 
-            if results_location is None or results_location is False\
-            or str(results_location).strip() == "":
-                results_execdir = self.create_def_exec_dir() #proj_exec_dir
+            if results_location is None or results_location is False \
+                    or str(results_location).strip() == "":
+                results_execdir = self.create_def_exec_dir()  # proj_exec_dir
                 rfile = self.get_exec_file_by_type("Results", results_execdir)
 
             elif results_location is not None and results_location is not False:
@@ -120,22 +124,22 @@ class ExecFilesClass(object):
             logs_location = xml_Utils.getChildTextbyParentTag(self.filepath, 'Details', 'Logsdir')
             results_location = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                                  'Details', 'Resultsdir')
-            #get default logs and results directory
-            #default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml' 
-            default_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml' 
-            default_logsdir = get_credentials(default_xml, 'def_dir',['Logsdir'], 'Setting')
-            default_resultsdir = get_credentials(default_xml, 'def_dir',['Resultsdir'], 'Setting')
-            #use the default directory if user didn't define it in test case/test suite/project
+            # get default logs and results directory
+            # default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+            default_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml'
+            default_logsdir = get_credentials(default_xml, 'def_dir', ['Logsdir'], 'Setting')
+            default_resultsdir = get_credentials(default_xml, 'def_dir', ['Resultsdir'], 'Setting')
+            # use the default directory if user didn't define it in test case/test suite/project
             if results_location is None or results_location is False:
                 if default_resultsdir['Resultsdir'] is not None:
                     results_location = default_resultsdir['Resultsdir']
- 
+
             if logs_location is None or logs_location is False:
                 if default_logsdir['Logsdir'] is not None:
                     logs_location = default_logsdir['Logsdir']
 
-            if logs_location is None or logs_location is False\
-            or str(logs_location).strip() == "":
+            if logs_location is None or logs_location is False \
+                    or str(logs_location).strip() == "":
                 logs_execdir = self.create_def_exec_dir()
                 logfile = self.get_exec_file_by_type('Logs', logs_execdir)
 
@@ -160,13 +164,12 @@ class ExecFilesClass(object):
         defectsdir = file_Utils.createDir_addtimestamp(os.path.dirname(self.resultsdir), 'Defects')
         return defectsdir
 
-
     def checkdir_create_file(self, inpdir, dirname, colocate=False):
         """Check if dir is present, if dir present create subdir nd files
         if dir not present try to create dir, subdir and files
         if not able to create dir use Warrior frameworks default dir structure."""
 
-        dir_status = file_Utils.check_and_create_dir(inpdir) # creates tc_results dir
+        dir_status = file_Utils.check_and_create_dir(inpdir)  # creates tc_results dir
         if dir_status:
             try:
                 if colocate:
@@ -183,10 +186,9 @@ class ExecFilesClass(object):
             print_warning("Creating directory/file(s) in provided path {0} failed. "
                           "\n Hence Warrior Framework's default directory structure will be used "
                           "for this execution.".format(inpdir))
-            execdir = self.create_def_exec_dir() # proj_exec_dir
+            execdir = self.create_def_exec_dir()  # proj_exec_dir
             rfile = self.get_exec_file_by_type(dirname, execdir)
         return rfile, execdir
-
 
     def get_exec_file_by_type(self, dirname, exec_dir):
         """Get execution files by file type """
@@ -218,9 +220,9 @@ class ExecFilesClass(object):
         datafile = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                      'Details', 'InputDataFile')
         if datafile is None or datafile is False or \
-        str(datafile).strip() == "":
+                str(datafile).strip() == "":
             if self.filetype == "tc":
-                #print "get default datatype for testcase"
+                # print "get default datatype for testcase"
                 datafile = get_default_xml_datafile(self.filepath)
             if self.filetype == "ts":
                 # Check if test suite datatype starts with iterative.
@@ -248,7 +250,7 @@ class ExecFilesClass(object):
         if str(datafile).strip().upper() != 'NO_DATA' and datafile is not False:
             if not file_Utils.fileExists(datafile):
                 print_info('\n')
-                print_error("!!! *** InputDataFile does not exist in provided path:"\
+                print_error("!!! *** InputDataFile does not exist in provided path:" \
                             "{0} *** !!!".format(datafile))
         return datafile
 
@@ -261,8 +263,8 @@ class ExecFilesClass(object):
             data_type = 'CUSTOM'
             print_info('This test case will be run without any InputDataFile')
 
-        elif data_type is None or data_type is False or\
-        str(data_type).strip() == "":
+        elif data_type is None or data_type is False or \
+                str(data_type).strip() == "":
             data_type = 'CUSTOM'
 
         elif data_type is not None and data_type is not False:
@@ -270,27 +272,27 @@ class ExecFilesClass(object):
             supported_values = ['iterative', 'custom', 'hybrid']
             if data_type.lower() not in supported_values:
                 print_warning("unsupported value '{0}' provided for data_type,"
-                              " supported values are "\
+                              " supported values are " \
                               "'{1}' and case-insensitive".format(data_type, supported_values))
                 print_info("Hence using default value for data_type which is 'custom'")
                 data_type = 'CUSTOM'
         return data_type
 
-    #def to get runtype of the testcase from xml
+    # def to get runtype of the testcase from xml
     def check_get_runtype(self):
         """Check and get the runtype for testcase
         """
         if xml_Utils.nodeExists(self.filepath, 'Runtype'):
             run_type = xml_Utils.getChildTextbyParentTag(self.filepath, 'Details', 'Runtype')
             if run_type is not None and run_type is not False:
-               run_type = str(run_type).strip()
-               supported_values = ['sequential_keywords', 'parallel_keywords']
-               if run_type.lower() not in supported_values:
-                   print_warning("unsupported value '{0}' provided for run_type,"
-                                 "supported values are "\
-                                "'{1}' and case-insensitive".format(run_type, supported_values))
-                   print_info("Hence using default value for run_type which is 'sequential_keywords'")
-                   run_type = 'SEQUENTIAL_KEYWORDS'
+                run_type = str(run_type).strip()
+                supported_values = ['sequential_keywords', 'parallel_keywords']
+                if run_type.lower() not in supported_values:
+                    print_warning("unsupported value '{0}' provided for run_type,"
+                                  "supported values are " \
+                                  "'{1}' and case-insensitive".format(run_type, supported_values))
+                    print_info("Hence using default value for run_type which is 'sequential_keywords'")
+                    run_type = 'SEQUENTIAL_KEYWORDS'
         else:
             run_type = "SEQUENTIAL_KEYWORDS"
         return run_type
@@ -301,20 +303,24 @@ def get_execution_files(filepath, execution_dir, extn):
     filename = file_Utils.getFileName(filepath)
     nameonly = file_Utils.getNameOnly(filename)
     if extn.lower() == "res":
-        fullpath = execution_dir + os.sep + nameonly + "_results" +"." + extn
+        fullpath = execution_dir + os.sep + nameonly + "_results" + "." + extn
     else:
         fullpath = execution_dir + os.sep + nameonly + '.' + extn
     if file_Utils.fileExists(fullpath):
         fullpath = file_Utils.addTimeDate(fullpath)
     return fullpath
 
+
 def get_testcase_execution_files(testcase_filepath, tc_execution_dir, dirname):
     """Create directories for Results, Logs for testcase execution
     and get related files """
     extension = file_Utils.getExtension(dirname)
     dirpath = file_Utils.createDir_addtimestamp(tc_execution_dir, dirname)
+    if dirpath is False:
+        exit(0)
     fullpath = get_execution_files(testcase_filepath, dirpath, extension)
     return fullpath
+
 
 def get_default_xml_datafile(filepath):
     """Get the default datafile for a testcase/testsuite file
@@ -327,5 +333,5 @@ def get_default_xml_datafile(filepath):
     nameonly = file_Utils.getNameOnly(filename)
     data_dir = os.sep.join(inpdir.split(os.sep)[:-1]) + os.sep + 'Data'
 
-    def_datafile_path = data_dir + os.sep + nameonly+'_Data.xml'
+    def_datafile_path = data_dir + os.sep + nameonly + '_Data.xml'
     return def_datafile_path
