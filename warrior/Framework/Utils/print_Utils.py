@@ -24,8 +24,6 @@ warrior/Framework/Utils/print_Utils.py at module level into this module
 as it will lead to cyclic imports.
 
 """
-
-
 def print_debug(message, *args):
     """Print a debug message to the terminal """
     print_type = "-D-"
@@ -65,7 +63,7 @@ def print_without_logging(message, *args):
     if len(args) > 0:
         for arg in args:
             message += arg + ", "
-    print_main(message, print_type, logging=False)
+    print_main(message, print_type, log=False)
     return message
 
 
@@ -114,7 +112,7 @@ def print_error(message, *args):
             message += arg + ", "
     color_message = None
     if sys.stdout.isatty():
-        print_type = "\033[1;31m"+ "-E-" + "\033[0m"
+        #print_type = "\033[1;31m"+ "-E-" + "\033[0m"
         color_message = "\033[1;31m" + str(message) + "\033[0m"
     print_main(message, print_type, color_message)
     return message
@@ -137,7 +135,7 @@ def print_warning(message, *args):
             message += arg + ", "
     color_message = None
     if sys.stdout.isatty():
-        print_type = "\033[1;33m"+ "-W-" + "\033[0m"
+        #print_type = "\033[1;33m"+ "-W-" + "\033[0m"
         color_message = "\033[1;33m" + str(message) + "\033[0m"
     print_main(message, print_type, color_message)
     return message
@@ -155,4 +153,3 @@ def print_sub(message, *args):
     message = message.format(*args)
     print_main(message, print_type)
     return message
-
