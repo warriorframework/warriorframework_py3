@@ -317,7 +317,7 @@ def get_testcase_execution_files(testcase_filepath, tc_execution_dir, dirname):
     extension = file_Utils.getExtension(dirname)
     dirpath = file_Utils.createDir_addtimestamp(tc_execution_dir, dirname)
     if dirpath is False:
-        exit(0)
+        exit(1)
     fullpath = get_execution_files(testcase_filepath, dirpath, extension)
     return fullpath
 
