@@ -24,13 +24,26 @@ as it will lead to cyclic imports.
 import sys
 import re
 import logging
-log_message = None
+LOG_MESSAGE = None
+DEFAULT_LOGLEVEL = logging.INFO
+LOGLEVEL_DICT = {'info': logging.INFO, 'debug': logging.DEBUG,
+                 'warning': logging.WARNING, 'error': logging.ERROR,
+                 'critical': logging.CRITICAL}
+if '--loglevel' in sys.argv:
+    LEVEL_INDEX = sys.argv.index('--loglevel')
+    if len(sys.argv) >= LEVEL_INDEX+1:
+        LEVEL_VALUE = sys.argv[LEVEL_INDEX+1]
+    else:
+        LEVEL_VALUE = 'info'
+    DEFAULT_LOGLEVEL = LOGLEVEL_DICT.get(LEVEL_VALUE, logging.INFO)
 
 def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
     """
+    global DEFAULT_LOGLEVEL
     if not print_type or print_type == "-N-":
         print_type = "-I-"
+
     if color_message is not None:
         print_string = str(color_message)
     elif color_message is None:
@@ -38,9 +51,9 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     if args:
         print_string = (str(message) + str(args))
     print_string.strip("\n")
-    matched = re.match("^=+", print_string) or re.match("^\++", print_string)\
-              or re.match("^\*+", print_string)  or re.match("^\n<<", print_string)\
-              or re.match("^\n\**", print_string)
+    matched = re.match(r"^=+", print_string) or re.match(r"^\++", print_string)\
+              or re.match(r"^\*+", print_string)  or re.match(r"^\n<<", print_string)\
+              or re.match(r"^\n\**", print_string)
     if matched:
         print_string = None
     elif print_string.strip() == '':
@@ -48,27 +61,28 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     elif print_string.startswith("["):
         msg = print_string.split()
         print_string = " ".join(msg[2:])
-    global log_message
-    if not log_message:
+    global LOG_MESSAGE
+    if not LOG_MESSAGE:
         console_logger = logging.getLogger('console')
-        console_logger.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)-15s %(levelname)-5s:: %(message)s','%Y-%m-%d %H:%M:%S')
+        console_logger.setLevel(DEFAULT_LOGLEVEL)
+        formatter = logging.Formatter('%(asctime)-15s %(levelname)-5s:: \
+%(message)s', '%Y-%m-%d %H:%M:%S')
         hdlr = logging.StreamHandler()
         hdlr.setFormatter(formatter)
         console_logger.addHandler(hdlr)
-        log_message = {"-I-": console_logger.info, "-W-": console_logger.warning,
-                       "-E-": console_logger.error,"-D-": console_logger.debug,
+        LOG_MESSAGE = {"-I-": console_logger.info, "-W-": console_logger.warning,\
+                       "-E-": console_logger.error, "-D-": console_logger.debug,\
                        "-C-": console_logger.critical}
     # set logging argument default to True, to write the message in the log file
     if isinstance(sys.stdout, RedirectPrint):
         sys.stdout.print_type = print_type
-        sys.stdout.log_message = log_message
+        sys.stdout.log_message = LOG_MESSAGE
         if print_string:
             sys.stdout.write(print_string,
                              log=kwargs.get('log', True))
     else:
         if print_string:
-            log_message[print_type](print_string)
+            LOG_MESSAGE[print_type](print_string)
     from warrior.Framework.Utils.testcase_Utils import TCOBJ
     if TCOBJ.pnote is False:
         TCOBJ.p_note_level(message, print_type)
@@ -81,7 +95,6 @@ class RedirectPrint(object):
     def __init__(self, console_logfile):
         """Constructor"""
         self.get_file(console_logfile)
-#         self.write_to_stdout = write_to_stdout
         self.stdout = sys.stdout
         self.console_full_log = None
         self.console_add = None
@@ -89,11 +102,13 @@ class RedirectPrint(object):
         self.log_message = None
         self.print_type = "-I-"
         self.file_logger = logging.getLogger('file')
-        self.file_logger.setLevel(logging.DEBUG)
+        global DEFAULT_LOGLEVEL
+        self.file_logger.setLevel(DEFAULT_LOGLEVEL)
         self.hdlr = None
-        self.formatter = logging.Formatter('%(asctime)-15s %(levelname)s ::%(message)s','%Y-%m-%d %H:%M:%S')
-        self.logfile_message = {"-I-": self.file_logger.info, "-W-": self.file_logger.warning,
-                                "-E-": self.file_logger.error, "-D-": self.file_logger.debug,
+        self.formatter = logging.Formatter('%(asctime)-15s %(levelname)-5s :: \
+%(message)s', '%Y-%m-%d %H:%M:%S')
+        self.logfile_message = {"-I-": self.file_logger.info, "-W-": self.file_logger.warning, \
+                                "-E-": self.file_logger.error, "-D-": self.file_logger.debug, \
                                 "-C-": self.file_logger.critical}
 
     def katana_console_log(self, katana_obj):
@@ -118,7 +133,6 @@ class RedirectPrint(object):
         - Writes data to log file only if the logging is True
         - Removes the ansii escape chars before writing to file
         """
-        #self.stdout.write(data)
         self.log_message[self.print_type](data)
         # write to log file if logging is set to True
         if log is True:
