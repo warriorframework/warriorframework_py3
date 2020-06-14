@@ -75,11 +75,27 @@ class ExecFilesClass(object):
 
         if self.res_startdir is not None:
             try:
-                results_execdir = file_Utils.createDir_addtimestamp(self.res_startdir, self.nameonly)
-                rfile = self.get_exec_file_by_type("Results", results_execdir)
+                if not os.path.exists(self.res_startdir):
+                    spath = self.res_startdir.split("/")
+                    if self.res_startdir.endswith("/"):
+                        check_path = "/".join(spath[:-2])
+                        op_dir = spath[-2]
+                    else:
+                        check_path = "/".join(spath[:-1])
+                        op_dir = spath[-1]
+                    if os.path.exists(check_path):
+                        print_warning(
+                            "Given output dir '{0}' does not exists, creating output dir at {1}".format(op_dir,
+                                                                                                        self.res_startdir))
+                        os.makedirs(self.res_startdir)
+                    else:
+                        print_error("Unable to create a outputdir ", self.res_startdir)
+                        exit(1)
             except Exception as e:
-                print_error("Cannot create output dir {}".format(self.res_startdir + self.nameonly))
-                exit(0)
+                print_error(e)
+                exit(1)
+            results_execdir = file_Utils.createDir_addtimestamp(self.res_startdir, self.nameonly)
+            rfile = self.get_exec_file_by_type("Results", results_execdir)
         elif self.res_startdir is None:
             results_location = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                                  'Details', 'Resultsdir')
@@ -297,6 +313,7 @@ class ExecFilesClass(object):
             run_type = "SEQUENTIAL_KEYWORDS"
         return run_type
 
+
 def get_execution_files(filepath, execution_dir, extn):
     """Get the execution files like resultfile, logfile etc"""
 
@@ -316,8 +333,6 @@ def get_testcase_execution_files(testcase_filepath, tc_execution_dir, dirname):
     and get related files """
     extension = file_Utils.getExtension(dirname)
     dirpath = file_Utils.createDir_addtimestamp(tc_execution_dir, dirname)
-    if dirpath is False:
-        exit(1)
     fullpath = get_execution_files(testcase_filepath, dirpath, extension)
     return fullpath
 
