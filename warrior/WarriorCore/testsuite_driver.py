@@ -237,7 +237,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                                          from_project, res_startdir, logs_startdir)
 
     if data_repository.get("random_tc_execution", False) or suite_repository['suite_random_exec']:
-        print_info("Executing test cases in suite in random order")
+        print_debug("Executing test cases in suite in random order")
         randomize = True
     else:
         randomize = False
@@ -376,7 +376,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
             ts_junit_object.remove_html_obj()
             data_repository["war_parallel"] = True
             Utils.config_Utils.data_repository = data_repository
-            print_info("Executing testcases in parallel")
+            print_debug("Executing testcases in parallel")
             test_suite_status = parallel_testcase_driver.main(testcase_list, suite_repository,
                                                               data_repository, from_project,
                                                               tc_parallel=True,
@@ -384,7 +384,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
 
         elif execution_type.upper() == 'SEQUENTIAL_TESTCASES':
             if runmode is None:
-                print_info("Executing testcases sequentially")
+                print_debug("Executing testcases sequentially")
                 test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
                                                                     data_repository, from_project,
                                                                     auto_defects=auto_defects)
@@ -503,7 +503,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
             # if execution type is iterative parallel call WarriorCore.Classes.iterative_testsuite
             # class and execute the testcases in iterative parallel fashion on the systems
             ts_junit_object.remove_html_obj()
-            print_info("Iterative parallel suite")
+            print_debug("Iterative parallel suite")
             data_repository["war_parallel"] = True
             iter_seq_ts_obj = IterativeTestsuite(testcase_list, suite_repository,
                                                  data_repository, from_project, auto_defects)
@@ -556,7 +556,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                                                           jiraproj=None, tc_onError_action=None,\
                                                           iter_ts_sys=None, steps_tag='Cleanup')
         print_info("*****************TESTWRAPPER CLEANUP EXECUTION END*********************")
-    print_info("\n")
+    print_debug("\n")
     suite_end_time = Utils.datetime_utils.get_current_timestamp()
     print_info("[{0}] Testsuite execution completed".format(suite_end_time))
 

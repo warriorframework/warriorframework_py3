@@ -14,7 +14,7 @@ import inspect
 import traceback
 from warrior.Framework import Utils
 from warrior.Framework.Utils import data_Utils
-from warrior.Framework.Utils.print_Utils import print_info, print_error, print_exception
+from warrior.Framework.Utils.print_Utils import print_info, print_error, print_exception, print_debug
 from warrior.Framework.Utils.testcase_Utils import pNote_level
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 """Driver utils module which handles gathers the argument
@@ -205,7 +205,7 @@ class KeywordOperations(object):
             print_error("value for mandatory argument '{0}' not available in "
                         "data_repository/args_repository".format(args))
             return None
-        print_info("getting values for mandatory arguments")
+        print_debug("getting values for mandatory arguments")
         arg_kv = {}
         sysname = 'system_name'
         args_list = self.req_args_list[:]
