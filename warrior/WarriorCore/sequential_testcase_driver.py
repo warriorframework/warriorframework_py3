@@ -99,10 +99,10 @@ def execute_sequential_testcases(testcase_list, suite_repository,
         tc_runtype = testsuite_utils.get_runtype_from_xmlfile(testcase)
         tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(testcase)
         tc_context = Utils.testcase_Utils.get_context_from_xmlfile(testcase)
-        suite_step_data_file = testsuite_utils.get_data_file_at_suite_step(
-                                                testcase, suite_repository)
-        tc_onError_action = Utils.xml_Utils.get_attributevalue_from_directchildnode(
-                                            testcase, 'onError', 'action')
+        suite_step_data_file = testsuite_utils.get_data_file_at_suite_step(\
+            testcase, suite_repository)
+        tc_onError_action = Utils.xml_Utils.get_attributevalue_from_directchildnode(\
+            testcase, 'onError', 'action')
         tc_onError_action = tc_onError_action if tc_onError_action else suite_error_action
         if suite_step_data_file is not None:
             data_file = Utils.file_Utils.getAbsPath(suite_step_data_file,
@@ -141,11 +141,9 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                     tc_status = tc_result[0]
                     tc_duration = tc_result[1]
                 except Exception:
-                    print_error('unexpected error {0}'.format(
-                                                    traceback.format_exc()))
+                    print_error('unexpected error {0}'.format(traceback.format_exc()))
                     tc_status, tc_duration = False, False
-                    tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(
-                                                                    testcase)
+                    tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(testcase)
 
             elif goto_tc and goto_tc == str(tests) and action is True:
 
@@ -163,54 +161,45 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                     goto_tc = False
 
                 except Exception:
-                    print_error('unexpected error {0}'.format(
-                                                    traceback.format_exc()))
+                    print_error('unexpected error {0}'.format(traceback.format_exc()))
                     tc_status, tc_duration = False, False
-                    tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(
-                                                                    testcase)
+                    tc_impact = Utils.testcase_Utils.get_impact_from_xmlfile(testcase)
 
             else:
                 print_info('skipped testcase %s ' % tc_name)
                 skipped += 1
                 testsuite_utils.pSuite_testcase_skip(junit_resultfile)
                 testsuite_utils.pSuite_update_suite_attributes(
-                                junit_resultfile, str(errors), str(skipped),
-                                str(tests), str(failures), time='0')
-                data_repository['wt_junit_object'].update_count(
-                                "skipped", "1", "ts",
-                                data_repository['wt_ts_timestamp'])
-                data_repository['wt_junit_object'].update_count(
-                                "tests", "1", "ts",
-                                data_repository['wt_ts_timestamp'])
-                data_repository['wt_junit_object'].update_count(
-                                "tests", "1", "pj", "not applicable")
+                    junit_resultfile, str(errors), str(skipped),
+                    str(tests), str(failures), time='0')
+                data_repository['wt_junit_object'].update_count("skipped", "1", "ts",\
+                    data_repository['wt_ts_timestamp'])
+                data_repository['wt_junit_object'].update_count("tests", "1", "ts",\
+                    data_repository['wt_ts_timestamp'])
+                data_repository['wt_junit_object'].update_count(\
+                    "tests", "1", "pj", "not applicable")
                 tmp_timestamp = str(Utils.datetime_utils.get_current_timestamp())
                 time.sleep(2)
                 data_repository['wt_junit_object'].create_testcase(
-                                location="from testsuite",
-                                timestamp=tmp_timestamp,
-                                ts_timestamp=data_repository['wt_ts_timestamp'],
-                                classname=data_repository['wt_suite_name'],
-                                name=os.path.splitext(tc_name)[0])
-                data_repository['wt_junit_object'].add_testcase_message(
-                                                    tmp_timestamp, "skipped")
-                data_repository['wt_junit_object'].update_attr(
-                                "status", "SKIPPED", "tc", tmp_timestamp)
+                    location="from testsuite",
+                    timestamp=tmp_timestamp,
+                    ts_timestamp=data_repository['wt_ts_timestamp'],
+                    classname=data_repository['wt_suite_name'],
+                    name=os.path.splitext(tc_name)[0])
+                data_repository['wt_junit_object'].add_testcase_message(tmp_timestamp, "skipped")
+                data_repository['wt_junit_object'].update_attr(\
+                    "status", "SKIPPED", "tc", tmp_timestamp)
                 data_repository['testcase_%d_result' % tests] = "SKIP"
                 if Utils.file_Utils.fileExists(tc_path):
-                    title = Utils.xml_Utils.getChildTextbyParentTag(
-                                            tc_path, 'Details', 'Title')
+                    title = Utils.xml_Utils.getChildTextbyParentTag(tc_path, 'Details', 'Title')
                 title = title.strip() if Utils.file_Utils.fileExists(tc_path) and title else "None"
-                data_repository['wt_junit_object'].update_attr(
-                                "title", title, "tc", tmp_timestamp)
-                data_repository['wt_junit_object'].update_attr(
-                                "impact", impact_dict.get(tc_impact.upper()),
-                                "tc", tmp_timestamp)
-                data_repository['wt_junit_object'].update_attr(
-                                "onerror", "N/A", "tc", tmp_timestamp)
-                data_repository['wt_junit_object'].output_junit(
-                                data_repository['wt_results_execdir'],
-                                print_summary=False)
+                data_repository['wt_junit_object'].update_attr("title", title, "tc", tmp_timestamp)
+                data_repository['wt_junit_object'].update_attr(\
+                    "impact", impact_dict.get(tc_impact.upper()), "tc", tmp_timestamp)
+                data_repository['wt_junit_object'].update_attr(\
+                    "onerror", "N/A", "tc", tmp_timestamp)
+                data_repository['wt_junit_object'].output_junit(\
+                    data_repository['wt_results_execdir'], print_summary=False)
                 continue
 
         else:
@@ -252,8 +241,7 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                          "SKIP": "SKIP", "RAN": "RAN"}
 
         if str(tc_status).upper() in list(string_status.keys()):
-            data_repository['testcase_%d_result' % tests] = string_status[
-                                                    str(tc_status).upper()]
+            data_repository['testcase_%d_result' % tests] = string_status[str(tc_status).upper()]
         else:
             print_error("unexpected testcase status, default to exception")
             data_repository['testcase_%d_result' % tests] = "ERROR"
@@ -265,8 +253,7 @@ def execute_sequential_testcases(testcase_list, suite_repository,
             "Teststuie result"
         print_debug(msg)
 
-        runmode, value, _ = common_execution_utils.get_runmode_from_xmlfile(
-                                                                testcase)
+        runmode, value, _ = common_execution_utils.get_runmode_from_xmlfile(testcase)
         retry_type, retry_cond, retry_cond_value, retry_value, \
             retry_interval = common_execution_utils.get_retry_from_xmlfile(testcase)
         # Adding condition to check tc_status is error or not
@@ -279,16 +266,12 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                     goto_tc = str(value)
             elif tc_status == 'ERROR' or tc_status == 'EXCEPTION':
                 errors += 1
-                testsuite_utils.pSuite_testcase_error(
-                            junit_resultfile,
-                            'Encountered error/exception during TC execution',
-                            str(tc_duration))
-                goto_tc = onerror_driver.main(testcase, suite_error_action,
-                                              suite_error_value)
+                testsuite_utils.pSuite_testcase_error(junit_resultfile,\
+                    'Encountered error/exception during TC execution', str(tc_duration))
+                goto_tc = onerror_driver.main(testcase, suite_error_action, suite_error_value)
                 if goto_tc in ['ABORT', 'ABORT_AS_ERROR']:
-                    update_suite_attribs(junit_resultfile, str(errors),
-                                         str(skipped), str(tests),
-                                         str(failures), time='0')
+                    update_suite_attribs(junit_resultfile, str(errors), str(skipped), str(tests),\
+                        str(failures), time='0')
                     break
                 # when 'onError:goto' value is less than the current tc num,
                 # change the next iteration point to goto value
@@ -297,8 +280,8 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                     goto_tc = False
                 # Handles the goto value is greater than total no of TC's
                 if int(goto_tc) > len(testcase_list):
-                    print_warning("The goto value {} is more than no of TC's {} so skipping all the TC's".format(
-                        goto_tc, len(testcase_list)))
+                    print_warning("The goto value {} is more than no of TC's {} \
+                        so skipping all the TC's".format(goto_tc, len(testcase_list)))
             elif tc_status is False:
                 failures += 1
                 testsuite_utils.pSuite_testcase_failure(junit_resultfile,
@@ -332,15 +315,12 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                         time.sleep(int(retry_interval))
                     else:
                         condition_met = False
-                        print_warning("The condition value '{0}' does not "
-                                      "match with the expected value "
-                                      "'{1}'".format(
-                                        data_repository[retry_cond],
-                                        retry_cond_value))
+                        print_warning("The condition value '{0}' does not "\
+                            "match with the expected value ""'{1}'".format(\
+                                data_repository[retry_cond], retry_cond_value))
                 except KeyError:
-                    print_warning("The given condition '{0}' is not there in "
-                                  "the data repository".format(
-                                                    retry_cond_value))
+                    print_warning("The given condition '{0}' is not there in "\
+                        "the data repository".format(retry_cond_value))
                     condition_met = False
                 if condition_met is False:
                     goto_tc = str(retry_value)
@@ -349,29 +329,24 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                     try:
                         if data_repository[retry_cond] != retry_cond_value:
                             condition_met = True
-                            pNote("Wait for {0}sec before retrying".format(
-                                                            retry_interval))
-                            pNote("The condition value '{0}' does not match "
-                                  "with the expected value "
-                                  "'{1}'".format(data_repository[retry_cond],
-                                                 retry_cond_value))
+                            pNote("Wait for {0}sec before retrying".format(retry_interval))
+                            pNote("The condition value '{0}' does not match "\
+                                "with the expected value ""'{1}'".format(\
+                                    data_repository[retry_cond], retry_cond_value))
                             time.sleep(int(retry_interval))
                         else:
                             condition_met = False
-                            print_warning("The given condition '{0}' matches "
-                                          "the expected value "
-                                          "'{1}'".format(
-                                                data_repository[retry_cond],
-                                                retry_cond_value))
+                            print_warning("The given condition '{0}' matches "\
+                                "the expected value ""'{1}'".format(\
+                                    data_repository[retry_cond], retry_cond_value))
                     except KeyError:
                         condition_met = False
-                        print_warning("The given condition '{0}' is not there "
-                                      "in the data repository".format(
-                                                            retry_cond_value))
+                        print_warning("The given condition '{0}' is not there "\
+                            "in the data repository".format(retry_cond_value))
                     if condition_met is False:
-                        pNote("The given condition '{0}' matched with the "
-                              "value '{1}'".format(data_repository[retry_cond],
-                                                   retry_cond_value))
+                        pNote("The given condition '{0}' matched with the "\
+                            "value '{1}'".format(data_repository[retry_cond],\
+                                retry_cond_value))
                         goto_tc = str(retry_value)
 # suite_status = testsuite_utils.compute_testsuite_status(suite_status,
 # tc_status, tc_impact)
@@ -395,8 +370,7 @@ def execute_sequential_testcases(testcase_list, suite_repository,
            testcase.find("runmode").get("runmode_val"):
             print_info("\n----------------- End of Testcase Runmode Execution"
                        " -----------------\n")
-    suite_status = Utils.testcase_Utils.compute_status_using_impact(
-                                        tc_status_list, tc_impact_list)
+    suite_status = Utils.testcase_Utils.compute_status_using_impact(tc_status_list, tc_impact_list)
 
     if tc_parallel:
         tc_impact = data_repository['wt_tc_impact']
@@ -418,9 +392,9 @@ def main(testcase_list, suite_repository, data_repository, from_project,
          ts_iter=False):
     """Executes testcases in a testsuite sequentially """
     try:
-        testsuite_status = execute_sequential_testcases(
-         testcase_list, suite_repository, data_repository, from_project,
-         auto_defects, iter_ts_sys, tc_parallel, queue, ts_iter)
+        testsuite_status = execute_sequential_testcases(\
+            testcase_list, suite_repository, data_repository, from_project,\
+            auto_defects, iter_ts_sys, tc_parallel, queue, ts_iter)
     except Exception:
         testsuite_status = False
         print_error('unexpected error {0}'.format(traceback.format_exc()))
