@@ -76,26 +76,19 @@ class ExecFilesClass(object):
         if self.res_startdir is not None:
             try:
                 if not os.path.exists(self.res_startdir):
-                    spath = self.res_startdir.split("/")
-                    if self.res_startdir.endswith("/"):
-                        check_path = "/".join(spath[:-2])
-                        op_dir = spath[-2]
-                    else:
-                        check_path = "/".join(spath[:-1])
-                        op_dir = spath[-1]
-                    if os.path.exists(check_path):
-                        print_warning(
-                            "Given output dir '{0}' does not exists, creating output dir at {1}".format(op_dir,
-                                                                                                        self.res_startdir))
-                        os.makedirs(self.res_startdir)
-                    else:
-                        print_error("Unable to create a outputdir ", self.res_startdir)
-                        exit(1)
+                    print_warning(
+                        "Given output dir does not exists, creating output dir at {0}".format(self.res_startdir))
+                    os.makedirs(self.res_startdir)
+                elif os.path.exists(self.res_startdir):
+                    os.makedirs(os.path.join(self.res_startdir,".checkpermission"))
             except Exception as e:
-                print_error(e)
+                print_error("Permission denied: Can not create an output dir ", self.res_startdir)
                 exit(1)
-            results_execdir = file_Utils.createDir_addtimestamp(self.res_startdir, self.nameonly)
-            rfile = self.get_exec_file_by_type("Results", results_execdir)
+            else:
+                if os.path.exists(os.path.join(self.res_startdir,".checkpermission")):
+                    os.rmdir(os.path.join(self.res_startdir,".checkpermission"))
+                results_execdir = file_Utils.createDir_addtimestamp(self.res_startdir, self.nameonly)
+                rfile = self.get_exec_file_by_type("Results", results_execdir)
         elif self.res_startdir is None:
             results_location = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                                  'Details', 'Resultsdir')
