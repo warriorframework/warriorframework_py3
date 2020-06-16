@@ -21,6 +21,9 @@ warrior/Framework/Utils/print_Utils.py at module level into this module
 as it will lead to cyclic imports.
 
 """
+#pylint: disable=wrong-import-position
+#pylint: disable=global-statement
+
 import sys
 import re
 import logging
@@ -65,8 +68,8 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     if not LOG_MESSAGE:
         console_logger = logging.getLogger('console')
         console_logger.setLevel(DEFAULT_LOGLEVEL)
-        formatter = logging.Formatter('%(asctime)-15s %(levelname)-5s:: \
-%(message)s', '%Y-%m-%d %H:%M:%S')
+        formatter = logging.Formatter('%(asctime)-7s %(levelname)-5s:: \
+%(message)s', '%H:%M:%S')
         hdlr = logging.StreamHandler()
         hdlr.setFormatter(formatter)
         console_logger.addHandler(hdlr)
