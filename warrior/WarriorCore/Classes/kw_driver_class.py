@@ -240,7 +240,7 @@ class KeywordOperations(object):
                 arg_kv[args] = self.data_repository[args]
             else:
                 arg_kv[args] = self.default_dict[args]
-                print_info("executing with default value '{0}' for optional "
+                print_debug("executing with default value '{0}' for optional "
                            "argument '{1}'".format(arg_kv[args], args))
         for args in self.optional_args_list:
             # requires another loop since system_name may not be at beginning

@@ -93,7 +93,7 @@ class IronClaw(object):
 
     def testsuite_prerun(self, testsuite_filepath, root, check_files_dict=None):
         """Executes prerun of a testsuite file """
-        print_info('\n')
+        print_debug('\n')
         print_info('*'*40)
         print_debug("Validating Test suite xml")
         print_info('*'*40)
@@ -408,7 +408,7 @@ class IronClaw(object):
 
         elif input_data_file is None or input_data_file is False:
             if testname is 'Testcase':
-                print_info("InputDataFile is not provided,"\
+                print_debug("InputDataFile is not provided,"\
                            "checking if default InputDataFile exists....")
                 default_datafilepath = execution_files_class.get_default_xml_datafile(\
                     filepath)

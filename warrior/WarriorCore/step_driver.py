@@ -153,7 +153,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:
         if step.find("runmode").get("attempt") == 1:
-            print_info("\n----------------- Start of Step Runmode Execution -----------------\n")
+            print_debug("\n----------------- Start of Step Runmode Execution -----------------\n")
         print_info("KEYWORD ATTEMPT: {0}".format(
             step.find("runmode").get("attempt")))
     # print keyword to result file
@@ -189,8 +189,8 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
 
     # Getting onError action
     # Insert rules else statement here
-    print_info("")
-    print_info("*** Keyword status ***")
+    print_debug("")
+    print_debug("*** Keyword status ***")
     step_goto_value = False
     step_onError_action = Utils.xml_Utils.get_attributevalue_from_directchildnode(
         step, 'onError', 'action')
@@ -243,8 +243,8 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     kw_end_time = Utils.datetime_utils.get_current_timestamp()
     kw_duration = Utils.datetime_utils.get_time_delta(kw_start_time)
     hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
-    print_info("Keyword duration= {0}".format(hms))
-    print_info("[{0}] Keyword execution completed".format(kw_end_time))
+    print_debug("Keyword duration= {0}".format(hms))
+    print_debug("[{0}] Keyword execution completed".format(kw_end_time))
     # condition to  print the end of runmode execution when all the attempts finish
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:

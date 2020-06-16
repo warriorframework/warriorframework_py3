@@ -18,7 +18,7 @@ import getpass
 import multiprocessing
 from warrior.Framework.Utils import xml_Utils, file_Utils, data_Utils
 from warrior.Framework.Utils.testcase_Utils import pNote
-from warrior.Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils.print_Utils import print_info, print_debug
 from warrior.Framework.Utils.xml_Utils import getElementWithTagAttribValueMatch
 import warrior.WarriorCore.Classes.katana_interface_class as katana_interface_class
 
@@ -316,7 +316,7 @@ class WarriorHtmlResults:
             print_info("++++ Results Summary ++++")
             print_info("Open the Results summary file given below in a browser to "
                        "view results summary for this execution")
-            print_info("Results sumary file: {0}".format(self.get_path()))
+            print_debug("Results sumary file: {0}".format(self.get_path()))
             print_info("+++++++++++++++++++++++++")
 
     def generate_html(self, junitObj, givenPath, is_final):
@@ -351,5 +351,5 @@ class WarriorHtmlResults:
         print_info("++++ Results Summary ++++")
         print_info("Open the Results summary file given below in a browser to "
                    "view results summary for this execution")
-        print_info("Results sumary file: {0}".format(self.get_path()))
+        print_debug("Results sumary file: {0}".format(self.get_path()))
         print_info("+++++++++++++++++++++++++")

@@ -492,7 +492,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         elif execution_type.upper() == "ITERATIVE_SEQUENTIAL":
             # if execution type is iterative sequential call WarriorCore.Classes.iterative_testsuite
             # class and execute the testcases in iterative sequential fashion on the systems
-            print_info("Iterative sequential suite")
+            print_debug("Iterative sequential suite")
 
             iter_seq_ts_obj = IterativeTestsuite(testcase_list, suite_repository,
                                                  data_repository, from_project,
@@ -555,7 +555,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                                                           auto_defects=auto_defects, suite=None,\
                                                           jiraproj=None, tc_onError_action=None,\
                                                           iter_ts_sys=None, steps_tag='Cleanup')
-        print_info("*****************TESTWRAPPER CLEANUP EXECUTION END*********************")
+        print_debug("*****************TESTWRAPPER CLEANUP EXECUTION END*********************")
     print_debug("\n")
     suite_end_time = Utils.datetime_utils.get_current_timestamp()
     print_info("[{0}] Testsuite execution completed".format(suite_end_time))

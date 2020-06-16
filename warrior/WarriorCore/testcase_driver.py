@@ -266,7 +266,7 @@ def report_testcase_result(tc_status, data_repository, tag="Steps"):
             elif fail_count > 1:
                 print_info("{0:15} {1:45} {2:10}".format(str(step_num), tag+"-"+str(kw_name),
                                                          str(kw_status)))
-    print_info("=================== END OF TESTCASE ===========================")
+    print_debug("=================== END OF TESTCASE ===========================")
 
 
 def get_system_list(datafile, node_req=False, iter_req=False):

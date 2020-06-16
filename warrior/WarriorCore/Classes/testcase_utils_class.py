@@ -110,7 +110,7 @@ class TestcaseUtils(object):
 
         self.p_testcase()
         self.gkeywordloop = self.gkeywordloop+1
-        print_info("\n********************* Keyword: %s *********************\n" % keyword_txt)
+        print_debug("\n********************* Keyword: %s *********************\n" % keyword_txt)
         self.gkeyword[self.gkeywordloop] = ET.SubElement(self.root, "Keyword")
         self.current_pointer = self.gkeyword[self.gkeywordloop]
         name = ET.SubElement(self.gkeyword[self.gkeywordloop], "Name")
@@ -121,7 +121,7 @@ class TestcaseUtils(object):
     def p_subkeyword(self, keyword_txt):
         """ Creates a Keyword tag as the child node to the <SubStep> tag """
         self.gsubkeyloop = self.gsubkeyloop+1
-        print_info("\n***************Sub-Keyword: %s "
+        print_debug("\n***************Sub-Keyword: %s "
                    "***************\n" % keyword_txt)
         self.gsubkey[self.gsubkeyloop] = ET.SubElement(\
                 self.gstep[self.gsteploop], "Keyword")
