@@ -83,7 +83,7 @@ class ExecFilesClass(object):
                     os.makedirs(os.path.join(self.res_startdir,".checkpermission"))
             except Exception as e:
                 print_error("Permission denied: Can not create an output dir ", self.res_startdir)
-                exit(1)
+                exit(0)
             else:
                 if os.path.exists(os.path.join(self.res_startdir,".checkpermission")):
                     os.rmdir(os.path.join(self.res_startdir,".checkpermission"))
