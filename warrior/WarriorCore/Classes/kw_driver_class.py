@@ -232,7 +232,7 @@ class KeywordOperations(object):
     def get_values_for_optional_args(self, arg_kv):
         """The values for optional arguments as a python dictionary
         """
-        print_info("getting values for optional arguments")
+        print_debug("getting values for optional arguments")
         for args in self.optional_args_list:
             if args in self.args_repository:
                 arg_kv[args] = self.args_repository[args]

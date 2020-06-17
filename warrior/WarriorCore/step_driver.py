@@ -95,8 +95,8 @@ def get_step_console_log(filename, logsdir, console_name):
 
     console_logfile = Utils.file_Utils.getCustomLogFile(
         filename, logsdir, console_name)
-    print_debug("\n************ This is parallel execution ************")
-    print_info("\n... console logs for {0} will be logged in {1} ".format(
+    print_debug("************ This is parallel execution ************")
+    print_info("... console logs for {0} will be logged in {1} ".format(
         console_name, console_logfile))
     Utils.config_Utils.debug_file(console_logfile)
 
@@ -153,7 +153,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:
         if step.find("runmode").get("attempt") == 1:
-            print_debug("\n----------------- Start of Step Runmode Execution -----------------\n")
+            print_debug("----------------- Start of Step Runmode Execution ----------------")
         print_info("KEYWORD ATTEMPT: {0}".format(
             step.find("runmode").get("attempt")))
     # print keyword to result file
@@ -243,14 +243,14 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     kw_end_time = Utils.datetime_utils.get_current_timestamp()
     kw_duration = Utils.datetime_utils.get_time_delta(kw_start_time)
     hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
-    print_debug("Keyword duration= {0}".format(hms))
+    print_info("Keyword duration= {0}".format(hms))
     print_debug("[{0}] Keyword execution completed".format(kw_end_time))
     # condition to  print the end of runmode execution when all the attempts finish
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:
         if step.find("runmode").get("attempt") == \
            step.find("runmode").get("runmode_val"):
-            print_info("\n----------------- End of Step Runmode Execution -----------------\n")
+            print_info("----------------- End of Step Runmode Execution -----------------")
 
     impact_dict = {"IMPACT": "Impact", "NOIMPACT": "No Impact"}
     tc_timestamp = data_repository['wt_tc_timestamp']

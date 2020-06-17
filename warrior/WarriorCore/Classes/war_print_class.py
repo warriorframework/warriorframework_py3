@@ -54,12 +54,12 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     if args:
         print_string = (str(message) + str(args))
     print_string.strip("\n")
-    matched = re.match(r"^=+", print_string) or re.match(r"^\++", print_string)\
-              or re.match(r"^\*+", print_string)  or re.match(r"^\n<<", print_string)\
-              or re.match(r"^\n\**", print_string)
-    if matched:
-        print_string = None
-    elif print_string.strip() == '':
+    # matched = re.match(r"^=+", print_string) or re.match(r"^\++", print_string)\
+    #           or re.match(r"^\*+", print_string)  or re.match(r"^\n<<", print_string)\
+    #           or re.match(r"^\n\**", print_string)
+    # if matched:
+    #     print_string = None
+    if print_string.strip() == '':
         print_string = None
     elif print_string.startswith("["):
         msg = print_string.split()

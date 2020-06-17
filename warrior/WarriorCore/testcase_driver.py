@@ -243,7 +243,7 @@ def report_testcase_result(tc_status, data_repository, tag="Steps"):
         1. tc_status (bool) = status of the executed testcase
         2. data_repository (dict) = data_repository of the executed  testcase
     """
-    print_info("\n**** Testcase Result ***")
+    print_info("**** Testcase Result ***")
     print_info("TESTCASE:{0}  STATUS:{1}".format(data_repository['wt_name'],
                                                  convertLogic(tc_status)))
     print_info("\n")
@@ -266,7 +266,7 @@ def report_testcase_result(tc_status, data_repository, tag="Steps"):
             elif fail_count > 1:
                 print_info("{0:15} {1:45} {2:10}".format(str(step_num), tag+"-"+str(kw_name),
                                                          str(kw_status)))
-    print_debug("=================== END OF TESTCASE ===========================")
+    print_info("=================== END OF TESTCASE ===========================")
 
 
 def get_system_list(datafile, node_req=False, iter_req=False):
@@ -334,7 +334,7 @@ def get_system_list(datafile, node_req=False, iter_req=False):
 def print_testcase_details_to_console(testcase_filepath, data_repository, steps_tag="Steps"):
     """Prints the testcase details to the console """
     framework_detail.warrior_framework_details()
-    print_info("\n===============================  TC-DETAILS  ===================================="
+    print_info("===============================  TC-DETAILS  ===================================="
                "==============")
     print_info("Title: %s" % data_repository['wt_title'])
     print_info("Results directory: %s" % data_repository['wt_resultsdir'])

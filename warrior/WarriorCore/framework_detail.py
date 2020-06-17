@@ -26,15 +26,15 @@ from warrior.Framework.Utils.testcase_Utils import pNote
 def warrior_banner():
     """This prints banner of warrior. The font is standard
     """
-    print_notype("  __        ___    ____  ____  ___ ___  ____  ")
+    print("  __        ___    ____  ____  ___ ___  ____  ")
     time.sleep(0.10)
-    print_notype(r"  \ \      / / \  |  _ \|  _ \|_ _/ _ \|  _ \  ")
+    print(r"  \ \      / / \  |  _ \|  _ \|_ _/ _ \|  _ \  ")
     time.sleep(0.10)
-    print_notype(r"   \ \ /\ / / _ \ | |_) | |_) || | | | | |_) |  ")
+    print(r"   \ \ /\ / / _ \ | |_) | |_) || | | | | |_) |  ")
     time.sleep(0.10)
-    print_notype(r"    \ V  V / ___ \|  _ <|  _ < | | |_| |  _ <   ")
+    print(r"    \ V  V / ___ \|  _ <|  _ < | | |_| |  _ <   ")
     time.sleep(0.10)
-    print_notype(r"     \_/\_/_/   \_\_| \_\_| \_\___\___/|_| \_\  ")
+    print(r"     \_/\_/_/   \_\_| \_\_| \_\___\___/|_| \_\  ")
 
 def warrior_framework_details():
     """This gets framework details such the executing framework path, release
