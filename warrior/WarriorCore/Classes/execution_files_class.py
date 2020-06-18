@@ -80,13 +80,12 @@ class ExecFilesClass(object):
                         "Given output dir does not exists, creating output dir at {0}".format(self.res_startdir))
                     os.makedirs(self.res_startdir)
                 elif os.path.exists(self.res_startdir):
-                    os.makedirs(os.path.join(self.res_startdir,".checkpermission"))
+                    if not (os.access(self.res_startdir, os.R_OK) and os.access(self.res_startdir, os.W_OK) and os.access(self.res_startdir, os.X_OK | os.W_OK)):
+                        raise Exception("Permission Denied")
             except Exception as e:
-                print_error("Permission denied: Can not create an output dir ", self.res_startdir)
-                exit(0)
+                print_error(str(e)+": Can not create an output dir "+ self.res_startdir)
+                exit(1)
             else:
-                if os.path.exists(os.path.join(self.res_startdir,".checkpermission")):
-                    os.rmdir(os.path.join(self.res_startdir,".checkpermission"))
                 results_execdir = file_Utils.createDir_addtimestamp(self.res_startdir, self.nameonly)
                 rfile = self.get_exec_file_by_type("Results", results_execdir)
         elif self.res_startdir is None:
