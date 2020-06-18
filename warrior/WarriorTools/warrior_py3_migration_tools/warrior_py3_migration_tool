@@ -1,0 +1,794 @@
+#!/usr/bin/env/python3
+
+'''
+Copyright 2017, Fujitsu Network Communications, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+'''
+
+import sys
+import re
+import time
+import subprocess
+import logging
+import os
+import xml.etree.ElementTree as et
+import shutil
+import json
+import argparse
+
+
+
+#Argparser to add command line argumets
+parser = argparse.ArgumentParser(description="This tool is used to add fully qualified imports to keyword repositories and repo name for test case repositoires")
+# parser.add_argument('--version', action='version',
+#                     version='%(prog)s {version}'.format(version=__version__))
+parser.add_argument('--file_name', "-f",  action="store", required=True, help="Absolute path of json file" )
+parser.add_argument('--version', "-v",action='version', version='%(prog)s 1.0')
+# parser.add_argument('-v', '--version', action='version', version='%(prog)s ' + __version__)
+
+args = parser.parse_args()
+
+class parse_json():
+    """
+    """
+    start_time = time.time()
+
+    def __init__(self, json_file):
+
+        filepath = os.path.abspath(json_file.strip())
+        with open(filepath, "r") as json_handle:
+            json_doc = json.load(json_handle)
+            self.keyword_repourls = json_doc.get("keyword_repositories")
+            self.test_repourls = json_doc.get("testcase_repositories")
+            self.output_dir = json_doc.get("output_dir")
+            if not self.keyword_repourls or not self.test_repourls:
+                self.log.info("keyword_repositories and testcase_repositories keys mandatory in given json file")
+                exit(1)
+            elif not type(self.keyword_repourls) == list and not type(self.test_repourls == list):
+                self.log.info("keyword_repositories and testcase_repositories should be type of list")
+                exit(1)
+
+
+
+class Migrate_keyword_repo(parse_json):
+
+    def __init__(self, keyword_repos, testcase_repos, output_dir=None):
+        self.keyword_repos_url = keyword_repos
+        self.testcase_repos_url = testcase_repos
+        self.warrior_framework_url = "https://github.com/warriorframework/warriorframework_py3.git"
+        self.keyword_repo = "keyword_repositories"
+        self.testcase_repo = "testcase_repositories"
+        self.current_working_directory = os.getcwd()
+        self.temp_directory_name = "conversion"
+        self.keyword_repos_with_path = []
+        self.keyword_repos_in_order = []
+        self.keyword_repos_path = os.path.join(self.current_working_directory, self.temp_directory_name,
+                                               "keyword_repositories")
+        self.testcase_repos_path = os.path.join(self.current_working_directory, self.temp_directory_name,
+                                                "testcase_repositories")
+        self.numbers_dict = {"1": "one", "2": "two", "3": "three", "4": "four", "5": "five", "6": "six",
+                             "7": "seven", "8": "eight", "9": "nine"}
+        self.log = logging.getLogger()
+        self.log.setLevel(logging.INFO)
+
+        fileHandler = logging.FileHandler("{0}/{1}.log".format(self.current_working_directory, "conversion"))
+        self.log.addHandler(fileHandler)
+
+        consoleHandler = logging.StreamHandler()
+        self.log.addHandler(consoleHandler)
+
+        self.not_modified_statements = []
+        self.output_dir = output_dir
+        self.keyword_summary = {}
+
+    def add_log(self):
+
+        destination = shutil.copytree(self.keyword_repos_path, os.path.join(self.output_dir, "keyword_repositories"))
+        destination = shutil.copytree(self.testcase_repos_path, os.path.join(self.output_dir, "testcase_repositories"))
+
+        shutil.copyfile(os.path.join(self.current_working_directory, "conversion.log"), os.path.join(self.output_dir, "conversion.log" ))
+        shutil.rmtree(os.path.join(self.current_working_directory, self.temp_directory_name))
+        os.remove(os.path.join(self.current_working_directory, "conversion.log"))
+        self.log.info ("Location of output directory : {}".format(self.output_dir))
+
+    def modifying_warrior_framework_folder(self):
+        os.system("mv {} {}".format(os.path.join(self.keyword_repos_path, "warriorframework_py3", "warrior"), os.path.join(self.keyword_repos_path)))
+        os.system("rm -rf {}".format(os.path.join(self.keyword_repos_path, "warriorframework_py3")))
+
+
+    def creating_directories(self):
+        if not os.path.exists(os.path.join(self.current_working_directory, self.temp_directory_name)):
+            self.log.info("creating directory {}".format(self.temp_directory_name))
+            os.mkdir(self.temp_directory_name)
+        else:
+            self.log.info("removing the existing directory {}".format(self.temp_directory_name))
+            os.system("rm -rf {}".format(self.temp_directory_name))
+            os.mkdir(self.temp_directory_name)
+            self.log.info("creating directory {}".format(self.temp_directory_name))
+        os.chdir(os.path.join(self.current_working_directory, self.temp_directory_name))
+        os.mkdir(self.keyword_repo)
+        os.mkdir(self.testcase_repo)
+        self.cloning_the_repositories()
+
+
+    def install_depen(self, dependency, dependency_name):
+        """ This function checks if a dependency was installed. If not,
+         then it raises an error.
+        """
+        counter = 0
+        if dependency == "virtualenv":
+            os.system("python3 -m pip install --user virtualenv")
+            time.sleep(5)
+        pip_cmds = ['pip3', 'install', dependency]
+
+        try:
+            self.log.info("installing " + dependency)
+            sp_output = subprocess.Popen(pip_cmds, stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE, stdin=subprocess.PIPE)
+
+            output, error = sp_output.communicate()
+            output = output.decode("utf-8")
+
+            if "Requirement already satisfied" in output or "Successfully installed GitPython" \
+                    in output:
+                self.log.info(" was able to install " + dependency_name)
+                return True
+            return_code = sp_output.returncode
+            if return_code > 0:
+                self.log.info(output, error)
+        except IOError:
+            counter = 1
+            self.log.info("unable to install " + dependency_name)
+        except:
+            counter = 1
+            self.log.info("unable to install " + dependency_name)
+        if counter == 0:
+            try:
+                sp_output = subprocess.Popen(["pip", "show", dependency_name],
+                                             stdin=subprocess.PIPE,
+                                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                output = sp_output.stdout.read()
+                if output == "":
+                    self.log.info(dependency_name + " could not be installed!!")
+                else:
+                    self.log.info(dependency_name + " installation complete!")
+            except:
+                self.log.info("wasn't able to determine if " + dependency_name)
+
+    def check_git_status(self):
+        """
+        this function is for checking the status of the git
+        """
+        try:
+            null = open("/dev/null", "w")
+            sp_output = subprocess.Popen("git", stdout=subprocess.PIPE,
+                                         stderr=subprocess.PIPE,
+                                         stdin=subprocess.PIPE, shell=True)
+            null.close()
+            output = sp_output.stdout.read()
+
+            return True
+
+        except OSError:
+            return False
+
+    def wait_for(self, sec):
+        i = sec
+        while i > 0:
+            print("waiting for {}".format(i))
+            time.sleep(1)
+            i = i - 1
+        print("{0}".format(" " * 50), end="\r")
+
+    def cloning_the_repositories(self):
+        git_status = self.check_git_status()
+        if git_status:
+            self.log.info("Git is available proceeding further ")
+        else:
+            self.log.info("Git is not installed on the system. "
+                       "Please install git and restart this installation.")
+            sys.exit("Git is mandatory Please install it")
+        dep_install_status = self.install_depen("GitPython", "git")
+        if dep_install_status:
+            self.log.info("Successfully installed package {}".format("GitPython"))
+        else:
+            self.log.info("Not able to install the package {}".format("GitPython"))
+        import git
+
+        # cloning warrior framework
+        self.log.info("cloning warrior framework")
+        repo = git.Repo.clone_from(self.warrior_framework_url, os.path.join(self.keyword_repos_path,"warriorframework_py3"), branch='master')
+        self.log.info("waiting for 5 seconds")
+        time.sleep(5)
+        # self.wait_for(5)
+
+        #git.Git(self.keyword_repos_path).clone(self.warrior_framework_url)
+        self.log.info("warrior framework cloned successfully")
+        warrior_repository_name = self.warrior_framework_url.split("/")[-1].split(".")[0]
+
+        for keyword_url in self.keyword_repos_url:
+            self.log.info("cloning keyword repository : {}".format(keyword_url))
+
+            #git.Git(self.keyword_repos_path).clone(keyword_url["url"])
+            repository_name = keyword_url["url"].split("/")[-1].split(".")[0]
+            commit_id = ""
+            branch = ""
+            if keyword_url.get("commitid"):
+                commit_id = keyword_url["commitid"]
+                branch = "master"
+
+            if not branch :
+                if keyword_url.get("branch"):
+                    branch = keyword_url["branch"]
+                else:
+                    branch = "master"
+            keyword_repo_instance = git.Repo.clone_from(keyword_url["url"], os.path.join(self.keyword_repos_path, repository_name),branch=branch)
+            # self.wait_for(10)
+
+            self.log.info("waiting for 5 seconds")
+            time.sleep(5)
+            if commit_id:
+                try :
+
+                    keyword_repo_instance.git.checkout(commit_id)
+                except:
+                    # self.wait_for(10)
+                    self.log.info("waiting for 5 seconds")
+                    time.sleep(5)
+                    try :
+
+                        # self.wait_for(10)
+                        self.log.info("waiting for 5 seconds")
+                        time.sleep(5)
+                        keyword_repo_instance.git.checkout(commit_id)
+                    except:
+                        pass
+
+
+
+            pattern1 = r'(\d)'
+            match1 = re.match(pattern1, repository_name)
+            match1_flag = False
+            if match1:
+                # import pdb
+                # pdb.set_trace()
+                existing_path = os.path.join(self.keyword_repos_path, repository_name)
+                modified_path = "{}{}".format(self.numbers_dict[match1.group(1)],
+                                              repository_name.split(match1.group(1))[-1])
+                os.system("mv {}/ {}".format(existing_path,
+                                             os.path.join(self.current_working_directory, self.temp_directory_name,
+                                                          self.keyword_repo, modified_path)))
+                match1_flag = True
+            if match1_flag:
+                self.keyword_repos_with_path.append(os.path.join(self.keyword_repos_path, modified_path))
+                self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, modified_path))
+            else:
+                self.keyword_repos_with_path.append(os.path.join(self.keyword_repos_path, repository_name))
+                self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, repository_name))
+
+            # import pdb
+            # pdb.set_trace()
+
+            self.log.info("successfully cloned keyword repository {}".format(keyword_url))
+            # path = self.imp_url.split("/")[-1].split(".")[0]
+        self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, warrior_repository_name))
+
+        for testcase_url in self.testcase_repos_url:
+            repository_name = testcase_url["url"].split("/")[-1].split(".")[0]
+            commit_id = ""
+            branch = ""
+            if testcase_url.get("commitid"):
+                commit_id = testcase_url["commitid"]
+                branch = "master"
+
+            if not branch:
+                if testcase_url.get("branch"):
+                    branch = testcase_url["branch"]
+                else:
+                    branch = "master"
+
+            self.log.info("cloning testcase repository : {}".format(testcase_url))
+            testcase_repo_instance= git.Repo.clone_from(testcase_url["url"], os.path.join(self.testcase_repos_path, repository_name),branch=branch)
+            # self.wait_for(10)
+            self.log.info("waiting for 5 seconds")
+            time.sleep(5)
+            self.log.info("successfully cloned testcase repository {}".format(testcase_url))
+
+            if commit_id:
+                testcase_repo_instance.git.checkout(commit_id)
+
+        self.log.info(self.keyword_repos_in_order)
+        # import pdb
+        # pdb.set_trace()
+
+        for user_keyword_repo in self.keyword_repos_with_path:
+            self.verify_import_statements(user_keyword_repo)
+
+    def check_for_statement_is_available_in_user_repo(self, line, user_repo_path):
+        """
+        This function will checks the statemnts are present in the user repo or not
+        :param line:
+        :param user_repo_path:
+        :return:
+        """
+
+        # for changing the order of searching
+        if self.keyword_repos_in_order[0] != user_repo_path:
+            self.keyword_repos_in_order.remove(user_repo_path)
+            self.keyword_repos_in_order.insert(0, user_repo_path)
+
+        line = line.strip()
+        flag1 = False
+        flag2 = False
+        d  = {}
+        for directory_path in self.keyword_repos_in_order:
+            if line.startswith("from"):
+                import_words = line.split()[1].split(".")
+                after_import_words = [line.split()[-1]]
+                if "," in after_import_words:
+                    after_import_words = after_import_words.split(",")[-1]
+                for word in after_import_words:
+                    import_words.append(word)
+
+                abs_path = "/".join(import_words)
+                if os.path.split(directory_path)[-1] == "warriorframework_py3":
+                    actual_path = os.path.join(directory_path, "warrior", abs_path)
+                    directory_name = "warrior"
+                else:
+                    actual_path = os.path.join(directory_path, abs_path)
+                    directory_name = os.path.split(directory_path)[-1]
+
+                if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)) :
+                    flag1 = True
+                    d.update({"flag1": directory_name})
+
+                elif os.path.exists(os.path.split(actual_path)[0]) or os.path.exists("{}.py".format(os.path.split(actual_path)[0])):
+                    flag2 = True
+                    d.update({"flag2" : directory_name})
+
+            elif line.strip().startswith("import"):
+                if " as " in line:
+
+                    line = line.split(" as ")[0]
+                import_words = line.strip("import").strip().split(".")
+                abs_path = "/".join(import_words)
+                actual_path = os.path.join(directory_path, abs_path)
+                directory_name = os.path.split(directory_path)[-1]
+                if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)):
+                    return directory_name
+
+            elif "[Actions" in line:
+                pattern = r"\s*package_list\s*\=\s*\[(Actions.*\.(\w+))\]"
+                import pdb
+                # pdb.set_trace()
+                match = re.search(pattern, line)
+                line = line.replace("[", r"\[")
+
+                if match:
+                    if match.group(1):
+                        actual_path = os.path.join(directory_path, match.group(1).replace(".", "/"))
+                        directory_name = os.path.split(directory_path)[-1]
+                        if os.path.exists(actual_path) or os.path.exists("{}.py".format(actual_path)):
+                            return directory_name
+            if d.get("flag1"):
+                return d["flag1"]
+            elif d.get("flag2"):
+                return d["flag2"]
+
+        return False
+
+    def verify_import_statements(self, user_repo_path):
+        """
+        This function will verify the imports present in the provided repo/path
+        :param user_repo_path:
+        :return:
+        """
+
+        self.user_repo_path = user_repo_path
+        if os.path.exists(self.user_repo_path):
+            directory_name = os.path.split(self.user_repo_path)[-1]
+            self.keyword_summary[directory_name]  = {}
+            self.keyword_summary[directory_name]["found"] = 0
+            self.keyword_summary[directory_name]["converted"] = 0
+            self.keyword_summary[directory_name]["not_converted"] = 0
+            self.log.info("********************************")
+            self.log.info("repo name : {}".format(directory_name))
+            self.log.info("********************************")
+            for root, _, files in os.walk(self.user_repo_path):
+                if root.endswith(directory_name) and "__init__py" not in files:
+                    cmd = "touch  {}/__init__.py".format(self.user_repo_path)
+                    os.system(cmd)
+
+                for file in files:
+                    if file == "__init__.py":
+                        pass
+                    elif file.endswith(".py"):
+                        self.log.info("********************************")
+                        self.log.info("filename : {}".format(file))
+                        self.log.info("********************************")
+
+                        filedesc = open(root + "/" + file, "r+")
+                        file_lines = filedesc.readlines()
+                        for fline in file_lines:
+                            if "Warrior." in fline :
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["converted"] += 1
+                                repo_name = "warrior"
+
+                                new_line = re.sub("Warrior", "warrior", fline)
+
+                                af = """sed -i 's/{}/{}/g' {}""".format(fline, repo_name, new_line,
+                                    root + "/" + file)
+                                try:
+                                    self.log.info("[Before] {}".format(fline.strip()))
+                                    os.system(af)
+                                    # import pdb
+                                    # pdb.set_trace()
+                                    self.log.info("[after] {}".format(
+                                        fline.replace("Warrior", "{}".format(repo_name), 1)))
+
+
+                                except:
+                                    impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                    os.system(impo)
+                                    self.keyword_summary[directory_name]["not_converted"] += 1
+                                    self.log.info(
+                                        "[NotModified]{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
+                                                                                              file_name,
+                                                                                              statement))
+                                    self.not_modified_statements.append(
+                                        "[NotModified]:::{}::{}::{}".format(
+                                            converting_repo_name,
+                                            file_name,
+                                            statement))
+
+                            elif (fline.startswith("import") or fline.startswith("from")) and "*" in fline:
+                                self.not_modified_statements.append("[NotModified] as it is contain * in import statement {} {}".
+                                           format(fline.strip(), file))
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["not_converted"] += 1
+                            elif fline.strip() == "import Framework.Utils as Utils" or re.search(
+                                    r"\s*import Framework.Utils as Utils", fline.strip()):
+
+                                impo = "sed -i 's/import Framework.Utils as Utils/import " \
+                                       "warrior.Framework.Utils as Utils/g' {}".format(
+                                    root + "/" + file)
+                                os.system(impo)
+                                self.keyword_summary[directory_name]["converted"] += 1
+                                self.keyword_summary[directory_name]["found"] += 1
+                            elif ("Framework" in fline or "Actions" in fline) and (
+                                    fline.strip().startswith("import") or fline.strip().startswith("from")):
+                                self.keyword_summary[directory_name]["found"] += 1
+
+                                if "\r" in fline:
+                                    fline = fline[:-2]
+                                else:
+                                    fline = fline[:-1]
+                                repo_name = self.check_for_statement_is_available_in_user_repo(
+                                    fline, self.user_repo_path)
+
+                                converting_repo_name = self.user_repo_path.split("/")[-1].split(".")[0]
+                                file_name = file
+                                statement = fline
+                                if repo_name:
+                                    if fline.strip().startswith("from"):
+
+
+                                            impo = "sed -i 's/{}/from {}.{}/g' {}".format(fline, repo_name,
+                                                                                          fline.split("from")[-1].lstrip(),
+                                                                                          root + "/" + file)
+                                            try :
+                                                self.log.info("[Before] {}".format(fline.strip()))
+                                                os.system(impo)
+
+                                                self.log.info("[After]  {}".format("from {}.{}".format(
+                                                    repo_name,
+                                                    fline.split( "from")[-1].strip())))
+                                                self.keyword_summary[directory_name]["converted"] += 1
+
+
+                                            except:
+
+                                                impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline,
+                                                                                          root + "/" + file)
+                                                os.system(impo)
+                                                self.log.info(
+                                                    "[NotModified]:::{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
+                                                                                             file_name,
+                                                                                             statement))
+                                                self.not_modified_statements.append("[NotModified]:::{}::{}::{}".format(converting_repo_name,
+                                                                                             file_name,
+                                                                                             statement))
+
+                                    elif fline.strip().startswith("import"):
+                                        impo = "sed -i 's/{}/import {}.{}/g' {}".format(fline, repo_name,
+                                                                                        fline.split("import")[
+                                                                                            -1].lstrip(),
+                                                                                        root + "/" + file)
+                                        try :
+                                            self.log.info("[Before] {}".format(fline.strip()))
+                                            os.system(impo)
+
+                                            self.log.info("[After]  {}".format("import {}.{}".format(repo_name, fline.split( "import")[-1].strip())))
+                                            self.keyword_summary[directory_name]["converted"] += 1
+
+                                        except:
+                                            impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                            os.system(impo)
+                                            self.log.info(
+                                                "[Not Modified]:::{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
+                                                                                         file_name,
+                                                                                         statement))
+                                            self.not_modified_statements.append(
+                                                "[NotModified]:::{}::{}::{}".format(
+                                                    converting_repo_name,
+                                                    file_name,
+                                                    statement))
+
+
+                                else:
+
+                                        impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                        self.log.info("[Before] {} ".format(statement))
+                                        os.system(impo)
+                                        self.log.info("[After] {} @404@".format(statement))
+                                        self.keyword_summary[directory_name]["not_converted"] += 1
+                                        self.not_modified_statements.append("[After] {} @404@".format(statement))
+
+                            elif "WarriorCore" in fline.strip():
+
+                                self.keyword_summary[directory_name]["found"] += 1
+                                self.keyword_summary[directory_name]["converted"] += 1
+                                converting_repo_name = self.user_repo_path.split("/")[-1].split(".")[0]
+                                file_name = file
+                                statement = fline.strip()
+
+                                if fline.split(" ",1)[-1].strip().startswith("WarriorCore"):
+                                    impo = "sed -i 's/{}/{} warrior.{}/g' {}".format(fline.strip(), fline.strip().split(" ", 1)[0].lstrip(), fline.strip().split(" ", 1)[-1].lstrip(), root + "/" + file)
+                                    try:
+                                        self.log.info("[Before] {}".format(fline.strip()))
+                                        os.system(impo)
+                                        self.log.info("[after] {} {}.{}".format(fline.split(" ", 1)[0].strip(), "warrior", fline.split(" ", 1)[-1].strip()))
+
+
+                                    except:
+                                        impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                        os.system(impo)
+                                        self.keyword_summary[directory_name]["not_converted"] += 1
+
+                                        #self.keyword_summary[directory_name]["not_converted"] += 1
+                                        self.log.info(
+                                            "[NotModified]{}::{}::{}-- replaced with @@@@".format(converting_repo_name, file_name,
+                                                                                     statement))
+                                        self.not_modified_statements.append(
+                                            "[NotModified]:::{}::{}::{}".format(
+                                                converting_repo_name,
+                                                file_name,
+                                                statement))
+                            elif "[Actions" in fline:
+
+                                self.keyword_summary[directory_name]["found"] += 1
+
+                                repo_name = self.check_for_statement_is_available_in_user_repo(
+                                    fline, self.user_repo_path)
+
+                                converting_repo_name = self.user_repo_path.split("/")[-1].split(".")[0]
+                                file_name = file
+                                statement = fline
+                                if repo_name:
+                                        import pdb
+                                        #pdb.set_trace()
+                                        self.keyword_summary[directory_name]["converted"] += 1
+                                        actual_line = statement.split("[")[-1].split("]")[0]
+
+                                        af = """sed -i 's/\[{}\]/\[{}.{}\]/g' {}""".format(
+                                            actual_line, repo_name,actual_line,
+                                            root + "/" + file)
+                                        try:
+                                            self.log.info("[Before] {}".format(fline.strip()))
+                                            os.system(af)
+                                            # import pdb
+                                            # pdb.set_trace()
+                                            self.log.info("[after] {}".format(fline.strip().replace("Actions", "{}.Actions".format(repo_name), 1)))
+
+
+                                        except:
+                                            impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                            os.system(impo)
+                                            self.keyword_summary[directory_name]["not_converted"] += 1
+                                            self.log.info(
+                                                "[NotModified]{}::{}::{}-- replaced with @@@@".format(converting_repo_name,
+                                                                                         file_name,
+                                                                                         statement))
+                                            self.not_modified_statements.append(
+                                                "[NotModified]:::{}::{}::{}".format(
+                                                    converting_repo_name,
+                                                    file_name,
+                                                    statement))
+                                else:
+
+                                #     count = count + 1
+                                #     self.keyword_summary[directory_name]["found"] += 1
+                                    self.keyword_summary[directory_name]["not_converted"] = +1
+                                    impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
+                                    self.log.info("[Before] {}".format(fline.strip()))
+                                    os.system(impo)
+                                    # import pdb
+                                    # pdb.set_trace()
+                                    self.log.info("[after] {}@404@".format(fline.strip()))
+        else:
+            print("path not found")
+
+    def pretty_print_test(self):
+        self.log.info("=" * 83)
+        self.log.info("                  Summary of keyword repositories                 ")
+
+        self.log.info("=" * 83)
+        self.log.info("|{:>5}| {:<15} | {:<15} | {:<10} | {:<15} | ".format("S NO",'REPO NAME', 'LINES FOUND', 'CONVERTED',
+                                                                      'NOT CONVERTED', ))
+        self.log.info("=" * 83)
+
+        # print each data item.
+        count = 0
+        for name, attr in self.keyword_summary.items():
+            count += 1
+
+            self.log.info("|{:>5}| {:<15} | {:<12} | {:<10} | {:<15} |".format(count, name, attr['found'],
+                                                                          attr['converted'],
+                                                                          attr['not_converted'],
+                                                                          ))
+        self.log.info("=" * 83)
+        self.end_time = time.time()
+        self.log.info("Total execution time in seconds: {}".format(self.end_time - parse_json.start_time))
+
+
+class migrate_testrepo(Migrate_keyword_repo):
+    """
+    """
+
+    def __init__(self, keyword_dirpath, testcase_dirpath, output_dir=None):
+        """
+        """
+        self.keyword_dirpath = keyword_dirpath
+        self.testcase_dirpath = testcase_dirpath
+        self.output_dir = output_dir or os.path.join(os.getcwd(), "migrated_repositories")
+        self.test_summary = {}
+        self.current_testrepo = None
+        self.log = logging.getLogger("Migrate_keyword_repo")
+
+    def modify_testfile(self, filename, drivers_dict):
+        """
+        """
+        tree = et.parse(filename)
+        root = tree.getroot()
+        steps = []
+        loops = []
+        file_message = None
+        step_messages = []
+        if root.tag == "Testcase" or root.tag == "TestWrapper":
+            file_message = "Processing testfile [{}] ".format(filename)
+            if root.tag == "Testcase":
+                step_tags = ["Steps"]
+            elif root.tag == "TestWrapper":
+                step_tags = ["Setup", "Cleanup", "Debug"]
+            for step_tag in step_tags:
+                nodes = root.find(step_tag)
+                if nodes:
+                    steps.extend([node for node in nodes if node.tag == "step"])
+                    loops.extend([node for node in nodes if node.tag == "Loop"])
+            for loop_node in loops:
+                steps.extend(loop_node.findall("step"))
+        for step in steps:
+            self.test_summary[self.current_testrepo]["steps_found"] += 1
+            if not step.get("Repo"):
+                repo = False
+                driver_file = "{}.py".format(step.get("Driver"))
+                for key, value in drivers_dict.items():
+                    if driver_file in value:
+                        repo = True
+                        step.set("Repo", key)
+                        step_messages.append("[+] Added Repo [{}] to step [{}]".format(key, step.get("TS")))
+                        self.test_summary[self.current_testrepo]["steps_converted"] += 1
+                        break
+                if not repo:
+                    step.set("Repo", "@404@")
+                    self.test_summary[self.current_testrepo]["steps_not_converted"] += 1
+                    step_messages.append(
+                        "[-] @404@ Couldn't Add Repo to step [{}]. Needs Attention".format(step.get("TS")))
+            else:
+                if step.get('Repo') == '@404@':
+                    step_messages.append("[-] @404@ Repo found in step [{}]. Needs Attention".format(step.get("TS")))
+                self.test_summary[self.current_testrepo]["steps_has_repo_already"] += 1
+        if step_messages:
+            self.log.info(file_message)
+            for line in step_messages:
+                self.log.info(line)
+            tree.write(filename)
+
+    def get_productdrivers_info(self):
+        """
+        """
+        drivers_dict = {}
+        for key_repo in os.listdir(self.keyword_dirpath):
+            pd_path = os.path.join(self.keyword_dirpath, key_repo, "ProductDrivers")
+            drivers_dict[key_repo] = os.listdir(pd_path)
+        return drivers_dict
+
+    def migrate_testcase_repositories(self):
+        """
+        """
+        drivers_dict = self.get_productdrivers_info()
+        test_repo_dirs = os.listdir(self.testcase_dirpath)
+        for test_repo_dir in test_repo_dirs:
+            self.current_testrepo = test_repo_dir
+            self.test_summary[self.current_testrepo] = {}
+            self.test_summary[self.current_testrepo]["steps_found"] = 0
+            self.test_summary[self.current_testrepo]["steps_converted"] = 0
+            self.test_summary[self.current_testrepo]["steps_not_converted"] = 0
+            self.test_summary[self.current_testrepo]["steps_has_repo_already"] = 0
+            walk_path = os.path.join(self.testcase_dirpath, test_repo_dir)
+            for path, dirs, files in os.walk(walk_path):
+                for f in files:
+                    filename = os.path.join(path, f)
+                    try:
+                        self.modify_testfile(filename, drivers_dict)
+                    except Exception as e:
+                        pass
+        if os.path.exists(self.output_dir):
+            shutil.rmtree(self.output_dir)
+        #destination = shutil.copytree(self.testcase_dirpath, self.output_dir)
+        #self.log.info(destination)
+
+    def pretty_print(self):
+        self.log.info("=" * 83)
+        self.log.info("                     SUMMARY OF TESTCASE REPOSITORIES                     ")
+        self.log.info("=" * 83)
+        self.log.info("|{:>5}| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format("SNO", 'REPO NAME', 'STEPS FOUND', 'CONVERTED',
+                                                                      'NOT CONVERTED', 'HAS REPO'))
+        self.log.info("=" * 83)
+
+        # print each data item.
+        testcase_repo_count = 0
+        for name, attr in self.test_summary.items():
+            testcase_repo_count += 1
+            self.log.info("|{:>5}| {:<20} | {:<12} | {:<10} | {:<15} | {:<10} |".format(testcase_repo_count, name, attr['steps_found'],
+                                                                          attr['steps_converted'],
+                                                                          attr['steps_not_converted'],
+                                                                          attr['steps_has_repo_already']))
+        self.log.info("=" * 83)
+
+
+file_path = args.file_name
+parse_obj = parse_json(file_path)
+print(parse_obj.keyword_repourls)
+
+m = Migrate_keyword_repo(parse_obj.keyword_repourls, parse_obj.test_repourls, parse_obj.output_dir)
+m.creating_directories()
+m.modifying_warrior_framework_folder()
+
+
+# mig_obj = migrate_testrepo(m.keyword_repos_path, m.testcase_repos_path, parse_obj.output_dir)
+# mig_obj.migrate_testcase_repositories()
+# m.add_log()
+# m.verify_import_statements("/home/apathapa/Documents/warriorframework_py3/warrior/WarriorTools/warrior_py3_migration_tools/conversion/keyword_repositories/kw_lseries")
+# parse_obj = parse_json("migrate_info.json")
+# print(parse_obj.keyword_repourls)
+
+
+mig_obj = migrate_testrepo(m.keyword_repos_path, m.testcase_repos_path, parse_obj.output_dir)
+mig_obj.migrate_testcase_repositories()
+
+# pretty print
+mig_obj.pretty_print()
+m.pretty_print_test()
+m.add_log()
+
+

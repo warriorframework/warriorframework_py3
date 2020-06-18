@@ -18,10 +18,9 @@ import warrior.Actions.MicroappsActions
 
 
 def main(keyword, data_repository, args_repository):
-    """Import all actions related to file driver and call the driver Utils
+    """Import all actions related to Microapp_driver and call the get_warrior_result
     to execute a keyword """
-    # Declare a list of packages to be used by this driver,
-    # if you want to add more packages import them outside the main function
+    # Declare a failed keywords for result
     # and then add them to the package_list below
     package_list = [warrior.Actions.MicroappsActions]
 

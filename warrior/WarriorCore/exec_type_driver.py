@@ -121,6 +121,8 @@ def rule_parser(rule):
     exec_cond_var = arg_datatype_object.convert_arg_to_datatype()
 
     status = logical_decision(exec_condition, exec_cond_var, operator)
+    if else_action == "":
+        else_action = None
     if status is False and else_action is not None:
         raise ElseException(else_action)
     else:

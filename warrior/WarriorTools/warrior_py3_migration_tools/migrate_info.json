@@ -1,0 +1,44 @@
+{
+	"keyword_repositories": [{
+			"url": "ssh://git@rtx-swtl-git.fnc.net.local:7999/warkey/testset.git",
+			"branch": "",
+			"commitid": ""
+
+		},
+		{
+			"url": "ssh://git@rtx-swtl-git.fnc.net.local:7999/warkey/kw_tseries.git",
+			"branch": "",
+			"commitid": "227639ccb23"
+
+		},
+		{
+			"url": "ssh://git@rtx-swtl-git.fnc.net.local:7999/warkey/1finity.git",
+			"branch": "",
+			"commitid": "3ffaf1c47c2"
+
+		}
+	],
+
+	"testcase_repositories": [{
+		"url": "ssh://git@rtx-swtl-git.fnc.net.local:7999/was/cia.git",
+		"branch": "",
+		"commitid": "da19a28fb2f"
+	},
+     {
+		"url": "ssh://git@rtx-swtl-git.fnc.net.local:7999/was/common.git",
+		"branch": "",
+		"commitid": "3fbbfd448e0"
+	},
+     {
+		"url": "ssh://git@rtx-swtl-git.fnc.net.local:7999/was/utp.git",
+		"branch": "",
+		"commitid": "ad2c1e5c3db"
+	},
+     {
+		"url": "ssh://git@rtx-swtl-git.fnc.net.local:7999/was/tseries.git",
+		"branch": "t600-hwsanity",
+		"commitid": ""
+	}
+    ],
+	"output_dir": ""
+}

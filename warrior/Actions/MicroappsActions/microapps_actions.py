@@ -19,7 +19,7 @@ from warrior.Framework.Utils.testcase_Utils import pNote
 
 
 class MicroappsActions(object):
-    """class CommonActions having methods (keywords) that are common for all the products"""
+    """class MicroappsActions having method that are for warrior_result product"""
 
     def get_warrior_result(self):
         """Returns warrior status and failed command details.
@@ -68,7 +68,7 @@ class MicroappsActions(object):
                                                 failure_reason = "{0} Failed".format(splitted_command[0])
 
         if failure_reason is None and script_status is False:
-            failure_reason = "Script execution failed"
+            failure_reason = "db_backup script execution failed"
         output_dict = {"script_status": script_status, "step_status_message": step_status_message,
                        "failure_reason": failure_reason}
         status = True

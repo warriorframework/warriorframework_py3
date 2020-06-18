@@ -410,8 +410,11 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             end_pat = _get_pattern_list(testdata, global_obj, pattern="end")
             details_dict = sub_from_env_var(details_dict, start_pat, end_pat)
             iter_number = get_object_from_datarepository("loop_iter_number")
+            general_iter_number = get_object_from_datarepository("gen_iter_number")
             if iter_number is not None:
                 details_dict = sub_from_loop_json(details_dict, iter_number, start_pat, end_pat)
+            if general_iter_number is not None:
+                details_dict = sub_from_gen_dict(details_dict, general_iter_number, start_pat, end_pat)
 
             print_info("var_sub:{0}".format(var_sub))
             td_obj = TestData()
@@ -423,6 +426,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             details_dict = sub_from_env_var(details_dict)
             details_dict = sub_from_data_repo(details_dict)
             details_dict = sub_from_loop_json(details_dict, iter_number)
+            details_dict = sub_from_gen_dict(details_dict, general_iter_number)
 
             td_iter_obj = TestDataIterations()
             details_dict, cmd_loc_list = td_iter_obj.resolve_iteration_patterns(details_dict)
@@ -1644,6 +1648,12 @@ def get_var_by_string_prefix(string, iter_number=None, loop_id = None):
         loop_json = get_object_from_datarepository('{}.loop_json'.format(loop_id))
         value = loop_json[iter_number][keys[1]]
         return str(value)
+    if string.startswith("XLSCOL."):
+        keys = string.split('.', 1)
+        gen_dict = get_object_from_datarepository('gen_dict')
+        #print_info("gen dict is {}".format(gen_dict))
+        value = gen_dict[iter_number][keys[1]]
+        return str(value)
 
 
 def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
@@ -1663,7 +1673,7 @@ def subst_var_patterns_by_prefix(raw_value, start_pattern="${",
     source could be environment or datarepository for now.
     """
     error_msg1 = ("Could not find any %s variable {0!r} corresponding to {1!r}"
-                  " provided in input data/testdata/loopjson file.\nWill default to "
+                  " provided in input data/testdata/loopjson/variable xls file.\nWill default to "
                   "None") % (prefix)
     error_msg2 = ("Unable to substitute %s variable {0!r} corresponding to "
                   "{1!r} provided in input data/testdata file.\nThe value "
@@ -1750,6 +1760,10 @@ def sub_from_loop_json(raw_value, iter_number, start_pattern="${", end_pattern="
     return subst_var_patterns_by_prefix(raw_value, start_pattern, end_pattern,
                                         prefix="LOOP", iter_number=iter_number, loop_id=loop_id)
 
+def sub_from_gen_dict(raw_value, iter_number, start_pattern="${", end_pattern="}"):
+    """wrapper function for subst_var_patterns_by_prefix"""
+    return subst_var_patterns_by_prefix(raw_value, start_pattern, end_pattern,
+                                        prefix="XLSCOL", iter_number=iter_number)
 
 def substitute_var_patterns(raw_value, start_pattern="${", end_pattern="}"):
     """substitute variable inside start and end pattern

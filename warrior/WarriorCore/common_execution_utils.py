@@ -85,8 +85,6 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
             loop_count = loop_count.strip()
             json_file = json_file.strip()
             json_file = Utils.data_Utils.sub_from_env_var(json_file)
-            if not json_file:
-                return False
             print_info("file is {}".format(json_file))
             loop_steps = child_node.findall(sub_step_tag)
             testcasefile_path = get_object_from_datarepository('wt_testcase_filepath')
