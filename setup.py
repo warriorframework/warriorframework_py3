@@ -23,7 +23,7 @@ setup(
     scripts=['warrior/Warrior',
              'katana/manage.py',
              'katana/appmanage.py',
-             'warrior/Tools/warrior_py3_migration_tools/warrior_py3_migration_tool',
+             'warrior/WarriorTools/warrior_py3_migration_tools/warrior_py3_migration_tool',
              'warrior/Tools/tc_generator/tc_generator',],
     packages=find_packages(),
     package_data={'':['**/*', '*']},
