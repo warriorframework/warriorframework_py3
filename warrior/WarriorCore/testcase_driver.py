@@ -243,7 +243,7 @@ def report_testcase_result(tc_status, data_repository, tag="Steps"):
         1. tc_status (bool) = status of the executed testcase
         2. data_repository (dict) = data_repository of the executed  testcase
     """
-    print_info("\n**** Testcase Result ***")
+    print_info("**** Testcase Result ***")
     print_info("TESTCASE:{0}  STATUS:{1}".format(data_repository['wt_name'],
                                                  convertLogic(tc_status)))
     print_info("\n")
@@ -334,7 +334,7 @@ def get_system_list(datafile, node_req=False, iter_req=False):
 def print_testcase_details_to_console(testcase_filepath, data_repository, steps_tag="Steps"):
     """Prints the testcase details to the console """
     framework_detail.warrior_framework_details()
-    print_info("\n===============================  TC-DETAILS  ===================================="
+    print_info("===============================  TC-DETAILS  ===================================="
                "==============")
     print_info("Title: %s" % data_repository['wt_title'])
     print_info("Results directory: %s" % data_repository['wt_resultsdir'])
@@ -404,7 +404,7 @@ def execute_steps(data_type, runtype, data_repository, step_list, tc_junit_objec
                                        data_repository, step_list)
     elif data_type.upper() == 'ITERATIVE' and \
                 runtype.upper() == 'SEQUENTIAL_KEYWORDS':
-        print_info("iterative sequential")
+        print_debug("iterative sequential")
         system_list = get_system_list(data_repository['wt_datafile'],\
                                           iter_req=True) \
             if iter_ts_sys is None else [iter_ts_sys]
@@ -422,7 +422,7 @@ def execute_steps(data_type, runtype, data_repository, step_list, tc_junit_objec
                 runtype.upper() == 'PARALLEL_KEYWORDS':
         tc_junit_object.remove_html_obj()
         data_repository["war_parallel"] = True
-        print_info("iterative parallel")
+        print_debug("iterative parallel")
         system_list = get_system_list(data_repository['wt_datafile'],\
                                           iter_req=True) \
         if iter_ts_sys is None else [iter_ts_sys]
@@ -437,7 +437,7 @@ def execute_steps(data_type, runtype, data_repository, step_list, tc_junit_objec
             tc_status = iterative_parallel_kw_driver.main(\
                  step_list, data_repository, tc_status, system_list)
     elif data_type.upper() == "HYBRID":
-        print_info("Hybrid")
+        print_debug("Hybrid")
         system_list, system_node_list = get_system_list(\
              data_repository['wt_datafile'], node_req=True)
             # call the hybrid driver here
@@ -694,9 +694,9 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     defectsdir = data_repository['wt_defectsdir']
     check_and_create_defects(tc_status, auto_defects, data_repository, tc_junit_object)
 
-    print_info("\n")
+    print_debug("\n")
     tc_end_time = Utils.datetime_utils.get_current_timestamp()
-    print_info("[{0}] Testcase execution completed".format(tc_end_time))
+    print_debug("[{0}] Testcase execution completed".format(tc_end_time))
     tc_duration = Utils.datetime_utils.get_time_delta(tc_start_time)
     hms = Utils.datetime_utils.get_hms_for_seconds(tc_duration)
     print_info("Testcase duration= {0}".format(hms))

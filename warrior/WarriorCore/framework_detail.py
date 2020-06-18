@@ -17,6 +17,7 @@ import platform
 import re
 import getpass
 import subprocess
+from datetime import date
 from warrior.Framework.Utils.print_Utils import print_info, print_notype
 from warrior.Framework.Utils import file_Utils
 from warrior.Framework.Utils.testcase_Utils import pNote
@@ -67,6 +68,7 @@ def warrior_framework_details():
     branch = proc2.communicate()[0]
     branch = branch.decode('utf-8')
     branch = branch.strip()[1:]
+    hostname = platform.node()
 
     if release and version and version_file_path:
         pNote("========================== WARRIOR FRAMEWORK DETAILS ==========================",
@@ -78,6 +80,7 @@ def warrior_framework_details():
         print_info('The Warrior framework branch is{0}'.format(branch))
         print_info('The Warrior framework running on python version: {0} with OS: {1}'.
                    format(platform.python_version(), platform.platform()))
+        print_info('Warrior script executed in host [{0}] on [{1}]'.format(hostname, date.today()))
         pNote("========================== WARRIOR FRAMEWORK DETAILS ==========================",
               'notype')
 

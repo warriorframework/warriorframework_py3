@@ -18,7 +18,8 @@ import warrior.WarriorCore.exec_type_driver as exec_type_driver
 from warrior.Framework import Utils
 from warrior.WarriorCore import common_execution_utils
 from warrior.Framework.Utils.testcase_Utils import pNote
-from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error, print_normal
+from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error,\
+ print_normal, print_debug
 from warrior.Framework.Utils.datetime_utils import wait_for_timeout
 
 """This module is used for sequential execution of testcase steps """
@@ -144,7 +145,7 @@ class TestCaseStepsExecutionClass:
             return self.current_step_number, self.go_to_step_number, "continue"
         elif self.current_triggered_action == "SKIP_INVOKED":
             if self.skip_invoked:
-                print_info("Skipping this step as it is an invoked step.")
+                print_debug("Skipping this step as it is an invoked step.")
                 return self.current_step_number, self.go_to_step_number, "continue"
         # when 'onError:goto' value is less than the current step num,
         # change the next iteration point to goto value

@@ -15,7 +15,7 @@ limitations under the License.
 end of Test Suite or Project Execution """
 import os
 from warrior.Framework.Utils import xml_Utils
-from warrior.Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils.print_Utils import print_info, print_debug
 
 
 class ExecutionSummary():
@@ -124,7 +124,7 @@ class ExecutionSummary():
            Suite/Project Execution"""
         file_type = self.get_file_type(junit_file)
         # Formatting execution summary as project_summary and suite_summary returns the list values
-        print_info("+++++++++++++++++++++++++++++++++++++++++++++++++ Execution Summary +++++++++++++++++++++++++++++++++++++++++++++++++")
+        print_debug("+++++++++++++++++++++++++++++++++++++++++++++++++ Execution Summary +++++++++++++++++++++++++++++++++++++++++++++++++")
         print_info("{0:10}{1:50}{2:10}{3:50}".format('Type', 'Name', 'Status', 'Path'))
         if file_type == "Project":
             project_exec = self.project_summary(junit_file)
@@ -138,6 +138,6 @@ class ExecutionSummary():
         elif file_type == "Suites":
             suite_tc_exec = self.suite_summary(junit_file)
             for suite_tc in suite_tc_exec:
-                print_info(("{0:10}{1:50}{2:10}{3:30}"
+                print_debug(("{0:10}{1:50}{2:10}{3:30}"
                             .format(suite_tc[0], suite_tc[1], suite_tc[2], suite_tc[3])))
         print_info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")

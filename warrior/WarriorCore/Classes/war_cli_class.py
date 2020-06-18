@@ -373,7 +373,7 @@ class WarriorCliClass(object):
 
         varxls_arg.add_argument('--generate_report', action='store_true', default=False,\
             dest='gen_report', help="generates excel sheet result report")
- 
+
         warrior_arg.add_argument('-decrypt', action='store', nargs='*',\
             dest="decrypt", help="decrypt data string")
 
@@ -452,6 +452,11 @@ class WarriorCliClass(object):
             "to be integrated with Warrior. "\
             "Multiple paths can be provided"\
             "(separated by a colon)")
+
+        warrior_arg.add_argument('--loglevel', action='store',\
+            help="logging level, debug:10, info:20, warning:30, error:40, critical:50 \
+                  defaults to 'info'. example usage '--loglevel error'\
+                  --loglevel warning'")
 
         tools_arg = parser.add_argument_group('warrior tools')
         tools_arg.add_argument('-tc_gen', action='store',\
