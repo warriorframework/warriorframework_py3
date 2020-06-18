@@ -28,6 +28,7 @@ import sys
 import re
 import logging
 LOG_MESSAGE = None
+LOGGER = None
 DEFAULT_LOGLEVEL = logging.INFO
 LOGLEVEL_DICT = {'info': logging.INFO, 'debug': logging.DEBUG,
                  'warning': logging.WARNING, 'error': logging.ERROR,
@@ -44,9 +45,6 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
     """
     global DEFAULT_LOGLEVEL
-    if not print_type or print_type == "-N-":
-        print_type = "-I-"
-
     if color_message is not None:
         print_string = str(color_message)
     elif color_message is None:
@@ -64,6 +62,17 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     elif print_string.startswith("["):
         msg = print_string.split()
         print_string = " ".join(msg[2:])
+    global LOGGER
+    if not LOGGER:
+        LOGGER = logging.getLogger('notype')
+        LOGGER.setLevel(DEFAULT_LOGLEVEL)
+        formatter = logging.Formatter('%(message)s')
+        hdlr = logging.StreamHandler()
+        hdlr.setFormatter(formatter)
+        LOGGER.addHandler(hdlr)
+    if not print_type:
+        LOGGER.info(print_string)
+        return print_string
     global LOG_MESSAGE
     if not LOG_MESSAGE:
         console_logger = logging.getLogger('console')
@@ -73,16 +82,18 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
         hdlr = logging.StreamHandler()
         hdlr.setFormatter(formatter)
         console_logger.addHandler(hdlr)
-        LOG_MESSAGE = {"-I-": console_logger.info, "-W-": console_logger.warning,\
+        LOG_MESSAGE = {"-I-": console_logger.info, \
+                       "-N-": console_logger.info, "-W-": console_logger.warning,\
                        "-E-": console_logger.error, "-D-": console_logger.debug,\
                        "-C-": console_logger.critical}
     # set logging argument default to True, to write the message in the log file
     if isinstance(sys.stdout, RedirectPrint):
         sys.stdout.print_type = print_type
         sys.stdout.log_message = LOG_MESSAGE
+        log_in_file = False if print_type == "-N-" else True
         if print_string:
             sys.stdout.write(print_string,
-                             log=kwargs.get('log', True))
+                             log=kwargs.get('log', log_in_file))
     else:
         if print_string:
             LOG_MESSAGE[print_type](print_string)
@@ -108,11 +119,12 @@ class RedirectPrint(object):
         global DEFAULT_LOGLEVEL
         self.file_logger.setLevel(DEFAULT_LOGLEVEL)
         self.hdlr = None
-        self.formatter = logging.Formatter('%(asctime)-15s %(levelname)-5s :: \
-%(message)s', '%Y-%m-%d %H:%M:%S')
+        self.formatter = logging.Formatter('%(asctime)-7s %(levelname)-5s :: \
+%(message)s', '%H:%M:%S')
         self.logfile_message = {"-I-": self.file_logger.info, "-W-": self.file_logger.warning, \
                                 "-E-": self.file_logger.error, "-D-": self.file_logger.debug, \
-                                "-C-": self.file_logger.critical}
+                                "-C-": self.file_logger.critical, \
+                                "-N-": self.file_logger.info}
 
     def katana_console_log(self, katana_obj):
         """
