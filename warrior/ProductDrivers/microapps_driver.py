@@ -1,4 +1,3 @@
-#pylint: disable=wrong-import-position
 '''
 Copyright 2017, Fujitsu Network Communications, Inc.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +11,16 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
-"""" microapps driver """
 from warrior.WarriorCore import kw_driver
 import warrior.Actions.MicroappsActions
 
 
 def main(keyword, data_repository, args_repository):
-    """Import all actions related to Microapp_driver and call the get_warrior_result
-    to execute a keyword """
+    """
+    microapps driver
+    Import all actions related to Microapp_driver and call the get_warrior_result
+    to execute a keyword.
+    """
     # Declare a failed keywords for result
     # and then add them to the package_list below
     package_list = [warrior.Actions.MicroappsActions]
