@@ -24,7 +24,7 @@ setup(
              'katana/manage.py',
              'katana/appmanage.py',
              'warrior/WarriorTools/warrior_py3_migration_tools/warrior_py3_migration_tool',
-             'warrior/Tools/tc_generator/tc_generator',],
+             'warrior/WarriorTools/tc_generator/tc_generator',],
     packages=find_packages(),
     package_data={'':['**/*', '*']},
     include_package_data=True,
