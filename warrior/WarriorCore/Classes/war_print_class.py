@@ -81,7 +81,11 @@ class RedirectPrint(object):
         - Writes data to log file only if the logging is True
         - Removes the ansii escape chars before writing to file
         """
-        self.stdout.write(data)
+        if type(data) == str:
+            self.stdout.write(data)
+        else:
+            data = data.decode('utf-8')
+            self.stdout.write(data)
         ansi_escape = re.compile(r'\x1b[^m]*m')
         data = ansi_escape.sub('', data)
         # write to log file if logging is set to True
