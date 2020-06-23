@@ -110,7 +110,7 @@ class TestcaseUtils(object):
 
         self.p_testcase()
         self.gkeywordloop = self.gkeywordloop+1
-        print_info("********************* Keyword: %s *********************" % keyword_txt)
+        print_info("Keyword: %s " % keyword_txt)
         self.gkeyword[self.gkeywordloop] = ET.SubElement(self.root, "Keyword")
         self.current_pointer = self.gkeyword[self.gkeywordloop]
         name = ET.SubElement(self.gkeyword[self.gkeywordloop], "Name")
@@ -169,7 +169,7 @@ class TestcaseUtils(object):
                                                 self.gsteploop], "SubStep")
         self.current_pointer = self.gsubstep[self.gsubsteploop]
         self.gsubstep[self.gsubsteploop].text = substep_txt
-        print_info("<< Substep >>")
+        print_debug("<< Substep >>")
         print_info("Keyword Description: {0}".format(substep_txt))
 
         self.print_output()
@@ -279,13 +279,13 @@ class TestcaseUtils(object):
 
     def p_ran(self, level, text=""):
         """Report a pass """
-        print_info("{0} STATUS:RAN".format(text))
+        print_debug("{0} STATUS:RAN".format(text))
         #print_info("PASS: %s\n" % text)
         self.p_status("RAN", level)
 
     def p_pass(self, level, text=""):
         """Report a pass """
-        print_info("{0} STATUS:PASS".format(text))
+        print_debug("{0} STATUS:PASS".format(text))
         #print_info("PASS: %s\n" % text)
         self.p_status("PASS", level)
 
@@ -439,7 +439,7 @@ class TestcaseUtils(object):
         :Returns:
             None
         """
-        print_info("<< Substep status >>")
+        print_debug("<< Substep status >>")
         self.report_warning(status)
 
     def report_keyword_status(self, status, kw_name=''):
@@ -485,7 +485,7 @@ class TestcaseUtils(object):
         tree.write(resultfile)
 
     def append_result_files(self, dst_resultfile, kw_resultfile_list, dst_root='Testcase', childtag='Keyword'):
-        """Append kw/system result files into a testcase result file"""
+        """Append kw/system STATUS:result files into a testcase result file"""
         try:
             finstring = ''
             for kw_file in kw_resultfile_list:

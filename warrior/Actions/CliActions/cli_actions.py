@@ -12,7 +12,7 @@ limitations under the License.
 '''
 from warrior.Framework import Utils
 from warrior.Framework.Utils import cli_Utils
-from warrior.Framework.Utils.print_Utils import print_warning
+from warrior.Framework.Utils.print_Utils import print_warning, print_debug
 from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.Utils.data_Utils import getSystemData, get_session_id, get_credentials
 from warrior.Framework.Utils.encryption_utils import decrypt
@@ -850,8 +850,8 @@ class CliActions(object):
                 session_id="system_name+subsystem_name+session_name"
         """
         Utils.testcase_Utils.pSubStep(wdesc)
-        Utils.testcase_Utils.pNote("System Name: {0}".format(system_name))
-        Utils.testcase_Utils.pNote("Datafile: {0}".format(self.datafile))
+        print_debug("System Name: {0}".format(system_name))
+        print_debug("Datafile: {0}".format(self.datafile))
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         session_object = Utils.data_Utils.get_object_from_datarepository(session_id)
         testdata, varconfigfile = Utils.data_Utils.get_td_vc(self.datafile,
