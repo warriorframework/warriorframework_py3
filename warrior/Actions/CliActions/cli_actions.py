@@ -188,8 +188,8 @@ class CliActions(object):
             if subsystem_name:
                 call_system_name += "[{}]".format(subsystem_name)
             Utils.testcase_Utils.pSubStep(wdesc)
-            Utils.testcase_Utils.pNote(system_name)
-            Utils.testcase_Utils.pNote(self.datafile)
+            # Utils.testcase_Utils.pNote(system_name)
+            # Utils.testcase_Utils.pNote(self.datafile)
             session_id = get_session_id(call_system_name, session_name)
             wc_obj = Utils.data_Utils.get_object_from_datarepository(session_id)
             msg1 = "Disconnect successful for system_name={0}, "\
@@ -578,8 +578,8 @@ class CliActions(object):
 
         wdesc = "Send cli command to the provided system"
         Utils.testcase_Utils.pSubStep(wdesc)
-        Utils.testcase_Utils.pNote(system_name)
-        Utils.testcase_Utils.pNote(self.datafile)
+        # Utils.testcase_Utils.pNote(system_name)
+        # Utils.testcase_Utils.pNote(self.datafile)
 
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         session_object = Utils.data_Utils.get_object_from_datarepository(session_id)
@@ -883,8 +883,8 @@ class CliActions(object):
         wdesc = "Sets the timeout period for the ssh/telnet session"
         status = True
         Utils.testcase_Utils.pSubStep(wdesc)
-        Utils.testcase_Utils.pNote(system_name)
-        Utils.testcase_Utils.pNote(self.datafile)
+        # Utils.testcase_Utils.pNote(system_name)
+        # Utils.testcase_Utils.pNote(self.datafile)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         session_object = Utils.data_Utils.get_object_from_datarepository(session_id)
 
@@ -913,8 +913,8 @@ class CliActions(object):
         wdesc = "Checks whether the ssh/telnet session is alive or not"
         status = True
         Utils.testcase_Utils.pSubStep(wdesc)
-        Utils.testcase_Utils.pNote(system_name)
-        Utils.testcase_Utils.pNote(self.datafile)
+        # Utils.testcase_Utils.pNote(system_name)
+        # Utils.testcase_Utils.pNote(self.datafile)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         session_object = Utils.data_Utils.get_object_from_datarepository(session_id)
 

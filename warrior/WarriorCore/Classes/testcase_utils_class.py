@@ -53,6 +53,7 @@ class TestcaseUtils(object):
         self.gsubkey = {}
         self.gsubkeyloop = 0
         self.pnote = False
+        self.Keyword = ""
 
     def file_utils(self):
         """
@@ -110,7 +111,7 @@ class TestcaseUtils(object):
 
         self.p_testcase()
         self.gkeywordloop = self.gkeywordloop+1
-        print_info("Keyword: %s " % keyword_txt)
+        # print_info("Keyword: %s " % keyword_txt)
         self.gkeyword[self.gkeywordloop] = ET.SubElement(self.root, "Keyword")
         self.current_pointer = self.gkeyword[self.gkeywordloop]
         name = ET.SubElement(self.gkeyword[self.gkeywordloop], "Name")
@@ -170,7 +171,7 @@ class TestcaseUtils(object):
         self.current_pointer = self.gsubstep[self.gsubsteploop]
         self.gsubstep[self.gsubsteploop].text = substep_txt
         print_debug("<< Substep >>")
-        print_info("Keyword Description: {0}".format(substep_txt))
+        print_info("Keyword: {0} | Keyword Description: {1}".format(self.Keyword, substep_txt))
 
         self.print_output()
 
@@ -279,13 +280,13 @@ class TestcaseUtils(object):
 
     def p_ran(self, level, text=""):
         """Report a pass """
-        print_debug("{0} STATUS:RAN".format(text))
+        print_info("{0} STATUS:RAN".format(text))
         #print_info("PASS: %s\n" % text)
         self.p_status("RAN", level)
 
     def p_pass(self, level, text=""):
         """Report a pass """
-        print_debug("{0} STATUS:PASS".format(text))
+        print_info("{0} STATUS:PASS".format(text))
         #print_info("PASS: %s\n" % text)
         self.p_status("PASS", level)
 
@@ -393,6 +394,7 @@ class TestcaseUtils(object):
             self.p_error(level, text)
         else:
             status(level, text)
+
 
     def report_warning(self, status, text="", level='subStep'):
         """
