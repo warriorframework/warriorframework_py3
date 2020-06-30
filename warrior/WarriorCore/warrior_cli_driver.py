@@ -473,6 +473,18 @@ def append_path(filepath, path_list, path):
 def decide_action(w_cli_obj, namespace):
     """Prepare filepath and other arguments for Warrior main to use"""
     # First level, sleep
+
+    #setenv varibles by cli
+    if namespace.setenv:
+        env_vir_list = [x.strip() for x in namespace.setenv.split(',')]
+        for env_vir in env_vir_list:
+            env_val_splt = env_vir.split(':')
+            env_vir_name = env_val_splt[0]
+            env_vir_val = env_val_splt[1]
+            # env_name = env_val_splt[0].strip('"\'')
+            # env_val = env_val_splt[1].strip('"\'')
+            os.environ[env_name] = env_val
+
     if namespace.target_time:
         w_cli_obj.gosleep(namespace.target_time)
 
