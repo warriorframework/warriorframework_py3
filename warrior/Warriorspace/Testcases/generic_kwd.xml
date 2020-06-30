@@ -1,0 +1,95 @@
+<?xml version="1.0" ?>
+<Testcase>
+        <Details>
+                <Name>generic_kwd</Name>
+                <Title>testcase to print log messages</Title>
+                <Engineer>venkat</Engineer>
+                <Date>2020-06-30</Date>
+                <Time>12:10</Time>
+                <State/>
+                <InputDataFile>../Data/data_generic_kwd.xml</InputDataFile>
+                <Datatype/>
+                <default_onError action="next"/>
+                <Logsdir/>
+                <Resultsdir/>
+                <ExpectedResults/>
+        </Details>
+        <Requirements>
+                <Requirement/>
+        </Requirements>
+        <Steps>
+                <step Driver="cli_driver" Keyword="connect" TS="1">
+                    <Arguments>
+                        <argument name="system_name" value="T100_1"/>
+                    </Arguments>
+                    <onError action="next"/>
+                    <Description>connect to cli</Description>
+                    <Execute ExecType="Yes"/>
+                    <context>positive</context>
+                    <impact>impact</impact>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="${ENV.test1}"/>
+                                <argument name="datavalue" value="test1"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="3" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="${ENV.test2}"/>
+                                <argument name="datavalue" value="test2"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="4" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="${ENV.test3}"/>
+                                <argument name="datavalue" value="test3"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="log_driver" Keyword="log_message" TS="5" draft="no">
+                        <Arguments>
+                                <argument name="dict_message" value="{'my first preference' : 'val1', 'my next preference' : 'val2'}"/>
+                                <argument name="type" value="INFO"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="cli_driver" Keyword="disconnect" TS="6">
+                        <Arguments>
+                                <argument name="system_name" value="T100_1"/>
+                        </Arguments>
+                        <onError action="abort"/>
+                        <Description>disconnect</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+        </Steps>
+</Testcase>
+

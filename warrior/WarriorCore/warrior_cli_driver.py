@@ -483,7 +483,7 @@ def decide_action(w_cli_obj, namespace):
             env_vir_val = env_val_splt[1]
             # env_name = env_val_splt[0].strip('"\'')
             # env_val = env_val_splt[1].strip('"\'')
-            os.environ[env_name] = env_val
+            os.environ[env_vir_name] = env_vir_val
 
     if namespace.target_time:
         w_cli_obj.gosleep(namespace.target_time)
