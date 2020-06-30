@@ -202,8 +202,8 @@ class CliActions(object):
                   wc_obj.conn_obj is not None and
                   wc_obj.conn_obj.target_host is not None):
                 # execute smart action to produce user report
-                connect_testdata = Utils.data_Utils.get_object_from_datarepository(session_id+"_system",
-                                                                                   verbose=False)
+                connect_testdata = Utils.data_Utils.get_object_from_datarepository(\
+                    session_id+"_system", verbose=False)
                 if connect_testdata is not None and connect_testdata is not False:
                     Utils.cli_Utils.smart_action(self.datafile, call_system_name, "",
                                                  wc_obj.conn_obj.target_host,
@@ -361,10 +361,12 @@ class CliActions(object):
                     result = True
                 else:
                     if credentials['conn_type'] == "SSH_NESTED":
-                        from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class import ParamikoConnect
+                        from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class\
+                        import ParamikoConnect
                         wc_obj.conn_obj = ParamikoConnect(credentials)
                     else:
-                        from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class import PexpectConnect
+                        from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class\
+                        import PexpectConnect
                         wc_obj.conn_obj = PexpectConnect(credentials)
                     wc_obj.conn_obj.connect_ssh()
 
@@ -497,10 +499,8 @@ class CliActions(object):
                 if not credentials["custom_keystroke"]:
                     credentials["custom_keystroke"] = "wctrl:M"
                 credentials = Utils.cli_Utils.get_connection_port("telnet", credentials)
-                credentials['logfile'] = Utils.file_Utils.getCustomLogFile(self.filename,
-                                                                           self.logsdir,
-                                                                           'telnet_{0}_'.format(
-                                                                                    session_id))
+                credentials['logfile'] = Utils.file_Utils.getCustomLogFile(self.filename,\
+                    self.logsdir, 'telnet_{0}_'.format(session_id))
                 if not credentials["timeout"]:
                     credentials["timeout"] = int_timeout
                 if not credentials["pty_dimensions"]:
@@ -521,7 +521,8 @@ class CliActions(object):
                     output_dict[session_id + "_td_response"] = {}
                     result = True
                 else:
-                    from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class import PexpectConnect
+                    from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class\
+                    import PexpectConnect
                     wc_obj.conn_obj = PexpectConnect(credentials)
                     wc_obj.conn_obj.connect_telnet()
 
