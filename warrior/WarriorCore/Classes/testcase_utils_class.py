@@ -53,7 +53,6 @@ class TestcaseUtils(object):
         self.gsubkey = {}
         self.gsubkeyloop = 0
         self.pnote = False
-        self.Keyword = ""
 
     def file_utils(self):
         """
@@ -171,7 +170,7 @@ class TestcaseUtils(object):
         self.current_pointer = self.gsubstep[self.gsubsteploop]
         self.gsubstep[self.gsubsteploop].text = substep_txt
         print_debug("<< Substep >>")
-        print_info("Keyword: {0} | Keyword Description: {1}".format(self.Keyword, substep_txt))
+        print_debug("Keyword Description: {0}".format(substep_txt))
 
         self.print_output()
 
