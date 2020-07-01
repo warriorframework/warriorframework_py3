@@ -996,7 +996,7 @@ class NetconfActions(object):
             wdesc = "print notification buffer: type=%s" % notification_type
         else:
             wdesc = "print notification buffer all"
-        pNote(wdesc)
+        pNote("Keyword: print_notification_buffer | Description: {0}".format(wdesc))
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
         notification_data = netconf_object.get_notification_buffer(notification_type)
@@ -1016,7 +1016,7 @@ class NetconfActions(object):
                 1. status (bool)
         """
         wdesc = "clear the notification print buffer"
-        pNote(wdesc)
+        pNote("Keyword: clear_notification_buffer_for_print | Description: {0}".format(wdesc))
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
         return netconf_object.clear_notification_buffer_for_print()

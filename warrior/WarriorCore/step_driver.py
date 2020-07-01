@@ -160,7 +160,6 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     # print keyword to result file
     Utils.testcase_Utils.pKeyword(keyword, driver)
     print_info("Step number: {0} | TestStep Description: {1}".format(step_num, step_description))
-    print_info("Keyword: {0} | Keyword Description: {1}".format(keyword, keyword_description))
     if step.get("loop_id"):
         print_info("loop id: {0}".format(step.get("loop_id")))
     # print_info("Teststep Description: {0}".format(step_description))

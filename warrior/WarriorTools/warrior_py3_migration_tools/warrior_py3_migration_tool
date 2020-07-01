@@ -258,8 +258,6 @@ class Migrate_keyword_repo(parse_json):
             match1 = re.match(pattern1, repository_name)
             match1_flag = False
             if match1:
-                # import pdb
-                # pdb.set_trace()
                 existing_path = os.path.join(self.keyword_repos_path, repository_name)
                 modified_path = "{}{}".format(self.numbers_dict[match1.group(1)],
                                               repository_name.split(match1.group(1))[-1])
@@ -273,9 +271,6 @@ class Migrate_keyword_repo(parse_json):
             else:
                 self.keyword_repos_with_path.append(os.path.join(self.keyword_repos_path, repository_name))
                 self.keyword_repos_in_order.append(os.path.join(self.keyword_repos_path, repository_name))
-
-            # import pdb
-            # pdb.set_trace()
 
             self.log.info("successfully cloned keyword repository {}".format(keyword_url))
             # path = self.imp_url.split("/")[-1].split(".")[0]
@@ -306,8 +301,6 @@ class Migrate_keyword_repo(parse_json):
                 testcase_repo_instance.git.checkout(commit_id)
 
         self.log.info(self.keyword_repos_in_order)
-        # import pdb
-        # pdb.set_trace()
 
         for user_keyword_repo in self.keyword_repos_with_path:
             self.verify_import_statements(user_keyword_repo)
@@ -367,8 +360,6 @@ class Migrate_keyword_repo(parse_json):
 
             elif "[Actions" in line:
                 pattern = r"\s*package_list\s*\=\s*\[(Actions.*\.(\w+))\]"
-                import pdb
-                # pdb.set_trace()
                 match = re.search(pattern, line)
                 line = line.replace("[", r"\[")
 
@@ -430,8 +421,6 @@ class Migrate_keyword_repo(parse_json):
                                 try:
                                     self.log.info("[Before] {}".format(fline.strip()))
                                     os.system(af)
-                                    # import pdb
-                                    # pdb.set_trace()
                                     self.log.info("[after] {}".format(
                                         fline.replace("Warrior", "{}".format(repo_name), 1)))
 
@@ -584,8 +573,6 @@ class Migrate_keyword_repo(parse_json):
                                 file_name = file
                                 statement = fline
                                 if repo_name:
-                                        import pdb
-                                        #pdb.set_trace()
                                         self.keyword_summary[directory_name]["converted"] += 1
                                         actual_line = statement.split("[")[-1].split("]")[0]
 
@@ -595,8 +582,6 @@ class Migrate_keyword_repo(parse_json):
                                         try:
                                             self.log.info("[Before] {}".format(fline.strip()))
                                             os.system(af)
-                                            # import pdb
-                                            # pdb.set_trace()
                                             self.log.info("[after] {}".format(fline.strip().replace("Actions", "{}.Actions".format(repo_name), 1)))
 
 
@@ -621,8 +606,6 @@ class Migrate_keyword_repo(parse_json):
                                     impo = "sed -i 's/{}/{}@404@/g' {}".format(fline, fline, root + "/" + file)
                                     self.log.info("[Before] {}".format(fline.strip()))
                                     os.system(impo)
-                                    # import pdb
-                                    # pdb.set_trace()
                                     self.log.info("[after] {}@404@".format(fline.strip()))
         else:
             print("path not found")

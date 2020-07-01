@@ -113,7 +113,7 @@ class CliActions(object):
         """
 
         wdesc = "Connect to the ssh/telnet port of the system"
-        pNote(wdesc)
+        pNote("Keyword: connect | Description: {0}".format(wdesc))
         # Resolve system_name and subsystem_list
         # Removing duplicate subsystem entry and blank spaces in entry name
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
@@ -182,7 +182,7 @@ class CliActions(object):
 
         attempt = 1 if subsystem_list is None else len(subsystem_list)
         for i in range(attempt):
-            # Utils.testcase_Utils.pNote(wdesc)
+            Utils.testcase_Utils.pNote("Keyword: disconnect | Description: {0}".format(wdesc))
             subsystem_name = subsystem_list[i] if subsystem_list is not None else None
             call_system_name = system_name
             if subsystem_name:
@@ -976,7 +976,7 @@ class CliActions(object):
                 and can be retrieved using the key= "session_id + _td_response".
         """
         wdesc = "Connect to all systems and subsystems in the datafile."
-        pNote(wdesc)
+        pNote("Keyword: connect_all | Description: {0}".format(wdesc))
 
         output_dict = {}
         status = True
@@ -1016,7 +1016,7 @@ class CliActions(object):
             1. status(bool)= True / False.
         """
         wdesc = "Disconnect all systems and subsystems in the datafile."
-        pNote(wdesc)
+        pNote("Keyword: disconnect_all | Description: {0}".format(wdesc))
         status = True
         root = Utils.xml_Utils.getRoot(self.datafile)
         systems = root.findall('system')
