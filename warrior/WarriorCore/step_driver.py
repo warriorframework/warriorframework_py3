@@ -130,6 +130,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     step_impact = Utils.testcase_Utils.get_impact_from_xmlfile(step)
     step_description = Utils.testcase_Utils.get_description_from_xmlfile(step)
     parallel = kw_parallel
+    keyword_description = data_repository['wt_title']
 
     if parallel is True:
         step_console_log = get_step_console_log(data_repository['wt_filename'],
@@ -158,9 +159,8 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
             step.find("runmode").get("attempt")))
     # print keyword to result file
     Utils.testcase_Utils.pKeyword(keyword, driver)
-    print_info("Step number: {0} ".format(step_num))
-    print_info("Keyword: {0} | Description: {1}".format(keyword, step_description))
-
+    print_info("Step number: {0} | TestStep Description: {1}".format(step_num, step_description))
+    print_info("Keyword: {0} | Keyword Description: {1}".format(keyword, keyword_description))
     if step.get("loop_id"):
         print_info("loop id: {0}".format(step.get("loop_id")))
     # print_info("Teststep Description: {0}".format(step_description))

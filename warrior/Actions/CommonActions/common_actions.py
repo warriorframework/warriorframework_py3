@@ -380,7 +380,7 @@ class CommonActions(object):
                 1. status(boolean)
         """
         wdesc = "Verify if the output of the arithmetic expression matches the expected"
-        Utils.testcase_Utils.pNote(wdesc)
+        # Utils.testcase_Utils.pNote(wdesc)
         status = Utils.data_Utils.verify_arith_exp(expression, expected,
                                                    comparison, repo_key)
         return status
@@ -399,7 +399,7 @@ class CommonActions(object):
 
         """
         wdesc = "To get the current timestamp in the format of yyyy-mm-dd hh:mm:ss"
-        Utils.testcase_Utils.pNote(wdesc)
+        # Utils.testcase_Utils.pNote(wdesc)
         currentdate = datetime_utils.get_current_timestamp()
         print_info("current timestamp : {0}".format(currentdate))
         output_dict = {current_time: currentdate}
@@ -428,7 +428,7 @@ class CommonActions(object):
 
         """
         wdesc = "To get time difference between two timestamps"
-        Utils.testcase_Utils.pNote(wdesc)
+        # Utils.testcase_Utils.pNote(wdesc)
         start_time = Utils.data_Utils.get_object_from_datarepository(start_time)
         if end_time:
             end_time = Utils.data_Utils.get_object_from_datarepository(end_time)

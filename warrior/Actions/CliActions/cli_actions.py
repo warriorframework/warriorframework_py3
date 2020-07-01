@@ -182,7 +182,7 @@ class CliActions(object):
 
         attempt = 1 if subsystem_list is None else len(subsystem_list)
         for i in range(attempt):
-            Utils.testcase_Utils.pNote(wdesc)
+            # Utils.testcase_Utils.pNote(wdesc)
             subsystem_name = subsystem_list[i] if subsystem_list is not None else None
             call_system_name = system_name
             if subsystem_name:
