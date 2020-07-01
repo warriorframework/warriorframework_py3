@@ -858,7 +858,6 @@ class CliActions(object):
                 session_id="system_name+subsystem_name+session_name"
         """
         wdesc = "send testdata command kw"
-        pNote("Keyword: send_testdata_command_kw | Description: {0}".format(wdesc))
         Utils.testcase_Utils.pSubStep(wdesc)
         print_debug("System Name: {0}".format(system_name))
         print_debug("Datafile: {0}".format(self.datafile))
