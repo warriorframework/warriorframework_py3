@@ -141,6 +141,8 @@ class ExecutionSummary():
         print_info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
     def print_execution_summary_details(self, suite_tc_exec):
+        """To print the consolidated test cases result in console at the end of Test Case/Test
+                   Suite/Project Execution"""
         data_repositery = config_Utils.data_repository
         for suite_tc in suite_tc_exec:
             path = suite_tc[3]
@@ -176,19 +178,18 @@ class ExecutionSummary():
                         name = name + ' [' + os.path.basename(data_repositery['ow_datafile']) + ']'
                     elif path in datafile_dict:
                         name = name + ' [' + os.path.basename(datafile_dict[path]) + ']'
-                    elif str(suite_datafile).strip().upper() != 'NO_DATA' and file_Utils.fileExists(
-                                suite_datafile):
+                    elif str(suite_datafile).strip().upper() != 'NO_DATA' and \
+                            file_Utils.fileExists(suite_datafile):
                         suite_datafile_rel = str(suite_datafile).strip()
                         suite_datafile = file_Utils.getAbsPath(suite_datafile_rel, os.path.dirname(path))
                         name = name + ' [' + os.path.basename(suite_datafile) + ']'
                     else:
                         datafile = xml_Utils.getChildTextbyParentTag(path,
                                                                      'Details', 'InputDataFile')
-                        if datafile is None or datafile is False or \
-                                str(datafile).strip() == "":
+                        if datafile is None or datafile is False or str(datafile).strip() == "":
                             datafile = "NO_DATA"
-                        if str(datafile).strip().upper() != 'NO_DATA' and datafile is not False and file_Utils.fileExists(
-                                datafile):
+                        if str(datafile).strip().upper() != 'NO_DATA' and datafile is not False and \
+                                file_Utils.fileExists(datafile):
                             datafile_rel = str(datafile).strip()
                             datafile = file_Utils.getAbsPath(datafile_rel, os.path.dirname(path))
                             name = name + ' [' + os.path.basename(datafile) + ']'
