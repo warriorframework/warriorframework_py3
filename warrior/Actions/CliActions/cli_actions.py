@@ -293,6 +293,7 @@ class CliActions(object):
                 and can be retrieved using the key= "session_id + _td_response".
         """
         wdesc = "Connect to the ssh port of the system/subsystem and creates a session"
+        pNote("Keyword: connect_ssh | Description: {0}".format(wdesc))
         # Resolve system_name and subsystem_list
         # Removing duplicate subsystem entry and blank spaces in entry name
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
@@ -472,6 +473,7 @@ class CliActions(object):
         """
 
         wdesc = "Connect to the telnet port of the system and creates a session"
+        pNote("Keyword: connect_telnet | Description: {0}".format(wdesc))
         # Resolve system_name and subsystem_list
         # Removing duplicate subsystem entry and blank spaces in entry name
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
@@ -578,6 +580,7 @@ class CliActions(object):
         """
 
         wdesc = "Send cli command to the provided system"
+        pNote("Keyword: send_command | Description: {0}".format(wdesc))
         Utils.testcase_Utils.pSubStep(wdesc)
         # Utils.testcase_Utils.pNote(system_name)
         # Utils.testcase_Utils.pNote(self.datafile)
@@ -650,6 +653,7 @@ class CliActions(object):
         """
 
         wdesc = "Send commands from rows marked execute=yes in the test data of the system"
+        pNote("Keyword: send_all_testdata_commands | Description: {0}".format(wdesc))
         desc = wdesc if description is None else description
         return self.send_testdata_command_kw(system_name, session_name, desc,
                                              var_sub, td_tag, vc_tag)
@@ -706,6 +710,7 @@ class CliActions(object):
         """
 
         wdesc = "Send commands by row num of testdata file"
+        pNote("Keyword: send_commands_by_testdata_rownum | Description: {0}".format(wdesc))
         desc = wdesc if description is None else description
         return self.send_testdata_command_kw(system_name, session_name,
                                              desc, var_sub, row_num=row_num,
@@ -763,6 +768,7 @@ class CliActions(object):
         """
 
         wdesc = "Send commands by title of testdata file"
+        pNote("Keyword: send_commands_by_testdata_title | Description: {0}".format(wdesc))
         desc = wdesc if description is None else description
         return self.send_testdata_command_kw(system_name, session_name, desc, var_sub,
                                              title=title, td_tag=td_tag, vc_tag=vc_tag)
@@ -819,6 +825,7 @@ class CliActions(object):
                 session_id="system_name+subsystem_name+session_name"
         """
         wdesc = "Send commands by title, row & execute=yes in the test data of the system"
+        pNote("Keyword: send_commands_by_testdata_title_rownum | Description: {0}".format(wdesc))
         desc = wdesc if description is None else description
         return self.send_testdata_command_kw(system_name, session_name,
                                              desc, var_sub, title=title, row_num=row_num,
@@ -850,6 +857,8 @@ class CliActions(object):
                 retrieved using the key= "session_id + _td_response" where
                 session_id="system_name+subsystem_name+session_name"
         """
+        wdesc = "send testdata command kw"
+        pNote("Keyword: send_testdata_command_kw | Description: {0}".format(wdesc))
         Utils.testcase_Utils.pSubStep(wdesc)
         print_debug("System Name: {0}".format(system_name))
         print_debug("Datafile: {0}".format(self.datafile))
@@ -882,6 +891,7 @@ class CliActions(object):
         """
 
         wdesc = "Sets the timeout period for the ssh/telnet session"
+        pNote("Keyword: set_session_timeout | Description: {0}".format(wdesc))
         status = True
         Utils.testcase_Utils.pSubStep(wdesc)
         # Utils.testcase_Utils.pNote(system_name)
@@ -912,6 +922,7 @@ class CliActions(object):
         """
 
         wdesc = "Checks whether the ssh/telnet session is alive or not"
+        pNote("Keyword: verify_session_status | Description: {0}".format(wdesc))
         status = True
         Utils.testcase_Utils.pSubStep(wdesc)
         # Utils.testcase_Utils.pNote(system_name)
