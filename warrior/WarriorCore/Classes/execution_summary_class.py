@@ -133,66 +133,69 @@ class ExecutionSummary():
             for proj in project_exec:
                 print_info(("{0:10}{1:50}{2:10}{3:30}"
                             .format(proj[0], proj[1], proj[2], proj[3])))
-            suite_tc_exec = self.suite_summary(junit_file)
-            print_execution_summary_details(suite_tc_exec)
+            self.print_execution_summary_details(junit_file)
         elif file_type == "Suites":
-            suite_tc_exec = self.suite_summary(junit_file)
-            print_execution_summary_details(suite_tc_exec)
+            self.print_execution_summary_details(junit_file)
         print_info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-def print_execution_summary_details(suite_tc_exec):
-    """To print the consolidated test cases result in console at the end of Test Case/Test
-       Suite/Project Execution"""
-    data_repositery = config_Utils.data_repository
-    for suite_tc in suite_tc_exec:
-        path = suite_tc[3]
-        name = suite_tc[1]
-        if suite_tc_exec[0][0] == 'Suites':
-            if suite_tc[0] == 'Suites':
-                testsuite_filepath = suite_tc[3]
-                testsuite_dir = os.path.dirname(testsuite_filepath)
+    def print_execution_summary_details(self, junit_file):
+        """To print the consolidated test cases result in console at the end of
+           Test Case/Test Suite/Project Execution"""
+        data_repositery = config_Utils.data_repository
+        suite_tc_exec = self.suite_summary(junit_file)
+        for suite_tc in suite_tc_exec:
+            path = suite_tc[3]
+            name = suite_tc[1]
+            if suite_tc_exec[0][0] == 'Suites':
+                if suite_tc[0] == 'Suites':
+                    testsuite_filepath = suite_tc[3]
+                    testsuite_dir = os.path.dirname(testsuite_filepath)
 
-                testcase_list = common_execution_utils.get_step_list(suite_tc[3],
-                                                                     "Testcases", "Testcase",
-                                                                     randomize=False)
-                suite_datafile = xml_Utils.getChildTextbyParentTag(suite_tc[3],
-                                                                   'Details', 'InputDataFile')
-                if suite_datafile is None or suite_datafile is False or \
-                        str(suite_datafile).strip() == "":
-                    suite_datafile = "NO_DATA"
-                datafile_dict = {}
-                for tests in testcase_list:
-                    tc_rel_path = testsuite_utils.get_path_from_xmlfile(tests)
-                    if tc_rel_path is not None:
-                        tc_path = Utils.file_Utils.getAbsPath(tc_rel_path, testsuite_dir)
+                    testcase_list = common_execution_utils.get_step_list(
+                        suite_tc[3], "Testcases", "Testcase", randomize=False)
+                    suite_datafile = xml_Utils.getChildTextbyParentTag(
+                        suite_tc[3], 'Details', 'InputDataFile')
+                    if suite_datafile is None or suite_datafile is False or \
+                            str(suite_datafile).strip() == "":
+                        suite_datafile = "NO_DATA"
+                    datafile_dict = {}
+                    for tests in testcase_list:
+                        tc_rel_path = testsuite_utils.get_path_from_xmlfile(tests)
+                        if tc_rel_path is not None:
+                            tc_path = Utils.file_Utils.getAbsPath(
+                                tc_rel_path, testsuite_dir)
+                        else:
+                            tc_path = str(tc_rel_path)
+                        suite_step_data_file = testsuite_utils.get_data_file_at_suite_step(
+                            tests, data_repositery)
+                        if suite_step_data_file is not None:
+                            data_file = Utils.file_Utils.getAbsPath(
+                                suite_step_data_file, testsuite_dir)
+                            datafile_dict[tc_path] = data_file
+                if suite_tc[0] == 'Testcase':
+                    if 'ow_datafile' in data_repositery:
+                        name = name + ' [' + os.path.basename(data_repositery['ow_datafile']) + ']'
+                    elif path in datafile_dict:
+                        name = name + ' [' + os.path.basename(datafile_dict[path]) + ']'
+                    elif str(suite_datafile).strip().upper() != 'NO_DATA' and \
+                            file_Utils.fileExists(suite_datafile):
+                        suite_datafile_rel = str(suite_datafile).strip()
+                        suite_datafile = file_Utils.getAbsPath(
+                            suite_datafile_rel, os.path.dirname(path))
+                        name = name + ' [' + os.path.basename(suite_datafile) + ']'
                     else:
-                        tc_path = str(tc_rel_path)
-                    suite_step_data_file = testsuite_utils.get_data_file_at_suite_step(
-                        tests, data_repositery)
-                    if suite_step_data_file is not None:
-                        data_file = Utils.file_Utils.getAbsPath(suite_step_data_file,
-                                                                testsuite_dir)
-                        datafile_dict[tc_path] = data_file
-            if suite_tc[0] == 'Testcase':
-                if 'ow_datafile' in data_repositery:
-                    name = name + ' [' + os.path.basename(data_repositery['ow_datafile']) + ']'
-                elif path in datafile_dict:
-                    name = name + ' [' + os.path.basename(datafile_dict[path]) + ']'
-                elif str(suite_datafile).strip().upper() != 'NO_DATA' and \
-                        file_Utils.fileExists(suite_datafile):
-                    suite_datafile_rel = str(suite_datafile).strip()
-                    suite_datafile = file_Utils.getAbsPath(suite_datafile_rel, os.path.dirname(path))
-                    name = name + ' [' + os.path.basename(suite_datafile) + ']'
-                else:
-                    datafile = xml_Utils.getChildTextbyParentTag(path,
-                                                                 'Details', 'InputDataFile')
-                    if datafile is None or datafile is False or str(datafile).strip() == "":
-                        datafile = "NO_DATA"
-                    if str(datafile).strip().upper() != 'NO_DATA' and datafile is not False and \
-                            file_Utils.fileExists(datafile):
-                        datafile_rel = str(datafile).strip()
-                        datafile = file_Utils.getAbsPath(datafile_rel, os.path.dirname(path))
-                        name = name + ' [' + os.path.basename(datafile) + ']'
+                        datafile = xml_Utils.getChildTextbyParentTag(
+                            path, 'Details', 'InputDataFile')
+                        if datafile is None or datafile is False or \
+                                str(datafile).strip() == "":
+                            datafile = "NO_DATA"
+                        if str(datafile).strip().upper() != 'NO_DATA' and \
+                                datafile is not False and \
+                                file_Utils.fileExists(datafile):
+                            datafile_rel = str(datafile).strip()
+                            datafile = file_Utils.getAbsPath(
+                                datafile_rel, os.path.dirname(path))
+                            name = name + ' [' + os.path.basename(datafile) + ']'
 
-        print_info(("{0:10}{1:50}{2:10}{3:30}"
-                    .format(suite_tc[0], name, suite_tc[2], suite_tc[3])))
+            print_info(("{0:10}{1:50}{2:10}{3:30}"
+                        .format(suite_tc[0], name, suite_tc[2], suite_tc[3])))
