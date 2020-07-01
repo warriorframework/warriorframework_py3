@@ -142,7 +142,7 @@ class ExecutionSummary():
 
 def print_execution_summary_details(suite_tc_exec):
     """To print the consolidated test cases result in console at the end of Test Case/Test
-               Suite/Project Execution"""
+       Suite/Project Execution"""
     data_repositery = config_Utils.data_repository
     for suite_tc in suite_tc_exec:
         path = suite_tc[3]
