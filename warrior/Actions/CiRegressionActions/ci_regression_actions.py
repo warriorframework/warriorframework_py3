@@ -541,7 +541,7 @@ class CIregressionActions(object):
         cur_ts = datetime_utils.get_current_timestamp()
         result_dict = {timestamp_key: cur_ts}
         status = self.local_data_test(desired_status)
-
+        time.sleep(5)
         previous_time = data_Utils.get_object_from_datarepository(timestamp_key)
         stored_delta = data_Utils.get_object_from_datarepository(stored_delta_key)
         if previous_time:
