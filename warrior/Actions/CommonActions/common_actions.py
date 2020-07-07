@@ -404,7 +404,8 @@ class CommonActions(object):
 
         """
         wdesc = "To get the current timestamp in the format of yyyy-mm-dd hh:mm:ss"
-        Utils.testcase_Utils.pNote("Keyword: get_current_timestamp | Description: {0}".format(wdesc))
+        Utils.testcase_Utils.pNote("Keyword: get_current_timestamp | Description: {0}".\
+            format(wdesc))
         currentdate = datetime_utils.get_current_timestamp()
         print_info("current timestamp : {0}".format(currentdate))
         output_dict = {current_time: currentdate}
@@ -442,7 +443,8 @@ class CommonActions(object):
         output_dict = {time_diff: time_delta}
         if max_time_diff:
             if time_delta > int(max_time_diff):
-                print_error("The time difference is greater than max time difference so failing the step !")
+                print_error("The time difference is greater than max time \
+                    difference so failing the step !")
                 status = False
                 return status, output_dict
         status = True
