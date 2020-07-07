@@ -18,7 +18,8 @@ import traceback
 from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
 from warrior.Framework import Utils
 from warrior.Framework.Utils import file_Utils
-from warrior.Framework.Utils.print_Utils import print_info, print_debug, print_error, print_exception
+from warrior.Framework.Utils.print_Utils import print_info, print_debug,\
+ print_error, print_exception
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 def get_arguments(step):
@@ -44,8 +45,10 @@ def get_arguments(step):
                     if "${REPO." in arg_value:
                         arg_value = Utils.data_Utils.sub_from_data_repo(arg_value)
                     if "${XLSCOL." in arg_value:
-                        general_iter_number = Utils.data_Utils.get_object_from_datarepository("gen_iter_number")
-                        arg_value = Utils.data_Utils.sub_from_gen_dict(arg_value, general_iter_number)
+                        general_iter_number = Utils.data_Utils.get_object_from_datarepository(\
+                            "gen_iter_number")
+                        arg_value = Utils.data_Utils.sub_from_gen_dict(\
+                            arg_value, general_iter_number)
                 arg_datatype_object.arg_name = arg_name
                 arg_datatype_object.arg_value = arg_value
                 value = arg_datatype_object.convert_arg_to_datatype()
