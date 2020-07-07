@@ -222,9 +222,12 @@ class TestCaseStepsExecutionClass:
         runmode_evaluation = any([runmode == "RMT",
                                   runmode == "RUF" and step_status is True,
                                   runmode == "RUP" and step_status is False])
+
         if runmode_timer is not None and runmode_evaluation:
-            pNote("Wait for {0}sec before the next runmode attempt ".format(runmode_timer))
-            wait_for_timeout(runmode_timer)
+            if not int(self.current_step.find("runmode").get("attempt")) == \
+               int(self.current_step.find("runmode").get("runmode_val")):
+                pNote("Wait for {0}sec before the next runmode attempt ".format(runmode_timer))
+                wait_for_timeout(runmode_timer)
         # if runmode is 'ruf' & step_status is False, skip the repeated
         # execution of same TC step and move to next actual step
         elif runmode.upper() == "RUF" and ((step_status is True) or (step_status is False)):
