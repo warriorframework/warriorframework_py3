@@ -1,5 +1,5 @@
 Release: Ninja
-Version: warrior-4.3.0
+Version: warrior-4.3.1
 
 ===================
 1: Release details
@@ -9,16 +9,16 @@ This is release Ninja of Warrior Test Automation Framework
 -------------------------------
 1.1: List of available releases
 -------------------------------
-1. Ninja = warrior-4.3.0
+1. Ninja = warrior-4.3.1
 2. Ninja = warrior-4.2.0
 3. Ninja = warrior-4.1.0
 
 ==================
 2. Version Details
 ==================
-You are on Release Ninja, Version warrior-4.3.0 of Warrior Framework.
+You are on Release Ninja, Version warrior-4.3.1 of Warrior Framework.
 
-warrior-4.3.0 is also released as pip install able package.
+warrior-4.3.1 is a  hotfix  release. 
 The pre-requiste for installing pip module is python 3.6 version and above.
 
 
@@ -26,28 +26,11 @@ The pre-requiste for installing pip module is python 3.6 version and above.
 2.1. Change log for this release
 +++++++++++++++++++++++++++++++++
 
--------------
-New Features:
--------------
-[WAR-2298] - Generic Framework : Repetitive testing with different set of data.
-[WAR-2299] - Parallel Execution Suite with wrapper files
-[WAR-2300] - Option to call keyword based on test results when using the test data file
-[WAR-2303] - Warrior Unit Test Cases.
-[WAR-2326] - Warrior Setting configuration file location need to be changed.
-[WAR-2343] - Enhance migration tool to support multiple repo conversion
-[WAR-2331] - New driver support for micro app applications
-[WAR-2347] - Remove Katana from the warriorframework
-
-
 -----------
 Bugfixes:
 -----------
-[WAR-2342] - Loop feature is not working properly when we have two loops in test case and using the same in test data file
-[WAR-2330] - Removing the extra double quotes which are coming from warrior kafka
-[WAR-2329] - Removed IP, Username, Password and Port support to REST in TC Generator
-[WAR-2328] - Warrior not asking at least single testcase instead throwing error when run Warrior without testcase path
-[WAR-2327] - Warrior not able to detect TC Generator Tool in venv virtualenv creation
-[WAR-2312] - Executetype "ifnot" is not working as expected in step level for argument execute
+[WAR-2365] -  CLI Output directory fix for non existent dir.
+[WAR-2382] -   Warrior Exception in print. 
 
 =================================================
 3. Procedure to install pip module
@@ -57,7 +40,7 @@ Bugfixes:
       pip install warriorframework
 
 2. Specific Version warriorframework from PyPI Server
-       pip install warriorframework==4.3.0
+       pip install warriorframework==4.3.1
 
 3. Uninstall warriorframework
        pip uninstall warriorframework
