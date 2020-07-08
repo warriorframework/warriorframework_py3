@@ -21,6 +21,8 @@ from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.Utils.print_Utils import print_info
 from warrior.Framework.Utils.xml_Utils import getElementWithTagAttribValueMatch
 import warrior.WarriorCore.Classes.katana_interface_class as katana_interface_class
+from warrior.WarriorCore import testsuite_utils, common_execution_utils
+from warrior.Framework import Utils
 
 __author__ = 'Keenan Jabri'
 
@@ -89,8 +91,13 @@ class LineResult:
             span_html = defects_span
             locn = ""
         else:
-            locn_tag = line.find('./properties/property[@name="location"]')
-            locn = locn_tag.get('value') if locn_tag is not None else ""
+            if variant == "InvalidTestsuite":
+                locn_tag = ""
+                locn = ""
+                variant = "Testsuite"
+            else:
+                locn_tag = line.find('./properties/property[@name="location"]')
+                locn = locn_tag.get('value') if locn_tag is not None else ""
 
         self.data = {'nameAttr': variant + 'Record',
                      'type': variant.replace('Test', '').replace('Keyword', 'step ') + str(stepcount),
@@ -174,8 +181,44 @@ class WarriorHtmlResults:
         project_node_list = [self.junit_root]
         for project_node in project_node_list:
             self.create_line_result(project_node, "Project")
+            for pro_node in project_node.findall("property"):
+                if pro_node.get('name') == 'location':
+                    pro_location = pro_node.get('value')
+
+                    testsuite_list = common_execution_utils.get_step_list(
+                        pro_location, "Testsuites", "Testsuite")
+                    project_dir = os.path.dirname(pro_location)
+                    for testsuite in testsuite_list:
+                        testsuite_rel_path = testsuite_utils.get_path_from_xmlfile(testsuite)
+                        if testsuite_rel_path is not None:
+                            testsuite_path = Utils.file_Utils.getAbsPath(
+                                testsuite_rel_path, project_dir)
+                        else:
+                            testsuite_path = str(testsuite_rel_path)
+                        if not file_Utils.fileExists(testsuite_path):
+                            self.create_line_result(
+                                {'name':os.path.splitext(os.path.basename(testsuite_path))[0],
+                                 'status':'ERROR'}, "InvalidTestsuite")
             for testsuite_node in project_node.findall("testsuite"):
                 self.create_line_result(testsuite_node, "Testsuite")
+                all_testcases = []
+                if testsuite_node.get('suite_location'):
+                    testsuite_dir = os.path.dirname(testsuite_node.get('suite_location'))
+                    testcase_list = common_execution_utils.get_step_list(
+                        testsuite_node.get('suite_location'),
+                        "Testcases", "Testcase", randomize=False)
+                    for tests in testcase_list:
+                        tc_rel_path = testsuite_utils.get_path_from_xmlfile(tests)
+                        if tc_rel_path is not None:
+                            tc_path = Utils.file_Utils.getAbsPath(
+                                tc_rel_path, testsuite_dir)
+                        else:
+                            tc_path = str(tc_rel_path)
+                        if not file_Utils.fileExists(tc_path):
+                            all_testcases.append(
+                                {'name': os.path.splitext(os.path.basename(tc_path))[0],
+                                 'status': 'ERROR'})
+                full_testcasess = all_testcases + testsuite_node.findall("testcase")
                 #to add setup result in html file
                 for setup_node in testsuite_node.findall("Setup"):
                     self.create_line_result(setup_node, "Setup")
@@ -185,14 +228,15 @@ class WarriorHtmlResults:
                             if node.get('type') == 'keyword':
                                 self.steps += 1
                                 self.create_line_result(node, "Keyword")
-                for testcase_node in testsuite_node.findall("testcase"):
+                for testcase_node in full_testcasess:
                     self.create_line_result(testcase_node, "Testcase")
                     self.steps = 0
-                    for step_node in testcase_node.findall("properties"):
-                        for node in step_node.findall("property"):
-                            if node.get('type') == 'keyword':
-                                self.steps += 1
-                                self.create_line_result(node, "Keyword")
+                    if testcase_node.get('status') != 'ERROR':
+                        for step_node in testcase_node.findall("properties"):
+                            for node in step_node.findall("property"):
+                                if node.get('type') == 'keyword':
+                                    self.steps += 1
+                                    self.create_line_result(node, "Keyword")
                 #to add debug result in html file
                 for debug_node in testsuite_node.findall("Debug"):
                     self.create_line_result(debug_node, "Debug")
