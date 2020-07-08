@@ -16,6 +16,7 @@ import glob
 import os
 import random
 import json
+from collections import OrderedDict 
 
 from warrior.Framework import Utils
 from warrior.Framework.Utils.print_Utils import print_warning, print_info, print_error
@@ -93,21 +94,42 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
                 filepath = getAbsPath(json_file, os.path.dirname(testcasefile_path))
                 with open(filepath, "r") as json_handle:
                     json_doc = json.load(json_handle)
+                    if isinstance(json_doc, dict):
+                        json_doc = json_doc[loop_count]
                     loop_json = {loop_count : {"loop_json" : json_doc}}
                     update_datarepository(loop_json)
                     update_datarepository({"loopid": loop_count})
-                    if not isinstance(json_doc, list):
+                    if not (isinstance(json_doc, list) or isinstance(json_doc, dict)):
                         valid_json = False
                         print_error('invalid json format specified,'
-                                    'valid format : [{"arg1":"value"}, {"arg2":"value"}]')
+                                    'valid format : [{"arg1":"value"}, {"arg2":"value"}]'
+                                    'or {"loop_id_1":[{"arg1":"value"}], "loop_id_2": [{"arg1":"value"}]')
                     else:
-                        for blob in json_doc:
-                            if not isinstance(blob, dict):
-                                valid_json = False
-                                print_error("element is {}. should be dict".format(type(blob)))
-                                print_error('invalid json format specified,'
-                                            'blob should be dict, valid format : '
-                                            '[{"arg1":"value"}, {"arg2":"value"}]')
+                        if isinstance(json_doc, list):
+                            for blob in json_doc:
+                                if not isinstance(blob, dict):
+                                    valid_json = False
+                                    print_error("element is {}. should be dict".format(type(blob)))
+                                    print_error('invalid json format specified,'
+                                                'blob should be dict, valid format : '
+                                                '[{"arg1":"value"}, {"arg2":"value"}]')
+                        elif isinstance(json_doc, dict):
+                            for each_loop_id in json_doc.keys():
+                                if isinstance(json_doc[each_loop_id], list):                                 
+                                    for blob in json_doc[each_loop_id]:
+                                        if not isinstance(blob, dict):
+                                            valid_json = False
+                                            print_error("element is {}. should be dict".format(type(blob)))
+                                            print_error('invalid json format specified,'
+                                                        'blob should be dict, valid format : '
+                                                        '{"loop_id_1":[{"arg1":"value"}, {"arg2":"value"}],'
+                                                        '"loop_id_2":[{"arg1":"value"}, {"arg2":"value"}]}')
+                                else:
+                                    valid_json = False
+                                    print_error("element is {}. should be list".format(type(json_doc[each_loop_id])))
+                                    print_error('invalid json format specified,'
+                                                'blob should be dict, valid format : '
+                                                '[{"arg1":"value"}, {"arg2":"value"}]')
             except ValueError:
                 valid_json = False
                 print_error('The file {0} is not a valid json '
