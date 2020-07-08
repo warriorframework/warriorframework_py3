@@ -16,7 +16,6 @@ import glob
 import os
 import random
 import json
-from collections import OrderedDict 
 
 from warrior.Framework import Utils
 from warrior.Framework.Utils.print_Utils import print_warning, print_info, print_error
@@ -103,7 +102,7 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
                         valid_json = False
                         print_error('invalid json format specified,'
                                     'valid format : [{"arg1":"value"}, {"arg2":"value"}]'
-                                    'or {"loop_id_1":[{"arg1":"value"}], "loop_id_2": [{"arg1":"value"}]')
+                                    'or {"loop_id_1":[{"arg1":"value"}], "loop_id_2": [{"arg1":"value"}]}')
                     else:
                         if isinstance(json_doc, list):
                             for blob in json_doc:
