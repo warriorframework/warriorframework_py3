@@ -21,7 +21,6 @@ from warrior.Framework import Utils
 from warrior.Framework.Utils.print_Utils import print_warning, print_info, print_error
 from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, update_datarepository
 from warrior.Framework.Utils.file_Utils import getAbsPath
-
 """ Module that contains common utilities required for execution """
 
 
@@ -44,12 +43,16 @@ def append_step_list(step_list, step, value, go_next, mode, tag):
         copy_step = copy.deepcopy(step)
         copy_step.find(mode).set(tag, go_next)
         copy_step.find(mode).set("attempt", i + 1)
-        copy_step.find(mode).set(mode+"_val", value)
+        copy_step.find(mode).set(mode + "_val", value)
         step_list.append(copy_step)
     return step_list
 
 
-def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="Loop"):
+def get_step_list(filepath,
+                  step_tag,
+                  sub_step_tag,
+                  randomize=False,
+                  loop_tag="Loop"):
     """
     Takes the location of Testcase/Suite/Project file as input
     Returns a list of all the step/testcase/testsuite elements
@@ -65,8 +68,8 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
     root = Utils.xml_Utils.getRoot(filepath)
     steps = root.find(step_tag)
     if steps is None:
-        print_warning("The file: '{0}' has no {1} to be executed"
-                      .format(filepath, step_tag))
+        print_warning("The file: '{0}' has no {1} to be executed".format(
+            filepath, step_tag))
     step_list = []
     for child_node in steps:
         if child_node.tag == sub_step_tag:
@@ -87,48 +90,65 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
             json_file = Utils.data_Utils.sub_from_env_var(json_file)
             print_info("file is {}".format(json_file))
             loop_steps = child_node.findall(sub_step_tag)
-            testcasefile_path = get_object_from_datarepository('wt_testcase_filepath')
+            testcasefile_path = get_object_from_datarepository(
+                'wt_testcase_filepath')
             valid_json = True
             try:
-                filepath = getAbsPath(json_file, os.path.dirname(testcasefile_path))
+                filepath = getAbsPath(json_file,
+                                      os.path.dirname(testcasefile_path))
                 with open(filepath, "r") as json_handle:
                     json_doc = json.load(json_handle)
                     if isinstance(json_doc, dict):
                         json_doc = json_doc[loop_count]
-                    loop_json = {loop_count : {"loop_json" : json_doc}}
+                    loop_json = {loop_count: {"loop_json": json_doc}}
                     update_datarepository(loop_json)
                     update_datarepository({"loopid": loop_count})
-                    if not (isinstance(json_doc, list) or isinstance(json_doc, dict)):
+                    if not isinstance(json_doc, (list, dict)):
                         valid_json = False
-                        print_error('invalid json format specified,'
-                                    'valid format : [{"arg1":"value"}, {"arg2":"value"}]'
-                                    'or {"loop_id_1":[{"arg1":"value"}], "loop_id_2": [{"arg1":"value"}]}')
+                        print_error(
+                            'invalid json format specified,'
+                            'valid format : [{"arg1":"value"}, {"arg2":"value"}]'
+                            'or {"loop_id_1":[{"arg1":"value"}],'
+                            ' "loop_id_2": [{"arg1":"value"}]}')
                     else:
                         if isinstance(json_doc, list):
                             for blob in json_doc:
                                 if not isinstance(blob, dict):
                                     valid_json = False
-                                    print_error("element is {}. should be dict".format(type(blob)))
-                                    print_error('invalid json format specified,'
-                                                'blob should be dict, valid format : '
-                                                '[{"arg1":"value"}, {"arg2":"value"}]')
+                                    print_error(
+                                        "element is {}. should be dict".format(
+                                            type(blob)))
+                                    print_error(
+                                        'invalid json format specified,'
+                                        'blob should be dict, valid format : '
+                                        '[{"arg1":"value"}, '
+                                        '{"arg2":"value"}]')
                         elif isinstance(json_doc, dict):
                             for each_loop_id in json_doc.keys():
-                                if isinstance(json_doc[each_loop_id], list):                                 
+                                if isinstance(json_doc[each_loop_id], list):
                                     for blob in json_doc[each_loop_id]:
                                         if not isinstance(blob, dict):
                                             valid_json = False
-                                            print_error("element is {}. should be dict".format(type(blob)))
-                                            print_error('invalid json format specified,'
-                                                        'blob should be dict, valid format : '
-                                                        '{"loop_id_1":[{"arg1":"value"}, {"arg2":"value"}],'
-                                                        '"loop_id_2":[{"arg1":"value"}, {"arg2":"value"}]}')
+                                            print_error(
+                                                "element is {}. should be dict"
+                                                .format(type(blob)))
+                                            print_error(
+                                                'invalid json format specified,'
+                                                'blob should be dict, valid format : '
+                                                '{"loop_id_1":[{"arg1":"value"}, '
+                                                '{"arg2":"value"}], '
+                                                '"loop_id_2":[{"arg1":"value"},'
+                                                ' {"arg2":"value"}]}')
                                 else:
                                     valid_json = False
-                                    print_error("element is {}. should be list".format(type(json_doc[each_loop_id])))
-                                    print_error('invalid json format specified,'
-                                                'blob should be dict, valid format : '
-                                                '[{"arg1":"value"}, {"arg2":"value"}]')
+                                    print_error(
+                                        "element is {}. should be list".format(
+                                            type(json_doc[each_loop_id])))
+                                    print_error(
+                                        'invalid json format specified,'
+                                        'blob should be dict,'
+                                        ' valid format : [{"arg1":"value"},'
+                                        ' {"arg2":"value"}]')
             except ValueError:
                 valid_json = False
                 print_error('The file {0} is not a valid json '
@@ -154,8 +174,8 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
                     if arguments is not None and arguments is not False:
                         for argument in arguments.findall('argument'):
                             arg_value = argument.get('value')
-                            arg_value = Utils.data_Utils.sub_from_loop_json(arg_value,
-                                                                            iter_number)
+                            arg_value = Utils.data_Utils.sub_from_loop_json(
+                                arg_value, iter_number)
                             argument.set("value", arg_value)
                     step_list.append(copy_step)
 
@@ -173,8 +193,8 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
                     orig_step_path, os.path.dirname(filepath))
                 print_info("Provided {0} path: '{1}' has asterisk(*) in "
                            "it. All the Warrior XML files matching "
-                           "the given pattern will be executed."
-                           .format(sub_step_tag, orig_step_abspath))
+                           "the given pattern will be executed.".format(
+                               sub_step_tag, orig_step_abspath))
                 # Get all the files matching the pattern and sort them by name
                 all_files = sorted(glob.glob(orig_step_abspath))
                 # Get XML files
@@ -195,13 +215,14 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
                         print_info("{0}: '{1}' added to the execution "
                                    "list ".format(sub_step_tag, step_file))
                 else:
-                    print_warning("Asterisk(*) pattern match failed for '{}' due "
-                                  "to at least one of the following reasons:\n"
-                                  "1. No files matched the given pattern\n"
-                                  "2. Invalid testcase path is given\n"
-                                  "3. No testcase XMLs are available\n"
-                                  "Given path will be used for the Warrior "
-                                  "execution.".format(orig_step_abspath))
+                    print_warning(
+                        "Asterisk(*) pattern match failed for '{}' due "
+                        "to at least one of the following reasons:\n"
+                        "1. No files matched the given pattern\n"
+                        "2. Invalid testcase path is given\n"
+                        "3. No testcase XMLs are available\n"
+                        "Given path will be used for the Warrior "
+                        "execution.".format(orig_step_abspath))
                     step_list.append(orig_step)
 
         if randomize:
@@ -212,20 +233,29 @@ def get_step_list(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="L
         retry_type, _, _, retry_value, _ = get_retry_from_xmlfile(step)
         if runmode is not None and value > 0:
             go_next = len(step_list_with_rmt_retry) + value + 1
-            step_list_with_rmt_retry = append_step_list(step_list_with_rmt_retry, step,
-                                                        value, go_next, mode="runmode",
-                                                        tag="value")
+            step_list_with_rmt_retry = append_step_list(
+                step_list_with_rmt_retry,
+                step,
+                value,
+                go_next,
+                mode="runmode",
+                tag="value")
         if retry_type is not None and retry_value > 0:
             go_next = len(step_list_with_rmt_retry) + retry_value + 1
             if runmode is not None:
                 get_runmode = step.find('runmode')
                 step.remove(get_runmode)
-            step_list_with_rmt_retry = append_step_list(step_list_with_rmt_retry, step,
-                                                        retry_value, go_next, mode="retry",
-                                                        tag="count")
+            step_list_with_rmt_retry = append_step_list(
+                step_list_with_rmt_retry,
+                step,
+                retry_value,
+                go_next,
+                mode="retry",
+                tag="count")
         if retry_type is None and runmode is None:
             step_list_with_rmt_retry.append(step)
     return step_list_with_rmt_retry
+
 
 def get_runmode_from_xmlfile(element):
     """Get 'runmode:type' & 'runmode:value' of a step/testcase from the
@@ -247,7 +277,7 @@ def get_runmode_from_xmlfile(element):
         rt_type = runmode.get("type").strip().upper()
         rt_value = runmode.get("value")
         runmode_timer = runmode.get("runmode_timer")
-        rt_type = None if rt_type == "" or rt_type == "STANDARD" else rt_type
+        rt_type = None if rt_type in ("", "STANDARD") else rt_type
         if rt_value is not None and rt_type is not None:
             if runmode_timer is None or runmode_timer == "":
                 runmode_timer = None
@@ -255,8 +285,9 @@ def get_runmode_from_xmlfile(element):
                 try:
                     runmode_timer = float(runmode_timer)
                 except ValueError:
-                    print_warning("The value for Runmode interval is {0}, please provide seconds to"
-                                  " wait in numerals".format(runmode_timer))
+                    print_warning(
+                        "The value for Runmode interval is {0}, please provide seconds to"
+                        " wait in numerals".format(runmode_timer))
                     runmode_timer = None
 
             if rt_type not in ['RUF', 'RUP', 'RMT']:
@@ -274,10 +305,10 @@ def get_runmode_from_xmlfile(element):
                                   "'{0}' is less than '1', using default value"
                                   " 1 for execution".format(rt_value))
             except ValueError:
-                print_warning("Unsupported value '{0}' provided for 'runmode:"
-                              "value' tag, please provide an integer, using "
-                              "default value '1' for execution".
-                              format(rt_value))
+                print_warning(
+                    "Unsupported value '{0}' provided for 'runmode:"
+                    "value' tag, please provide an integer, using "
+                    "default value '1' for execution".format(rt_value))
                 rt_value = 1
 
     return (rt_type, rt_value, runmode_timer)
@@ -305,8 +336,9 @@ def get_retry_from_xmlfile(element):
                           .format(retry_type))
             return (None, None, None, 5, 5)
         if (retry_cond is None) or (retry_cond_value is None):
-            print_warning("Atleast one of the value provided for 'retry_cond/retry_cond_value' "
-                          "is None.")
+            print_warning(
+                "Atleast one of the value provided for 'retry_cond/retry_cond_value' "
+                "is None.")
             return (None, None, None, 5, 5)
         retry_interval = str(retry_interval)
         retry_value = str(retry_value)
@@ -322,16 +354,20 @@ def get_retry_from_xmlfile(element):
                           "retry:retry_value is not valid, "
                           "using default value 5 for execution")
         retry_value = int(retry_value)
-    return (retry_type, retry_cond, retry_cond_value, retry_value, retry_interval)
+    return (retry_type, retry_cond, retry_cond_value, retry_value,
+            retry_interval)
 
 
 def compute_runmode_status(global_status_list, runmode, global_xml):
     """ Computes the status of runmode execution when runmode is provided in
        global level (Details section)
     """
-    if global_xml.find('runmode').get('status') not in [None, '', 'last_instance', 'expected']:
-        print_warning("Unsupported value for status. Please provide a valid value. "
-                      "Using the Default value for execution")
+    if global_xml.find('runmode').get('status') not in [
+            None, '', 'last_instance', 'expected'
+    ]:
+        print_warning(
+            "Unsupported value for status. Please provide a valid value. "
+            "Using the Default value for execution")
         global_xml.find('runmode').set('status', '')
     if global_xml.find('runmode').get('status') is None or \
         global_xml.find('runmode').get('status') == "" or \
@@ -375,9 +411,12 @@ def compute_status(element, status_list, impact_list, status, impact):
         status_list.append(status)
         impact_list.append(impact)
     else:
-        if element.find('runmode').get('status') not in [None, '', 'last_instance', 'expected']:
-            print_warning("Unsupported value for status. Please provide a valid value. "
-                          "Using the Default value for execution")
+        if element.find('runmode').get('status') not in [
+                None, '', 'last_instance', 'expected'
+        ]:
+            print_warning(
+                "Unsupported value for status. Please provide a valid value. "
+                "Using the Default value for execution")
             element.find('runmode').set('status', '')
         if runmode.upper() == "RMT":
             status_list.append(status)
