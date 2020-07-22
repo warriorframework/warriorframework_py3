@@ -177,10 +177,10 @@ class ExecutionSummary():
             if suite_tc_exec[0][0] == 'Suites' and file_Utils.fileExists(path):
                 if suite_tc[0] == 'Suites':
                     testsuite_filepath = suite_tc[3]
-                    suite_repository = warrior_cli_driver.testsuite_driver.get_suite_details(testsuite_filepath,
-                                                                                             {'db_obj': False,
-                                                                                              'war_file_type': 'Suite'},
-                                                                                             False, None, None)
+                    from_project = {'db_obj': False, 'war_file_type': 'Suite'}
+                    suite_repository = warrior_cli_driver.testsuite_driver.\
+                        get_suite_details(testsuite_filepath, from_project,
+                                          False, None, None)
                     testsuite_dir = os.path.dirname(testsuite_filepath)
 
                     testcase_list = common_execution_utils.get_step_list(
@@ -202,7 +202,8 @@ class ExecutionSummary():
                                 or suite_repository["suite_exectype"].upper() == "ITERATIVE_PARALLEL":
                             suite_step_data_file = suite_repository["data_file"]
                         else:
-                            suite_step_data_file = xml_Utils.get_text_from_direct_child(tests, 'InputDataFile')
+                            suite_step_data_file = xml_Utils.get_text_from_direct_child(
+                                tests, 'InputDataFile')
                         if suite_step_data_file is None or suite_step_data_file is False:
                             suite_step_data_file = None
                         elif suite_step_data_file is not None and suite_step_data_file is not False:
