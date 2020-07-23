@@ -32,7 +32,12 @@ from warrior.Framework.Utils import config_Utils, file_Utils, xml_Utils
 from warrior.Framework.Utils.data_Utils import get_credentials
 import warrior.Framework.Utils.encryption_utils as Encrypt
 from warrior.WarriorCore.Classes import war_cli_class
-from warrior.WarriorCore import testcase_steps_execution
+from warrior.WarriorCore import testcase_steps_execution, common_execution_utils
+from warrior.WarriorCore import testcase_driver
+from warrior.WarriorCore import sequential_testcase_driver
+from warrior.WarriorCore import parallel_testcase_driver
+from warrior.WarriorCore import testsuite_driver
+from warrior.WarriorCore import project_driver
 from warrior.Framework import Utils
 from argparse import Namespace
 
@@ -302,14 +307,26 @@ def test_file_execution_for_testcase():
     mock_tools = os.getenv("WAR_TOOLS_DIR")
     mock_tools = MagicMock(return_value=mock_tools)
     cli_args = Namespace(ad=False, jiraproj=None, jiraid=False,)
+    warrior.WarriorCore.warrior_cli_driver.update_jira_by_id = MagicMock()
+    warrior.Framework.Utils.email_utils.compose_send_email = MagicMock()
+    Utils.data_Utils.get_object_from_datarepository = MagicMock(return_value=False)
+    data_repository = {'wt_resultsdir':result_dir, 'wt_logsdir':result_dir}
+    testcase_driver.main = MagicMock(return_value=(True,7.0, data_repository))
     testcase_steps_execution.main = MagicMock(return_value=([True], [abs_filepath], ['impact']))
-    default_repo =  {'db_obj': False, 'wt_resultsdir':result_dir, 'wt_logsdir':result_dir}
+    common_execution_utils.get_runmode_from_xmlfile = MagicMock(return_value=('RUF', 1, None))
+    default_repo =  {'db_obj': False, 'wt_resultsdir':result_dir, 'wt_logsdir':result_dir,\
+    'wt_filename':'war_test1.xml'}
     result = warrior_cli_driver.file_execution(cli_args, abs_filepath, default_repo)
     assert result == True
     assert default_repo['war_file_type'] == 'Case'
     assert default_repo['wt_filename'] == 'war_test1.xml'
     del mock_tools
     del testcase_steps_execution.main
+    del testcase_driver.main
+    del common_execution_utils.get_runmode_from_xmlfile
+    del warrior.WarriorCore.warrior_cli_driver.update_jira_by_id
+    del warrior.Framework.Utils.email_utils.compose_send_email
+    del Utils.data_Utils.get_object_from_datarepository
 
 def test_file_execution_for_testsuite():
     """
@@ -319,16 +336,26 @@ def test_file_execution_for_testsuite():
     os.environ["WAR_TOOLS_DIR"] = tools_dir
     mock_tools = os.getenv("WAR_TOOLS_DIR")
     mock_tools = MagicMock(return_value=mock_tools)
-    cli_args = Namespace(ad=False, jiraproj=None, jiraid=False,)
+    cli_args = Namespace(ad=False, jiraproj=None, jiraid=False)
+    suite_repository = {'suite_execution_dir':result_dir, 'ws_logs_execdir':result_dir,\
+     'ws_results_execdir':result_dir}
+    warrior.WarriorCore.warrior_cli_driver.update_jira_by_id = MagicMock()
+    warrior.Framework.Utils.email_utils.compose_send_email = MagicMock()
     abs_filepath = os.path.join(os.path.split(__file__)[0], "war_suite.xml")
+    testsuite_driver.main = MagicMock(return_value=(True, suite_repository))
+    # common_execution_utils.get_runmode_from_xmlfile = MagicMock(return_value=('RUF', 1, None))
     testcase_steps_execution.main = MagicMock(return_value=([True], [abs_filepath], ['impact']))
-    default_repo =  {'db_obj': False, 'wt_resultsdir':result_dir, 'wt_logsdir':result_dir}
+    default_repo =  {'db_obj': False, 'wt_resultsdir':result_dir, 'wt_logsdir':result_dir,\
+     'wt_filename':'war_test1.xml'}
     result = warrior_cli_driver.file_execution(cli_args, abs_filepath, default_repo)
     assert result == True
     assert default_repo['war_file_type'] == 'Suite'
     assert default_repo['wt_filename'] == 'war_test1.xml'
     del mock_tools
     del testcase_steps_execution.main
+    del testsuite_driver.main
+    del warrior.WarriorCore.warrior_cli_driver.update_jira_by_id
+    del warrior.Framework.Utils.email_utils.compose_send_email
 
 def test_file_execution_for_project():
     """
@@ -341,9 +368,14 @@ def test_file_execution_for_project():
     cli_args = Namespace(ad=False, jiraproj=None, jiraid=False,)
     abs_filepath = os.path.join(os.path.split(__file__)[0], "war_project.xml")
     Utils.xml_Utils.getChildAttributebyParentTag = MagicMock(return_value=False)
+    warrior.WarriorCore.warrior_cli_driver.update_jira_by_id = MagicMock()
+    warrior.Framework.Utils.email_utils.compose_send_email = MagicMock()
+    project_repository = {'project_execution_dir':result_dir, 'wp_logs_execdir':result_dir,\
+    'wp_results_execdir':result_dir}
+    project_driver.main = MagicMock(return_value=(True, project_repository))
     testcase_steps_execution.main = MagicMock(return_value=([True], [abs_filepath], ['impact']))
     default_repo =  {'db_obj': False, 'wt_resultsdir':result_dir, 'wt_logsdir':result_dir,\
-    'execution_type':'sequential_suites'}
+    'execution_type':'sequential_suites', 'wt_filename':'war_test1.xml'}
     result = warrior_cli_driver.file_execution(cli_args, abs_filepath, default_repo)
     assert result == True
     assert default_repo['war_file_type'] == 'Project'
@@ -351,6 +383,9 @@ def test_file_execution_for_project():
     del mock_tools
     del testcase_steps_execution.main
     del Utils.xml_Utils.getChildAttributebyParentTag
+    del project_driver.main
+    del warrior.WarriorCore.warrior_cli_driver.update_jira_by_id
+    del warrior.Framework.Utils.email_utils.compose_send_email
 
 def test_group_execution():
     """
