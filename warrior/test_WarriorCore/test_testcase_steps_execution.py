@@ -27,7 +27,6 @@ except Exception as e:
 
 import xml.dom.minidom
 import xml.etree.ElementTree as ET
-from xml.etree import ElementTree as et
 
 sys.modules['warrior.WarriorCore.Classes.argument_datatype_class'] = MagicMock(return_value=None)
 from warrior.Framework import Utils
@@ -59,7 +58,7 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
         step_list = tree.findall('Steps/step')
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
@@ -69,11 +68,9 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         system_name = 'NE1'
         parallel = False
         queue = False
-        # import pdb
-        # pdb.set_trace()
         testcase_Utils.get_impact_from_xmlfile = MagicMock(return_value='impact')
         common_execution_utils.compute_status = MagicMock(return_value=([True, True],\
-         ['impact','impact']))
+         ['impact', 'impact']))
         obj = TestCaseStepsExecutionClass(step_list, data_repository, go_to_step_number,\
          system_name, parallel, queue, skip_invoked=True)
         obj. _execute_current_step()
@@ -88,7 +85,7 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
         step_list = tree.findall('Steps/step')
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
@@ -101,7 +98,7 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         step_driver.main = MagicMock(return_value=[True, wt_logsdir, 'impact'])
         Utils.testcase_Utils.get_impact_from_xmlfile = MagicMock(return_value='impact')
         common_execution_utils.compute_status = MagicMock(return_value=([True, True],\
-         ['impact','impact']))
+         ['impact', 'impact']))
         obj = TestCaseStepsExecutionClass(step_list, data_repository, go_to_step_number,\
          system_name, parallel, queue, skip_invoked=True)
         obj. _execute_current_step()
@@ -109,40 +106,21 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         del Utils.testcase_Utils.get_impact_from_xmlfile
         del common_execution_utils.compute_status
 
-    # def test__skip_because_of_goto(self):
-    #     '''
-    #     UT for __run_execute_and_resume_mode
-    #     '''
-    #     from warrior.WarriorCore.testcase_steps_execution import TestCaseStepsExecutionClass
-    #     timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
-    #     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
-    #     step_list = tree.findall('Steps/step')
-    #     with open(result_dir+'/'+'myfile.log', 'w') as fp:
-    #         pass
-    #     wt_logsdir = os.path.join(result_dir, 'myfile.log')
-    #     data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
-    #     'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'', 'wt_junit_object':None,\
-    #     'wt_kw_results_dir':result_dir, 'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
-    #     go_to_step_number = None
-    #     system_name = 'NE1'
-    #     parallel = False
-    #     queue = False
-    #     obj = TestCaseStepsExecutionClass(step_list, data_repository, go_to_step_number,\
-    #      system_name, parallel, queue, skip_invoked=True)
-    #     obj._skip_because_of_goto()
-
     def test_execute_step(self):
-
+        """
+        UT for _execute_current_step
+        """
         from warrior.WarriorCore.testcase_steps_execution import TestCaseStepsExecutionClass
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
         step_list = tree.findall('Steps/step')
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
-        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'', 'wt_junit_object':Junit('testcase_step_exe'),\
-        'wt_kw_results_dir':result_dir, 'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
+        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'',\
+        'wt_junit_object':Junit('testcase_step_exe'), 'wt_kw_results_dir':result_dir,\
+        'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
         go_to_step_number = None
         system_name = 'NE1'
         parallel = False
@@ -152,7 +130,7 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         warrior.WarriorCore.Classes.junit_class.Junit.add_keyword_result = MagicMock()
         Utils.testcase_Utils.get_impact_from_xmlfile = MagicMock(return_value='impact')
         common_execution_utils.compute_status = MagicMock(return_value=([True, True],\
-         ['impact','impact']))
+         ['impact', 'impact']))
         obj = TestCaseStepsExecutionClass(step_list, data_repository, go_to_step_number,\
             system_name, parallel, queue, skip_invoked=True)
         current_step_number = 1
@@ -165,17 +143,20 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         del common_execution_utils.compute_status
 
     def test_execute_steps_runmode(self):
-
+        """
+        UT for _execute_current_step
+        """
         from warrior.WarriorCore.testcase_steps_execution import TestCaseStepsExecutionClass
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
         step_list = tree.findall('Steps/step')
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
-        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'', 'wt_junit_object':Junit('testcase_step_exe'),\
-        'wt_kw_results_dir':result_dir, 'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
+        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'',\
+        'wt_junit_object':Junit('testcase_step_exe'), 'wt_kw_results_dir':result_dir,\
+         'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
         go_to_step_number = None
         system_name = 'NE1'
         parallel = False
@@ -184,7 +165,8 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         warrior.WarriorCore.Classes.junit_class.Junit.update_count = MagicMock()
         warrior.WarriorCore.Classes.junit_class.Junit.add_keyword_result = MagicMock()
         Utils.testcase_Utils.get_impact_from_xmlfile = MagicMock(return_value='impact')
-        common_execution_utils.get_runmode_from_xmlfile = MagicMock(return_value=('RUP', True, '20'))
+        common_execution_utils.get_runmode_from_xmlfile = MagicMock(return_value=\
+            ('RUP', True, '20'))
 
 
         obj = TestCaseStepsExecutionClass(step_list, data_repository, go_to_step_number,\
@@ -199,17 +181,20 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         del common_execution_utils.get_runmode_from_xmlfile
 
     def test_execute_steps_retry_type(self):
-
+        """
+        UT for _execute_current_step
+        """
         from warrior.WarriorCore.testcase_steps_execution import TestCaseStepsExecutionClass
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
         step_list = tree.findall('Steps/step')
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
-        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'', 'wt_junit_object':Junit('testcase_step_exe'),\
-        'wt_kw_results_dir':result_dir, 'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
+        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'',\
+         'wt_junit_object':Junit('testcase_step_exe'), 'wt_kw_results_dir':result_dir,\
+          'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
         go_to_step_number = None
         system_name = 'NE1'
         parallel = False
@@ -219,7 +204,8 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         warrior.WarriorCore.Classes.junit_class.Junit.add_keyword_result = MagicMock()
         Utils.testcase_Utils.get_impact_from_xmlfile = MagicMock(return_value='impact')
         common_execution_utils.get_runmode_from_xmlfile = MagicMock(return_value=(None, True, '20'))
-        common_execution_utils.get_retry_from_xmlfile = MagicMock(return_value=(True, '', '', '', ''))
+        common_execution_utils.get_retry_from_xmlfile = MagicMock(return_value=\
+            (True, '', '', '', ''))
 
         obj = TestCaseStepsExecutionClass(step_list, data_repository, go_to_step_number,\
             system_name, parallel, queue, skip_invoked=True)
@@ -241,12 +227,13 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
         step_list = tree.findall('Steps/step')
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
-        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'', 'wt_junit_object':Junit('testcase_step_exe'),\
-        'wt_kw_results_dir':result_dir, 'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
+        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'',\
+        'wt_junit_object':Junit('testcase_step_exe'), 'wt_kw_results_dir':result_dir,\
+         'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
         Utils.testcase_Utils.get_impact_from_xmlfile = MagicMock(return_value='impact')
         onerror_driver.main = MagicMock(return_value='ABORT')
         go_to_step_number = None
@@ -268,16 +255,17 @@ class test_TestCaseStepsExecutionClass(unittest.TestCase):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
         tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
         step_list = tree.findall('Steps/step')
-        with open(result_dir+'/'+'myfile.log', 'w') as fp:
+        with open(result_dir+'/'+'myfile.log', 'w'):
             pass
         wt_logsdir = os.path.join(result_dir, 'myfile.log')
         data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
-        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'', 'wt_junit_object':Junit('testcase_step_exe'),\
-        'wt_kw_results_dir':result_dir, 'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
+        'wt_def_on_error_action':'NEXT', 'wt_def_on_error_value':'',\
+        'wt_junit_object':Junit('testcase_step_exe'), 'wt_kw_results_dir':result_dir,\
+        'wt_tc_timestamp':timestamp, 'wt_resultsdir':result_dir}
         onerror_driver.main = MagicMock(return_value=2)
         warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock()
         common_execution_utils.compute_status = MagicMock(return_value=([True, True],\
-         ['impact','impact']))
+         ['impact', 'impact']))
         input_dict = {"loop_iter_number":None}
         self.current_step_number = 3
         go_to_step_number = None
@@ -300,7 +288,7 @@ def test_execute_steps():
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
     step_list = tree.findall('Steps/step')
     temp_logs_dir = os.getcwd()
-    with open(temp_logs_dir+'myfile.log', 'w') as fp:
+    with open(temp_logs_dir+'myfile.log', 'w'):
         pass
     wt_logsdir = os.path.join(temp_logs_dir, 'myfile.log')
     data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
@@ -310,8 +298,6 @@ def test_execute_steps():
     system_name = 'NE1'
     parallel = False
     queue = False
-    skip_invoked = True
-    step_num = None
     warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock()
     input_dict = {"loop_iter_number":None}
     Utils.testcase_Utils.get_impact_from_xmlfile = MagicMock(return_value='impact')
@@ -319,7 +305,7 @@ def test_execute_steps():
     common_execution_utils.get_runmode_from_xmlfile = MagicMock(return_value=(None, True, '20'))
     common_execution_utils.get_retry_from_xmlfile = MagicMock(return_value=('if', '', '', '', ''))
     common_execution_utils.compute_status = MagicMock(return_value=([True, True],\
-         ['impact','impact']))
+         ['impact', 'impact']))
     result = testcase_steps_execution.execute_steps(step_list, data_repository, system_name,\
      parallel, queue, skip_invoked=True, step_num=None)
     assert result == ([True, True], [None, None], ['impact', 'impact'])
@@ -340,7 +326,7 @@ def test_execute_steps_go_to_step_number():
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
     step_list = tree.findall('Steps/step')
     temp_logs_dir = os.getcwd()
-    with open(temp_logs_dir+'myfile.log', 'w') as fp:
+    with open(temp_logs_dir+'myfile.log', 'w'):
         pass
     wt_logsdir = os.path.join(temp_logs_dir, 'myfile.log')
     data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
@@ -349,19 +335,17 @@ def test_execute_steps_go_to_step_number():
     system_name = 'NE1'
     parallel = False
     queue = False
-    skip_invoked = True
-    step_num = None
     warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock()
     input_dict = {"loop_iter_number":None}
     warrior.Framework.Utils.config_Utils.data_repository = MagicMock(return_value=data_repository)
     common_execution_utils.get_retry_from_xmlfile = MagicMock(return_value=('if', '', '', '', ''))
     common_execution_utils.get_runmode_from_xmlfile = MagicMock(return_value=(None, True, '20'))
     Utils.testcase_Utils.get_impact_from_xmlfile = MagicMock(return_value='impact')
-    common_execution_utils.compute_status = MagicMock(return_value=([True],['impact']))
+    common_execution_utils.compute_status = MagicMock(return_value=([True], ['impact']))
 
     result = testcase_steps_execution.execute_steps(step_list, data_repository, system_name,\
      parallel, queue, skip_invoked=True, step_num=None)
-    # assert result == ([False, False], [[], []], ['impact', 'impact'])
+    assert result == ([True], [None, None], ['impact'])
     del warrior.Framework.Utils.data_Utils.update_datarepository
     del warrior.Framework.Utils.config_Utils.data_repository
     del common_execution_utils.get_retry_from_xmlfile
@@ -379,7 +363,7 @@ def test_execute_steps_with_parallel_true():
     tree = ET.parse(os.path.join(os.path.split(__file__)[0], "testcase_step_exe.xml"))
     step_list = tree.findall('Steps/step')
     temp_logs_dir = os.getcwd()
-    with open(temp_logs_dir+'myfile.log', 'w') as fp:
+    with open(temp_logs_dir+'myfile.log', 'w'):
         pass
     wt_logsdir = os.path.join(temp_logs_dir, 'myfile.log')
     data_repository = {'wt_filename':'testcase_step_exe.xml', 'wt_logsdir':wt_logsdir,\
@@ -388,13 +372,11 @@ def test_execute_steps_with_parallel_true():
     system_name = 'NE1'
     parallel = True
     queue = False
-    skip_invoked = True
-    step_num = 0
     warrior.Framework.Utils.data_Utils.update_datarepository = MagicMock()
     common_execution_utils.get_runmode_from_xmlfile = MagicMock(return_value=(None, True, '20'))
     input_dict = {"loop_iter_number":None}
     Utils.testcase_Utils.get_impact_from_xmlfile = MagicMock(return_value='impact')
-    common_execution_utils.compute_status = MagicMock(return_value=([True],['impact']))
+    common_execution_utils.compute_status = MagicMock(return_value=([True], ['impact']))
     common_execution_utils.get_retry_from_xmlfile = MagicMock(return_value=('if', '', '', '', ''))
     warrior.Framework.Utils.config_Utils.data_repository = MagicMock(return_value=data_repository)
     testcase_steps_execution.execute_steps(step_list, data_repository, system_name, parallel,\
