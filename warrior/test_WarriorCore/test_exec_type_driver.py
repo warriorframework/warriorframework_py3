@@ -14,7 +14,6 @@ limitations under the License.
 import sys
 import os
 import datetime
-import pytest
 from unittest.mock import MagicMock
 from os.path import abspath, dirname
 import unittest
@@ -33,7 +32,6 @@ from warrior.WarriorCore import exec_type_driver
 
 sys.modules['warrior.WarriorCore.Classes.argument_datatype_class.ArgumentDatatype'] = MagicMock()
 
-from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, verify_data
 from warrior.Framework.Utils import config_Utils
 
 def test_main():
@@ -44,7 +42,7 @@ def test_main():
     # get root element
     root = tree.getroot()
     # getting steps
-    steps  = root.find("Steps")
+    steps = root.find("Steps")
     sstep = steps[1]
     data_repository = {'step_1_result': 'PASS'}
     config_Utils.data_repository = MagicMock(return_value=data_repository)
@@ -61,7 +59,7 @@ def test_main_exec_type_NO():
     # get root element
     root = tree.getroot()
     # getting steps
-    steps  = root.find("Steps")
+    steps = root.find("Steps")
     sstep = steps[3]
     result1, result2 = exec_type_driver.main(sstep, skip_invoked=True)
     assert result1 == False
@@ -75,7 +73,7 @@ def test_main_exec_type_YES():
     # get root element
     root = tree.getroot()
     # getting steps
-    steps  = root.find("Steps")
+    steps = root.find("Steps")
     sstep = steps[0]
     result1, result2 = exec_type_driver.main(sstep, skip_invoked=True)
     assert result1 == True
@@ -89,7 +87,7 @@ def test_main_exec_type_INVOKED():
     # get root element
     root = tree.getroot()
     # getting steps
-    steps  = root.find("Steps")
+    steps = root.find("Steps")
     sstep = steps[4]
     result1, result2 = exec_type_driver.main(sstep, skip_invoked=True)
     assert result1 == False
@@ -103,7 +101,7 @@ def test_main_exec_type_invalid():
     # get root element
     root = tree.getroot()
     # getting steps
-    steps  = root.find("Steps")
+    steps = root.find("Steps")
     sstep = steps[5]
     result1, result2 = exec_type_driver.main(sstep, skip_invoked=True)
     assert result1 == False
@@ -117,7 +115,7 @@ def test_main_logical_decision():
     # get root element
     root = tree.getroot()
     # getting steps
-    steps  = root.find("Steps")
+    steps = root.find("Steps")
     sstep = steps[1]
     data_repository = {'step_1_result': 'PASS'}
     config_Utils.data_repository = MagicMock(return_value=data_repository)
@@ -134,7 +132,7 @@ def test_main_expression_parser():
     # get root element
     root = tree.getroot()
     # getting steps
-    steps  = root.find("Steps")
+    steps = root.find("Steps")
     sstep = steps[3]
     data_repository = {'step_1_result': 'PASS'}
     exec_type_driver.rule_parser = MagicMock()
@@ -152,7 +150,7 @@ def test_main_expression_parser1():
     # get root element
     root = tree.getroot()
     # getting steps
-    steps  = root.find("Steps")
+    steps = root.find("Steps")
     sstep = steps[4]
     data_repository = {'step_1_result': 'PASS'}
     exec_type_driver.rule_parser = MagicMock()
@@ -170,7 +168,7 @@ def test_main_expression_parser_if_not():
     # get root element
     root = tree.getroot()
     # getting steps
-    steps  = root.find("Steps")
+    steps = root.find("Steps")
     sstep = steps[6]
     data_repository = {'step_1_result': 'PASS'}
     exec_type_driver.rule_parser = MagicMock()
