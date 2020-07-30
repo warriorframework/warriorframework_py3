@@ -28,10 +28,9 @@ except Exception as e:
 import xml.dom.minidom
 import xml.etree.ElementTree as ET
 
-from warrior.WarriorCore import exec_type_driver
-
 sys.modules['warrior.WarriorCore.Classes.argument_datatype_class.ArgumentDatatype'] = MagicMock()
 
+from warrior.WarriorCore import exec_type_driver
 from warrior.Framework.Utils import config_Utils
 
 def test_main():
