@@ -47,7 +47,7 @@ class MongoActions(object):
                     else:
                         print_error('cannot update doc in mongo db')
             elif update_json and not filter_json:
-                update_json = get_object_from_datarepository('update_json')
+                update_json = get_object_from_datarepository(update_json)
                 result = col.insert_one(update_json)
                 if result:
                     status = True
@@ -55,7 +55,7 @@ class MongoActions(object):
                 else:
                     print_error('cannot insert doc in mongo db')
             elif not update_json and filter_json:
-                filter_json = get_object_from_datarepository('filter_json')
+                filter_json = get_object_from_datarepository(filter_json)
                 result = col.find_one(filter_json)
                 if result:
                     status = True
