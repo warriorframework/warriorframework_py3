@@ -447,6 +447,10 @@ class WarriorCliClass(object):
             help=":random_tc_execution mode: In this mode, testcases will be "\
             "executed in random order")
 
+        #accepting the env variables
+        warrior_arg.add_argument('--setenv', action='store', dest="setenv",\
+         help="setenv mode: In this mode, accepts environment variables from the cli")
+
         warrior_arg.add_argument('-pythonpath', action='store',\
             help="Enter absolute dir path of user repositories"\
             "to be integrated with Warrior. "\
