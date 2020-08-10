@@ -133,9 +133,11 @@ class ExecutionSummary():
             for proj in project_exec:
                 print_info(("{0:10}{1:50}{2:10}{3:30}"
                             .format(proj[0], proj[1], proj[2], proj[3])))
-            self.print_execution_summary_details(junit_file)
+            suite_tc_exec = self.suite_summary(junit_file)
+            self.print_execution_summary_details(suite_tc_exec)
         elif file_type == "Suites":
-            self.print_execution_summary_details(junit_file)
+            suite_tc_exec = self.suite_summary(junit_file)
+            self.print_execution_summary_details(suite_tc_exec)
         print_info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
     def print_execution_summary_details(self, suite_tc_exec):
