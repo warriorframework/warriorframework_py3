@@ -17,7 +17,7 @@ import os
 from warrior.Framework import Utils
 from warrior.Framework.Utils import xml_Utils, file_Utils, config_Utils
 from warrior.Framework.Utils.print_Utils import print_info
-from warrior.WarriorCore import testsuite_utils, common_execution_utils
+from warrior.WarriorCore import testsuite_utils, common_execution_utils, warrior_cli_driver
 
 
 class ExecutionSummary():
@@ -138,17 +138,20 @@ class ExecutionSummary():
             self.print_execution_summary_details(junit_file)
         print_info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
-    def print_execution_summary_details(self, junit_file):
+    def print_execution_summary_details(self, suite_tc_exec):
         """To print the consolidated test cases result in console at the end of
            Test Case/Test Suite/Project Execution"""
         data_repositery = config_Utils.data_repository
-        suite_tc_exec = self.suite_summary(junit_file)
         for suite_tc in suite_tc_exec:
             path = suite_tc[3]
             name = suite_tc[1]
-            if suite_tc_exec[0][0] == 'Suites':
+            if suite_tc_exec[0][0] == 'Suites' and file_Utils.fileExists(path):
                 if suite_tc[0] == 'Suites':
                     testsuite_filepath = suite_tc[3]
+                    from_project = {'db_obj': False, 'war_file_type': 'Suite'}
+                    suite_repository = warrior_cli_driver.testsuite_driver. \
+                        get_suite_details(testsuite_filepath, from_project,
+                                          False, None, None)
                     testsuite_dir = os.path.dirname(testsuite_filepath)
 
                     testcase_list = common_execution_utils.get_step_list(
@@ -166,14 +169,22 @@ class ExecutionSummary():
                                 tc_rel_path, testsuite_dir)
                         else:
                             tc_path = str(tc_rel_path)
-                        suite_step_data_file = testsuite_utils.get_data_file_at_suite_step(
-                            tests, data_repositery)
+                        if suite_repository["suite_exectype"].upper() == "ITERATIVE_SEQUENTIAL" \
+                                or suite_repository["suite_exectype"].upper() == "ITERATIVE_PARALLEL":
+                            suite_step_data_file = suite_repository["data_file"]
+                        else:
+                            suite_step_data_file = xml_Utils.get_text_from_direct_child(
+                                tests, 'InputDataFile')
+                        if suite_step_data_file is None or suite_step_data_file is False:
+                            suite_step_data_file = None
+                        elif suite_step_data_file is not None and suite_step_data_file is not False:
+                            suite_step_data_file = str(suite_step_data_file).strip()
                         if suite_step_data_file is not None:
                             data_file = Utils.file_Utils.getAbsPath(
                                 suite_step_data_file, testsuite_dir)
                             datafile_dict[tc_path] = data_file
                 if suite_tc[0] == 'Testcase':
-                    if 'ow_datafile' in data_repositery:
+                    if data_repositery is not None and 'ow_datafile' in data_repositery:
                         name = name + ' [' + os.path.basename(data_repositery['ow_datafile']) + ']'
                     elif path in datafile_dict:
                         name = name + ' [' + os.path.basename(datafile_dict[path]) + ']'
