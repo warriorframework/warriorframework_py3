@@ -86,12 +86,13 @@ class ExecutionSummary():
                 testcase_name = testcase_details.get('name')+".xml"
                 testcase_location = testcase_details.get('testcasefile_path')
                 case_result_dir_with_tc_name = testcase_details.get('resultsdir')
+                testcase_datafile = testcase_details.get('data_file')
                 if case_result_dir_with_tc_name is not None:
                     case_result_dir = os.path.dirname(case_result_dir_with_tc_name)
                     # suite junit element will not have resultsdir attrib for case execution
                     if suite_result_dir is None or suite_result_dir == case_result_dir:
                         suite_tc_list.append(["Testcase", testcase_name, testcase_status,
-                                              testcase_location])
+                                              testcase_location, testcase_datafile])
             #to add debug results in suite summary
             for value in tree.iter('Debug'):
                 debug_details = value.attrib
@@ -170,72 +171,15 @@ class ExecutionSummary():
     def print_execution_summary_details(self, suite_tc_exec):
         """To print the consolidated test cases result in console at the end of
            Test Case/Test Suite/Project Execution"""
-        data_repositery = config_Utils.data_repository
         for suite_tc in suite_tc_exec:
             path = suite_tc[3]
             name = suite_tc[1]
             if suite_tc_exec[0][0] == 'Suites' and file_Utils.fileExists(path):
-                if suite_tc[0] == 'Suites':
-                    testsuite_filepath = suite_tc[3]
-                    from_project = {'db_obj': False, 'war_file_type': 'Suite'}
-                    suite_repository = warrior_cli_driver.testsuite_driver. \
-                        get_suite_details(testsuite_filepath, from_project,
-                                          False, None, None)
-                    testsuite_dir = os.path.dirname(testsuite_filepath)
-
-                    testcase_list = common_execution_utils.get_step_list(
-                        suite_tc[3], "Testcases", "Testcase", randomize=False)
-                    suite_datafile = xml_Utils.getChildTextbyParentTag(
-                        suite_tc[3], 'Details', 'InputDataFile')
-                    if suite_datafile is None or suite_datafile is False or \
-                            str(suite_datafile).strip() == "":
-                        suite_datafile = "NO_DATA"
-                    datafile_dict = {}
-                    for tests in testcase_list:
-                        tc_rel_path = testsuite_utils.get_path_from_xmlfile(tests)
-                        if tc_rel_path is not None:
-                            tc_path = Utils.file_Utils.getAbsPath(
-                                tc_rel_path, testsuite_dir)
-                        else:
-                            tc_path = str(tc_rel_path)
-                        if suite_repository["suite_exectype"].upper() == "ITERATIVE_SEQUENTIAL" \
-                                or suite_repository["suite_exectype"].upper() == "ITERATIVE_PARALLEL":
-                            suite_step_data_file = suite_repository["data_file"]
-                        else:
-                            suite_step_data_file = xml_Utils.get_text_from_direct_child(
-                                tests, 'InputDataFile')
-                        if suite_step_data_file is None or suite_step_data_file is False:
-                            suite_step_data_file = None
-                        elif suite_step_data_file is not None and suite_step_data_file is not False:
-                            suite_step_data_file = str(suite_step_data_file).strip()
-                        if suite_step_data_file is not None:
-                            data_file = Utils.file_Utils.getAbsPath(
-                                suite_step_data_file, testsuite_dir)
-                            datafile_dict[tc_path] = data_file
                 if suite_tc[0] == 'Testcase':
-                    if data_repositery is not None and 'ow_datafile' in data_repositery:
-                        name = name + ' [' + os.path.basename(data_repositery['ow_datafile']) + ']'
-                    elif path in datafile_dict:
-                        name = name + ' [' + os.path.basename(datafile_dict[path]) + ']'
-                    elif str(suite_datafile).strip().upper() != 'NO_DATA' and \
-                            file_Utils.fileExists(suite_datafile):
-                        suite_datafile_rel = str(suite_datafile).strip()
-                        suite_datafile = file_Utils.getAbsPath(
-                            suite_datafile_rel, os.path.dirname(path))
-                        name = name + ' [' + os.path.basename(suite_datafile) + ']'
-                    else:
-                        datafile = xml_Utils.getChildTextbyParentTag(
-                            path, 'Details', 'InputDataFile')
-                        if datafile is None or datafile is False or \
-                                str(datafile).strip() == "":
-                            datafile = "NO_DATA"
-                        if str(datafile).strip().upper() != 'NO_DATA' and \
-                                datafile is not False and \
-                                file_Utils.fileExists(datafile):
-                            datafile_rel = str(datafile).strip()
-                            datafile = file_Utils.getAbsPath(
-                                datafile_rel, os.path.dirname(path))
-                            name = name + ' [' + os.path.basename(datafile) + ']'
+                    if str(suite_tc[4]).strip().upper() != 'NO_DATA' and \
+                            suite_tc[4] is not False and \
+                            file_Utils.fileExists(suite_tc[4]):
+                        name = name + ' [' + os.path.basename(suite_tc[4]) + ']'
 
             print_info(("{0:10}{1:50}{2:10}{3:30}"
                         .format(suite_tc[0], name, suite_tc[2], suite_tc[3])))

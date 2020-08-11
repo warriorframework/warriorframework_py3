@@ -547,6 +547,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_junit_object.update_attr("console_logfile", data_repository['wt_console_logfile'],
                                 "tc", tc_timestamp)
     tc_junit_object.update_attr("title", data_repository['wt_title'], "tc", tc_timestamp)
+    tc_junit_object.update_attr("data_file", data_repository['wt_datafile'], "tc", tc_timestamp)
 
     data_repository['wt_junit_object'] = tc_junit_object
     print_testcase_details_to_console(testcase_filepath, data_repository, steps_tag)
