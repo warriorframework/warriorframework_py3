@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<Testcase>
+        <Details>
+                <Name>generic_kwd</Name>
+                <Title>testcase to generic keyword</Title>
+                <Engineer>venkat</Engineer>
+                <Date>2020-06-30</Date>
+                <Time>12:10</Time>
+                <InputDataFile>No_Data</InputDataFile>
+                <Datatype/>
+                <default_onError action="next"/>
+                <Logsdir/>
+                <Resultsdir/>
+                <ExpectedResults/>
+        </Details>
+        <Requirements>
+                <Requirement/>
+        </Requirements>
+        <Steps>
+            <step Driver="common_driver" Keyword="store_in_repo" TS="2" draft="no">
+                    <Arguments>
+                            <argument name="datavar" value="INTERFACE_NAME"/>
+                            <argument name="datavalue" value="${ENV.interface_name}"/>
+                    </Arguments>
+                    <Execute ExecType="Yes"/>
+                    <onError action="next"/>
+                    <Description/>
+                    <iteration_type type="Standard"/>
+                    <context>positive</context>
+                    <impact>impact</impact>
+                    <runmode type="Standard" value=""/>
+            </step>
+                <step Driver="common_driver" Keyword="store_in_repo" TS="3" draft="no">
+                        <Arguments>
+                                <argument name="datavar" value="HOSTNAME"/>
+                                <argument name="datavalue" value="${ENV.hostname}"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+                <step Driver="log_driver" Keyword="log_message" TS="5" draft="no">
+                        <Arguments>
+                                <argument name="dict_message" value="{'my INTERFACE_NAME is' : 'INTERFACE_NAME', 'HOSTNAME is' : 'HOSTNAME'}"/>
+                                <argument name="type" value="INFO"/>
+                        </Arguments>
+                        <Execute ExecType="Yes"/>
+                        <onError action="next"/>
+                        <Description/>
+                        <iteration_type type="Standard"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                        <runmode type="Standard" value=""/>
+                </step>
+        </Steps>
+</Testcase>
+

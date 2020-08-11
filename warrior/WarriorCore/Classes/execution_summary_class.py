@@ -56,7 +56,18 @@ class ExecutionSummary():
             suite_result_dir = suite_detail.get('resultsdir')
             if suite_location is not None:
                 suite_tc_list.append(["Suites", suite_name, suite_status, suite_location])
-
+                testsuite_dir = os.path.dirname(suite_location)
+                testcase_list = common_execution_utils.get_step_list(
+                    suite_location, "Testcases", "Testcase", randomize=False)
+                for tests in testcase_list:
+                    tc_rel_path = testsuite_utils.get_path_from_xmlfile(tests)
+                    if tc_rel_path is not None:
+                        tc_path = Utils.file_Utils.getAbsPath(
+                            tc_rel_path, testsuite_dir)
+                    else:
+                        tc_path = str(tc_rel_path)
+                    if not file_Utils.fileExists(tc_path):
+                        suite_tc_list.append(["Testcase", os.path.basename(tc_path), "ERROR", tc_path])
             #to add Setup results in suite summary
             for value in tree.iter('Setup'):
                 setup_details = value.attrib
@@ -130,10 +141,26 @@ class ExecutionSummary():
         print_info("{0:10}{1:50}{2:10}{3:50}".format('Type', 'Name [DataFile]', 'Status', 'Path'))
         if file_type == "Project":
             project_exec = self.project_summary(junit_file)
+            invalid_suite_path = []
             for proj in project_exec:
                 print_info(("{0:10}{1:50}{2:10}{3:30}"
                             .format(proj[0], proj[1], proj[2], proj[3])))
-            suite_tc_exec = self.suite_summary(junit_file)
+                testsuite_list = common_execution_utils.get_step_list(
+                    proj[3], "Testsuites", "Testsuite")
+                project_dir = os.path.dirname(proj[3])
+                for testsuite in testsuite_list:
+                    testsuite_rel_path = testsuite_utils.get_path_from_xmlfile(testsuite)
+                    if testsuite_rel_path is not None:
+                        testsuite_path = Utils.file_Utils.getAbsPath(
+                            testsuite_rel_path,project_dir)
+                    else:
+                        testsuite_path = str(testsuite_rel_path)
+                    if not file_Utils.fileExists(testsuite_path):
+                        invalid_suite_path.append(
+                            ["Suites", os.path.basename(testsuite_path),
+                             "ERROR", testsuite_path])
+            suite_tc_list = self.suite_summary(junit_file)
+            suite_tc_exec = invalid_suite_path + suite_tc_list
             self.print_execution_summary_details(suite_tc_exec)
         elif file_type == "Suites":
             suite_tc_exec = self.suite_summary(junit_file)
