@@ -24,6 +24,7 @@ from warrior.Framework.ClassUtils.snmp_utlity_class import WSnmp as ws
 from warrior.Framework.Utils import testcase_Utils, config_Utils, data_Utils, snmp_utils
 from threading import Thread
 from time import sleep
+# from warrior.Actions.SnmpActions import snmp_data
 try:
     from pysnmp.entity.rfc3413 import ntfrcv
     from pysnmp.smi import builder, view, compiler, rfc1902, error
@@ -456,7 +457,6 @@ class CommonSnmpActions(object):
                 '{0}_custom_mib_paths'.format(system_name):temp_custom_mib_paths,
                 '{0}_load_mib_modules'.format(system_name):load_mib_modules
             }
-
             if result != []:
                 status = True
                 testcase_Utils.pNote("Successfully executed SNMP WALK command {}".
@@ -660,7 +660,7 @@ class CommonSnmpActions(object):
         status = False
 
         if errindication:
-            testcase_Utils.pNote("%s" % errindication.prettyPrint())
+            testcase_Utils.pNote("%s" % errindication)
         else:
             if errorstatus:
                 testcase_Utils.pNote('%s at %s' % (errorstatus.prettyPrint(),
@@ -674,24 +674,46 @@ class CommonSnmpActions(object):
                             result_list.append(snmp_utils.translate_mib(custom_mib_paths, load_mib_modules, name, val))
                     else:
                         # for SNMP Getbulk/walk output only
+                        next_tag = False
                         for varBindTableRow in varBindTable:
-                            for name, val in varBindTableRow:
-                                result_list.append(snmp_utils.translate_mib(custom_mib_paths, load_mib_modules, name, val))
+                            if not next_tag:
+                                for name, val in varBindTableRow:
+                                    result_list.append(snmp_utils.translate_mib(custom_mib_paths, load_mib_modules, name, val))
+                                    for element in result_list:
+                                        if mib_string:
+                                            if mib_string in element[0] and snmp_result in element[-1]:
+                                                status = True
+                                                next_tag = True
+                                                testcase_Utils.pNote('%s and %s found in SNMP Output' % (
+                                                    mib_string, snmp_result))
+                                                break
+                                            else:
+                                                continue
+                                        else:
+                                            if snmp_result in element[-1]:
+                                                status = True
+                                                testcase_Utils.pNote('%s Found! in SNMP Output' % (
+                                                    snmp_result))
+                                                break
+                                            else:
+                                                continue
+                            else:
+                                break
                 else:
                     testcase_Utils.pNote("No SNMP Result Present!", 'error')
-        for element in result_list:
-            if mib_string:
-                if mib_string in element[0] and snmp_result in element[-1]:
-                    status = True
-                    testcase_Utils.pNote('%s and %s found in SNMP Output' %(
-                        mib_string, snmp_result))
-                    break
-            else:
-                if snmp_result in element[-1]:
-                    status = True
-                    testcase_Utils.pNote('%s Found! in SNMP Output' %(
-                        snmp_result))
-                    break
+        # for element in result_list:
+        #     if mib_string:
+        #         if mib_string in element[0] and snmp_result in element[-1]:
+        #             status = True
+        #             testcase_Utils.pNote('%s and %s found in SNMP Output' %(
+        #                 mib_string, snmp_result))
+        #             break
+        #     else:
+        #         if snmp_result in element[-1]:
+        #             status = True
+        #             testcase_Utils.pNote('%s Found! in SNMP Output' %(
+        #                 snmp_result))
+        #             break
         if status == False:
             if mib_string:
                 testcase_Utils.pNote('{} and {} NOT Found in SNMP Output'.format(mib_string, snmp_result))
