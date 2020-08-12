@@ -17,7 +17,7 @@ import os
 from warrior.Framework import Utils
 from warrior.Framework.Utils import xml_Utils, file_Utils, config_Utils
 from warrior.Framework.Utils.print_Utils import print_info
-from warrior.WarriorCore import testsuite_utils, common_execution_utils
+from warrior.WarriorCore import testsuite_utils, common_execution_utils, warrior_cli_driver
 
 
 class ExecutionSummary():
@@ -86,12 +86,13 @@ class ExecutionSummary():
                 testcase_name = testcase_details.get('name')+".xml"
                 testcase_location = testcase_details.get('testcasefile_path')
                 case_result_dir_with_tc_name = testcase_details.get('resultsdir')
+                testcase_datafile = testcase_details.get('data_file')
                 if case_result_dir_with_tc_name is not None:
                     case_result_dir = os.path.dirname(case_result_dir_with_tc_name)
                     # suite junit element will not have resultsdir attrib for case execution
                     if suite_result_dir is None or suite_result_dir == case_result_dir:
                         suite_tc_list.append(["Testcase", testcase_name, testcase_status,
-                                              testcase_location])
+                                              testcase_location, testcase_datafile])
             #to add debug results in suite summary
             for value in tree.iter('Debug'):
                 debug_details = value.attrib
@@ -138,7 +139,7 @@ class ExecutionSummary():
         file_type = self.get_file_type(junit_file)
         # Formatting execution summary as project_summary and suite_summary returns the list values
         print_info("+++++++++++++++++++++++++++++++++++++++++++++++++ Execution Summary +++++++++++++++++++++++++++++++++++++++++++++++++")
-        print_info("{0:10}{1:50}{2:10}{3:50}".format('Type', 'Name', 'Status', 'Path'))
+        print_info("{0:10}{1:50}{2:10}{3:50}".format('Type', 'Name [DataFile]', 'Status', 'Path'))
         if file_type == "Project":
             project_exec = self.project_summary(junit_file)
             invalid_suite_path = []
@@ -161,12 +162,24 @@ class ExecutionSummary():
                              "ERROR", testsuite_path])
             suite_tc_list = self.suite_summary(junit_file)
             suite_tc_exec = invalid_suite_path + suite_tc_list
-            for suite_tc in suite_tc_exec:
-                print_info(("{0:10}{1:50}{2:10}{3:30}"
-                            .format(suite_tc[0], suite_tc[1], suite_tc[2], suite_tc[3])))
+            self.print_execution_summary_details(suite_tc_exec)
         elif file_type == "Suites":
             suite_tc_exec = self.suite_summary(junit_file)
-            for suite_tc in suite_tc_exec:
-                print_info(("{0:10}{1:50}{2:10}{3:30}"
-                            .format(suite_tc[0], suite_tc[1], suite_tc[2], suite_tc[3])))
+            self.print_execution_summary_details(suite_tc_exec)
         print_info("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+    def print_execution_summary_details(self, suite_tc_exec):
+        """To print the consolidated test cases result in console at the end of
+           Test Case/Test Suite/Project Execution"""
+        for suite_tc in suite_tc_exec:
+            path = suite_tc[3]
+            name = suite_tc[1]
+            if suite_tc_exec[0][0] == 'Suites' and file_Utils.fileExists(path):
+                if suite_tc[0] == 'Testcase':
+                    if str(suite_tc[4]).strip().upper() != 'NO_DATA' and \
+                            suite_tc[4] is not False and \
+                            file_Utils.fileExists(suite_tc[4]):
+                        name = name + ' [' + os.path.basename(suite_tc[4]) + ']'
+
+            print_info(("{0:10}{1:50}{2:10}{3:30}"
+                        .format(suite_tc[0], name, suite_tc[2], suite_tc[3])))
