@@ -692,6 +692,7 @@ class CommonSnmpActions(object):
                                         else:
                                             if snmp_result in element[-1]:
                                                 status = True
+                                                next_tag = True
                                                 testcase_Utils.pNote('%s Found! in SNMP Output' % (
                                                     snmp_result))
                                                 break
@@ -701,19 +702,7 @@ class CommonSnmpActions(object):
                                 break
                 else:
                     testcase_Utils.pNote("No SNMP Result Present!", 'error')
-        # for element in result_list:
-        #     if mib_string:
-        #         if mib_string in element[0] and snmp_result in element[-1]:
-        #             status = True
-        #             testcase_Utils.pNote('%s and %s found in SNMP Output' %(
-        #                 mib_string, snmp_result))
-        #             break
-        #     else:
-        #         if snmp_result in element[-1]:
-        #             status = True
-        #             testcase_Utils.pNote('%s Found! in SNMP Output' %(
-        #                 snmp_result))
-        #             break
+
         if status == False:
             if mib_string:
                 testcase_Utils.pNote('{} and {} NOT Found in SNMP Output'.format(mib_string, snmp_result))
