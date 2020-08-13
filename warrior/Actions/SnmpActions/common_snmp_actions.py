@@ -24,7 +24,6 @@ from warrior.Framework.ClassUtils.snmp_utlity_class import WSnmp as ws
 from warrior.Framework.Utils import testcase_Utils, config_Utils, data_Utils, snmp_utils
 from threading import Thread
 from time import sleep
-# from warrior.Actions.SnmpActions import snmp_data
 try:
     from pysnmp.entity.rfc3413 import ntfrcv
     from pysnmp.smi import builder, view, compiler, rfc1902, error
