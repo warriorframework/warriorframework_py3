@@ -359,7 +359,7 @@ class WarriorCli(object):
                 response = reobj.group(0) if reobj is not None else ""
                 temp_resp_dict = {resp_ref: response}
                 resp_key_list.append(temp_resp_dict)
-                # storing the value and expected output in data repository 
+                # storing the value and expected output in data repository
                 resp_key_dict = {resp_pat_key: response}
                 data_repository.update(resp_key_dict)
                 pNote(save_msg1+'.')
@@ -625,6 +625,7 @@ class WarriorCli(object):
         else:
             inorder_search = False
         if log is None or log.lower() != "false":
+            pNote("System name\t: {0}".format(system_name))
             pNote("Startprompt\t: {0}".format(startprompt))
             pNote("Endprompt\t: {0}".format(endprompt))
             pNote("Sleeptime\t: {0}".format(sleeptime))
@@ -731,7 +732,7 @@ class WarriorCli(object):
             else:
                 system_name = kw_system_name
             session_id = Utils.data_Utils.get_session_id(system_name, session)
-        pNote("System name\t: {0}".format(system_name))
+
 
         if details_dict["sys_list"][index] is not None:
             kw_system_name = details_dict["sys_list"][index]
