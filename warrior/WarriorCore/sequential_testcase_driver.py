@@ -269,8 +269,6 @@ def execute_sequential_testcases(testcase_list, suite_repository,
         retry_type, retry_cond, retry_cond_value, retry_value, \
             retry_interval = common_execution_utils.get_retry_from_xmlfile(testcase)
         # Adding condition to check tc_status is error or not
-            # import pdb
-            # pdb.set_trace()
         if runmode is not None or tc_status == "ERROR":
             if tc_status is True:
                 testsuite_utils.update_tc_duration(str(tc_duration))
