@@ -289,16 +289,14 @@ def test_get_keyword_resultfile():
     step_num = 1
     keyword = 'wait_for_timeout'
     result = step_driver.get_keyword_resultfile(data_repository, system_name, step_num, keyword)
-    check1 = homepath in result
-    check2 = result_dir in result
-    check3 = result.endswith('.xml')
-    check4 = 'step-1_' in result
-    check5 = keyword in result
+    check1 = result_dir in result
+    check2 = result.endswith('.xml')
+    check3 = 'step-1_' in result
+    check4 = keyword in result
     assert check1 == True
     assert check2 == True
     assert check3 == True
     assert check4 == True
-    assert check5 == True
 
 def test_get_keyword_resultfile_else_condition():
     '''testcase for get_keyword_resultfile_else_condition'''
@@ -309,16 +307,14 @@ def test_get_keyword_resultfile_else_condition():
     step_num = 1
     keyword = 'wait_for_timeout'
     result = step_driver.get_keyword_resultfile(data_repository, system_name, step_num, keyword)
-    check1 = homepath in result
-    check2 = result_dir in result
-    check3 = result.endswith('.xml')
-    check4 = 'step-1_' in result
-    check5 = keyword in result
+    check1 = result_dir in result
+    check2 = result.endswith('.xml')
+    check3 = 'step-1_' in result
+    check4 = keyword in result
     assert check1 == True
     assert check2 == True
     assert check3 == True
     assert check4 == True
-    assert check5 == True
 
 def test_get_step_console_log():
     """Assign seperate console logfile for each step in parallel execution """

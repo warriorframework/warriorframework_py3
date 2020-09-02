@@ -551,7 +551,7 @@ def test_decide_action_runcat1():
     namespace = Namespace(target_time=None, kwparallel=None, kwsequential=None, tcparallel=None,\
         tcsequential=None, RMT=None, RUF=None, filepath=None, runcat=[True], create=None,\
         encrypt=None, decrypt=None, ujd=None, tc_name=None, suitename=None, proj_name=None,\
-         tcdir=None, suite_dest=None, ts_name=None)
+         tcdir=None, suite_dest=None, ts_name=None, setenv=None)
     with pytest.raises(SystemExit):
         result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
         test1 = namespace in result
@@ -570,7 +570,7 @@ def test_decide_action_create():
     namespace = Namespace(target_time=None, kwparallel=None, kwsequential=None, tcparallel=None,\
         tcsequential=None, RMT=None, RUF=None, filepath=None, runcat=None, create=True,\
         encrypt=None, decrypt=None, ujd=None, tc_name='war_test1', suitename=None,\
-        proj_name=None, tcdir=None, cat=None)
+        proj_name=None, tcdir=None, cat=None, setenv=None)
     with pytest.raises(SystemExit):
         result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
         test1 = namespace in result
@@ -587,7 +587,7 @@ def test_decide_action_ujd():
     namespace = Namespace(target_time=None, kwparallel=None, kwsequential=None, tcparallel=None,\
         tcsequential=None, RMT=None, RUF=None, filepath=None, runcat=None, create=None,\
         encrypt=None, decrypt=None, ujd=True, tc_name='war_test1', suitename=None,\
-        proj_name=None, tcdir=None, cat=None, ddir=True, djson=None, jiraproj=None)
+        proj_name=None, tcdir=None, cat=None, ddir=True, djson=None, jiraproj=None, setenv=None)
     with pytest.raises(SystemExit):
         result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
         test1 = namespace in result
@@ -605,7 +605,7 @@ def test_decide_action_ujd1():
     namespace = Namespace(target_time=None, kwparallel=None, kwsequential=None, tcparallel=None,\
         tcsequential=None, RMT=None, RUF=None, filepath=None, runcat=None, create=None,\
         encrypt=None, decrypt=None, ujd=True, tc_name='war_test1', suitename=None, proj_name=None,\
-        tcdir=None, cat=None, ddir=None, djson=True, jiraproj=None)
+        tcdir=None, cat=None, ddir=None, djson=True, jiraproj=None, setenv=None)
     with pytest.raises(SystemExit):
         result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
         test1 = namespace in result
@@ -623,7 +623,7 @@ def test_decide_action_ujd2():
     namespace = Namespace(target_time=None, kwparallel=None, kwsequential=None, tcparallel=None,\
         tcsequential=None, RMT=None, RUF=None, filepath=None, runcat=None, create=None,\
         encrypt=None, decrypt=None, ujd=True, tc_name='war_test1', suitename=None, proj_name=None,\
-        tcdir=None, cat=None, ddir=True, djson=True, jiraproj=None)
+        tcdir=None, cat=None, ddir=True, djson=True, jiraproj=None, setenv=None)
     with pytest.raises(SystemExit):
         result = warrior_cli_driver.decide_action(w_cli_obj, namespace)
         test1 = namespace in result
