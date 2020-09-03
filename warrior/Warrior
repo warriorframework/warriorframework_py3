@@ -25,7 +25,13 @@ try:
     if virtual_env:
         war_tools_dir = virtual_env + os.sep + "warrior_settings/Tools"
     else:
-        war_tools_dir = site.getuserbase() + os.sep + "warrior_settings/Tools"
+        if os.path.exists(site.getuserbase() + os.sep + "warrior_settings/Tools"):
+            war_tools_dir = site.getuserbase() + os.sep + "warrior_settings/Tools"
+        elif os.path.exists("/usr/local/warrior_settings/Tools"):
+            war_tools_dir = "/usr/local/warrior_settings/Tools"
+        else:
+            Print("-- An error occured: Can not find the warrior_settings directory.")
+            sys.exit()
 except:
     WARRIORDIR = dirname(dirname(abspath(__file__)))
     sys.path.append(WARRIORDIR)
