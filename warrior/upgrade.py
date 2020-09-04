@@ -65,7 +65,7 @@ except Exception as e:
 
 print(colored("Upgrading warrior framework, please hold on a moment !", "green"))
 time.sleep(1)
-print(colored("Preparing to backup of warrior framework...", "green"))
+print(colored("Preparing to backup warrior tools...", "green"))
 if os.path.exists(backup_dir):
     shutil.rmtree(backup_dir)
 if os.path.exists(war_tools_dir):
