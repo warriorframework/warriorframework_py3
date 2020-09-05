@@ -36,17 +36,9 @@ sys.modules['warrior.WarriorCore.Classes.argument_datatype_class'] = MagicMock(r
 sys.modules['warrior.WarriorCore.warrior_cli_driver'] = MagicMock(return_value=None)
 
 from warrior.WarriorCore.testcase_steps_execution import main
-from warrior.WarriorCore import exec_type_driver
-import warrior.WarriorCore.testsuite_driver as testsuite_driver
-import warrior.WarriorCore.onerror_driver as onerror_driver
 from warrior.WarriorCore import testcase_steps_execution
-from warrior.WarriorCore import testcase_driver
-from warrior.Framework import Utils
-from warrior.WarriorCore import common_execution_utils
-from warrior.WarriorCore import testsuite_driver
-from warrior.WarriorCore import testsuite_utils
 
-from warrior.WarriorCore import project_driver 
+from warrior.WarriorCore import project_driver
 
 def test_compute_project_status_impact_True():
     """Computes the status of the project based on the value of impact for the testsuite
@@ -54,7 +46,8 @@ def test_compute_project_status_impact_True():
     project_status = True
     testsuite_status = True
     testsuite_impact = 'impact'
-    result = project_driver.compute_project_status(project_status, testsuite_status, testsuite_impact)
+    result = project_driver.compute_project_status(project_status, testsuite_status,
+    	testsuite_impact)
     assert result == True
 
 def test_compute_project_status_impact_False():
@@ -63,7 +56,8 @@ def test_compute_project_status_impact_False():
     project_status = True
     testsuite_status = False
     testsuite_impact = 'impact'
-    result = project_driver.compute_project_status(project_status, testsuite_status, testsuite_impact)
+    result = project_driver.compute_project_status(project_status, testsuite_status,
+    	testsuite_impact)
     assert result == False
 
 def test_compute_project_status_noimpact_True():
@@ -72,7 +66,8 @@ def test_compute_project_status_noimpact_True():
     project_status = True
     testsuite_status = True
     testsuite_impact = 'noimpact'
-    result = project_driver.compute_project_status(project_status, testsuite_status, testsuite_impact)
+    result = project_driver.compute_project_status(project_status, testsuite_status,
+    	testsuite_impact)
     assert result == True
 
 def test_compute_project_status_noimpact_False():
@@ -81,7 +76,8 @@ def test_compute_project_status_noimpact_False():
     project_status = True
     testsuite_status = False
     testsuite_impact = 'noimpact'
-    result = project_driver.compute_project_status(project_status, testsuite_status, testsuite_impact)
+    result = project_driver.compute_project_status(project_status, testsuite_status,
+    	testsuite_impact)
     assert result == True
 
 def test_main_exeception():
@@ -104,11 +100,9 @@ def test_main_pass():
     with open(result_dir+'/'+'project_log.txt', 'w'):
         pass
     wt_logsdir = os.path.join(result_dir, 'project_log.txt')
-    res_startdir = wt_logsdir
-    logs_startdir = wt_logsdir
     testcase_steps_execution.main = MagicMock(return_value=([True], [], ['impact']))
-    project_status, project_repository = project_driver.main(project_filepath,
-     data_repository, auto_defects=False, jiraproj=None, res_startdir=None, logs_startdir=None)
+    project_status, project_repository = project_driver.main(project_filepath,\
+    	data_repository, auto_defects=False, jiraproj=None, res_startdir=None, logs_startdir=None)
     check1 = project_repository['project_name'] == 'pj_for_pj_file'
     check2 = project_repository['project_title'] == 'test'
     assert project_status == True
