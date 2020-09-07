@@ -279,13 +279,13 @@ class WarriorCli(object):
             for resp in list(resp_key_list[i].keys()):
                 td_resp_dict = get_object_from_datarepository(str(session_id))
                 # checks if title_row value is not in td_resp_dict
+                loop_id = get_object_from_datarepository("loopid")
+                iter_number = get_object_from_datarepository("loop_iter_number")
+                if loop_id is not None and iter_number is not None:
+                    title_row = title_row + '_' + str(loop_id) + '_' + str(iter_number)
                 if title_row not in td_resp_dict:
                     # if not available then it first updates the
                     # title_row value to td_resp_dict
-                    loop_id = get_object_from_datarepository("loopid")
-                    iter_number = get_object_from_datarepository("loop_iter_number")
-                    if loop_id is not None and iter_number is not None:
-                        title_row = title_row + '_' + str(loop_id) + '_' + str(iter_number)
                     td_resp_dict[title_row] = {}
                 # updates td_resp_dict with the key and value
                 status = {True: "PASS", False: "FAIL", "ERROR": "ERROR"}.get(status)
