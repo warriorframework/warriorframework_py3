@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+	<Details>
+		<Name>test</Name>
+		<Title>test</Title>
+		<State>New</State>
+		<Engineer>user</Engineer>
+		<Date>2020-5-14</Date>
+		<default_onError action="next" value=""></default_onError>
+		<Resultsdir></Resultsdir>
+		<Time>11:14</Time>
+	</Details>
+	<Testsuites>
+		<Testsuite TS="1">
+			<path>ts_for_sts_driver.xml</path>
+			<Execute ExecType="Yes">
+			</Execute>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+		</Testsuite>
+	</Testsuites>
+</Project>

@@ -1,0 +1,21 @@
+<?xml version="1.0" ?>
+<Project>
+    <Details>
+        <Name>pj_runmode_at_project_local_file</Name>
+        <Title>Project for testing runmode tag project local level</Title>
+        <Engineer>Warrior_user</Engineer>
+        <State>New</State>
+        <Date>07-18-2018</Date>
+        <Time>11:59:51</Time>
+        <default_onError action="next"/>
+    </Details>
+    <Testsuites> 
+<!-- runmode at project local level  -->
+     <Testsuite>
+            <path>ts_for_sts_driver.xml</path>
+            <onError action="next" value=""/>
+	    <runmode type="RUP" value="3"/>
+            <impact>noimpact</impact>
+        </Testsuite>
+    </Testsuites>
+</Project>
