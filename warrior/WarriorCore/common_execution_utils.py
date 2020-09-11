@@ -454,3 +454,160 @@ def compute_status(element, status_list, impact_list, status, impact):
                     status_list.append(False)
                     impact_list.append(impact)
     return status_list, impact_list
+
+def get_steps_lists(filepath, step_tag, sub_step_tag, randomize=False, loop_tag="Loop"):
+    """
+    Takes the location of Testcase/Suite/Project file as input
+    Returns a list of all the step/testcase/testsuite elements
+    present in the file.
+
+    :Arguments:
+        1. filepath     = full path of the Testcase/suite/project xml file
+        2. step_tag     = xml tag for group of step in the file
+        3. sub_step_tag = xml tag for each step in the file
+        4. loop_tag     = xml tag for loop. Loop by default
+    """
+    step_list_with_rmt_retry = []
+    root = Utils.xml_Utils.getRoot(filepath)
+    steps = root.find(step_tag)
+    # if steps is None:
+        # print_warning("The file: '{0}' has no {1} to be executed"
+        #               .format(filepath, step_tag))
+    step_list = []
+    for child_node in steps:
+        if child_node.tag == sub_step_tag:
+            step_list.append(child_node)
+        elif child_node.tag == loop_tag:
+            loop_count = child_node.get("id")
+            if loop_count is None:
+                # print_error('`id` attribute is mandatory in Loop tag.'
+                #             ' example : <Loop id="1" file="filename">')
+                return False
+            json_file = child_node.get("file")
+            if json_file is None:
+                # print_error('`file` attribute is mandatory in Loop tag.'
+                #             ' example : <Loop id="1" file="filename">')
+                return False
+            loop_count = loop_count.strip()
+            json_file = json_file.strip()
+            json_file = Utils.data_Utils.sub_from_env_var(json_file)
+            # print_info("file is {}".format(json_file))
+            loop_steps = child_node.findall(sub_step_tag)
+            testcasefile_path = get_object_from_datarepository('wt_testcase_filepath')
+            valid_json = True
+            try:
+                filepath = getAbsPath(json_file, os.path.dirname(testcasefile_path))
+                with open(filepath, "r") as json_handle:
+                    json_doc = json.load(json_handle)
+                    loop_json = {loop_count : {"loop_json" : json_doc}}
+                    update_datarepository(loop_json)
+                    update_datarepository({"loopid": loop_count})
+                    if not isinstance(json_doc, list):
+                        valid_json = False
+                        # print_error('invalid json format specified,'
+                        #             'valid format : [{"arg1":"value"}, {"arg2":"value"}]')
+                    else:
+                        for blob in json_doc:
+                            if not isinstance(blob, dict):
+                                valid_json = False
+                                # print_error("element is {}. should be dict".format(type(blob)))
+                                # print_error('invalid json format specified,'
+                                #             'blob should be dict, valid format : '
+                                #             '[{"arg1":"value"}, {"arg2":"value"}]')
+            except ValueError:
+                valid_json = False
+                # print_error('The file {0} is not a valid json '
+                #             'file'.format(filepath))
+            except IOError:
+                valid_json = False
+                # print_error('The file {0} does not exist'.format(filepath))
+            except Exception as error:
+                valid_json = False
+                # print_error('Encountered {0} error'.format(error))
+
+            if not valid_json:
+                return False
+
+            for iter_number, _ in enumerate(json_doc):
+                for step_number, loop_step in enumerate(loop_steps):
+                    copy_step = copy.deepcopy(loop_step)
+                    copy_step.set("loop_id", "Loop:{}-Step:{}-Iter:{}".\
+                            format(loop_count, step_number+1, iter_number+1))
+                    copy_step.set("loop_iter_number", iter_number)
+                    copy_step.set("loopid", loop_count)
+                    arguments = copy_step.find('Arguments')
+                    if arguments is not None and arguments is not False:
+                        for argument in arguments.findall('argument'):
+                            arg_value = argument.get('value')
+                            arg_value = Utils.data_Utils.sub_from_loop_json(arg_value,
+                                                                            iter_number)
+                            argument.set("value", arg_value)
+                    step_list.append(copy_step)
+
+    if root.tag == 'Project' or root.tag == 'TestSuite':
+        step_list = []
+        orig_step_list = steps.findall(sub_step_tag)
+        for orig_step in orig_step_list:
+            orig_step_path = orig_step.find('path').text
+            if '*' not in orig_step_path:
+                step_list.append(orig_step)
+            # When the file path has asterisk(*), get the Warrior XML testcase/testsuite
+            # files matching the given pattern
+            else:
+                orig_step_abspath = Utils.file_Utils.getAbsPath(
+                    orig_step_path, os.path.dirname(filepath))
+                # print_info("Provided {0} path: '{1}' has asterisk(*) in "
+                #            "it. All the Warrior XML files matching "
+                #            "the given pattern will be executed."
+                #            .format(sub_step_tag, orig_step_abspath))
+                # Get all the files matching the pattern and sort them by name
+                all_files = sorted(glob.glob(orig_step_abspath))
+                # Get XML files
+                xml_files = [fl for fl in all_files if fl.endswith('.xml')]
+                step_files = []
+                # Get Warrior testcase/testsuite XML files
+                for xml_file in xml_files:
+                    root = Utils.xml_Utils.getRoot(xml_file)
+                    if root.tag.upper() == sub_step_tag.upper():
+                        step_files.append(xml_file)
+                # Copy the XML object and set the filepath as path value for
+                # all the files matching the pattern
+                if step_files:
+                    for step_file in step_files:
+                        new_step = copy.deepcopy(orig_step)
+                        new_step.find('path').text = step_file
+                        step_list.append(new_step)
+                        # print_info("{0}: '{1}' added to the execution "
+                        #            "list ".format(sub_step_tag, step_file))
+                else:
+                    # print_warning("Asterisk(*) pattern match failed for '{}' due "
+                    #               "to at least one of the following reasons:\n"
+                    #               "1. No files matched the given pattern\n"
+                    #               "2. Invalid testcase path is given\n"
+                    #               "3. No testcase XMLs are available\n"
+                    #               "Given path will be used for the Warrior "
+                    #               "execution.".format(orig_step_abspath))
+                    step_list.append(orig_step)
+
+        if randomize:
+            random.shuffle(step_list)
+    # iterate all steps to get the runmode and retry details
+    for _, step in enumerate(step_list):
+        runmode, value, _ = get_runmode_from_xmlfile(step)
+        retry_type, _, _, retry_value, _ = get_retry_from_xmlfile(step)
+        if runmode is not None and value > 0:
+            go_next = len(step_list_with_rmt_retry) + value + 1
+            step_list_with_rmt_retry = append_step_list(step_list_with_rmt_retry, step,
+                                                        value, go_next, mode="runmode",
+                                                        tag="value")
+        if retry_type is not None and retry_value > 0:
+            go_next = len(step_list_with_rmt_retry) + retry_value + 1
+            if runmode is not None:
+                get_runmode = step.find('runmode')
+                step.remove(get_runmode)
+            step_list_with_rmt_retry = append_step_list(step_list_with_rmt_retry, step,
+                                                        retry_value, go_next, mode="retry",
+                                                        tag="count")
+        if retry_type is None and runmode is None:
+            step_list_with_rmt_retry.append(step)
+    return step_list_with_rmt_retrys
