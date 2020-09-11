@@ -610,4 +610,4 @@ def get_steps_lists(filepath, step_tag, sub_step_tag, randomize=False, loop_tag=
                                                         tag="count")
         if retry_type is None and runmode is None:
             step_list_with_rmt_retry.append(step)
-    return step_list_with_rmt_retrys
+    return step_list_with_rmt_retry
