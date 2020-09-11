@@ -57,7 +57,7 @@ class ExecutionSummary():
             if suite_location is not None:
                 suite_tc_list.append(["Suites", suite_name, suite_status, suite_location])
                 testsuite_dir = os.path.dirname(suite_location)
-                testcase_list = common_execution_utils.get_step_list(
+                testcase_list = common_execution_utils.get_steps_lists(
                     suite_location, "Testcases", "Testcase", randomize=False)
                 for tests in testcase_list:
                     tc_rel_path = testsuite_utils.get_path_from_xmlfile(tests)
@@ -146,7 +146,7 @@ class ExecutionSummary():
             for proj in project_exec:
                 print_info(("{0:10}{1:50}{2:10}{3:30}"
                             .format(proj[0], proj[1], proj[2], proj[3])))
-                testsuite_list = common_execution_utils.get_step_list(
+                testsuite_list = common_execution_utils.get_steps_lists(
                     proj[3], "Testsuites", "Testsuite")
                 project_dir = os.path.dirname(proj[3])
                 for testsuite in testsuite_list:

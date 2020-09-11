@@ -185,7 +185,7 @@ class WarriorHtmlResults:
                 if pro_node.get('name') == 'location':
                     pro_location = pro_node.get('value')
 
-                    testsuite_list = common_execution_utils.get_step_list(
+                    testsuite_list = common_execution_utils.get_steps_lists(
                         pro_location, "Testsuites", "Testsuite")
                     project_dir = os.path.dirname(pro_location)
                     for testsuite in testsuite_list:
@@ -204,7 +204,7 @@ class WarriorHtmlResults:
                 all_testcases = []
                 if testsuite_node.get('suite_location'):
                     testsuite_dir = os.path.dirname(testsuite_node.get('suite_location'))
-                    testcase_list = common_execution_utils.get_step_list(
+                    testcase_list = common_execution_utils.get_steps_lists(
                         testsuite_node.get('suite_location'),
                         "Testcases", "Testcase", randomize=False)
                     for tests in testcase_list:
