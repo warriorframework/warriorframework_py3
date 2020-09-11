@@ -239,6 +239,8 @@ class WarriorCli(object):
                         response=response, system_name=td_sys)
                     rspRes, resp_key_list = new_obj_session._get_response_dict(
                         details_dict, i, response, resp_key_list)
+                    if len(resp_key_list) != i+1:
+                        resp_key_list.append({})
                     resp_session_id = session_id + "_td_response"
 
                     td_resp_dict = self.update_resp_ref_to_repo(details_dict, resp_key_list, i,
