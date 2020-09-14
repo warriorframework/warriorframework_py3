@@ -13,7 +13,7 @@ limitations under the License.
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = "warriorframework"
-PACKAGE_VERSION = "4.3.1"
+PACKAGE_VERSION = "4.4.0"
 
 setup(
     name=PACKAGE_NAME,
