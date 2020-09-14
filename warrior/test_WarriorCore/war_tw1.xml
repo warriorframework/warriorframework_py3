@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TestWrapper>
+	<Details>
+		<Name>Untitled</Name>
+		<Title>Untitled</Title>
+		<Engineer>Untitled</Engineer>
+		<Date>2020-4-20</Date>
+		<Time>13:52</Time>
+		<Datatype>Custom</Datatype>
+	</Details>
+	<Setup>
+		<step TS="1" Repo="warrior" Driver="common_driver" Keyword="wait_for_timeout">
+			<Description></Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="rmt" value="2"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="timeout" value="2"></argument>
+				<argument name="notify_count" value="1"></argument>
+			</Arguments>
+		</step>
+	</Setup>
+	<Cleanup>
+		<step TS="1" Repo="warrior" Driver="common_driver" Keyword="wait_for_timeout">
+			<Description></Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="timeout" value="2"></argument>
+				<argument name="notify_count" value="1"></argument>
+			</Arguments>
+		</step>
+	</Cleanup>
+	<Debug>
+		<step TS="1" Repo="warrior" Driver="common_driver" Keyword="wait_for_timeout">
+			<Description></Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="timeout" value="2"></argument>
+				<argument name="notify_count" value="1"></argument>
+			</Arguments>
+		</step>
+	</Debug>
+</TestWrapper>

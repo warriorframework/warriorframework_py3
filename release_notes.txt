@@ -1,5 +1,5 @@
 Release: Ninja
-Version: warrior-4.3.1
+Version: warrior-4.4.0
 
 ===================
 1: Release details
@@ -9,16 +9,17 @@ This is release Ninja of Warrior Test Automation Framework
 -------------------------------
 1.1: List of available releases
 -------------------------------
-1. Ninja = warrior-4.3.1
-2. Ninja = warrior-4.2.0
-3. Ninja = warrior-4.1.0
+1. Ninja = warrior-4.4.0
+2. Ninja = warrior-4.3.1
+3. Ninja = warrior-4.2.0
+4. Ninja = warrior-4.1.0
 
 ==================
 2. Version Details
 ==================
-You are on Release Ninja, Version warrior-4.3.1 of Warrior Framework.
+You are on Release Ninja, Version warrior-4.4.0 of Warrior Framework.
 
-warrior-4.3.1 is a  hotfix  release. 
+warrior-4.4.0 is also released as pip install able package.
 The pre-requiste for installing pip module is python 3.6 version and above.
 
 
@@ -26,11 +27,29 @@ The pre-requiste for installing pip module is python 3.6 version and above.
 2.1. Change log for this release
 +++++++++++++++++++++++++++++++++
 
+-------------
+New Features:
+-------------
+[WAR-2458] - Support for Mongo DB keywords in Warrior
+[WAR-2381] - Add the data file name in warrior Testcase Execution Summary format
+[WAR-2378] - Display error Testcases in the final results.
+[WAR-2384] - Regression Scripts ported to new lab infrastructure 
+[WAR-2377] - LOOP functionality Enhancements
+[WAR-2376] - Generic keywords to test multiple interfaces
+[WAR-2369] - Upgrade support for Warriorframework 
+[WAR-2352] - Warrior Core Unit Testing 
+
 -----------
 Bugfixes:
 -----------
-[WAR-2365] -  CLI Output directory fix for non existent dir.
-[WAR-2382] -   Warrior Exception in print. 
+[WAR-2465] - Warrior Email Notification issue
+[WAR-2467] - "onError action= abort"- not working as expected in testsuite level
+[WAR-2385] - As a user, I want a fix for the additional wait time with runmode_timer attribute of "connect" keyword in Warrior Framework
+[WAR-2365] - After adding output directory and executing a case, and if directory not present,, it is exiting without continuing
+[WAR-2468] - Required warrior solution to avoid the overriding of command response in data repo when iterating through loops
+[WAR-2460] - Please display the "System name" in the retry also, so that it will be more easy to read the failure logs
+[WAR-2372] - Required changes in get_warrior_result keyword
+
 
 =================================================
 3. Procedure to install pip module
@@ -40,7 +59,7 @@ Bugfixes:
       pip install warriorframework
 
 2. Specific Version warriorframework from PyPI Server
-       pip install warriorframework==4.3.1
+       pip install warriorframework==4.4.0
 
 3. Uninstall warriorframework
        pip uninstall warriorframework

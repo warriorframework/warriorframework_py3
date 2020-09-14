@@ -26,6 +26,7 @@ except Exception as e:
     sys.path.append(WARRIORDIR)
     import warrior
 
+sys.modules['warrior.WarriorCore.warrior_cli_driver'] = MagicMock(return_value=None)
 from warrior.WarriorCore import common_execution_utils
 
 def test_append_step_list():
@@ -165,3 +166,5 @@ def test_get_runmode_from_xmlfile_invalid_runmode_value():
     sstep = steps[5]
     status = common_execution_utils.get_runmode_from_xmlfile(element=sstep)
     assert status[0] == None
+
+sys.modules.pop('warrior.WarriorCore.warrior_cli_driver')

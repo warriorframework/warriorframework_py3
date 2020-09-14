@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testcase>
+	<Details>
+		<Name>Untitled</Name>
+		<Title>Untitled</Title>
+		<Category></Category>
+		<State>New</State>
+		<Engineer>Untitled</Engineer>
+		<Date>2020-4-28</Date>
+		<Time>9:8</Time>
+		<default_onError action="next" value=""></default_onError>
+		<InputDataFile>No_Data</InputDataFile>
+		<TestWrapperFile>war_tw1.xml</TestWrapperFile>
+		<Datatype>Custom</Datatype>
+		<Logsdir></Logsdir>
+		<Resultsdir></Resultsdir>
+		<ExpectedResults></ExpectedResults>
+	</Details>
+	<Requirements>
+	</Requirements>
+	<Steps>
+		<step TS="1" Repo="warrior" Driver="common_driver" Keyword="wait_for_timeout">
+			<Description></Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="timeout" value="3"></argument>
+				<argument name="notify_count" value="1"></argument>
+			</Arguments>
+		</step>
+		<step TS="2" Repo="warrior" Driver="common_driver" Keyword="store_in_repo">
+			<Description></Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="datavar" value="a"></argument>
+				<argument name="datavalue" value="b"></argument>
+			</Arguments>
+		</step>
+	</Steps>
+</Testcase>

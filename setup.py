@@ -13,7 +13,7 @@ limitations under the License.
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = "warriorframework"
-PACKAGE_VERSION = "4.3.1"
+PACKAGE_VERSION = "4.4.0"
 
 setup(
     name=PACKAGE_NAME,
@@ -21,7 +21,8 @@ setup(
     author="warriorteam",
     author_email='frameworkwarrior@gmail.com',
     scripts=['warrior/Warrior',
-             'warrior/WarriorTools/warrior_py3_migration_tools/warrior_py3_migration_tool'],
+             'warrior/WarriorTools/warrior_py3_migration_tools/warrior_py3_migration_tool',
+             'warrior/warrior_upgrade.py'],
     packages=find_packages(exclude=['warrior/test_WarriorCore']),
     package_data={'':['**/*', '*']},
     include_package_data=True,
@@ -55,6 +56,6 @@ setup(
                       "cloudshell-automation-api==9.3.0.175525",
                       "pycryptodome==3.6.1", "xmltodict==0.12.0",
                       "xlrd==1.2.0", "openpyxl==3.0.3", "pandas==1.0.3",
-                      "gcg==0.2.0", "termcolor==1.1.0",]
+                      "gcg==0.2.0", "termcolor==1.1.0", "pymongo==3.11.0",]
 
 )

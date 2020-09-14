@@ -238,6 +238,8 @@ class WarriorCli(object):
                         response=response, system_name=td_sys)
                     rspRes, resp_key_list = new_obj_session._get_response_dict(
                         details_dict, i, response, resp_key_list)
+                    if len(resp_key_list) != i+1:
+                        resp_key_list.append({})
                     resp_session_id = session_id + "_td_response"
 
                     td_resp_dict = self.update_resp_ref_to_repo(details_dict, resp_key_list, i,
@@ -278,6 +280,10 @@ class WarriorCli(object):
             for resp in list(resp_key_list[i].keys()):
                 td_resp_dict = get_object_from_datarepository(str(session_id))
                 # checks if title_row value is not in td_resp_dict
+                loop_id = get_object_from_datarepository("loopid")
+                iter_number = get_object_from_datarepository("loop_iter_number")
+                if loop_id is not None and iter_number is not None:
+                    title_row = title_row + '_' + str(loop_id) + '_' + str(iter_number)
                 if title_row not in td_resp_dict:
                     # if not available then it first updates the
                     # title_row value to td_resp_dict
@@ -359,7 +365,7 @@ class WarriorCli(object):
                 response = reobj.group(0) if reobj is not None else ""
                 temp_resp_dict = {resp_ref: response}
                 resp_key_list.append(temp_resp_dict)
-                # storing the value and expected output in data repository 
+                # storing the value and expected output in data repository
                 resp_key_dict = {resp_pat_key: response}
                 data_repository.update(resp_key_dict)
                 pNote(save_msg1+'.')
@@ -625,6 +631,7 @@ class WarriorCli(object):
         else:
             inorder_search = False
         if log is None or log.lower() != "false":
+            pNote("System name\t: {0}".format(system_name))
             pNote("Startprompt\t: {0}".format(startprompt))
             pNote("Endprompt\t: {0}".format(endprompt))
             pNote("Sleeptime\t: {0}".format(sleeptime))
@@ -731,7 +738,7 @@ class WarriorCli(object):
             else:
                 system_name = kw_system_name
             session_id = Utils.data_Utils.get_session_id(system_name, session)
-        pNote("System name\t: {0}".format(system_name))
+
 
         if details_dict["sys_list"][index] is not None:
             kw_system_name = details_dict["sys_list"][index]

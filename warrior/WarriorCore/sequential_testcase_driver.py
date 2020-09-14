@@ -85,7 +85,6 @@ def execute_sequential_testcases(testcase_list, suite_repository,
     while tests < len(testcase_list):
         testcase = testcase_list[tests]
         tests += 1
-
         tc_rel_path = testsuite_utils.get_path_from_xmlfile(testcase)
         if tc_rel_path is not None:
             tc_path = Utils.file_Utils.getAbsPath(tc_rel_path, testsuite_dir)
@@ -373,6 +372,18 @@ def execute_sequential_testcases(testcase_list, suite_repository,
                               "value '{1}'".format(data_repository[retry_cond],
                                                    retry_cond_value))
                         goto_tc = str(retry_value)
+        else:
+            if tc_status is False or tc_status == "ERROR" or\
+                    tc_status == "EXCEPTION":
+                goto_tc = onerror_driver.main(testcase, suite_error_action,
+                                                     suite_error_value)
+            if goto_tc in ['ABORT', 'ABORT_AS_ERROR']:
+                break
+            # when 'onError:goto' value is less than the current tc num,
+            # change the next iteration point to goto value
+            elif goto_tc and int(goto_tc) <tests:
+                tests = int(goto_tc)-1
+                goto_tc = False
 # suite_status = testsuite_utils.compute_testsuite_status(suite_status,
 # tc_status, tc_impact)
         update_suite_attribs(junit_resultfile, str(errors),
