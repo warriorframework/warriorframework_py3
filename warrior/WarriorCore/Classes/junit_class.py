@@ -251,12 +251,12 @@ class Junit(object):
         copy xslt to the results folder
         Print execution summary in console based on 'print_summary' value """
 
-        fpath = path + os.sep + self.filename + "_junit.xml"
-        tree = ET.ElementTree(self.root)
-        tree.write(fpath)
         if print_summary is True:
+            fpath = path + os.sep + self.filename + "_junit.xml"
+            tree = ET.ElementTree(self.root)
+            tree.write(fpath)
             summary_obj = ExecutionSummary(fpath)
             summary_obj.print_result_in_console(fpath)
         print_info("\n")
-
-        self._junit_to_html(fpath, print_summary)
+        if print_summary is True:
+            self._junit_to_html(fpath, print_summary)
