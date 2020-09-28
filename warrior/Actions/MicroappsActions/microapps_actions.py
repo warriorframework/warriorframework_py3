@@ -68,7 +68,7 @@ class MicroappsActions(object):
                                                 failure_reason = "{0} Failed".format(splitted_command[0])
 
         if failure_reason is None and script_status is False:
-            failure_reason = "Script execution failed"
+            failure_reason = "NE response mismatch"
         output_dict = {"script_status": script_status, "step_status_message": step_status_message,
                        "failure_reason": failure_reason}
         status = True
