@@ -57,13 +57,24 @@ body {
     color: white;
 }
 
-.navbar > .ml-auto > i {
+.navbar > .ml-auto > #extspc {
+    padding-right: 1rem;
+    color: white !important;
+    font-weight: 700;
+    font-family: 'Segoe UI';
+    font-size: 13px;
+}
+
+.navbar > .set_menu > i{
     padding-right: 1rem;
     cursor: pointer;
 }
 
 .navbar-brand {
     color: white !important;
+    font-weight: 700;
+    font-family: 'Segoe UI';
+    font-size: 16px;
 }
 
 .dropdown-menu-right {
