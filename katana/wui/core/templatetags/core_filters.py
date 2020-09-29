@@ -15,5 +15,4 @@ def get_app_name(value):
     fname_file = os.path.join(BASE_DIR, "wui/core/static/core/framework_name.json")
     data = read_json_data(fname_file)
     appname = data["fr_name"]
-    print(appname)
     return appname
