@@ -1663,6 +1663,8 @@ class PexpectConnect(object):
                 # will be raised and it is set to the after property of spawn object
                 if self.target_host.after == self.pexpect.TIMEOUT:
                     pNote("EXCEPTION !! Command Timed Out", 'error')
+                elif self.target_host.after == self.pexpect.EOF:
+                    pNote("EXCEPTION !! Device unresponsive", 'error')
                 else:
                     response = response + self.target_host.after.decode('utf-8')
                 if kwargs.get("log", "true") != "false":
