@@ -276,7 +276,7 @@ class WarriorCli(object):
             2. The user gives the system and session name in both testcase and testdata file,
             then it takes testdata as priority and updates on testdata's session id
         """
-        title_row = 'step-{}_{}'.format(data_repository['step_num'], title_row)
+        title_row = 'step_{}_{}'.format(data_repository['step_num'], title_row)
         try:
             for resp in list(resp_key_list[i].keys()):
                 td_resp_dict = get_object_from_datarepository(str(session_id))
@@ -1664,10 +1664,10 @@ class PexpectConnect(object):
                 step_num = data_repository['step_num']
                 if self.target_host.after == self.pexpect.TIMEOUT:
                     pNote("EXCEPTION !! Command Timed Out", 'error')
-                    data_repository['step-%s_errormessage' % step_num] = "command timed out while executing command: {}".format(command)
+                    data_repository['step_%s_errormessage' % step_num] = "command timed out while executing command: {}".format(command)
                 elif self.target_host.after == self.pexpect.EOF:
                     pNote("EXCEPTION !! Device unresponsive", 'error')
-                    data_repository['step-%s_errormessage' % step_num] = "device unresponsive while executing command: {}".format(command)
+                    data_repository['step_%s_errormessage' % step_num] = "device unresponsive while executing command: {}".format(command)
                 else:
                     response = response + self.target_host.after.decode('utf-8')
                 if kwargs.get("log", "true") != "false":
