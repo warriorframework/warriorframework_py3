@@ -42,9 +42,10 @@ class MicroappsActions(object):
                         script_status = False
                         step_status_message = "{0} status {1}". \
                             format(session_td_key.replace('_result', ''), session_td_value)
+                        failure_reason = data_repository.get(session_td_key.replace('_result', '_errormessage'), None)
                         break
 
-        if not script_status:
+        if not script_status and not failure_reason:
             for session_td_key, session_td_value in data_repository.items():
                 if '_td_response' in session_td_key:
                     for title_td_key, title_td_value in session_td_value.items():
