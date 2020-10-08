@@ -276,7 +276,7 @@ class WarriorCli(object):
             2. The user gives the system and session name in both testcase and testdata file,
             then it takes testdata as priority and updates on testdata's session id
         """
-
+        title_row = 'step-{}_{}'.format(data_repository['step_num'], title_row)
         try:
             for resp in list(resp_key_list[i].keys()):
                 td_resp_dict = get_object_from_datarepository(str(session_id))
