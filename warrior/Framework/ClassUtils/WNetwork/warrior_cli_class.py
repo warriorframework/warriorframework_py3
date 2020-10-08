@@ -1661,10 +1661,13 @@ class PexpectConnect(object):
                 response = self.target_host.before.decode('utf-8')
                 # When the command gets timed out, the pexpect.TIMEOUT exception
                 # will be raised and it is set to the after property of spawn object
+                step_num = data_repository['step_num']
                 if self.target_host.after == self.pexpect.TIMEOUT:
                     pNote("EXCEPTION !! Command Timed Out", 'error')
+                    data_repository['step-%s_errormessage' % step_num] = "command timed out while executing command: {}".format(command)
                 elif self.target_host.after == self.pexpect.EOF:
                     pNote("EXCEPTION !! Device unresponsive", 'error')
+                    data_repository['step-%s_errormessage' % step_num] = "device unresponsive while executing command: {}".format(command)
                 else:
                     response = response + self.target_host.after.decode('utf-8')
                 if kwargs.get("log", "true") != "false":
