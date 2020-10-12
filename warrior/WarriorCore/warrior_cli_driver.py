@@ -320,15 +320,18 @@ def warrior_execute_entry(*args, **kwargs):
             sys.exit(1)
     except:
         data_repo = config_Utils.data_repository
-        if not data_repo['war_parallel']:
-            war_file_type = data_repo['war_file_type']
-            tc_junit_object = data_repo['wt_junit_object']
-            if war_file_type == "Case":
-                tc_junit_object.junit_output(data_repo['wt_resultsdir'])
-            elif war_file_type == "Suite":
-                tc_junit_object.junit_output(data_repo['wt_results_execdir'])
-            elif war_file_type == "Project":
-                tc_junit_object.junit_output(data_repo['wp_results_execdir'])
+        if 'war_parallel' in data_repo:
+            if not data_repo['war_parallel']:
+                war_file_type = data_repo['war_file_type']
+                tc_junit_object = data_repo['wt_junit_object']
+                if war_file_type == "Case":
+                    tc_junit_object.junit_output(data_repo['wt_resultsdir'])
+                elif war_file_type == "Suite":
+                    tc_junit_object.junit_output(data_repo['wt_results_execdir'])
+                elif war_file_type == "Project":
+                    tc_junit_object.junit_output(data_repo['wp_results_execdir'])
+        else:
+            pass
 
 
 """Handle all the cli command, new functions may be added later"""
