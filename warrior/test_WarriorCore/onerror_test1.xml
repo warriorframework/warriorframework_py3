@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Testcase>
+	<Details>
+		<Name>test</Name>
+		<Title>test</Title>
+		<Category></Category>
+		<State>New</State>
+		<Engineer>warrior</Engineer>
+		<Date>2020-5-18</Date>
+		<Time>9:16</Time>
+		<default_onError action="next" value=""></default_onError>
+		<InputDataFile>No_Data</InputDataFile>
+		<Datatype>Custom</Datatype>
+		<Logsdir></Logsdir>
+		<Resultsdir></Resultsdir>
+		<ExpectedResults></ExpectedResults>
+	</Details>
+	<Requirements>
+	</Requirements>
+	<Steps>
+		<step TS="1" Repo="warrior" Driver="common_driver" Keyword="store_in_repo">
+			<Description></Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="datavar" value="test"></argument>
+				<argument name="datavalue" value="ut"></argument>
+			</Arguments>
+		</step>
+		<step TS="2" Repo="warrior" Driver="common_driver" Keyword="wait_for_timeout">
+			<Description></Description>
+			<Execute ExecType="Yes">
+			</Execute>
+			<runmode type="standard"></runmode>
+			<Iteration_type type="standard"></Iteration_type>
+			<context>positive</context>
+			<impact>impact</impact>
+			<onError action="next"></onError>
+			<Arguments>
+				<argument name="timeout" value="4"></argument>
+				<argument name="notify_count" value="2"></argument>
+			</Arguments>
+		</step>
+	</Steps>
+</Testcase>

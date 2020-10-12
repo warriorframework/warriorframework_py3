@@ -15,7 +15,7 @@ limitations under the License.
 end of Test Suite or Project Execution """
 import os
 from warrior.Framework.Utils import xml_Utils
-from warrior.Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils.print_Utils import print_info, print_debug
 
 
 class ExecutionSummary():

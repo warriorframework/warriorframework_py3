@@ -110,7 +110,7 @@ class TestcaseUtils(object):
 
         self.p_testcase()
         self.gkeywordloop = self.gkeywordloop+1
-        print_info("\n********************* Keyword: %s *********************\n" % keyword_txt)
+        # print_info("Keyword: %s " % keyword_txt)
         self.gkeyword[self.gkeywordloop] = ET.SubElement(self.root, "Keyword")
         self.current_pointer = self.gkeyword[self.gkeywordloop]
         name = ET.SubElement(self.gkeyword[self.gkeywordloop], "Name")
@@ -121,8 +121,8 @@ class TestcaseUtils(object):
     def p_subkeyword(self, keyword_txt):
         """ Creates a Keyword tag as the child node to the <SubStep> tag """
         self.gsubkeyloop = self.gsubkeyloop+1
-        print_info("\n***************Sub-Keyword: %s "
-                   "***************\n" % keyword_txt)
+        print_debug("***************Sub-Keyword: %s "
+                   "***************" % keyword_txt)
         self.gsubkey[self.gsubkeyloop] = ET.SubElement(\
                 self.gstep[self.gsteploop], "Keyword")
         self.current_pointer = self.gsubkey[self.gsubkeyloop]
@@ -169,8 +169,8 @@ class TestcaseUtils(object):
                                                 self.gsteploop], "SubStep")
         self.current_pointer = self.gsubstep[self.gsubsteploop]
         self.gsubstep[self.gsubsteploop].text = substep_txt
-        print_info("\n<< Substep >>")
-        print_info("Keyword Description: {0}".format(substep_txt))
+        print_debug("<< Substep >>")
+        print_debug("Keyword Description: {0}".format(substep_txt))
 
         self.print_output()
 
@@ -394,6 +394,7 @@ class TestcaseUtils(object):
         else:
             status(level, text)
 
+
     def report_warning(self, status, text="", level='subStep'):
         """
         Reports the status to the testcase xml result file based on the received status
@@ -439,7 +440,7 @@ class TestcaseUtils(object):
         :Returns:
             None
         """
-        print_info("\n<< Substep status >>")
+        print_debug("<< Substep status >>")
         self.report_warning(status)
 
     def report_keyword_status(self, status, kw_name=''):
@@ -485,7 +486,7 @@ class TestcaseUtils(object):
         tree.write(resultfile)
 
     def append_result_files(self, dst_resultfile, kw_resultfile_list, dst_root='Testcase', childtag='Keyword'):
-        """Append kw/system result files into a testcase result file"""
+        """Append kw/system STATUS:result files into a testcase result file"""
         try:
             finstring = ''
             for kw_file in kw_resultfile_list:

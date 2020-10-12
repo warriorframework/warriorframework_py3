@@ -16,10 +16,9 @@ import os
 import json
 import getpass
 import multiprocessing
-from warrior import Tools
 from warrior.Framework.Utils import xml_Utils, file_Utils, data_Utils
 from warrior.Framework.Utils.testcase_Utils import pNote
-from warrior.Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils.print_Utils import print_info, print_debug
 from warrior.Framework.Utils.xml_Utils import getElementWithTagAttribValueMatch
 import warrior.WarriorCore.Classes.katana_interface_class as katana_interface_class
 
@@ -156,8 +155,10 @@ class WarriorHtmlResults:
     def __init__(self, junit_file=None):
         """ init function"""
         self.junit_file = junit_file
+        #self.html_template = "{0}{1}reporting{1}html_results_template.html" \
+        #    .format(Tools.__path__[0], os.sep)
         self.html_template = "{0}{1}reporting{1}html_results_template.html" \
-            .format(Tools.__path__[0], os.sep)
+            .format(os.getenv("WAR_TOOLS_DIR"), os.sep)
         self.junit_root = xml_Utils.getRoot(self.junit_file)
 
     def create_line_result(self, line, variant):

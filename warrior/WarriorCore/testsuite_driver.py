@@ -166,12 +166,12 @@ def report_testsuite_result(suite_repository, suite_status):
     """
     suite_resultfile = suite_repository['junit_resultfile']
 
-    print_info("\n ****** TestSuite Result ******")
+    print_info("****** TestSuite Result ******")
     suite_status = {'TRUE': 'PASS', 'FALSE': 'FAIL', 'EXCEPTION': 'FAIL',
                     'ERROR': 'FAIL'}.get(str(suite_status).upper())
     print_info("Testsuite:{0}  STATUS:{1}".format(suite_repository['suite_name'], suite_status))
     testsuite_utils.pSuite_report_suite_result(suite_resultfile)
-    print_info("\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END OF TEST SUITE $$$$$$$$$$$$$$$$$$$$$$"
+    print_info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ END OF TEST SUITE $$$$$$$$$$$$$$$$$$$$$$"
                "$$$$$$$$$$$$$$$$$$$$$$$$")
     return suite_status
 
@@ -179,8 +179,8 @@ def report_testsuite_result(suite_repository, suite_status):
 def print_suite_details_to_console(suite_repository, testsuite_filepath, junit_resultfile):
     """Prints the testsuite details to console """
 
-    print_info("\n\n$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  TESTSUITE-DETAILS  "
-               "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n")
+    print_info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  TESTSUITE-DETAILS  "
+               "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$")
     print_info("Executing testsuite '{0}'".format(suite_repository['suite_name'].strip()))
     print_info("Title: {0}".format(suite_repository['suite_title'].strip()))
     print_info("Results directory: %s" % suite_repository['suite_execution_dir'])
@@ -237,7 +237,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                                          from_project, res_startdir, logs_startdir)
 
     if data_repository.get("random_tc_execution", False) or suite_repository['suite_random_exec']:
-        print_info("Executing test cases in suite in random order")
+        print_debug("Executing test cases in suite in random order")
         randomize = True
     else:
         randomize = False
@@ -361,6 +361,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         print_info("*****************TESTWRAPPER SETUP EXECUTION START*********************")
         data_repository['suite_testwrapper_file'] = testwrapperfile
         data_repository['wt_data_type'] = j_data_type
+        Utils.config_Utils.set_datarepository(data_repository)
         setup_tc_status, data_repository = testcase_driver.execute_testcase(testwrapperfile,\
                                             data_repository, tc_context='POSITIVE',\
                                             runtype=j_runtype,\
@@ -375,7 +376,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
             ts_junit_object.remove_html_obj()
             data_repository["war_parallel"] = True
             Utils.config_Utils.data_repository = data_repository
-            print_info("Executing testcases in parallel")
+            print_debug("Executing testcases in parallel")
             test_suite_status = parallel_testcase_driver.main(testcase_list, suite_repository,
                                                               data_repository, from_project,
                                                               tc_parallel=True,
@@ -383,7 +384,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
 
         elif execution_type.upper() == 'SEQUENTIAL_TESTCASES':
             if runmode is None:
-                print_info("Executing testcases sequentially")
+                print_debug("Executing testcases sequentially")
                 test_suite_status = sequential_testcase_driver.main(testcase_list, suite_repository,
                                                                     data_repository, from_project,
                                                                     auto_defects=auto_defects)
@@ -491,7 +492,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
         elif execution_type.upper() == "ITERATIVE_SEQUENTIAL":
             # if execution type is iterative sequential call WarriorCore.Classes.iterative_testsuite
             # class and execute the testcases in iterative sequential fashion on the systems
-            print_info("Iterative sequential suite")
+            print_debug("Iterative sequential suite")
 
             iter_seq_ts_obj = IterativeTestsuite(testcase_list, suite_repository,
                                                  data_repository, from_project,
@@ -502,7 +503,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
             # if execution type is iterative parallel call WarriorCore.Classes.iterative_testsuite
             # class and execute the testcases in iterative parallel fashion on the systems
             ts_junit_object.remove_html_obj()
-            print_info("Iterative parallel suite")
+            print_debug("Iterative parallel suite")
             data_repository["war_parallel"] = True
             iter_seq_ts_obj = IterativeTestsuite(testcase_list, suite_repository,
                                                  data_repository, from_project, auto_defects)
@@ -531,6 +532,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
             print_info("*****************SUITE TESTWRAPPER DEBUG EXECUTION START"
                        "*********************")
             data_repository['wt_data_type'] = j_data_type
+            Utils.config_Utils.set_datarepository(data_repository)
             debug_tc_status, data_repository = testcase_driver.execute_testcase(testwrapperfile,\
                                                          data_repository, tc_context='POSITIVE',\
                                                          runtype=j_runtype,\
@@ -545,6 +547,7 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
     if testwrapperfile:
         print_info("*****************TESTWRAPPER CLEANUP EXECUTION START*********************")
         data_repository['wt_data_type'] = j_data_type
+        Utils.config_Utils.set_datarepository(data_repository)
         cleanup_tc_status, data_repository = testcase_driver.execute_testcase(testwrapperfile,\
                                                           data_repository, tc_context='POSITIVE',\
                                                           runtype=j_runtype,\
@@ -552,8 +555,8 @@ def execute_testsuite(testsuite_filepath, data_repository, from_project,
                                                           auto_defects=auto_defects, suite=None,\
                                                           jiraproj=None, tc_onError_action=None,\
                                                           iter_ts_sys=None, steps_tag='Cleanup')
-        print_info("*****************TESTWRAPPER CLEANUP EXECUTION END*********************")
-    print_info("\n")
+        print_debug("*****************TESTWRAPPER CLEANUP EXECUTION END*********************")
+    print_debug("\n")
     suite_end_time = Utils.datetime_utils.get_current_timestamp()
     print_info("[{0}] Testsuite execution completed".format(suite_end_time))
 

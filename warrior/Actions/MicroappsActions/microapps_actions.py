@@ -19,7 +19,7 @@ from warrior.Framework.Utils.testcase_Utils import pNote
 
 
 class MicroappsActions(object):
-    """class CommonActions having methods (keywords) that are common for all the products"""
+    """class MicroappsActions having method that are for warrior_result product"""
 
     def get_warrior_result(self):
         """Returns warrior status and failed command details.
@@ -29,7 +29,7 @@ class MicroappsActions(object):
                 3. failure_reason (str) : failure reason
         """
         wdesc = "to get current status of warrior script and failure reason"
-        Utils.testcase_Utils.pNote(wdesc)
+        Utils.testcase_Utils.pNote("Keyword: get_warrior_result | Description: {0}".format(wdesc))
         script_status = True
         step_status_message = None
         failure_reason = None

@@ -18,7 +18,8 @@ import traceback
 from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
 from warrior.Framework import Utils
 from warrior.Framework.Utils import file_Utils
-from warrior.Framework.Utils.print_Utils import print_info, print_debug, print_error, print_exception
+from warrior.Framework.Utils.print_Utils import print_info, print_debug,\
+ print_error, print_exception
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 def get_arguments(step):
@@ -43,6 +44,11 @@ def get_arguments(step):
                 if arg_value:
                     if "${REPO." in arg_value:
                         arg_value = Utils.data_Utils.sub_from_data_repo(arg_value)
+                    if "${XLSCOL." in arg_value:
+                        general_iter_number = Utils.data_Utils.get_object_from_datarepository(\
+                            "gen_iter_number")
+                        arg_value = Utils.data_Utils.sub_from_gen_dict(\
+                            arg_value, general_iter_number)
                 arg_datatype_object.arg_name = arg_name
                 arg_datatype_object.arg_value = arg_value
                 value = arg_datatype_object.convert_arg_to_datatype()
@@ -92,8 +98,8 @@ def get_step_console_log(filename, logsdir, console_name):
 
     console_logfile = Utils.file_Utils.getCustomLogFile(
         filename, logsdir, console_name)
-    print_info("\n************ This is parallel execution ************")
-    print_info("\n... console logs for {0} will be logged in {1} ".format(
+    print_debug("************ This is parallel execution ************")
+    print_info("... console logs for {0} will be logged in {1} ".format(
         console_name, console_logfile))
     Utils.config_Utils.debug_file(console_logfile)
 
@@ -127,6 +133,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     step_impact = Utils.testcase_Utils.get_impact_from_xmlfile(step)
     step_description = Utils.testcase_Utils.get_description_from_xmlfile(step)
     parallel = kw_parallel
+    keyword_description = data_repository['wt_title']
 
     if parallel is True:
         step_console_log = get_step_console_log(data_repository['wt_filename'],
@@ -150,21 +157,21 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:
         if step.find("runmode").get("attempt") == 1:
-            print_info("\n----------------- Start of Step Runmode Execution -----------------\n")
+            print_debug("----------------- Start of Step Runmode Execution ----------------")
         print_info("KEYWORD ATTEMPT: {0}".format(
             step.find("runmode").get("attempt")))
     # print keyword to result file
     Utils.testcase_Utils.pKeyword(keyword, driver)
-    print_info("step number: {0}".format(step_num))
+    print_info("Step number: {0} | TestStep Description: {1}".format(step_num, step_description))
     if step.get("loop_id"):
         print_info("loop id: {0}".format(step.get("loop_id")))
-    print_info("Teststep Description: {0}".format(step_description))
+    # print_info("Teststep Description: {0}".format(step_description))
 
     if step.find("retry") is not None and step.find("retry").get("attempt") is not None:
         print_info("KEYWORD ATTEMPT: {0}".format(
             step.find("retry").get("attempt")))
     kw_start_time = Utils.datetime_utils.get_current_timestamp()
-    print_info("[{0}] Keyword execution starts".format(kw_start_time))
+    print_debug("[{0}] Keyword execution starts".format(kw_start_time))
     # get argument list provided by user
     args_repository = get_arguments(step)
     if system_name is not None:
@@ -186,8 +193,8 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
 
     # Getting onError action
     # Insert rules else statement here
-    print_info("")
-    print_info("*** Keyword status ***")
+    print_debug("")
+    print_debug("*** Keyword status ***")
     step_goto_value = False
     step_onError_action = Utils.xml_Utils.get_attributevalue_from_directchildnode(
         step, 'onError', 'action')
@@ -208,7 +215,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
                    "'abort_as_error'")
         keyword_status = "ERROR"
     Utils.testcase_Utils.reportKeywordStatus(keyword_status, keyword)
-    print_info("step number: {0}".format(step_num))
+    print_debug("step number: {0}".format(step_num))
 
     # Reporting status to data repo
     string_status = {"TRUE": "PASS", "FALSE": "FAIL",
@@ -236,18 +243,18 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
             data_repository['step-%s_exception' % step_num]
         Utils.testcase_Utils.pNote_level(msg, "debug", "kw", ptc=False)
 
-    print_info("")
+    print_debug("")
     kw_end_time = Utils.datetime_utils.get_current_timestamp()
     kw_duration = Utils.datetime_utils.get_time_delta(kw_start_time)
     hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
     print_info("Keyword duration= {0}".format(hms))
-    print_info("[{0}] Keyword execution completed".format(kw_end_time))
+    print_debug("[{0}] Keyword execution completed".format(kw_end_time))
     # condition to  print the end of runmode execution when all the attempts finish
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:
         if step.find("runmode").get("attempt") == \
            step.find("runmode").get("runmode_val"):
-            print_info("\n----------------- End of Step Runmode Execution -----------------\n")
+            print_info("----------------- End of Step Runmode Execution -----------------")
 
     impact_dict = {"IMPACT": "Impact", "NOIMPACT": "No Impact"}
     tc_timestamp = data_repository['wt_tc_timestamp']

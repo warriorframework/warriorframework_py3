@@ -12,13 +12,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 import sys
+import os
 from os.path import abspath, dirname
+import site 
+
 if sys.version_info < (3, 4):
     print("Warrior doesn't support Python version lower than 3.4, now exiting")
     sys.exit(0)
 try:
     from warrior.WarriorCore import warrior_cli_driver
-#except ModuleNotFoundError as error:
+    virtual_env = os.getenv('VIRTUAL_ENV')
+    if virtual_env:
+        war_tools_dir = virtual_env + os.sep + "warrior_settings/Tools"
+    else:
+        war_tools_dir = site.getuserbase() + os.sep + "warrior_settings/Tools"
 except:
     WARRIORDIR = dirname(dirname(abspath(__file__)))
     sys.path.append(WARRIORDIR)
@@ -26,8 +33,15 @@ except:
         from warrior.WarriorCore import warrior_cli_driver
     except:
         raise
+    war_tools_dir = WARRIORDIR + os.sep + "warrior" + os.sep + "Tools"
+
+if not os.path.exists(war_tools_dir):
+    print("warrior_settings dir path {} doesn't exist. environment issue"
+            " aborting script execution.".format(war_tools_dir))
+    sys.exit(0)
 
 __description__ = """This is the Warrior executable"""
 
 if __name__ == '__main__':
+    os.environ["WAR_TOOLS_DIR"] = war_tools_dir
     warrior_cli_driver.warrior_execute_entry()

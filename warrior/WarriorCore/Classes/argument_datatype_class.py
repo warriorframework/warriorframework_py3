@@ -13,7 +13,7 @@ limitations under the License.
 import ast
 import traceback
 from io import IOBase
-from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning, print_debug
 from warrior.Framework.Utils import config_Utils, file_Utils
 
 """This is argument datatype class api that converts the user input
@@ -98,7 +98,7 @@ class ArgumentDatatype(object):
         if self.datatype is not None:
             convert_msg = "Input argument {0} will be converted to a {1}".format(
                                                     self.arg_name, self.datatype)
-            print_info(convert_msg)
+            print_debug(convert_msg)
 
         result = self.convert_string_to_datatype()
         return result

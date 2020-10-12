@@ -16,13 +16,14 @@ from warrior.Framework import Utils
 from warrior.Framework.Utils.print_Utils import print_error, print_info
 from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.Utils.data_Utils import getSystemData
-from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer, WarriorKafkaConsumer
+from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer,\
+    WarriorKafkaConsumer
 from warrior.Framework.Utils.config_Utils import data_repository
 
 """This is the kafka_actions module that has kafka keywords """
 
 
-class KafkaActions(object):
+class KafkaActions():
     """KafkaActions class which has methods(keywords)
        related to actions performed for kafka"""
 
@@ -63,7 +64,7 @@ class KafkaActions(object):
 
         """
         wdesc = "publish value {} to topic {} in kafka broker {}".format(system_name, topic, value)
-        pNote(wdesc)
+        pNote("Keyword: send_messages | Description: {0}".format(wdesc))
         status = True
         if not data_repository.get("kafka_producer", None):
             print_info("creating kafka producer")
@@ -91,7 +92,7 @@ class KafkaActions(object):
 
         # handling string and dict as input
         try:
-            value =  eval(value)
+            value = eval(value)
         except:
             value = value
 
@@ -143,7 +144,7 @@ class KafkaActions(object):
 
         """
         wdesc = "get messages subscribed to topics : {}".format(list_topics)
-        pNote(wdesc)
+        pNote("Keyword: get_messages | Description: {0}".format(wdesc))
         status = True
         output_dict = {}
         if not data_repository.get("kafka_consumer", None):

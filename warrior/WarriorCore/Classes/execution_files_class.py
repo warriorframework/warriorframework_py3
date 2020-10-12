@@ -15,10 +15,10 @@ limitations under the License.
 
 
 import os
-from warrior import Tools
 from warrior.Framework.Utils import file_Utils as file_Utils
 from warrior.Framework.Utils import xml_Utils as xml_Utils
-from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error, print_exception
+from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error,\
+ print_exception, print_debug
 from warrior.Framework.Utils.data_Utils import get_credentials
 
 class ExecFilesClass(object):
@@ -82,7 +82,8 @@ class ExecFilesClass(object):
                                                                  'Details', 'Resultsdir')
 
             #get default results directory
-            default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+            #default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+            default_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml'
             default_resultsdir = get_credentials(default_xml, 'def_dir', ['Resultsdir'], 'Setting')
             #use the default directory if user didn't define it in test case/test suite/project
             if results_location is None or results_location is False:
@@ -121,9 +122,10 @@ class ExecFilesClass(object):
             results_location = xml_Utils.getChildTextbyParentTag(self.filepath,
                                                                  'Details', 'Resultsdir')
             #get default logs and results directory
-            default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml' 
-            default_logsdir = get_credentials(default_xml, 'def_dir',['Logsdir'], 'Setting')
-            default_resultsdir = get_credentials(default_xml, 'def_dir',['Resultsdir'], 'Setting')
+            #default_xml = Tools.__path__[0] + os.sep + 'w_settings.xml'
+            default_xml = os.getenv("WAR_TOOLS_DIR") + os.sep + 'w_settings.xml'
+            default_logsdir = get_credentials(default_xml, 'def_dir', ['Logsdir'], 'Setting')
+            default_resultsdir = get_credentials(default_xml, 'def_dir', ['Resultsdir'], 'Setting')
             #use the default directory if user didn't define it in test case/test suite/project
             if results_location is None or results_location is False:
                 if default_resultsdir['Resultsdir'] is not None:
@@ -234,10 +236,10 @@ class ExecFilesClass(object):
             elif self.filetype == "proj":
                 datafile = False
         elif str(datafile).strip().upper() == "DEFAULT":
-            print_info("This testcase will be executed using the default InputDataFile")
+            print_debug("This testcase will be executed using the default InputDataFile")
             datafile = get_default_xml_datafile(self.filepath)
         elif str(datafile).strip().upper() == 'NO_DATA':
-            print_info('This test case will be run without any InputDataFile')
+            print_debug('This test case will be run without any InputDataFile')
             datafile = "NO_DATA"
 
         elif datafile is not None and datafile is not False:
@@ -246,7 +248,7 @@ class ExecFilesClass(object):
 
         if str(datafile).strip().upper() != 'NO_DATA' and datafile is not False:
             if not file_Utils.fileExists(datafile):
-                print_info('\n')
+                print_debug('\n')
                 print_error("!!! *** InputDataFile does not exist in provided path:"\
                             "{0} *** !!!".format(datafile))
         return datafile
@@ -258,7 +260,7 @@ class ExecFilesClass(object):
         data_type = xml_Utils.getChildTextbyParentTag(self.filepath, 'Details', 'Datatype')
         if str(datafile).upper().strip() == 'NO_DATA':
             data_type = 'CUSTOM'
-            print_info('This test case will be run without any InputDataFile')
+            print_debug('This test case will be run without any InputDataFile')
 
         elif data_type is None or data_type is False or\
         str(data_type).strip() == "":

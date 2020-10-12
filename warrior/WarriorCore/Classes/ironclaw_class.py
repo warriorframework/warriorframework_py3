@@ -18,7 +18,6 @@ of warrior framework """
 import os
 import time
 import re
-from warrior import Tools
 from  warrior import ProductDrivers
 import warrior.WarriorCore.Classes.kw_driver_class as kw_driver_class
 import warrior.WarriorCore.Classes.execution_files_class as execution_files_class
@@ -38,7 +37,8 @@ class IronClaw(object):
     def __init__(self):
         """ Contructor """
 
-        self.xsd_dir = Tools.__path__[0] + os.sep + 'xsd' + os.sep
+        #self.xsd_dir = Tools.__path__[0] + os.sep + 'xsd' + os.sep
+        self.xsd_dir = os.getenv("WAR_TOOLS_DIR") + os.sep + 'xsd' + os.sep
 
     @staticmethod
     def xml_to_xsd_validation(file_xml, file_xsd):
@@ -50,8 +50,8 @@ class IronClaw(object):
             No return value
         """
         try:
-            print_info("Validating:{0}".format(file_xml))
-            print_info("xsd_file:{0}".format(file_xsd))
+            print_debug("Validating:{0}".format(file_xml))
+            print_debug("xsd_file:{0}".format(file_xsd))
             xml_doc = parse(file_xml)
             xsd_doc = parse(file_xsd)
             xmlschema = XMLSchema(xsd_doc)
@@ -68,10 +68,10 @@ class IronClaw(object):
 
     def testcase_prerun(self, tc_filepath, check_files_dict=None):
         """Executes prerun of a testcase file """
-        print_info('\n')
-        print_info('='*40)
+        print_debug('\n')
+        print_debug('='*40)
         print_debug("Validating Test case xml")
-        print_info('='*40)
+        print_debug('='*40)
 
         testcase_xsd_fullpath = self.xsd_dir + os.sep + 'warrior_testcase.xsd'
         #print_info("Test case_xsd_location: {0}".format(testcase_xsd_fullpath))
@@ -93,10 +93,10 @@ class IronClaw(object):
 
     def testsuite_prerun(self, testsuite_filepath, root, check_files_dict=None):
         """Executes prerun of a testsuite file """
-        print_info('\n')
-        print_info('*'*40)
+        print_debug('\n')
+        print_debug('*'*40)
         print_debug("Validating Test suite xml")
-        print_info('*'*40)
+        print_debug('*'*40)
 
         testsuite_xsd_fullpath = self.xsd_dir + os.sep + 'warrior_suite.xsd'
         testsuite_status = self.xml_to_xsd_validation(testsuite_filepath, testsuite_xsd_fullpath)
@@ -110,11 +110,11 @@ class IronClaw(object):
                                                 os.path.dirname(testsuite_filepath))
                 time.sleep(5)
                 if os.path.isfile(tc_path):
-                    print_info('\n')
+                    print_debug('\n')
                     print_info('tc_path: {0}, Testcase file exists...'.format(tc_path))
                     tc_status = self.testcase_prerun(tc_path, check_files_dict)
                 else:
-                    print_info('\n')
+                    print_debug('\n')
                     tc_status = False
                     print_error('tc_path: {0}, Testcase file does not exist'.format(tc_path))
                     print_info('TC STATUS: {0}'.format('FAILED'))
@@ -133,10 +133,10 @@ class IronClaw(object):
     def project_prerun(self, project_filepath, root):
         """Executes prerun of a project file """
 
-        print_info('\n')
-        print_info('+'*40)
+        print_debug('\n')
+        print_debug('+'*40)
         print_debug("Validating Project xml")
-        print_info('+'*40)
+        print_debug('+'*40)
         project_xsd_fullpath = self.xsd_dir + os.sep + 'warrior_project.xsd'
         project_status = self.xml_to_xsd_validation(project_filepath, project_xsd_fullpath)
         if project_status:
@@ -147,13 +147,13 @@ class IronClaw(object):
                                                        os.path.dirname(project_filepath))
 
                 if os.path.isfile(testsuite_path):
-                    print_info('\n')
+                    print_debug('\n')
                     print_info("Testsuite_path: {0}, Testsuite"\
                                "file exists...".format(testsuite_path))
                     ts_root = xml_Utils.getRoot(testsuite_path)
                     tsuite_status = self.testsuite_prerun(testsuite_path, ts_root, check_files_dict)
                 else:
-                    print_info('\n')
+                    print_debug('\n')
                     tsuite_status = False
                     print_error('testsuite_path: {0},\
                                 Testsuite file does not exist'.format(testsuite_path))
@@ -164,7 +164,7 @@ class IronClaw(object):
             print_error("Incorrect xml format")
 
         time.sleep(5)
-        print_info('\n')
+        print_debug('\n')
         status = testcase_Utils.convertLogic(project_status)
         print_info('PROJECT STATUS: {0}ED'.format(status))
 
@@ -227,15 +227,15 @@ class IronClaw(object):
 
         search_result_list = drv_obj.matching_method_list + drv_obj.matching_function_list
         if len(search_result_list) == 1:
-            print_info("Found one matching method/function for "\
+            print_debug("Found one matching method/function for "\
                        "keyword '{0}'".format(keyword))
         elif len(search_result_list) == 0:
-            print_info("There is no matching keyword: '{0}' "\
+            print_warning("There is no matching keyword: '{0}' "\
             "for the Driver: '{1}'".format(keyword,
                                            driver_name))
             search_result_list = None
         elif len(search_result_list) > 1:
-            print_info("More than one method/function of same name: '{0}' "\
+            print_debug("More than one method/function of same name: '{0}' "\
             "exists for the Driver: '{1}'".format(keyword,
                                                   driver_name))
             search_result_list = None
@@ -408,13 +408,13 @@ class IronClaw(object):
 
         elif input_data_file is None or input_data_file is False:
             if testname is 'Testcase':
-                print_info("InputDataFile is not provided,"\
+                print_debug("InputDataFile is not provided,"\
                            "checking if default InputDataFile exists....")
                 default_datafilepath = execution_files_class.get_default_xml_datafile(\
                     filepath)
                 print_debug("default_datafile_path: {0}".format(default_datafilepath))
                 if os.path.exists(default_datafilepath):
-                    print_info("Default input datafile for the Testcase is available")
+                    print_debug("Default input datafile for the Testcase is available")
                     result.append(True)
                 else:
                     print_error("Default input datafile for the Testcase is NOT available")
@@ -443,7 +443,7 @@ def get_action_dirlist(driverpath):
 
             return actions_package_list
         else:
-            print_info(("file {0} does not exist".format(driverpath)))
+            print_error(("file {0} does not exist".format(driverpath)))
             return actions_package_list
     except Exception as exception:
         print_exception(exception)
