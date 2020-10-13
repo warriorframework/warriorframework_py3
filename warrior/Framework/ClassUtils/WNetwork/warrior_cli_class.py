@@ -1681,7 +1681,11 @@ class PexpectConnect(object):
                     pNote("EXCEPTION !! Device unresponsive", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "device unresponsive while executing command: {}".format(command.split(":")[0])
                 else:
-                    response = response + self.target_host.after.decode('utf-8')
+                    try:
+                        response = response + self.target_host.after.decode('utf-8')
+                    except:
+                        pNote("EXCEPTION !! Cannot decode response", 'error')
+                        data_repository['step_%s_errormessage' % step_num] = "Response decode error for command: {}".format(command.split(":")[0])
                 if kwargs.get("log", "true") != "false":
                     pNote("Response:\n{0}\n".format(response))
                 pNote(msg, "debug")
