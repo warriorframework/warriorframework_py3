@@ -7,7 +7,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing per//////////////////////////////////////////////////////////////////////////////////missions and
+See the License for the specific language governing permissions and
 limitations under the License.
 '''
 
@@ -44,7 +44,7 @@ class ExecutionSummary():
             project_list.append([file_type, proj_name, project_status, proj_location])
         return project_list
 
-    #import pdb;pdb.set_trace()
+
 
     def suite_summary(self, junit_file):
         """ To get the name, status and location of both test suite and test case"""
@@ -134,7 +134,7 @@ class ExecutionSummary():
             else:
                 file_type = "Project"
         return file_type
-    #import pdb;pdb.set_trace()
+
     def print_result_in_console(self, junit_file):
         """To print the consolidated test cases result in console at the end of Test Case/Test
            Suite/Project Execution"""
