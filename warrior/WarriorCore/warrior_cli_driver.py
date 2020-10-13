@@ -249,7 +249,7 @@ def execution(parameter_list, cli_args, overwrite, livehtmlobj):
     if cli_args.version:
         framework_detail.warrior_framework_details()
         sys.exit(0)
-    #import pdb;pdb.set_trace()
+
     if not parameter_list:
         print_error("Provide at least one xml file to execute")
         sys.exit(1)
@@ -304,7 +304,7 @@ def warrior_execute_entry(*args, **kwargs):
             sys.exit()
         if sys.argv[1] == "-rerun":
             print_info("Initializing the rerun feature  !!")
-            #import pdb;pdb.set_trace()
+
             try:
                 junit_path = sys.argv[2]
                 if os.path.exists(junit_path):
