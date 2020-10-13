@@ -16,7 +16,10 @@ try:
     import site
     import os
 
+
     print("import os was successful")
+    from warrior.WarriorCore.Classes.rerun import execute_failedsuite
+    print("Import rerun was successful")
     import shutil
 
     print("import shutil was successful")
@@ -246,6 +249,7 @@ def execution(parameter_list, cli_args, overwrite, livehtmlobj):
     if cli_args.version:
         framework_detail.warrior_framework_details()
         sys.exit(0)
+    #import pdb;pdb.set_trace()
     if not parameter_list:
         print_error("Provide at least one xml file to execute")
         sys.exit(1)
@@ -298,6 +302,24 @@ def warrior_execute_entry(*args, **kwargs):
             os.system("python {}/warrior_py3_migration_tool {}".format(warrior_py3_migration_tool_path,\
              " ".join(sys.argv[2:])))
             sys.exit()
+        if sys.argv[1] == "-rerun":
+            print_info("Initializing the rerun feature  !!")
+            #import pdb;pdb.set_trace()
+            try:
+                junit_path = sys.argv[2]
+                if os.path.exists(junit_path):
+                    execute_failedsuite(junit_path)
+                    sys.exit()
+                else:
+                    print_error("Invalid junit path")
+                    sys.exit()
+            except Exception as e:
+                print(e)
+                print_error("Junit Path is missing")
+
+                sys.exit()
+
+
 
     if not kwargs:
         # Launch from terminal/cli exeuction

@@ -457,6 +457,10 @@ class WarriorCliClass(object):
             "Multiple paths can be provided"\
             "(separated by a colon)")
 
+        warrior_arg.add_argument('-rerun', action="store", default=False, \
+             help=": Enter the command -rerun path of junit path")
+
+
         tools_arg = parser.add_argument_group('warrior tools')
         tools_arg.add_argument('-tc_gen', action='store',\
             help="generate the sample cli/netconf/snmp testcase based on "\
