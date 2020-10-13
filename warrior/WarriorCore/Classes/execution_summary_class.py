@@ -44,8 +44,6 @@ class ExecutionSummary():
             project_list.append([file_type, proj_name, project_status, proj_location])
         return project_list
 
-
-
     def suite_summary(self, junit_file):
         """ To get the name, status and location of both test suite and test case"""
         tree = xml_Utils.get_tree_from_file(self.junit_file)
@@ -173,7 +171,6 @@ class ExecutionSummary():
     def print_execution_summary_details(self, suite_tc_exec):
         """To print the consolidated test cases result in console at the end of
            Test Case/Test Suite/Project Execution"""
-        print(suite_tc_exec)
         for suite_tc in suite_tc_exec:
             path = suite_tc[3]
             name = suite_tc[1]
