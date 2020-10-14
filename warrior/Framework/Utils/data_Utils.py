@@ -1328,7 +1328,7 @@ def _get_resp_order(context_list, verify_list, resp_details_dict):
             index_list.append(resp_details_dict[system][i]['start_index'])
 
         rcv_all_resp_order = []
-        for val in sorted(enumerate(index_list), key=lambda x: x[1]):
+        for val in sorted(enumerate(index_list), key=lambda x: x[1] is not None):
             if val[1] is not None:
                 rcv_all_resp_order.append(verify_list[val[0]])
 
