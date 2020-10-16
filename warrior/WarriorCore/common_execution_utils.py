@@ -18,6 +18,8 @@ import random
 import json
 
 from warrior.Framework import Utils
+from warrior.Framework.Utils import file_Utils as file_Utils
+from warrior.Framework.Utils import xml_Utils as xml_Utils
 from warrior.Framework.Utils.print_Utils import print_warning, print_info, print_error
 from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, update_datarepository
 from warrior.Framework.Utils.file_Utils import getAbsPath
@@ -611,3 +613,46 @@ def get_steps_lists(filepath, step_tag, sub_step_tag, randomize=False, loop_tag=
         if retry_type is None and runmode is None:
             step_list_with_rmt_retry.append(step)
     return step_list_with_rmt_retry
+
+
+def check_get_datatype(filepath,datafile):
+    """Check and get the datatype for testcase
+    """
+    data_type = xml_Utils.getChildTextbyParentTag(filepath, 'Details', 'Datatype')
+    if str(datafile).upper().strip() == 'NO_DATA':
+        data_type = 'CUSTOM'
+        print_info('This test case will be run without any InputDataFile')
+
+    elif data_type is None or data_type is False or \
+            str(data_type).strip() == "":
+        data_type = 'CUSTOM'
+
+    elif data_type is not None and data_type is not False:
+        data_type = str(data_type).strip()
+        supported_values = ['iterative', 'custom', 'hybrid']
+        if data_type.lower() not in supported_values:
+            print_warning("unsupported value '{0}' provided for data_type,"
+                          " supported values are " \
+                          "'{1}' and case-insensitive".format(data_type, supported_values))
+            print_info("Hence using default value for data_type which is 'custom'")
+            data_type = 'CUSTOM'
+    return data_type
+
+
+def check_get_runtype(filepath):
+    """Check and get the runtype for testcase
+    """
+    if xml_Utils.nodeExists(filepath, 'Runtype'):
+        run_type = xml_Utils.getChildTextbyParentTag(filepath, 'Details', 'Runtype')
+        if run_type is not None and run_type is not False:
+            run_type = str(run_type).strip()
+            supported_values = ['sequential_keywords', 'parallel_keywords']
+            if run_type.lower() not in supported_values:
+                print_warning("unsupported value '{0}' provided for run_type,"
+                              "supported values are " \
+                              "'{1}' and case-insensitive".format(run_type, supported_values))
+                print_info("Hence using default value for run_type which is 'sequential_keywords'")
+                run_type = 'SEQUENTIAL_KEYWORDS'
+    else:
+        run_type = "SEQUENTIAL_KEYWORDS"
+    return run_type
