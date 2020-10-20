@@ -468,9 +468,8 @@ def get_testwrapper_file_details(testcase_filepath, data_repository):
     abs_cur_dir = os.path.dirname(testcase_filepath)
     abs_testwrapperfile = Utils.file_Utils.getAbsPath(testwrapperfile, abs_cur_dir)
     Utils.xml_Utils.getRoot(abs_testwrapperfile)
-    jfile_obj = execution_files_class.ExecFilesClass(abs_testwrapperfile, "tc", None, None)
-    j_data_type = jfile_obj.check_get_datatype(data_repository['wt_datafile'])
-    j_runtype = jfile_obj.check_get_runtype()
+    j_data_type = common_execution_utils.check_get_datatype(abs_testwrapperfile, data_repository['wt_datafile'])
+    j_runtype = common_execution_utils.check_get_runtype(abs_testwrapperfile)
     setup_on_error_action = Utils.testcase_Utils.get_setup_on_error(abs_testwrapperfile)
     return [abs_testwrapperfile, j_data_type, j_runtype, setup_on_error_action]
 

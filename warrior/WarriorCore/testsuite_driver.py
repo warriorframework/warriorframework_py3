@@ -202,12 +202,11 @@ def get_testwrapper_file_details(testsuite_filepath, data_repository):
     abs_cur_dir = os.path.dirname(testsuite_filepath)
     abs_testwrapperfile = Utils.file_Utils.getAbsPath(testwrapperfile, abs_cur_dir)
     Utils.xml_Utils.getRoot(abs_testwrapperfile)
-    jfile_obj = execution_files_class.ExecFilesClass(abs_testwrapperfile, "ts", None, None)
     if not data_repository.get('suite_data_file', False):
         print_error("Input data file must be specified in test suite global details section")
         exit(0)
-    j_data_type = jfile_obj.check_get_datatype(data_repository['suite_data_file'])
-    j_runtype = jfile_obj.check_get_runtype()
+    j_data_type = common_execution_utils.check_get_datatype(abs_testwrapperfile, data_repository['suite_data_file'])
+    j_runtype = common_execution_utils.check_get_runtype(abs_testwrapperfile)
     setup_on_error_action = Utils.testcase_Utils.get_setup_on_error(abs_testwrapperfile)
     return [abs_testwrapperfile, j_data_type, j_runtype, setup_on_error_action]
 
