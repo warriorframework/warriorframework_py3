@@ -457,6 +457,11 @@ class WarriorCliClass(object):
             "Multiple paths can be provided"\
             "(separated by a colon)")
 
+        warrior_arg.add_argument('--loglevel', action='store',\
+            help="logging level, debug:10, info:20, warning:30, error:40, critical:50 \
+                  defaults to 'info'. example usage '--loglevel error'\
+                  --loglevel warning'")
+
         tools_arg = parser.add_argument_group('warrior tools')
         tools_arg.add_argument('-tc_gen', action='store',\
             help="generate the sample cli/netconf/snmp testcase based on "\

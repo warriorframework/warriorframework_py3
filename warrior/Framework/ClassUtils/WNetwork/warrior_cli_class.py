@@ -1287,7 +1287,7 @@ class ParamikoConnect(object):
                 response = response + stderr.read().decode("utf-8")
 
             pNote("[{0}] Command execution completed".format(end_time))
-            pNote("Response:\n{0}\n".format(response))
+            print_debug("Response:\n{0}\n".format(response))
             status = True
         except Exception as exception:
             print_exception(exception)
@@ -1675,7 +1675,7 @@ class PexpectConnect(object):
                 else:
                     response = response + self.target_host.after.decode('utf-8')
                 if kwargs.get("log", "true") != "false":
-                    pNote("Response:\n{0}\n".format(response))
+                    print_debug("Response:\n{0}\n".format(response))
                 pNote(msg, "debug")
                 if status is True:
                     duration = Utils.datetime_utils.get_time_delta(start_time,

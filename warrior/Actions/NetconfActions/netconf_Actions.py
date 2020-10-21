@@ -17,6 +17,8 @@ ymizugaki 2017/07/11
 import time
 from xml.dom.minidom import parseString
 from warrior.Framework import Utils
+from warrior.Framework.Utils.print_Utils import  print_info, print_debug,\
+ print_warning, print_exception, print_error, print_without_logging
 from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep, report_substep_status
 from warrior.Framework.ClassUtils.netconf_utils_class import WNetConf
 from warrior.Framework.Utils.encryption_utils import decrypt
@@ -74,8 +76,8 @@ class NetconfActions(object):
 
         reply_key = '{}_request_rpc_reply'.format(system_name)
         reply_list = []
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.\
@@ -96,12 +98,12 @@ class NetconfActions(object):
                                               request_type, xmlns_tag)
             else:
                 status = "error"
-                pNote("Datafile does not have any value for netconf_data tag "
+                print_error("Datafile does not have any value for netconf_data tag "
                       "or the filepath mentioned in the netconf_data tag "
                       "does not exist", 'error')
         else:
             status = "error"
-            pNote("Please provide value(s) for 'request' or 'xmlns &"
+            print_error("Please provide value(s) for 'request' or 'xmlns &"
                   " request_type'", 'error')
         if status is True and config_data_list:
             list_config_data = []
@@ -113,16 +115,16 @@ class NetconfActions(object):
                 if config_data:
                     reply = netconf_object.request_rpc(config_data)
                     reply_list.append(reply)
-                    pNote('Request RPC Reply= {}'.format(reply))
+                    print_debug('Request RPC Reply= {}'.format(reply))
                     if netconf_object.isCOMPLD:
                         sub_status = True
                     else:
-                        pNote('Request RPC Failed {}'.format(
+                        print_error('Request RPC Failed {}'.format(
                          netconf_object.ErrorMessage), "error")
                         sub_status = False
                 else:
                     reply_list.append("error")
-                    pNote('Request RPC Failed', "error")
+                    print_error('Request RPC Failed', "error")
                     sub_status = "error"
                 status = status and sub_status if sub_status != "error" \
                     else sub_status
@@ -182,8 +184,8 @@ class NetconfActions(object):
                                                                system_name,
                                                                session_parameters)
         session_credentials["password"] = decrypt(session_credentials["password"])
-        pNote(system_name)
-        pNote(Utils.file_Utils.getDateTime())
+        print_debug(system_name)
+        print_debug(Utils.file_Utils.getDateTime())
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         status = self.netconf_object.open(session_credentials)
 
@@ -194,7 +196,7 @@ class NetconfActions(object):
                 status = False
             else:
                 output_dict["netconf_session_id"] = self.netconf_object.session_id
-                pNote("netconf session-id = %s" % self.netconf_object.session_id)
+                print_debug("netconf session-id = %s" % self.netconf_object.session_id)
                 output_dict[session_id] = self.netconf_object
         report_substep_status(status)
         if output_dict:
@@ -215,24 +217,24 @@ class NetconfActions(object):
 
         wdesc = "Request graceful termination of Netconf session"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(
             session_id)
         netconf_session_id = Utils.data_Utils.get_object_from_datarepository(
             "netconf_session_id")
-        pNote("close session-id=%s" % netconf_session_id)
+        print_debug("close session-id=%s" % netconf_session_id)
         reply = netconf_object.close()
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('close-session: Reply= {}'.format(reply))
+        print_debug('close-session: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
             status = False
-            pNote('Close Netconf Failed {}'.format(
+            print_error('Close Netconf Failed {}'.format(
                 netconf_object.ErrorMessage), "error")
 
         report_substep_status(status)
@@ -258,8 +260,8 @@ class NetconfActions(object):
 
         wdesc = "Get system configuration data from the provided system"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -269,11 +271,11 @@ class NetconfActions(object):
             datastore, filter_string, filter_type)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('get-config: Reply= {}'.format(reply))
+        print_debug('get-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote("get-config: Failed {}".format(netconf_object.ErrorMessage))
+            print_error("get-config: Failed {}".format(netconf_object.ErrorMessage))
             status = False
         report_substep_status(status)
         reply_key = '{}_get_config_reply'.format(system_name)
@@ -296,8 +298,8 @@ class NetconfActions(object):
         """
         wdesc = "Create or replace an entire configuration datastore with another datastore"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -306,12 +308,12 @@ class NetconfActions(object):
         reply = netconf_object.copy_config(source, target)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('copy-config: Reply= {}'.format(reply))
+        print_debug('copy-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
             status = False
-            pNote('copy-config: Failed {}'.format(netconf_object.ErrorMessage), "error")
+            print_error('copy-config: Failed {}'.format(netconf_object.ErrorMessage), "error")
         report_substep_status(status)
         reply_key = '{}_copy_config_reply'.format(system_name)
         return status, {reply_key: reply}
@@ -329,8 +331,8 @@ class NetconfActions(object):
          """
         wdesc = "Delete system configuration data from the provided system"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -339,11 +341,11 @@ class NetconfActions(object):
         reply = netconf_object.delete_config(datastore)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('delete-config: Reply= {}'.format(reply))
+        print_debug('delete-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote('delete-config: Failed {}'.format(netconf_object.ErrorMessage), "error")
+            print_error('delete-config: Failed {}'.format(netconf_object.ErrorMessage), "error")
             status = False
         report_substep_status(status)
         reply_key = '{}_delete_config_reply'.format(system_name)
@@ -362,8 +364,8 @@ class NetconfActions(object):
          """
         wdesc = "Discard any uncommitted changes to the candidate configuration"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -372,11 +374,11 @@ class NetconfActions(object):
         reply = netconf_object.discard_changes()
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('discard-changes: Reply= {}'.format(reply))
+        print_debug('discard-changes: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote(
+            print_error(
                 'discard-changes: Failed {}'.format(netconf_object.ErrorMessage), "error")
             status = False
         report_substep_status(status)
@@ -403,8 +405,8 @@ class NetconfActions(object):
          """
         wdesc = "Edit system configuration data"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
         reply_key = '{}_edit_config_reply'.format(system_name)
         reply_list = []
         status = True
@@ -436,14 +438,15 @@ class NetconfActions(object):
                     if netconf_object.isCOMPLD:
                         status = status and True if status != "error" else status
                     else:
-                        pNote('Edit Config Failed {}'.format(netconf_object.ErrorMessage), "error")
+                        print_error('Edit Config Failed {}'.format(netconf_object.ErrorMessage),\
+                         "error")
                         status = status and False if status != "error" else status
                         break
                 else:
                     reply = "error"
-                    pNote('Edit Config Failed', "error")
+                    print_error('Edit Config Failed', "error")
                     status = status and False
-        pNote('Edit Config Reply= {}'.format(reply_list))
+        print_debug('Edit Config Reply= {}'.format(reply_list))
 
         report_substep_status(status)
         return status, {reply_key: reply_list}
@@ -465,8 +468,8 @@ class NetconfActions(object):
          """
         wdesc = "Commit the candidate datastore"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -475,11 +478,11 @@ class NetconfActions(object):
         reply = netconf_object.commit(confirmed, timeout, persist, persist_id)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('commit: Reply= {}'.format(reply))
+        print_debug('commit: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote('commit: Failed {}'.format(
+            print_error('commit: Failed {}'.format(
                 netconf_object.ErrorMessage), "error")
             status = False
         report_substep_status(status)
@@ -499,8 +502,8 @@ class NetconfActions(object):
          """
         wdesc = "Lock the configuration datastore"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -509,11 +512,11 @@ class NetconfActions(object):
         reply = netconf_object.lock(datastore)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('lock: Reply= {}'.format(reply))
+        print_debug('lock: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote('lock: Failed {}'.format(
+            print_error('lock: Failed {}'.format(
                 netconf_object.ErrorMessage), "error")
             status = False
         report_substep_status(status)
@@ -533,8 +536,8 @@ class NetconfActions(object):
          """
         wdesc = "Unlock the configuration datastore"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -543,11 +546,11 @@ class NetconfActions(object):
         reply = netconf_object.unlock(datastore)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('unlock: Reply= {}'.format(reply))
+        print_debug('unlock: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote('unlock: Failed {}'.format(
+            print_error('unlock: Failed {}'.format(
                 netconf_object.ErrorMessage), "error")
             status = False
         report_substep_status(status)
@@ -569,8 +572,8 @@ class NetconfActions(object):
          """
         wdesc = "Retrieve operational state information (get rpc)."
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -579,11 +582,11 @@ class NetconfActions(object):
         reply = netconf_object.get(filter_string, filter_type)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('get: Reply= {}'.format(reply))
+        print_debug('get: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote('get: Failed {}'.format(netconf_object.ErrorMessage), "error")
+            print_error('get: Failed {}'.format(netconf_object.ErrorMessage), "error")
             status = False
         report_substep_status(status)
         reply_key = '{}_get_config_reply'.format(system_name)
@@ -601,8 +604,8 @@ class NetconfActions(object):
          """
         wdesc = "Force the termination of a NETCONF session (not the current one!)"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -613,11 +616,11 @@ class NetconfActions(object):
         reply = netconf_object.kill_session(netconf_session_id)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('kill-session: Reply= {}'.format(reply))
+        print_debug('kill-session: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote('kill-session: Failed {}'.format(netconf_object.ErrorMessage), "error")
+            print_error('kill-session: Failed {}'.format(netconf_object.ErrorMessage), "error")
             status = False
         report_substep_status(status)
         reply_key = '{}_kill_session_netconf_reply'.format(system_name)
@@ -635,8 +638,8 @@ class NetconfActions(object):
          """
         wdesc = "Validate the contents of the specified configuration."
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -645,11 +648,11 @@ class NetconfActions(object):
         reply = netconf_object.validate(datastore)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('validate: Reply= {}'.format(reply))
+        print_debug('validate: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote('validate: Failed {}'.format(
+            print_error('validate: Failed {}'.format(
                 netconf_object.ErrorMessage), "error")
             status = False
 
@@ -677,8 +680,8 @@ class NetconfActions(object):
          """
         wdesc = "Edit system configuration data"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -693,10 +696,10 @@ class NetconfActions(object):
             status = True
             if reply:
                 reply = parseString(reply).toprettyxml(indent="  ")
-            pNote('edit-config: Reply= {}'.format(reply))
+            print_debug('edit-config: Reply= {}'.format(reply))
         else:
-            pNote('edit-config: Reply= {}'.format(reply))
-            pNote('edit-config: Failed {}'.format(netconf_object.ErrorMessage), "error")
+            print_error('edit-config: Reply= {}'.format(reply))
+            print_error('edit-config: Failed {}'.format(netconf_object.ErrorMessage), "error")
             status = False
         report_substep_status(status)
         reply_key = '{}_edit_config_reply'.format(system_name)
@@ -725,8 +728,8 @@ class NetconfActions(object):
          """
         wdesc = "create-subscription to receive netconf event notification"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -740,11 +743,11 @@ class NetconfActions(object):
                                                    stop_time)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('create-subscription: Reply= {}'.format(reply))
+        print_debug('create-subscription: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote(
+            print_error(
                 'create-subscription: Failed {}'.format(netconf_object.ErrorMessage), "error")
             status = False
         report_substep_status(status)
@@ -809,8 +812,8 @@ class NetconfActions(object):
         wdesc = ("waitfor_subscription to wait specified netconf event "
                  "notification")
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(
@@ -848,8 +851,8 @@ class NetconfActions(object):
         """
         wdesc = "kill-session, create another session and kill it"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         test_netconf = WNetConf()
         session_parameters = ['ip', 'nc_port', 'username', 'password',
@@ -884,8 +887,8 @@ class NetconfActions(object):
         """
         wdesc = "cancel-commit"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -894,11 +897,11 @@ class NetconfActions(object):
         reply = netconf_object.cancel_commit(persist_id)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('cancel-commit: Reply= {}'.format(reply))
+        print_debug('cancel-commit: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote('cancel-commit: Failed {}'.format(netconf_object.ErrorMessage), "error")
+            print_error('cancel-commit: Failed {}'.format(netconf_object.ErrorMessage), "error")
             status = False
 
         report_substep_status(status)
@@ -915,8 +918,8 @@ class NetconfActions(object):
         """
         wdesc = "clear notification buffer"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(
             session_id)
@@ -935,8 +938,8 @@ class NetconfActions(object):
         """
         wdesc = "clear notification buffer all"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         temp_dict = Utils.config_Utils.data_repository
         for s0, s1 in list(temp_dict.items()):
@@ -959,8 +962,8 @@ class NetconfActions(object):
         """
         wdesc = "get-schema"
         pSubStep(wdesc)
-        pNote(system_name)
-        pNote(self.datafile)
+        print_debug(system_name)
+        print_debug(self.datafile)
 
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -970,11 +973,11 @@ class NetconfActions(object):
             identifier, version_number, format_type)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        pNote('get-schema: Reply= {}'.format(reply))
+        print_debug('get-schema: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
-            pNote('get-schema: Failed {}'.format(netconf_object.ErrorMessage), "error")
+            print_error('get-schema: Failed {}'.format(netconf_object.ErrorMessage), "error")
             status = False
 
         report_substep_status(status)
@@ -1002,7 +1005,7 @@ class NetconfActions(object):
         notification_data = netconf_object.get_notification_buffer(notification_type)
         if len(notification_data) != 0:
             for notif in notification_data:
-                pNote(notif)
+                print_debug(notif)
         else:
             pNote("notification data is empty")
         return True

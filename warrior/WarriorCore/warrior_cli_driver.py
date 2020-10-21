@@ -26,7 +26,7 @@ try:
     from warrior.Framework import Utils
 
     print("import Utils was successful")
-    from warrior.Framework.Utils.print_Utils import print_error, print_info
+    from warrior.Framework.Utils.print_Utils import print_error, print_info, print_debug
 
     print("import print_Utils was successful")
     from warrior.WarriorCore import testcase_driver, testsuite_driver, project_driver
@@ -433,7 +433,7 @@ def decide_overwrite_var(namespace):
         if job_url['url'] is not None:
             url = job_url['url']
         else:
-            print_info("jobid is specified but no job url found in w_settings")
+            print_debug("jobid is specified but no job url found in w_settings")
             print_info("Using jobid only in JUnit file")
             url = ""
         overwrite['jobid'] = url + str(namespace.jobid)

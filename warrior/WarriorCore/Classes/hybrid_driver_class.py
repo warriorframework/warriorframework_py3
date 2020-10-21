@@ -65,7 +65,7 @@ otherwise the step will be executed on the current iterating system.
 from warrior.Framework.Utils import data_Utils, xml_Utils, config_Utils, \
                         testcase_Utils, file_Utils
 from warrior.Framework.Utils.testcase_Utils import pNote
-from warrior.Framework.Utils.print_Utils import print_debug, print_info
+from warrior.Framework.Utils.print_Utils import print_debug
 from warrior.WarriorCore import step_driver, common_execution_utils
 import warrior.WarriorCore.onerror_driver as onerror_driver
 import warrior.WarriorCore.exec_type_driver as exec_type_driver
@@ -178,11 +178,10 @@ class HybridDriver(object):
     def _compute_system_status(self, system_executed):
         """
         """
-        system_status = testcase_Utils.compute_status_using_impact(
-                                self.step_status_list, self.step_impact_list)
-        system_resultfile = self.compute_system_resultfile(self.kw_resultfile_list,
-                                                           self.data_repository['wt_resultsdir'],
-                                                           system_executed)
+        system_status = testcase_Utils.compute_status_using_impact(\
+            self.step_status_list, self.step_impact_list)
+        system_resultfile = self.compute_system_resultfile(self.kw_resultfile_list,\
+            self.data_repository['wt_resultsdir'], system_executed)
         self.system_status_list.append(system_status)
         self.system_resultfile_list.append(system_resultfile)
 
@@ -191,11 +190,10 @@ class HybridDriver(object):
     def _compute_testcase_status(self):
         """
         """
-        tc_status = testcase_Utils.compute_status_without_impact(
-                                                    self.system_status_list)
+        tc_status = testcase_Utils.compute_status_without_impact(self.system_status_list)
         print_debug("Updating Testcase result file...")
-        testcase_Utils.append_result_files(self.data_repository['wt_resultfile'],
-                                           self.system_resultfile_list)
+        testcase_Utils.append_result_files(self.data_repository['wt_resultfile'],\
+            self.system_resultfile_list)
         return tc_status
 
     def _execute_step_list(self):
@@ -222,29 +220,29 @@ class HybridDriver(object):
                 if not run_current_step:
 
                     if trigger_action.upper() in ['ABORT', 'ABORT_AS_ERROR']:
-                        if any([self.iter_type_list[index] == "once_per_tc",
-                               self.iter_type_list[index] == "end_of_tc"]):
-                            pNote("step exectype check failed, fail action is set to {0} and"
-                                  "step iter_type={1} hence aborting execution compeletely".\
-                                  format(trigger_action.upper(), self.iter_type_list[index]), "debug")
+                        if any([self.iter_type_list[index] == "once_per_tc",\
+                            self.iter_type_list[index] == "end_of_tc"]):
+                            pNote("step exectype check failed, fail action is set to {0} and"\
+                                "step iter_type={1} hence aborting execution compeletely".\
+                                  format(trigger_action.upper(), self.iter_type_list[index]),\
+                                   "debug")
                             self.stop_after_current_iteration = True
                             self.stop_after_current_step = True
                         else:
                             pNote("step exectype check failed, fail action is set to {0} and"
                                   "step iter_type={1} hence aborting execution for this system".\
-                                  format(trigger_action.upper(), self.iter_type_list[index]), "debug")
+                                  format(trigger_action.upper(), self.iter_type_list[index]),\
+                                   "debug")
                         goto_stepnum = False
                         break
                     elif trigger_action.upper() in ['SKIP', 'NEXT']:
-                        result = self._update_skip_results(step, self.system_executed,
-                                                   step_num)
+                        result = self._update_skip_results(step, self.system_executed, step_num)
                         self.kw_resultfile_list.append(result[1])
                         continue
                     # when 'onError:goto' value is less than the current step num,
                     # change the next iteration point to goto value
                     elif trigger_action and int(trigger_action) < step_num:
-                        result = self._update_skip_results(step, self.system_executed,
-                                                   step_num)
+                        result = self._update_skip_results(step, self.system_executed, step_num)
                         self.kw_resultfile_list.append(result[1])
                         step_num = int(trigger_action)-1
                         trigger_action = False
@@ -277,8 +275,8 @@ class HybridDriver(object):
             goto_stepnum, step_num = self._compute_runmode_goto_operations(step, step_status,
                                                                            goto_stepnum, step_num)
             if (goto_stepnum == 'ABORT'):
-                if any([self.iter_type_list[index] == "once_per_tc",
-                       self.iter_type_list[index] == "end_of_tc"]):
+                if any([self.iter_type_list[index] == "once_per_tc",\
+                    self.iter_type_list[index] == "end_of_tc"]):
                     pNote("step iter_type={0}, and onerror action=ABORT hence aborting execution"
                           "compeletely".format(self.iter_type_list[index]), "debug")
                     self.stop_after_current_iteration = True
@@ -291,6 +289,7 @@ class HybridDriver(object):
     def _compute_runmode_goto_operations(self, step, step_status,
                                          goto_stepnum, step_num):
         """
+        compute_runmode_goto_operations
         """
         runmode, value, _ = common_execution_utils.get_runmode_from_xmlfile(step)
 
@@ -304,17 +303,17 @@ class HybridDriver(object):
             elif runmode == "rup" and step_status is True:
                 goto_stepnum = str(value)
             else:
-                if any([step_status is False,
-                       str(step_status).upper() == "ERROR",
-                       str(step_status).upper() == "EXCEPTION"]):
-                    goto_stepnum = onerror_driver.main(step, self.default_error_action,
-                                                       self.default_error_value)
+                if any([step_status is False,\
+                    str(step_status).upper() == "ERROR",\
+                    str(step_status).upper() == "EXCEPTION"]):
+                    goto_stepnum = onerror_driver.main(step, self.default_error_action,\
+                    self.default_error_value)
                     # if (goto_stepnum == 'ABORT'): break
         else:
-            if any([step_status is False, str(step_status).upper() == "ERROR",
-                   str(step_status).upper() == "EXCEPTION"]):
-                goto_stepnum = onerror_driver.main(step, self.default_error_action,
-                                                   self.default_error_value)
+            if any([step_status is False, str(step_status).upper() == "ERROR",\
+                str(step_status).upper() == "EXCEPTION"]):
+                goto_stepnum = onerror_driver.main(step, self.default_error_action,\
+                    self.default_error_value)
                 if str(goto_stepnum).upper() == 'ABORT':
                     pass
                 # when 'onError:goto' value is less than the current step num,
@@ -333,8 +332,9 @@ class HybridDriver(object):
 
     def _execute_step(self, system_executed, step_num, index, goto_stepnum):
         """
+        execute_step
         """
-        print_info("\n")
+        print_debug("\n")
         result = (None, None, None, None)
 
         if not self.execute_endoftc:
@@ -366,8 +366,7 @@ class HybridDriver(object):
                                           system_executed)
 
             # if end_of_tc, skip it
-            elif all([self.iter_type_list[index] == "end_of_tc",
-                     not goto_stepnum]):
+             elif all([self.iter_type_list[index] == "end_of_tc", not goto_stepnum]):
                 self._print_step_details(step_num, self.iter_type_list[index],
                                          system_executed)
                 pNote("step iter_type={0} and will be executed at the end of "
@@ -406,6 +405,7 @@ class HybridDriver(object):
 
     def _update_skip_results(self, step, system_name, step_num):
         """
+         update_skip_results
         """
         keyword = step.get('Keyword')
         kw_resultfile = step_driver.get_keyword_resultfile(self.data_repository, system_name,
@@ -414,17 +414,14 @@ class HybridDriver(object):
         config_Utils.set_resultfile(kw_resultfile)
         testcase_Utils.pKeyword(keyword, step.get('Driver'))
         testcase_Utils.reportStatus('Skip')
-        print_info("\n-----------------------------------------------------\n")
-        self.data_repository['wt_junit_object'].update_count("skipped", "1", "tc",
-                                                             self.data_repository['wt_tc_timestamp'])
-        self.data_repository['wt_junit_object'].update_count("keywords", "1", "tc",
-                                                             self.data_repository['wt_tc_timestamp'])
-        self.data_repository['wt_junit_object'].add_keyword_result(self.
-                                                                   data_repository['wt_tc_timestamp'],
-                                                                   step_num, keyword, "SKIPPED",
-                                                                   "skipped", "skipped", "skipped",
-                                                                   "skipped", "skipped",
-                                                                   keyword_description)
+        print_debug("\n-----------------------------------------------------\n")
+        self.data_repository['wt_junit_object'].update_count("skipped", "1", "tc",\
+            self.data_repository['wt_tc_timestamp'])
+        self.data_repository['wt_junit_object'].update_count("keywords", "1", "tc",\
+            self.data_repository['wt_tc_timestamp'])
+        self.data_repository['wt_junit_object'].add_keyword_result(\
+            self.data_repository['wt_tc_timestamp'], step_num, keyword, "SKIPPED",\
+            "skipped", "skipped", "skipped", "skipped", "skipped", keyword_description)
 
         self.data_repository['step_{}_result'.format(step_num)] = "SKIPPED"
         result = ("Skip", kw_resultfile, None, None)
@@ -432,6 +429,7 @@ class HybridDriver(object):
 
     def _get_system_executed(self, index, sys_list=None):
         """
+        get_system_executed
         """
         sys_list = self.kw_sys_list if sys_list is None else sys_list
         if sys_list[index] is not None:
@@ -471,6 +469,7 @@ class HybridDriver(object):
 
     def _get_executed_list(self, step_list):
         """
+        get_executed_list
         """
         executed_or_not_list = []
         for _ in step_list:
@@ -499,6 +498,7 @@ class HybridDriver(object):
 
     def _get_exec_steps(self, step_list, iter_type_list):
         """
+        get_exec_steps
         """
         end_of_tc_list = []
         end_of_tc_kw_syslist = []
