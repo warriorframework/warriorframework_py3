@@ -29,6 +29,7 @@ from datetime import datetime
 import paramiko
 
 from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import  print_info, print_debug
 
 BUF_SIZE = 65536
 POLL_INTERVAL = 0.1
@@ -207,7 +208,7 @@ class client(Thread):
             #
             dispdata = data.replace("\n", "")
             dispdata = re.sub("> +<", "><", dispdata)
-            pNote("netconf send: \n" + \
+            print_debug("netconf send: \n" + \
                   parseString(dispdata).toprettyxml(indent="  "))
 
             try:
@@ -311,7 +312,7 @@ class client(Thread):
                         self.__notification_list_print.append(recv_data)
                     elif resType == "hello":
                         self.__hello_buffer = recv_data
-                        pNote(recv_data)
+                        print_debug(recv_data)
                         cap = recv_dom.getElementsByTagName("capability")
                         for c in cap:
                             if c.childNodes[0].data == "urn:ietf:params:netconf:base:1.1":
