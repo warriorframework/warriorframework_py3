@@ -21,6 +21,10 @@ warrior/Framework/Utils/print_Utils.py at module level into this module
 as it will lead to cyclic imports.
 
 """
+
+#pylint: disable=wrong-import-position
+#pylint: disable=global-statement
+
 import sys
 import re
 import logging
@@ -45,7 +49,7 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     if color_message is not None:
         print_string = str(color_message)
     elif color_message is None:
-        print_string = str(color_message)
+        print_string = str(message)
     if args:
         print_string = (str(message) + str(args))
     print_string.strip("\n")
@@ -145,11 +149,11 @@ class RedirectPrint(object):
         - Writes data to log file only if the logging is True
         - Removes the ansii escape chars before writing to file
         """
-        if isinstance(data, str):
-            self.stdout.write(data)
-        else:
-            data = data.decode('utf-8')
-            self.stdout.write(data)
+        # if isinstance(data, str):
+        #     self.stdout.write(data)
+        # else:
+        #     data = data.decode('utf-8')
+        #     self.stdout.write(data)
         self.log_message[self.print_type](data)
         # write to log file if logging is set to True
         if log is True:

@@ -366,7 +366,7 @@ class HybridDriver(object):
                                           system_executed)
 
             # if end_of_tc, skip it
-             elif all([self.iter_type_list[index] == "end_of_tc", not goto_stepnum]):
+            elif all([self.iter_type_list[index] == "end_of_tc", not goto_stepnum]):
                 self._print_step_details(step_num, self.iter_type_list[index],
                                          system_executed)
                 pNote("step iter_type={0} and will be executed at the end of "

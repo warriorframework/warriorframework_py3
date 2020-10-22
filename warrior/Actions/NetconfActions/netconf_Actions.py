@@ -822,21 +822,21 @@ class NetconfActions(object):
         prefixes = [prefix.strip() for prefix in namespace_prefix.split(",")]
         namespaces = [ns.strip() for ns in namespace_string.split(",")]
         if len(prefixes) != len(namespaces):
-            pNote("the number of prefixes and namespaces should match", "error")
-            pNote("Number of prefixes ({}) != Number of namespaces({})".format(
+            print_error("the number of prefixes and namespaces should match", "error")
+            print_error("Number of prefixes ({}) != Number of namespaces({})".format(
                                 len(prefixes), len(namespaces)), "error")
             return False
         for (prefix, namespace) in zip(prefixes, namespaces):
             namespace_dict[prefix] = namespace
 
         temp_waitstring = (wait_string, namespace_dict)
-        pNote("waiting for %s timeout=%s ..." % (wait_string, str(timeout)))
+        print_debug("waiting for %s timeout=%s ..." % (wait_string, str(timeout)))
         status = netconf_object.waitfor_subscription(temp_waitstring,
                                                      int(timeout))
         if status:
-            pNote("waitfor %s received" % wait_string)
+            print_debug("waitfor %s received" % wait_string)
         else:
-            pNote("waitfor %s timeouted" % wait_string, "error")
+            print_debug("waitfor %s timeouted" % wait_string, "error")
         report_substep_status(status)
         return status
 
@@ -871,7 +871,7 @@ class NetconfActions(object):
         if status:
             pNote("kill-session PASS")
         else:
-            pNote("kill-session FAIL", "error")
+            print_error("kill-session FAIL", "error")
         report_substep_status(status)
         return status
 
