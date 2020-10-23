@@ -37,7 +37,7 @@ XML_HEADER = "<?xml version='1.0' encoding='utf-8'?>"
 NETCONF_BASE_NS = "urn:ietf:params:xml:ns:netconf:base:1.0"
 NETCONF_NTFCN_NS = "urn:ietf:params:xml:ns:netconf:notification:1.0"
 NETCONF_GETSCHEMA_NS = "urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring"
-TIMEOUT_VALUE = 600
+TIMEOUT_VALUE = 1800
 NETCONF_DELIM_11 = "\n##\n"
 
 def connect(host, port, username, password, hostkey_verify=False, protocol_version=""):
