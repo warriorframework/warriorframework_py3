@@ -65,7 +65,7 @@ def print_without_logging(message, *args):
     if len(args) > 0:
         for arg in args:
             message += arg + ", "
-    print_main(message, print_type, logging=False)
+    print_main(message, print_type, log=False)
     return message
 
 
@@ -114,7 +114,7 @@ def print_error(message, *args):
             message += arg + ", "
     color_message = None
     if sys.stdout.isatty():
-        print_type = "\033[1;31m"+ "-E-" + "\033[0m"
+        # print_type = "\033[1;31m"+ "-E-" + "\033[0m"
         color_message = "\033[1;31m" + str(message) + "\033[0m"
     print_main(message, print_type, color_message)
     return message
@@ -137,7 +137,7 @@ def print_warning(message, *args):
             message += arg + ", "
     color_message = None
     if sys.stdout.isatty():
-        print_type = "\033[1;33m"+ "-W-" + "\033[0m"
+        # print_type = "\033[1;33m"+ "-W-" + "\033[0m"
         color_message = "\033[1;33m" + str(message) + "\033[0m"
     print_main(message, print_type, color_message)
     return message
