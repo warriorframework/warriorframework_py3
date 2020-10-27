@@ -754,19 +754,19 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                     value = item.text
                 data.update({item.tag: value})
 
-        ip_port = ["{}:{}".format(ip_address, ssh_port)]
-        data.update({"bootstrap_servers": ip_port})
-        data.update({"value_serializer": lambda x: json.dumps(x).encode('utf-8')})
-        try:
-            producer = WarriorKafkaProducer(**data)
-            producer.send_messages('warrior_results', suite_details.items())
-            producer.send_messages('warrior_results', test_case_details.items())
-            print_info("message published to topic: warrior_results {}".format(
-                suite_details.items()))
-            print_info("message published to topic: warrior_results {}".format(
-                test_case_details.items()))
-        except:
-            print_warning("Unable to connect kafka server !!")
+            ip_port = ["{}:{}".format(ip_address, ssh_port)]
+            data.update({"bootstrap_servers": ip_port})
+            data.update({"value_serializer": lambda x: json.dumps(x).encode('utf-8')})
+            try:
+                producer = WarriorKafkaProducer(**data)
+                producer.send_messages('warrior_results', suite_details.items())
+                producer.send_messages('warrior_results', test_case_details.items())
+                print_info("message published to topic: warrior_results {}".format(
+                    suite_details.items()))
+                print_info("message published to topic: warrior_results {}".format(
+                    test_case_details.items()))
+            except:
+                print_warning("Unable to connect kafka server !!")
 
     report_testcase_result(tc_status, data_repository, tag=steps_tag)
     if not from_ts:
