@@ -29,7 +29,7 @@ from datetime import datetime
 import paramiko
 
 from warrior.Framework.Utils.testcase_Utils import pNote
- from warrior.Framework.Utils.print_Utils import  print_info, print_debug, print_error
+from warrior.Framework.Utils.print_Utils import  print_info, print_debug, print_error
 
 BUF_SIZE = 65536
 POLL_INTERVAL = 0.1
@@ -307,7 +307,8 @@ class client(Thread):
                         self.__response_buffer += recv_data
                         self.__wait_resp.set()
                     elif resType == "notification":
-                        pNote("\n[NETCONF Notification %s from %s]\n%s" % (datetime.now(), self.__host_name, recv_data))
+                        print_debug("\n[NETCONF Notification %s from %s]\n%s"\
+                                    % (datetime.now(), self.__host_name, recv_data))
                         self.__notification_list.append(recv_data)
                         self.__notification_list_print.append(recv_data)
                     elif resType == "hello":
@@ -344,7 +345,7 @@ class client(Thread):
                     else:
                         # in case of something unexpected happens
                         if len(self.__temp_buf) > 0:
-                            pNote(self.__temp_buf)
+                            print_debug(self.__temp_buf)
                         self.__error_message = "port closed"
                         self.__wait_resp.set()
                         self.close()
@@ -353,7 +354,7 @@ class client(Thread):
                 if len(self.__wait_string) != 0 and self.__wait_string[0]:
                     waitstr = self.__wait_string
                     for notification in self.__notification_list:
-                        pNote("Checking notification: "
+                        print_debug("Checking notification: "
                               "##{}##".format(notification))
 
                         xml = etree.fromstring(notification.encode("utf-8"))
