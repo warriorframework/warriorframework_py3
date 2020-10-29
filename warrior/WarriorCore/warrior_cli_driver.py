@@ -15,7 +15,7 @@ try:
     # Framework related import
     import site
     import os
-
+    from collections import OrderedDict
     print("import os was successful")
     import shutil
 
@@ -174,7 +174,7 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
 
     iter_count = 0  ## this iter is used for live html results
     for parameter in parameter_list:
-        default_repo = {}
+        default_repo = OrderedDict()
         result = False
         # check if the input parameter is an xml file
         if Utils.file_Utils.get_extension_from_path(parameter) == '.xml':
