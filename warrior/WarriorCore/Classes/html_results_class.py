@@ -18,7 +18,7 @@ import getpass
 import multiprocessing
 from warrior.Framework.Utils import xml_Utils, file_Utils, data_Utils
 from warrior.Framework.Utils.testcase_Utils import pNote
-from warrior.Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils.print_Utils import print_info, print_debug
 from warrior.Framework.Utils.xml_Utils import getElementWithTagAttribValueMatch
 import warrior.WarriorCore.Classes.katana_interface_class as katana_interface_class
 from warrior.WarriorCore import testsuite_utils, common_execution_utils

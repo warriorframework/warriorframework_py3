@@ -29,6 +29,7 @@ from datetime import datetime
 import paramiko
 
 from warrior.Framework.Utils.testcase_Utils import pNote
+from warrior.Framework.Utils.print_Utils import  print_info, print_debug, print_error
 
 BUF_SIZE = 65536
 POLL_INTERVAL = 0.1
@@ -37,7 +38,7 @@ XML_HEADER = "<?xml version='1.0' encoding='utf-8'?>"
 NETCONF_BASE_NS = "urn:ietf:params:xml:ns:netconf:base:1.0"
 NETCONF_NTFCN_NS = "urn:ietf:params:xml:ns:netconf:notification:1.0"
 NETCONF_GETSCHEMA_NS = "urn:ietf:params:xml:ns:yang:ietf-netconf-monitoring"
-TIMEOUT_VALUE = 600
+TIMEOUT_VALUE = 1800
 NETCONF_DELIM_11 = "\n##\n"
 
 def connect(host, port, username, password, hostkey_verify=False, protocol_version=""):
@@ -207,7 +208,7 @@ class client(Thread):
             #
             dispdata = data.replace("\n", "")
             dispdata = re.sub("> +<", "><", dispdata)
-            pNote("netconf send: \n" + \
+            print_debug("netconf send: \n" + \
                   parseString(dispdata).toprettyxml(indent="  "))
 
             try:
@@ -267,7 +268,7 @@ class client(Thread):
                         recv_dom = parseString(recv_data)
                     except Exception as e:
                         pNote(str(e), "error")
-                        pNote(recv_data)
+                        print_error(recv_data)
                         pNote("\nreceived xml is invalid, closing port.\n", "error")
                         self.close()
                         return False
@@ -306,12 +307,13 @@ class client(Thread):
                         self.__response_buffer += recv_data
                         self.__wait_resp.set()
                     elif resType == "notification":
-                        pNote("\n[NETCONF Notification %s from %s]\n%s" % (datetime.now(), self.__host_name, recv_data))
+                        print_debug("\n[NETCONF Notification %s from %s]\n%s"\
+                                    % (datetime.now(), self.__host_name, recv_data))
                         self.__notification_list.append(recv_data)
                         self.__notification_list_print.append(recv_data)
                     elif resType == "hello":
                         self.__hello_buffer = recv_data
-                        pNote(recv_data)
+                        print_debug(recv_data)
                         cap = recv_dom.getElementsByTagName("capability")
                         for c in cap:
                             if c.childNodes[0].data == "urn:ietf:params:netconf:base:1.1":
@@ -343,7 +345,7 @@ class client(Thread):
                     else:
                         # in case of something unexpected happens
                         if len(self.__temp_buf) > 0:
-                            pNote(self.__temp_buf)
+                            print_debug(self.__temp_buf)
                         self.__error_message = "port closed"
                         self.__wait_resp.set()
                         self.close()
@@ -352,7 +354,7 @@ class client(Thread):
                 if len(self.__wait_string) != 0 and self.__wait_string[0]:
                     waitstr = self.__wait_string
                     for notification in self.__notification_list:
-                        pNote("Checking notification: "
+                        print_debug("Checking notification: "
                               "##{}##".format(notification))
 
                         xml = etree.fromstring(notification.encode("utf-8"))

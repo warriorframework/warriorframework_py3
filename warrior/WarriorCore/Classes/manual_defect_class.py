@@ -15,7 +15,7 @@ limitations under the License.
 import json
 import os
 from warrior.Framework.Utils import file_Utils
-from warrior.Framework.Utils.print_Utils import print_error, print_info
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_debug
 from warrior.WarriorCore import defects_driver
 
 class ManualDefectClass(object):
@@ -60,7 +60,7 @@ class ManualDefectClass(object):
 
     def manual_defects(self, paths):
         """parse file list and create jira issue for each failures"""
-        print_info("manual-create defects")
+        print_debug("manual-create defects")
 
         if self.path_type == "dir":
             defects_json_list = []
@@ -80,7 +80,7 @@ class ManualDefectClass(object):
                 else:
                     print_error("Directory does not exist in provided path {0} "\
                                 "relative to cwd".format(path))
-                print_info("\n")
+                print_debug("\n")
         else:
             defects_json_list = []
             i = 0
@@ -90,7 +90,7 @@ class ManualDefectClass(object):
                 check_file = self.check_defect_file(path)
                 if check_file is not None:
                     defects_json_list.append(check_file)
-                print_info("\n")
+                print_debug("\n")
 
         if len(defects_json_list) == 0:
             print_info("No defect json files found")

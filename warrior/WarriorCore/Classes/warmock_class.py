@@ -12,7 +12,7 @@ limitations under the License.
 '''
 import os
 from warrior.Framework.Utils.testcase_Utils import pNote
-from warrior.Framework.Utils.print_Utils import print_info, print_warning
+from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_debug
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass as WarCli
 # For function/method that only be mocked in trialmode (not sim mode), put name here
 VERIFY_ONLY = ["verify_cmd_response", "verify_inorder_cmd_response"]
@@ -453,7 +453,7 @@ class MockUtils(object):
             else:
                 response = ""
 
-            pNote("Response:\n{0}\n".format(response))
+            print_debug("Response:\n{0}\n".format(response))
             return True, response
 
         @classmethod
