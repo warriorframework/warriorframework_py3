@@ -17,6 +17,11 @@ try:
     import os
 
     print("import os was successful")
+    from warrior.WarriorCore.Classes.rerun_testsuite import execute_failedsuite
+    from warrior.WarriorCore.Classes.rerun_project import execute_failedproject
+
+    print("Import rerun was successful")
+
     import shutil
 
     print("import shutil was successful")
@@ -41,6 +46,9 @@ try:
     from warrior.Framework.ClassUtils import database_utils_class
 
     print("import database_utils_class was successful")
+    from xml.etree import ElementTree as et
+
+    print("import element tree was successful")
 except:
     print("\033[1;31m*********************************************")
     print(" !-Unable to import library in for Warrior Framework in warrior_cli_driver")
@@ -299,6 +307,35 @@ def warrior_execute_entry(*args, **kwargs):
                 os.system("python {}/warrior_py3_migration_tool {}".format(warrior_py3_migration_tool_path,\
                  " ".join(sys.argv[2:])))
                 sys.exit()
+
+            if sys.argv[1] == "-rerun":
+                print_info("Initializing the rerun feature  !!")
+                try:
+                    junit_path = sys.argv[2]
+                    if os.path.exists(junit_path):
+                        tree = et.parse(junit_path)
+                        root = tree.getroot()
+                        if root.tag.islower() and root.tag == "testsuites":
+                            child_list = []
+                            for child in root:
+                                child_list.append(child.tag)
+                            if "property" in child_list:
+                                print_info("The Junit file provided is a project file")
+                                execute_failedproject(junit_path)
+                                sys.exit()
+                            else:
+                                print_info("The Junit file provided is a testsuite file")
+                                execute_failedsuite(junit_path)
+                                sys.exit()
+                        else:
+                            print_error("Invalid junit path")
+                            sys.exit()
+                    else:
+                        print_error("Invalid junit path")
+                except Exception as e:
+                    print(e)
+                    print_error("Junit Path is missing")
+                    sys.exit()
 
         if not kwargs:
             # Launch from terminal/cli exeuction

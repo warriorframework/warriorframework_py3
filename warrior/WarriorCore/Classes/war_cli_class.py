@@ -392,6 +392,10 @@ class WarriorCliClass(object):
             " Multiple file names can be provided "\
             "(separated by a space)")
 
+        warrior_arg.add_argument('-rerun', action="store", default=False, \
+                                 help=": Enter the command -rerun path of junit path")
+
+
         warrior_arg.add_argument('-wp', action='store', nargs='*', dest="proj_name",\
             help="Runs project available in default path, "\
             "Warrior/Warriorspace/Projects/. User need not give entire path. "\
