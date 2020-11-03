@@ -80,6 +80,7 @@ class KafkaActions():
                 return status
             self.kafka_obj_producer = WarriorKafkaProducer(bootstrap_servers=\
                                                              [kafka_ip+":"+kafka_port],
+                                                           acks='all',
                                                            ssl_cafile=ca_file,
                                                            ssl_keyfile=key_file,
                                                            ssl_crlfile=crl_file,
