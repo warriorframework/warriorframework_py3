@@ -719,11 +719,13 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
 
     if data_repository.get("kafka_producer", None):
         kf_producer = data_repository.get("kafka_producer")
-        kf_producer.flush()
+        kf_producer.flush(60)
         kf_producer.close()
+        print_info("Producer Closed connection with kafka broker")
     elif data_repository.get("kafka_consumer", None):
         kf_consumer = data_repository.get("kafka_consumer")
         kf_consumer.close()
+        print_info("Consumer closed connection with kafka broker")
 
     data_file = data_repository["wt_datafile"]
     system_name = ""
