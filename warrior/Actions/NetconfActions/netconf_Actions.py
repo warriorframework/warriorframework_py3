@@ -838,7 +838,7 @@ class NetconfActions(object):
         else:
             print_debug("waitfor %s timeouted" % wait_string, "error")
         report_substep_status(status)
-        return status
+        return status,wait_string
 
     def testfor_killsession(self, system_name, session_name=None):
         """kill-session test keyword
