@@ -51,6 +51,8 @@ if '--loglevel' in sys.argv:
     else:
         LEVEL_VALUE = 'info'
     DEFAULT_LOGLEVEL = LOGLEVEL_DICT.get(LEVEL_VALUE, logging.INFO)
+else:
+    DEFAULT_HEADER_FORMAT = 'no_headers'
 
 def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
