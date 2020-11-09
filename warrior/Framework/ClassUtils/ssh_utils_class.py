@@ -258,7 +258,7 @@ class SSHComm(object):
             verify_context_list = details_dict["verify_context_list"][i]
             sleep = {None: 0, "":0, "none":0}.get(str(sleeptime).lower(), str(sleeptime))
             sleep = int(sleep)
-            print_info("\n")
+            print_debug("\n")
             print_debug(">>>")
             testcase_Utils.pNote("Command #{0}\t: {1}".format(str(i+1), command))
             testcase_Utils.pNote("startprompt\t: {0}".format(startprompt))

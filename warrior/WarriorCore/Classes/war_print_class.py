@@ -58,12 +58,20 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
     """
     global DEFAULT_LOGLEVEL
-    if color_message is not None:
-        print_string = str(color_message)
-    elif color_message is None:
-        print_string = str(message)
-    if args:
-        print_string = (str(message) + str(args))
+    if DEFAULT_HEADER_FORMAT == 'no_headers':
+        if color_message is not None:
+            print_string = print_type + " " + str(color_message)
+        elif color_message is None:
+            print_string = print_type + " " + str(message)
+        if args:
+            print_string = (print_type + " " + str(message) + str(args))
+    else:
+        if color_message is not None:
+            print_string = str(color_message)
+        elif color_message is None:
+            print_string = str(message)
+        if args:
+            print_string = (str(message) + str(args))
     print_string.strip("\n")
     # matched = re.match(r"^=+", print_string) or re.match(r"^\++", print_string)\
     #           or re.match(r"^\*+", print_string)  or re.match(r"^\n<<", print_string)\
