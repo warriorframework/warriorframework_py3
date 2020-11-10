@@ -115,7 +115,7 @@ class NetconfActions(object):
                 if config_data:
                     reply = netconf_object.request_rpc(config_data)
                     reply_list.append(reply)
-                    print_debug('Request RPC Reply= {}'.format(reply))
+                    print_info('Request RPC Reply= {}'.format(reply))
                     if netconf_object.isCOMPLD:
                         sub_status = True
                     else:
@@ -185,7 +185,7 @@ class NetconfActions(object):
                                                                session_parameters)
         session_credentials["password"] = decrypt(session_credentials["password"])
         print_debug(system_name)
-        print_debug(Utils.file_Utils.getDateTime())
+        print_info(Utils.file_Utils.getDateTime())
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         status = self.netconf_object.open(session_credentials)
 
@@ -196,7 +196,7 @@ class NetconfActions(object):
                 status = False
             else:
                 output_dict["netconf_session_id"] = self.netconf_object.session_id
-                print_debug("netconf session-id = %s" % self.netconf_object.session_id)
+                print_info("netconf session-id = %s" % self.netconf_object.session_id)
                 output_dict[session_id] = self.netconf_object
         report_substep_status(status)
         if output_dict:
@@ -225,11 +225,11 @@ class NetconfActions(object):
             session_id)
         netconf_session_id = Utils.data_Utils.get_object_from_datarepository(
             "netconf_session_id")
-        print_debug("close session-id=%s" % netconf_session_id)
+        print_info("close session-id=%s" % netconf_session_id)
         reply = netconf_object.close()
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('close-session: Reply= {}'.format(reply))
+        print_info('close-session: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -251,7 +251,7 @@ class NetconfActions(object):
             2. system_name(string)  = Name of the system from the input datafile.
             3. session_name(string) = Name of the session to the system.
             4. filter_string(string) = xml string, by default entire configuration is \
-	       retrieved.
+           retrieved.
             5. filter_type(string) = Type of the Filter , subtree or xpath, default is subtree.
         :Returns:
             1. status(bool)= True / False
@@ -271,7 +271,7 @@ class NetconfActions(object):
             datastore, filter_string, filter_type)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('get-config: Reply= {}'.format(reply))
+        print_info('get-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -308,7 +308,7 @@ class NetconfActions(object):
         reply = netconf_object.copy_config(source, target)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('copy-config: Reply= {}'.format(reply))
+        print_info('copy-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -341,7 +341,7 @@ class NetconfActions(object):
         reply = netconf_object.delete_config(datastore)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('delete-config: Reply= {}'.format(reply))
+        print_info('delete-config: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -374,7 +374,7 @@ class NetconfActions(object):
         reply = netconf_object.discard_changes()
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('discard-changes: Reply= {}'.format(reply))
+        print_info('discard-changes: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -446,7 +446,7 @@ class NetconfActions(object):
                     reply = "error"
                     print_error('Edit Config Failed', "error")
                     status = status and False
-        print_debug('Edit Config Reply= {}'.format(reply_list))
+        print_info('Edit Config Reply= {}'.format(reply_list))
 
         report_substep_status(status)
         return status, {reply_key: reply_list}
@@ -478,7 +478,7 @@ class NetconfActions(object):
         reply = netconf_object.commit(confirmed, timeout, persist, persist_id)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('commit: Reply= {}'.format(reply))
+        print_info('commit: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -512,7 +512,7 @@ class NetconfActions(object):
         reply = netconf_object.lock(datastore)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('lock: Reply= {}'.format(reply))
+        print_info('lock: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -546,7 +546,7 @@ class NetconfActions(object):
         reply = netconf_object.unlock(datastore)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('unlock: Reply= {}'.format(reply))
+        print_info('unlock: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -582,7 +582,7 @@ class NetconfActions(object):
         reply = netconf_object.get(filter_string, filter_type)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('get: Reply= {}'.format(reply))
+        print_info('get: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -616,7 +616,7 @@ class NetconfActions(object):
         reply = netconf_object.kill_session(netconf_session_id)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('kill-session: Reply= {}'.format(reply))
+        print_info('kill-session: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -648,7 +648,7 @@ class NetconfActions(object):
         reply = netconf_object.validate(datastore)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('validate: Reply= {}'.format(reply))
+        print_info('validate: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -696,7 +696,7 @@ class NetconfActions(object):
             status = True
             if reply:
                 reply = parseString(reply).toprettyxml(indent="  ")
-            print_debug('edit-config: Reply= {}'.format(reply))
+            print_info('edit-config: Reply= {}'.format(reply))
         else:
             print_error('edit-config: Reply= {}'.format(reply))
             print_error('edit-config: Failed {}'.format(netconf_object.ErrorMessage), "error")
@@ -743,7 +743,7 @@ class NetconfActions(object):
                                                    stop_time)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('create-subscription: Reply= {}'.format(reply))
+        print_info('create-subscription: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -780,7 +780,6 @@ class NetconfActions(object):
         :Returns:
             1. status(bool)= True / False
             2. Match String Response in the data repository {data:reply(xml)}
-
         E.g., Assuming the following notification is the one received:
         ****************************
         <?xml version="1.0" encoding="UTF-8"?>
@@ -832,13 +831,13 @@ class NetconfActions(object):
             namespace_dict[prefix] = namespace
 
         temp_waitstring = (wait_string, namespace_dict)
-        print_debug("waiting for %s timeout=%s ..." % (wait_string, str(timeout)))
+        print_info("waiting for %s timeout=%s ..." % (wait_string, str(timeout)))
         status = netconf_object.waitfor_subscription(temp_waitstring,
                                                      int(timeout))
         if status:
-            print_debug("waitfor %s received" % wait_string)
+            print_info("waitfor %s received" % wait_string)
         else:
-            print_debug("waitfor %s timeouted" % wait_string, "error")
+            print_info("waitfor %s timeouted" % wait_string, "error")
         report_substep_status(status)
         return status,{"match_string": wait_string}
 
@@ -899,7 +898,7 @@ class NetconfActions(object):
         reply = netconf_object.cancel_commit(persist_id)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('cancel-commit: Reply= {}'.format(reply))
+        print_info('cancel-commit: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -975,7 +974,7 @@ class NetconfActions(object):
             identifier, version_number, format_type)
         if reply:
             reply = parseString(reply).toprettyxml(indent="  ")
-        print_debug('get-schema: Reply= {}'.format(reply))
+        print_info('get-schema: Reply= {}'.format(reply))
         if netconf_object.isCOMPLD:
             status = True
         else:
@@ -1007,7 +1006,7 @@ class NetconfActions(object):
         notification_data = netconf_object.get_notification_buffer(notification_type)
         if len(notification_data) != 0:
             for notif in notification_data:
-                print_debug(notif)
+                print_info(notif)
         else:
             pNote("notification data is empty")
         return True
@@ -1025,4 +1024,3 @@ class NetconfActions(object):
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
         return netconf_object.clear_notification_buffer_for_print()
-
