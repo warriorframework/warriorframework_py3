@@ -938,7 +938,7 @@ class NetconfActions(object):
             1. command_status(bool) = always true
         """
         wdesc = "clear notification buffer all"
-        pSubStep(wdesc)
+        # pSubStep(wdesc)
         print_debug(system_name)
         print_debug(self.datafile)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -946,7 +946,7 @@ class NetconfActions(object):
         for s0, s1 in list(temp_dict.items()):
             if s0 != session_id and isinstance(s1, WNetConf):
                 s1.clear_notification_buffer()
-        report_substep_status(True)
+        # report_substep_status(True)
         return True
 
     def get_schema(self, system_name, identifier, version_number=None, format_type=None, session_name=None):
