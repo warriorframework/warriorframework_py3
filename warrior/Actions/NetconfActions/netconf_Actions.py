@@ -779,6 +779,8 @@ class NetconfActions(object):
             6. session_name(string) = Name of the session to the system
         :Returns:
             1. status(bool)= True / False
+            2. Match String Response in the data repository {data:reply(xml)}
+
         E.g., Assuming the following notification is the one received:
         ****************************
         <?xml version="1.0" encoding="UTF-8"?>
@@ -838,7 +840,7 @@ class NetconfActions(object):
         else:
             print_debug("waitfor %s timeouted" % wait_string, "error")
         report_substep_status(status)
-        return status
+        return status,{"match_string": wait_string}
 
     def testfor_killsession(self, system_name, session_name=None):
         """kill-session test keyword
