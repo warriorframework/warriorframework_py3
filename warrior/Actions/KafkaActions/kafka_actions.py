@@ -81,6 +81,8 @@ class KafkaActions():
             self.kafka_obj_producer = WarriorKafkaProducer(bootstrap_servers=\
                                                              [kafka_ip+":"+kafka_port],
                                                            acks='all',
+                                                           request_timeout_ms=1000000,
+                                                           api_version_auto_timeout_ms=1000000,
                                                            ssl_cafile=ca_file,
                                                            ssl_keyfile=key_file,
                                                            ssl_crlfile=crl_file,
