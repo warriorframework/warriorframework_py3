@@ -716,6 +716,20 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                                 "tc", tc_timestamp)
     tc_junit_object.update_attr("logsdir", os.path.dirname(data_repository['wt_logsdir']),
                                 "tc", tc_timestamp)
+    if data_repository.get("kafka_producer", None):
+        kf_producer = data_repository.get("kafka_producer")
+        kf_producer.flush(60)
+        kf_producer.close()
+        war_producer = data_repository.get("kafka_producer")
+        war_producer.kafka_producer.flush(60)
+        war_producer.kafka_producer.close()
+        print_info("Producer Closed connection with kafka broker")
+    elif data_repository.get("kafka_consumer", None):
+        kf_consumer = data_repository.get("kafka_consumer")
+        kf_consumer.close()
+        war_consumer = data_repository.get("kafka_consumer")
+        war_consumer.kafka_consumer.close()
+        print_info("Consumer closed connection with kafka broker")
     data_file = data_repository["wt_datafile"]
     system_name = ""
     try:
@@ -761,6 +775,10 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                 producer = WarriorKafkaProducer(**data)
                 producer.send_messages('warrior_results', suite_details.items())
                 producer.send_messages('warrior_results', test_case_details.items())
+                producer.flush()
+                producer.close()
+                producer.kafka_producer.flush(60)
+                producer.kafka_producer.close()
                 print_info("message published to topic: warrior_results {}".format(
                     suite_details.items()))
                 print_info("message published to topic: warrior_results {}".format(
