@@ -294,7 +294,7 @@ class WarriorCli(object):
                              resp+"_command": details_dict["command_list"][i]}
                 td_resp_dict[title_row].update(temp_resp)
                 if not details_dict["logmsg_list"][i] or details_dict["logmsg_list"][i].lower() != "false":
-                    pNote("Portion of response saved to the data "
+                    print_debug("Portion of response saved to the data "
                           "repository with key: '{0}.{1}.{2}' and value: '{3}'"
                           .format(session_id, title_row, resp, temp_resp[resp]))
         except Exception as e:
@@ -1675,7 +1675,7 @@ class PexpectConnect(object):
                 else:
                     response = response + self.target_host.after.decode('utf-8')
                 if kwargs.get("log", "true") != "false":
-                    print_debug("Response:\n{0}\n".format(response))
+                    print_info("Response:\n{0}\n".format(response))
                 pNote(msg, "debug")
                 if status is True:
                     duration = Utils.datetime_utils.get_time_delta(start_time,
