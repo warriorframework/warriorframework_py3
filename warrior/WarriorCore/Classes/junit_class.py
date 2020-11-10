@@ -14,7 +14,7 @@ limitations under the License.
 
 import xml.etree.ElementTree as ET
 import os
-from warrior.Framework.Utils.print_Utils import print_info
+from warrior.Framework.Utils.print_Utils import print_debug
 from warrior.Framework.Utils import file_Utils
 from warrior.WarriorCore.Classes.html_results_class import WarriorHtmlResults
 from warrior.WarriorCore.Classes.execution_summary_class import ExecutionSummary
@@ -257,7 +257,7 @@ class Junit(object):
             tree.write(fpath)
             summary_obj = ExecutionSummary(fpath)
             summary_obj.print_result_in_console(fpath)
-        print_info("\n")
+        print_debug("\n")
         if print_summary is True:
             self._junit_to_html(fpath, print_summary)
 

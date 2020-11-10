@@ -31,6 +31,7 @@ import logging
 LOG_MESSAGE = None
 LOGGER = None
 DEFAULT_LOGLEVEL = logging.INFO
+DEFAULT_HEADER_FORMAT = None
 LOGLEVEL_DICT = {'info': logging.INFO, 'debug': logging.DEBUG,
                  'warning': logging.WARNING, 'error': logging.ERROR,
                  'critical': logging.CRITICAL}
@@ -38,20 +39,39 @@ if '--loglevel' in sys.argv:
     LEVEL_INDEX = sys.argv.index('--loglevel')
     if len(sys.argv) >= LEVEL_INDEX+1:
         LEVEL_VALUE = sys.argv[LEVEL_INDEX+1]
+        logging_arg_value = LEVEL_VALUE.split(':')
+        if ':' in LEVEL_VALUE:
+            LEVEL_VALUE = logging_arg_value[0]
+            DEFAULT_HEADER_FORMAT = logging_arg_value[1]
+        else:
+            if LEVEL_VALUE == 'no_headers':
+                DEFAULT_HEADER_FORMAT = LEVEL_VALUE
+                LEVEL_VALUE = DEFAULT_LOGLEVEL
+
     else:
         LEVEL_VALUE = 'info'
     DEFAULT_LOGLEVEL = LOGLEVEL_DICT.get(LEVEL_VALUE, logging.INFO)
+else:
+    DEFAULT_HEADER_FORMAT = 'no_headers'
 
 def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
     """
     global DEFAULT_LOGLEVEL
-    if color_message is not None:
-        print_string = str(color_message)
-    elif color_message is None:
-        print_string = str(message)
-    if args:
-        print_string = (str(message) + str(args))
+    if DEFAULT_HEADER_FORMAT == 'no_headers':
+        if color_message is not None:
+            print_string = print_type + " " + str(color_message)
+        elif color_message is None:
+            print_string = print_type + " " + str(message)
+        if args:
+            print_string = (print_type + " " + str(message) + str(args))
+    else:
+        if color_message is not None:
+            print_string = str(color_message)
+        elif color_message is None:
+            print_string = str(message)
+        if args:
+            print_string = (str(message) + str(args))
     print_string.strip("\n")
     # matched = re.match(r"^=+", print_string) or re.match(r"^\++", print_string)\
     #           or re.match(r"^\*+", print_string)  or re.match(r"^\n<<", print_string)\
@@ -78,7 +98,10 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
     if not LOG_MESSAGE:
         console_logger = logging.getLogger('console')
         console_logger.setLevel(DEFAULT_LOGLEVEL)
-        formatter = logging.Formatter('%(asctime)-7s %(levelname)-5s:: \
+        if DEFAULT_HEADER_FORMAT == "no_headers":
+            formatter = logging.Formatter('%(message)s')
+        else:
+            formatter = logging.Formatter('%(asctime)-7s %(levelname)-5s:: \
 %(message)s', '%H:%M:%S')
         hdlr = logging.StreamHandler()
         hdlr.setFormatter(formatter)
@@ -120,7 +143,10 @@ class RedirectPrint(object):
         global DEFAULT_LOGLEVEL
         self.file_logger.setLevel(DEFAULT_LOGLEVEL)
         self.hdlr = None
-        self.formatter = logging.Formatter('%(asctime)-7s %(levelname)-5s :: \
+        if DEFAULT_HEADER_FORMAT == "no_headers":
+            self.formatter = logging.Formatter('%(message)s')
+        else:
+            self.formatter = logging.Formatter('%(asctime)-7s %(levelname)-5s :: \
 %(message)s', '%H:%M:%S')
         self.logfile_message = {"-I-": self.file_logger.info, "-W-": self.file_logger.warning, \
                                 "-E-": self.file_logger.error, "-D-": self.file_logger.debug, \
