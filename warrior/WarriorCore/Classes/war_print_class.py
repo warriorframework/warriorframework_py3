@@ -185,8 +185,7 @@ else:
             if DEFAULT_HEADER_FORMAT == "no_headers":
                 formatter = logging.Formatter('%(message)s')
             else:
-                formatter = logging.Formatter('%(asctime)-7s %(levelname)-5s:: \
-    %(message)s', '%H:%M:%S')
+                formatter = logging.Formatter('%(asctime)-7s %(levelname)-5s:: %(message)s', '%H:%M:%S')
             hdlr = logging.StreamHandler()
             hdlr.setFormatter(formatter)
             console_logger.addHandler(hdlr)
