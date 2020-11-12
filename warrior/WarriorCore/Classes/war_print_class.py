@@ -57,6 +57,7 @@ else:
 def print_main(message, print_type, color_message=None, *args, **kwargs):
     """The main print function will be called by other print functions
     """
+    just_print = kwargs.get("normal", None)
     global DEFAULT_LOGLEVEL
     if DEFAULT_HEADER_FORMAT == 'no_headers':
         if color_message is not None:
@@ -93,7 +94,8 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
         LOGGER.addHandler(hdlr)
     if not print_type:
         LOGGER.info(print_string)
-        return print_string
+        if not just_print:
+            return print_string
     global LOG_MESSAGE
     if not LOG_MESSAGE:
         console_logger = logging.getLogger('console')
@@ -115,6 +117,8 @@ def print_main(message, print_type, color_message=None, *args, **kwargs):
         sys.stdout.print_type = print_type
         sys.stdout.log_message = LOG_MESSAGE
         log_in_file = False if print_type == "-N-" else True
+        if just_print:
+            log_in_file = True
         if print_string:
             sys.stdout.write(print_string,
                              log=kwargs.get('log', log_in_file))
@@ -175,12 +179,15 @@ class RedirectPrint(object):
         - Writes data to log file only if the logging is True
         - Removes the ansii escape chars before writing to file
         """
-        if isinstance(data, str):
-            self.log_message[self.print_type](data)
-        else:
-            data = data.decode('utf-8')
-            # self.stdout.write(data)
-            self.log_message[self.print_type](data)
+        if len(data) < 2:
+            return
+        if self.print_type:
+            if isinstance(data, str):
+                self.log_message[self.print_type](data)
+            else:
+                data = data.decode('utf-8')
+                # self.stdout.write(data)
+                self.log_message[self.print_type](data)
 
         # write to log file if logging is set to True
         if log is True:
@@ -190,7 +197,17 @@ class RedirectPrint(object):
                 self.hdlr = logging.FileHandler(self.file.name)
                 self.hdlr.setFormatter(self.formatter)
                 self.file_logger.addHandler(self.hdlr)
-            self.logfile_message[self.print_type](data)
+            if self.print_type:
+                self.logfile_message[self.print_type](data)
+            else:
+                self.nohead_formatter = logging.Formatter('%(message)s')
+                self.file_logger.handlers = []
+                self.nohead_hdlr = logging.FileHandler(self.file.name)
+                self.nohead_hdlr.setFormatter(self.nohead_formatter)
+                self.file_logger.addHandler(self.nohead_hdlr)
+                self.file_logger.info(data)
+                self.file_logger.handlers = []
+                self.file_logger.addHandler(self.hdlr)
 
         if self.katana_obj is not None and "console_full_log" in self.katana_obj\
         and "console_add" in self.katana_obj:
