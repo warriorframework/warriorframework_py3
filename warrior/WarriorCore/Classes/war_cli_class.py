@@ -466,6 +466,9 @@ class WarriorCliClass(object):
                   defaults to 'info'. example usage '--loglevel error'\
                   --loglevel warning'")
 
+        warrior_arg.add_argument('--no_logger', action='store_true', default=False,\
+            help=":This option will enable backward compatibility of warrior logging")
+
         tools_arg = parser.add_argument_group('warrior tools')
         tools_arg.add_argument('-tc_gen', action='store',\
             help="generate the sample cli/netconf/snmp testcase based on "\
