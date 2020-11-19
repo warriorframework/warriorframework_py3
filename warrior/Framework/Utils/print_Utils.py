@@ -24,8 +24,6 @@ warrior/Framework/Utils/print_Utils.py at module level into this module
 as it will lead to cyclic imports.
 
 """
-
-
 def print_debug(message, *args):
     """Print a debug message to the terminal """
     print_type = "-D-"
@@ -50,17 +48,18 @@ def print_notype(message, *args):
 
 
 def print_normal(message, *args):
-    """Prints with out print type(-I-,-E-),with color cyan in bold TEXT """
+    """Prints with out print type or level(-I-,-E-) and logs the same in console log file
+       can be used for printing tables"""
     print_type = ""
     if len(args) > 0:
         for arg in args:
             message += arg + ", "
-    print_main(message, print_type)
+    print_main(message, print_type, normal=True)
     return message
 
 
 def print_without_logging(message, *args):
-    """Prints without writing to log file"""
+    """Prints as info level in console, without writing to log file"""
     print_type = "-N-"
     if len(args) > 0:
         for arg in args:
@@ -155,4 +154,3 @@ def print_sub(message, *args):
     message = message.format(*args)
     print_main(message, print_type)
     return message
-
