@@ -17,6 +17,11 @@ try:
     import os
 
     print("import os was successful")
+    from warrior.WarriorCore.Classes.rerun_testsuite import execute_failedsuite
+    from warrior.WarriorCore.Classes.rerun_project import execute_failedproject
+
+    print("Import rerun was successful")
+
     import shutil
 
     print("import shutil was successful")
@@ -41,6 +46,9 @@ try:
     from warrior.Framework.ClassUtils import database_utils_class
 
     print("import database_utils_class was successful")
+    from xml.etree import ElementTree as et
+
+    print("import element tree was successful")
 except:
     print("\033[1;31m*********************************************")
     print(" !-Unable to import library in for Warrior Framework in warrior_cli_driver")
@@ -280,43 +288,86 @@ def warrior_execute_entry(*args, **kwargs):
         dbsystem:
         livehtmllocn:
     """
-    if len(sys.argv) >= 2:
-        if sys.argv[1] == "-tc_gen":
-            print_info("Initializing tc generator tool !!")
+    try:
+        if len(sys.argv) >= 2:
+            if sys.argv[1] == "-tc_gen":
+                print_info("Initializing tc generator tool !!")
 
-            tc_generator_dir_path = "WarriorTools/tc_generator"
-            current_working_directory = dirname(dirname(abspath(__file__)))
-            tc_generator_path = os.path.join(current_working_directory, tc_generator_dir_path)
-            os.system("python {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
-            sys.exit()
+                tc_generator_dir_path = "WarriorTools/tc_generator"
+                current_working_directory = dirname(dirname(abspath(__file__)))
+                tc_generator_path = os.path.join(current_working_directory, tc_generator_dir_path)
+                os.system("python {}/tc_generator {}".format(tc_generator_path, " ".join(sys.argv[2:])))
+                sys.exit()
 
-        if sys.argv[1] == "-warrior_py3_migration_tool":
-            print_info("Initializing tc warrior_py3_migration_tool tool !!")
-            war_path = dirname(dirname(abspath(__file__)))
-            warrior_py3_migration_tool_path = "{}/WarriorTools/warrior_py3_migration_tools".\
-            format(war_path)
-            os.system("python {}/warrior_py3_migration_tool {}".format(warrior_py3_migration_tool_path,\
-             " ".join(sys.argv[2:])))
-            sys.exit()
+            if sys.argv[1] == "-warrior_py3_migration_tool":
+                print_info("Initializing tc warrior_py3_migration_tool tool !!")
+                war_path = dirname(dirname(abspath(__file__)))
+                warrior_py3_migration_tool_path = "{}/WarriorTools/warrior_py3_migration_tools".\
+                format(war_path)
+                os.system("python {}/warrior_py3_migration_tool {}".format(warrior_py3_migration_tool_path,\
+                 " ".join(sys.argv[2:])))
+                sys.exit()
 
-    if not kwargs:
-        # Launch from terminal/cli exeuction
-        filepath, cli_args, overwrite = main(sys.argv[1:])
-    else:
-        args = [] if not args else args
-        # Launch from python function call
-        filepath, cli_args, overwrite = main(*args)
-    livehtmlobj = kwargs.get("livehtmlobj", None)
-    status = execution(filepath, cli_args, overwrite, livehtmlobj)
-    status = {"true": True, "pass": True, "ran": True}.get(str(status).lower())
-    # add code to send div finished using katana interface class
+            if sys.argv[1] == "-rerun":
+                print_info("Initializing the rerun feature  !!")
+                try:
+                    junit_path = sys.argv[2]
+                    if os.path.exists(junit_path):
+                        tree = et.parse(junit_path)
+                        root = tree.getroot()
+                        if root.tag.islower() and root.tag == "testsuites":
+                            child_list = []
+                            for child in root:
+                                child_list.append(child.tag)
+                            if "property" in child_list:
+                                print_info("The Junit file provided is a project file")
+                                execute_failedproject(junit_path)
+                                sys.exit()
+                            else:
+                                print_info("The Junit file provided is a testsuite file")
+                                execute_failedsuite(junit_path)
+                                sys.exit()
+                        else:
+                            print_error("Invalid junit path")
+                            sys.exit()
+                    else:
+                        print_error("Invalid junit path")
+                except Exception as e:
+                    print(e)
+                    print_error("Junit Path is missing")
+                    sys.exit()
 
-    if status is True:
-        print_info("DONE 0")
-        sys.exit(0)
-    else:
-        print_info("DONE 1")
-        sys.exit(1)
+        if not kwargs:
+            # Launch from terminal/cli exeuction
+            filepath, cli_args, overwrite = main(sys.argv[1:])
+        else:
+            args = [] if not args else args
+            # Launch from python function call
+            filepath, cli_args, overwrite = main(*args)
+        livehtmlobj = kwargs.get("livehtmlobj", None)
+        status = execution(filepath, cli_args, overwrite, livehtmlobj)
+        status = {"true": True, "pass": True, "ran": True}.get(str(status).lower())
+        # add code to send div finished using katana interface class
+
+        if status is True:
+            print_info("DONE 0")
+            sys.exit(0)
+        else:
+            print_info("DONE 1")
+            sys.exit(1)
+    except:
+        data_repo = config_Utils.data_repository
+        if data_repo is not None:
+            if 'war_parallel' in data_repo:
+                if not data_repo['war_parallel']:
+                    war_file_type = data_repo['war_file_type']
+                    tc_junit_object = data_repo['wt_junit_object']
+                    if war_file_type == "Case":
+                        tc_junit_object.junit_output(data_repo['wt_resultsdir'])
+                    elif war_file_type == "Suite":
+                        tc_junit_object.junit_output(data_repo['wt_results_execdir'])
+                    elif war_file_type == "Project":
+                        tc_junit_object.junit_output(data_repo['wp_results_execdir'])
 
 
 """Handle all the cli command, new functions may be added later"""

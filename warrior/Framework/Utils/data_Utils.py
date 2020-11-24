@@ -961,10 +961,10 @@ def verify_cmd_response(match_list, context_list, command, response,
                     print_info(msg .format(match_list[i], command, verify_on_system,
                                            "Yes", "verification Passed"))
                 elif pattern_match is True and found is False:
-                    print_debug(msg .format(match_list[i], command, verify_on_system,
+                    print_error(msg .format(match_list[i], command, verify_on_system,
                                             "No", "verification Failed"))
                 elif pattern_match is False and found is True:
-                    print_debug(msg .format(match_list[i], command, verify_on_system,
+                    print_error(msg .format(match_list[i], command, verify_on_system,
                                             "Yes", "verification Failed"))
                 elif pattern_match is False and found is False:
                     print_info(msg .format(match_list[i], command, verify_on_system,

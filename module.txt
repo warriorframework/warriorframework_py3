@@ -11,7 +11,7 @@ Requires:
        requests==2.21.0
        selenium==3.8.0
        lxml==4.4.1
-       paramiko==2.4.2
+       paramiko==2.7.2
        pysnmp==4.4.12
        pyvirtualdisplay==0.2.1
        kafka-python==1.4.6

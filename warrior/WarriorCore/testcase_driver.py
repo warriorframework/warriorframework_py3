@@ -246,7 +246,7 @@ def report_testcase_result(tc_status, data_repository, tag="Steps"):
     print_info("**** Testcase Result ***")
     print_info("TESTCASE:{0}  STATUS:{1}".format(data_repository['wt_name'],
                                                  convertLogic(tc_status)))
-    print_info("\n")
+    print_debug("\n")
     Utils.testcase_Utils.pTestResult(tc_status, data_repository['wt_resultfile'])
     root = Utils.xml_Utils.getRoot(data_repository['wt_resultfile'])
     fail_count = 0

@@ -392,6 +392,10 @@ class WarriorCliClass(object):
             " Multiple file names can be provided "\
             "(separated by a space)")
 
+        warrior_arg.add_argument('-rerun', action="store", default=False, \
+                                 help=": Enter the command -rerun path of junit path")
+
+
         warrior_arg.add_argument('-wp', action='store', nargs='*', dest="proj_name",\
             help="Runs project available in default path, "\
             "Warrior/Warriorspace/Projects/. User need not give entire path. "\
@@ -461,6 +465,9 @@ class WarriorCliClass(object):
             help="logging level, debug:10, info:20, warning:30, error:40, critical:50 \
                   defaults to 'info'. example usage '--loglevel error'\
                   --loglevel warning'")
+
+        warrior_arg.add_argument('--no_logger', action='store_true', default=False,\
+            help=":This option will enable backward compatibility of warrior logging")
 
         tools_arg = parser.add_argument_group('warrior tools')
         tools_arg.add_argument('-tc_gen', action='store',\
