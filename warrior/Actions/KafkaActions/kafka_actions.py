@@ -256,6 +256,8 @@ class KafkaActions():
                 value = eval(value)
             except:
                 value = value
+            if isinstance(value, dict):
+                value = dumps(value).encode('utf-8')
 
             if not hasattr(self.kafka_obj_producer_confluent, "kafka_producer_confluent"):
                 print_error("couldn't create connection to the kafka broker")
