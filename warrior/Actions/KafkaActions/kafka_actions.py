@@ -236,7 +236,7 @@ class KafkaActions():
             wdesc = "publish value {} to topic {} in kafka broker {}".format(system_name, topic, value)
             pNote(wdesc)
             status = True
-            if not data_repository.get("kafka_producer", None):
+            if not data_repository.get("kafka_producer_confluent", None):
                 print_info("creating kafka producer")
                 kafka_ip = getSystemData(self.datafile, system_name, "ip")
                 kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
