@@ -327,67 +327,10 @@ class WarriorConfluentKafkaConsumer():
             result = False
         return result
 
-    def unsubscribe_to_topics_confluent(self):
-        """
-        Unsubscribe to all topics.
-        Arguments: None.
-        Returns:
-          result(bool) : False if exception occures, True otherwise
-        """
-        print_info("unsubscribe to all topics")
-        try:
-            self.kafka_consumer_confluent.unsubscribe()
-            result = True
-        except KafkaError as exc:
-            print_error("Exception during unsubscibing to topics - {}".format(exc))
-            result = False
-        return result
-
-    def assign_partitions_confluent(self, partitions):
-        """
-        Assign partitions to consumer.
-        Arguments:
-          partitions(list) : list of [topic, partition] lists
-            example : [[topic1,1], [topic2,1]]
-        Returns:
-            None.
-        """
-        print_info("assigning partitions to consumer {}".format(partitions))
-        topic_partitions = [TopicPartition(topic=tup[0], partition=tup[1]) for tup in partitions]
-        try:
-            self.kafka_consumer_confluent.assign(topic_partitions)
-            result = True
-        except KafkaError as exc:
-            print_error("Exception during assiging partitions - {}".format(exc))
-            result = False
-        return result
-
-    def seek_to_position_confluent(self, topic, partition, offset):
-        """
-        Seek to the given offset.
-        Arguments:
-          topic(str): topic name
-          partition(int): partition number
-          offset(int): offset number
-        Returns:
-          result(bool) : False if exception occures, True otherwise
-        """
-        print_info("seeking to position {}:{}:{}".format(topic, partition, offset))
-        topic_partition = TP(topic=topic, partition=partition)
-        try:
-            self.kafka_consumer_confluent.seek(topic_partition)
-            result = True
-        except KafkaError as exc:
-            print_error("Exception during seek - {}".format(exc))
-            result = False
-        return result
-
     def get_messages_confluent(self, get_all_messages=False, **kwargs):
         """
         Get messages from consumer.
         Arguments:
-          get_all_messages(bool): set this to True to get all the messages, seeks to the beginning.
-                                   Defaults to False.
           timeout(int): timeout in milliseconds
           max_records(int): maximum messages to fetch
         Returns:
@@ -455,8 +398,6 @@ class WarriorConfluentKafkaProducer():
         Publish messages to the desired topic
         Arguments:
           topic(str): topic name to publish messages
-          partition(int): partition nubmer
-          key(str): key name
           value(str): message to publish
         Returns:
           result(bool) : False if exception occures, True otherwise
