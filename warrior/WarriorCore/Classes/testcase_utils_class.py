@@ -27,6 +27,7 @@ import traceback
 
 from warrior.Framework.Utils.print_Utils import  print_info, print_debug, print_warning,\
 print_error, print_exception, print_sub, print_notype, print_without_logging
+from warrior.Framework import Utils
 from warrior.Framework.Utils import config_Utils 
 
 #import warrior.Framework.Utils.file_Utils as file_Utils
@@ -285,13 +286,21 @@ class TestcaseUtils(object):
 
     def p_pass(self, level, text=""):
         """Report a pass """
-        print_info("{0} STATUS:PASS".format(text))
+        kw_duration = Utils.data_Utils.get_object_from_datarepository("kw_duration")
+        if "KEYWORD" in text and kw_duration:
+            print_info("{0} STATUS:PASS | Duration = {1}".format(text, kw_duration))
+        else:
+            print_debug("{0} STATUS:PASS".format(text))
         #print_info("PASS: %s\n" % text)
         self.p_status("PASS", level)
 
     def p_fail(self, level, text=""):
         """Report a fail """
-        print_info("{0} STATUS:FAIL".format(text))
+        kw_duration = Utils.data_Utils.get_object_from_datarepository("kw_duration")
+        if "KEYWORD" in text and kw_duration:
+            print_info("{0} STATUS:FAIL | Duration = {1}".format(text, kw_duration))
+        else:
+            print_debug("{0} STATUS:FAIL".format(text))
         #print_info("FAIL: %s\n" % text)
         self.p_status("FAIL", level)
 
