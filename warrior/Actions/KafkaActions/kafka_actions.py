@@ -89,7 +89,6 @@ class KafkaActions():
                                                            ssl_ciphers=ciphers,
                                                            value_serializer=\
                                                              lambda x: dumps(x).encode('utf-8'))
-            data_repository["kafka_producer"] = self.kafka_obj_producer
         else:
             self.kafka_obj_producer = data_repository["kafka_producer"]
 
@@ -104,6 +103,7 @@ class KafkaActions():
             result = False
             status = status and result
         else:
+            data_repository["kafka_producer"] = self.kafka_obj_producer
             result = self.kafka_obj_producer.send_messages(topic=topic,
                                                            value=value,
                                                            partition=partition,
@@ -172,7 +172,6 @@ class KafkaActions():
                                                            auto_offset_reset='earliest',
                                                            value_deserializer=\
                                                              lambda x: loads(x.decode('utf-8')))
-            data_repository["kafka_consumer"] = self.kafka_obj_consumer
         else:
             self.kafka_obj_consumer = data_repository["kafka_consumer"]
 
@@ -181,6 +180,7 @@ class KafkaActions():
             result = False
             status = status and result
         else:
+            data_repository["kafka_consumer"] = self.kafka_obj_consumer
             subscribe_required = False
             assigned_topics = self.kafka_obj_consumer.get_topics()
             if not assigned_topics:

@@ -696,7 +696,12 @@ class WarriorCli(object):
                         verify_list, remote_resp_dict, endprompt, verify_group, log)
         command_status = {True: "PASS", False: "FAIL", "ERROR": "ERROR"}.get(
             result)
-        pNote("COMMAND STATUS:{0}".format(command_status))
+        duration = data_repository.get("command_duration", None)
+        if command_status == "PASS":
+            pNote("COMMAND STATUS:{} | Duration: {} sec".format(command_status,
+                                                                 duration))
+        else:
+            pNote("COMMAND STATUS:{0}".format(command_status))
 
         return result, response
 
@@ -1593,6 +1598,7 @@ class PexpectConnect(object):
         status = False
         cmd_timedout = False
         # time_format = "%Y-%b-%d %H:%M:%S"
+        data_repository.update({"command_duration" : None})
         try:
             boolprompt = self.target_host.expect(start_prompt)
         except Exception as exception:
@@ -1692,5 +1698,5 @@ class PexpectConnect(object):
                 if status is True:
                     duration = Utils.datetime_utils.get_time_delta(start_time,
                                                                    end_time)
-                    pNote("Command Duration: {0} sec".format(duration))
+                    data_repository.update({"command_duration" : duration})
         return status, response
