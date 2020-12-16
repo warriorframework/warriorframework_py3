@@ -51,7 +51,7 @@ class LogActions(object):
 
         """
         wdesc = "keyword to print the given log message"
-        Utils.testcase_Utils.pNote(wdesc)
+        Utils.testcase_Utils.pNote("Keyword: log_message | Description: {0}".format(wdesc))
         if not (message or list_message or dict_message):
             print_error("Please specify atleast one message for printing")
             Utils.testcase_Utils.pNote("Please specify atleast one message for printing")

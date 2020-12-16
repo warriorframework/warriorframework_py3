@@ -27,6 +27,7 @@ import traceback
 
 from warrior.Framework.Utils.print_Utils import  print_info, print_debug, print_warning,\
 print_error, print_exception, print_sub, print_notype, print_without_logging
+from warrior.Framework import Utils
 from warrior.Framework.Utils import config_Utils 
 
 #import warrior.Framework.Utils.file_Utils as file_Utils
@@ -110,7 +111,7 @@ class TestcaseUtils(object):
 
         self.p_testcase()
         self.gkeywordloop = self.gkeywordloop+1
-        print_info("********************* Keyword: %s *********************" % keyword_txt)
+        # print_info("********************* Keyword: %s *********************" % keyword_txt)
         self.gkeyword[self.gkeywordloop] = ET.SubElement(self.root, "Keyword")
         self.current_pointer = self.gkeyword[self.gkeywordloop]
         name = ET.SubElement(self.gkeyword[self.gkeywordloop], "Name")
@@ -169,8 +170,8 @@ class TestcaseUtils(object):
                                                 self.gsteploop], "SubStep")
         self.current_pointer = self.gsubstep[self.gsubsteploop]
         self.gsubstep[self.gsubsteploop].text = substep_txt
-        print_info("<< Substep >>")
-        print_info("Keyword Description: {0}".format(substep_txt))
+        print_debug("<< Substep >>")
+        print_debug("Keyword Description: {0}".format(substep_txt))
 
         self.print_output()
 
@@ -285,13 +286,21 @@ class TestcaseUtils(object):
 
     def p_pass(self, level, text=""):
         """Report a pass """
-        print_info("{0} STATUS:PASS".format(text))
+        kw_duration = Utils.data_Utils.get_object_from_datarepository("kw_duration")
+        if "KEYWORD" in text and kw_duration:
+            print_info("{0} STATUS:PASS | Duration = {1}".format(text, kw_duration))
+        else:
+            print_debug("{0} STATUS:PASS".format(text))
         #print_info("PASS: %s\n" % text)
         self.p_status("PASS", level)
 
     def p_fail(self, level, text=""):
         """Report a fail """
-        print_info("{0} STATUS:FAIL".format(text))
+        kw_duration = Utils.data_Utils.get_object_from_datarepository("kw_duration")
+        if "KEYWORD" in text and kw_duration:
+            print_info("{0} STATUS:FAIL | Duration = {1}".format(text, kw_duration))
+        else:
+            print_debug("{0} STATUS:FAIL".format(text))
         #print_info("FAIL: %s\n" % text)
         self.p_status("FAIL", level)
 
@@ -439,7 +448,7 @@ class TestcaseUtils(object):
         :Returns:
             None
         """
-        print_info("<< Substep status >>")
+        print_debug("<< Substep status >>")
         self.report_warning(status)
 
     def report_keyword_status(self, status, kw_name=''):
@@ -485,7 +494,7 @@ class TestcaseUtils(object):
         tree.write(resultfile)
 
     def append_result_files(self, dst_resultfile, kw_resultfile_list, dst_root='Testcase', childtag='Keyword'):
-        """Append kw/system result files into a testcase result file"""
+         """Append kw/system STATUS:result files into a testcase result file"""
         try:
             finstring = ''
             for kw_file in kw_resultfile_list:

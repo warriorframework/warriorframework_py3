@@ -127,7 +127,7 @@ class wait_actions(object):
         status = True
         wdesc = "This would permanently set the implicit wait time for " \
                 "given browser instance(s)"
-        pNote(wdesc)
+        pNote("Keyword: set_implicit_wait | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         browser_details = {}
 
@@ -289,7 +289,7 @@ class wait_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "Browser would wait until element is clickable"
-        pNote(wdesc)
+        pNote("Keyword: wait_until_element_is_clickable | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         browser_details = {}
 
@@ -453,7 +453,7 @@ class wait_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "Browser would wait until presence of element is detected"
-        pNote(wdesc)
+        pNote("Keyword: wait_until_presence_of_element_located | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         browser_details = {}
 
@@ -618,7 +618,8 @@ class wait_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "Browser would wait until presence of elements is detected"
-        pNote(wdesc)
+        pNote("Keyword: wait_until_presence_of_all_elements_located | Description: {0}".\
+          format(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -784,7 +785,7 @@ class wait_actions(object):
         status = True
         wdesc = "Browser would wait until visibility of an element known to " \
                 "be present in the DOM is determined"
-        pNote(wdesc)
+        pNote("Keyword: wait_until_visibility_is_determined | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         browser_details = {}
 
@@ -965,7 +966,7 @@ class wait_actions(object):
         status = True
         wdesc = "Browser would wait until visibility of an element known to " \
                 "be is determined"
-        pNote(wdesc)
+        pNote("Keyword: wait_until_visibility_of_element_located | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         browser_details = {}
 

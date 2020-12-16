@@ -45,7 +45,7 @@ class DemoActions(object):
         lab PC or test set calibration are up-to-date or not.
         """
         wdesc = "Check lab PC replacement or test set calibration status"
-        pNote(wdesc)
+        pNote("Keyword: check_lab_equipment | Description: {0}".format(wdesc))
         #Resolve system_name and subsystem_list
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile, system_name)
         output_dict = {}
