@@ -619,7 +619,7 @@ class wait_actions(object):
         status = True
         wdesc = "Browser would wait until presence of elements is detected"
         pNote("Keyword: wait_until_presence_of_all_elements_located | Description: {0}".\
-          format(wdesc)
+          format(wdesc))
         pSubStep(wdesc)
         browser_details = {}
 

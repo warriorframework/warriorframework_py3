@@ -300,7 +300,7 @@ class WarriorCli(object):
                 td_resp_dict[title_row].update(temp_resp)
                 td_resp_dict[step_title_row].update(temp_resp)
                 if not details_dict["logmsg_list"][i] or details_dict["logmsg_list"][i].lower() != "false":
-                    pNote("Portion of response saved to the data "
+                    print_debug("Portion of response saved to the data "
                           "repository with key: '{0}.{1}.{2}' and value: '{3}'"
                           .format(session_id, title_row, resp, temp_resp[resp]))
         except Exception as e:
@@ -637,6 +637,7 @@ class WarriorCli(object):
         else:
             inorder_search = False
         if log is None or log.lower() != "false":
+            pNote("System name\t: {0}".format(system_name))
             pNote("Startprompt\t: {0}".format(startprompt))
             pNote("Endprompt\t: {0}".format(endprompt))
             pNote("Sleeptime\t: {0}".format(sleeptime))
@@ -748,7 +749,6 @@ class WarriorCli(object):
             else:
                 system_name = kw_system_name
             session_id = Utils.data_Utils.get_session_id(system_name, session)
-        pNote("System name\t: {0}".format(system_name))
 
         if details_dict["sys_list"][index] is not None:
             kw_system_name = details_dict["sys_list"][index]
@@ -1297,7 +1297,7 @@ class ParamikoConnect(object):
                 response = response + stderr.read().decode("utf-8")
 
             pNote("[{0}] Command execution completed".format(end_time))
-            pNote("Response:\n{0}\n".format(response))
+            print_debug("Response:\n{0}\n".format(response))
             status = True
         except Exception as exception:
             print_exception(exception)
@@ -1692,7 +1692,7 @@ class PexpectConnect(object):
                         pNote("EXCEPTION !! Cannot decode response", 'error')
                         data_repository['step_%s_errormessage' % step_num] = "Response decode error for command: {}".format(command.split(":")[0])
                 if kwargs.get("log", "true") != "false":
-                    pNote("Response:\n{0}\n".format(response))
+                    print_info("Response:\n{0}\n".format(response))
                 pNote(msg, "debug")
                 if status is True:
                     duration = Utils.datetime_utils.get_time_delta(start_time,
