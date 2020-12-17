@@ -376,6 +376,9 @@ class CliActions(object):
                         output_dict[session_id] = wc_obj
                         output_dict[session_id + "_connstring"] = conn_string.replace(b"\r\n", b"")
                         output_dict[session_id + "_td_response"] = {}
+                        output_dict['connected_system'] = {"username": credentials['username'],
+                                                           "password": credentials['password'],
+                                                           "sysname": system_name}
                         result = True
                         pNote("Connection to system-subsystem-session={0}-{1}-{2}"
                               " is successful".format(system_name, subsystem_name, session_name))
