@@ -494,7 +494,7 @@ class TestcaseUtils(object):
         tree.write(resultfile)
 
     def append_result_files(self, dst_resultfile, kw_resultfile_list, dst_root='Testcase', childtag='Keyword'):
-         """Append kw/system STATUS:result files into a testcase result file"""
+        """Append kw/system STATUS:result files into a testcase result file"""
         try:
             finstring = ''
             for kw_file in kw_resultfile_list:
