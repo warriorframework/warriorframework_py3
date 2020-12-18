@@ -18,7 +18,7 @@ except Exception:
 class Restart:
 
     def __init__(self):
-        self.settings_file = os.path.join(Navigator().get_katana_dir(), 'katana.wui', 'settings.py')
+        self.settings_file = os.path.join(Navigator().get_katana_dir(), 'wui', 'settings.py')
         print(self.settings_file)
 
     def restart(self, delay=0):
