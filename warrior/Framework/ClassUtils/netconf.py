@@ -394,12 +394,13 @@ class client(Thread):
 
         return True
 
-    def __wait_recv_data(self):
+    def __wait_recv_data(self, timeout):
         '''
         #wait receive for rpc-reply until timeout expires
         '''
+        print_debug("timeout value: ""##{}##".format(timeout))
         self.__wait_resp.clear()
-        self.__wait_resp.wait(TIMEOUT_VALUE)
+        self.__wait_resp.wait(timeout)
         if self.__wait_resp.isSet():
             if not self.__isOpen:
                 return False
@@ -425,7 +426,7 @@ class client(Thread):
         xml += "</hello>"
         return self.__send(xml)
 
-    def rpc(self, xml):
+    def rpc(self, xml, timeout = TIMEOUT_VALUE):
         '''
         #send a rpc
           xml = xml string to send
@@ -436,7 +437,7 @@ class client(Thread):
         data += xml
         data += "</rpc>"
         if self.__send(data):
-            self.__wait_recv_data()
+            self.__wait_recv_data(timeout)
         return self.__response_buffer
 
     def get_config(self, source, filter_string=None, filter_type="subtree"):

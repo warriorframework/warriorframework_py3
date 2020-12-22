@@ -39,7 +39,7 @@ from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
 from warrior.Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
 import warrior.Framework.Utils.email_utils as email
 from warrior.WarriorCore import warrior_cli_driver
-
+from xml.etree import ElementTree
 def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     """Gets all the details of the Testcase
     (like title, resultsfolder, logsfolder, datafile, default on_error
@@ -125,7 +125,14 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     #To check the whether data file is a well formed xml file.
     if datafile and datafile is not "NO_DATA":
         Utils.xml_Utils.getRoot(datafile)
-
+    mapfile = None
+    if 'ow_mapfile' in data_repository:
+        mapfile = data_repository['ow_mapfile']
+    elif Utils.xml_Utils.nodeExists(testcase_filepath, "MapFile"):
+        mapfile = Utils.xml_Utils.getChildTextbyParentTag(testcase_filepath, \
+                'Details', 'MapFile')
+    abs_cur_dir = os.path.dirname(testcase_filepath)
+    mapfile = Utils.file_Utils.getAbsPath(mapfile, abs_cur_dir)
     # tc_execution_dir = Utils.file_Utils.createDir_addtimestamp(execution_dir, nameonly)
     # datafile, data_type = get_testcase_datafile(testcase_filepath)
     # resultfile, resultsdir = get_testcase_resultfile(testcase_filepath, tc_execution_dir,
@@ -171,6 +178,7 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     data_repository['wt_operating_system'] = operating_system.upper()
     data_repository['wt_def_on_error_action'] = def_on_error_action.upper()
     data_repository['wt_def_on_error_value'] = def_on_error_value
+    data_repository['wt_mapfile'] = mapfile
     # For custom jira project name
     if 'jiraproj' not in data_repository:
         data_repository['jiraproj'] = jiraproj
@@ -188,6 +196,8 @@ def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     Utils.testcase_Utils.pCustomTag("Title", title)
     Utils.testcase_Utils.pCustomTag("TC_Location", testcase_filepath)
     Utils.testcase_Utils.pCustomTag("Datafile", datafile)
+    if mapfile:
+        Utils.testcase_Utils.pCustomTag("Mapfile", mapfile)
     Utils.testcase_Utils.pCustomTag("Logsdir", logsdir)
     Utils.testcase_Utils.pCustomTag("Defectsdir", defectsdir)
     Utils.testcase_Utils.pCustomTag("Resultfile", resultfile)
@@ -547,6 +557,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                                 "tc", tc_timestamp)
     tc_junit_object.update_attr("title", data_repository['wt_title'], "tc", tc_timestamp)
     tc_junit_object.update_attr("data_file", data_repository['wt_datafile'], "tc", tc_timestamp)
+    tc_junit_object.update_attr("mapfile", data_repository['wt_mapfile'], "tc", tc_timestamp)
 
     data_repository['wt_junit_object'] = tc_junit_object
     print_testcase_details_to_console(testcase_filepath, data_repository, steps_tag)

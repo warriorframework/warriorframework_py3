@@ -22,6 +22,11 @@ from warrior.Framework.Utils.print_Utils import  print_info, print_debug,\
 from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep, report_substep_status
 from warrior.Framework.ClassUtils.netconf_utils_class import WNetConf
 from warrior.Framework.Utils.encryption_utils import decrypt
+import re
+from configobj import ConfigObj
+from xml.etree import ElementTree
+from warrior.Framework.Utils.config_Utils import data_repository
+import os
 
 class NetconfActions(object):
     """NetconfActions class which has methods(keywords)
@@ -180,7 +185,15 @@ class NetconfActions(object):
         output_dict = {}
         session_parameters = ['ip', 'nc_port', 'username', 'password',
                               'hostkey_verify', 'protocol_version']
-        session_credentials = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None) 
+        if data_repository.get('wt_mapfile', None):
+            status, session_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            protocol=session_credentials.get('protocol_version', None)
+            print(session_credentials, 'session cred%%%%%%%%%%%%%%%%%%%%%%')
+            if protocol == None:
+                session_credentials['protocol_version'] = False
+        else:
+            session_credentials = Utils.data_Utils.get_credentials(self.datafile,
                                                                system_name,
                                                                session_parameters)
         session_credentials["password"] = decrypt(session_credentials["password"])
@@ -240,6 +253,111 @@ class NetconfActions(object):
         report_substep_status(status)
         reply_key = '{}_close_netconf_reply'.format(system_name)
         return status, {reply_key: reply}
+
+    def ne_request(self, system_name, command, session_name = None, dict_request = {}):
+        status = True
+        print_debug(system_name)
+        self.clear_notification_buffer_all(system_name, session_name)
+        session_id = Utils.data_Utils.get_session_id(system_name, session_name)
+        netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
+        reply = ''
+        mapfile = data_repository.get('wt_mapfile', None)
+        try:
+            status, mapper_data =  Utils.data_Utils.get_connection('MAP', mapfile)
+            if mapper_data:
+                v = mapper_data[command]
+                if v != '':
+                    status, config =  Utils.data_Utils.get_connection('COMMAND', v)
+                    status, optional =  Utils.data_Utils.get_connection('OPTIONS', v)
+                    print_debug('config data: {0}'.format(config))
+                    print_debug('optional data: {0}'.format(optional))
+                    status, config_data =  Utils.data_Utils.replace_var(config, dict_request)
+                    l = []
+                    if optional:
+                        status, optional_data =  Utils.data_Utils.replace_var(optional, dict_request)
+                        if 'TIMEOUT' in optional_data.keys():
+                            reply = netconf_object.request_rpc(config_data['REQUEST'], int(optional_data['TIMEOUT']))
+                            print_debug('reply: {0}'.format(reply))
+                        else:
+                            reply = netconf_object.request_rpc(config_data['REQUEST'])
+                            print_debug('reply: {0}'.format(reply))
+                        if 'MATCH_STRING' in optional_data.keys():
+                            if re.search('AND', optional['MATCH_STRING']):
+                                match_type = 'AND'
+                            elif re.search('OR', optional['MATCH_STRING']):
+                                match_type = 'OR'
+                            elif re.search('NOT', optional['MATCH_STRING']):
+                                match_type = 'NOT'
+                            else:
+                                match_type = 'NONE'
+                            match_string = optional['MATCH_STRING']
+                            if match_type == 'AND':
+                                result = True
+                                for i in match_string.split('AND'):
+                                    l.append(i)
+                                l.remove('\n')
+                                for i in l:
+                                    i = i.replace('\n', '')
+                                    valid = re.search(i, reply)
+                                    if valid == None:
+                                        result = False
+                                if result:
+                                    print_debug('The given match string is found in the response')
+                                else:
+                                    print_debug('The given match string is not found in the response')
+                            elif match_type == 'OR':
+                                result = False
+                                for i in match_string.split('OR'):
+                                    l.append(i)
+                                l.remove('\n')
+                                for i in l:
+                                    i = i.replace('\n', '')
+                                    valid = re.search(i, reply)
+                                    if valid:
+                                        result = True
+                                if result:
+                                    print_debug('The given match string is found in the response')
+                                else:
+                                    print_debug('The given match string is not found in the response')
+                            elif match_type == 'NOT':
+                                result = True
+                                for i in match_string.split('NOT'):
+                                    l.append(i)
+                                l.remove('\n')
+                                for i in l:
+                                    i = i.replace('\n', '')
+                                    valid = re.search(i, reply)
+                                    if valid:
+                                        result = False
+                                if result:
+                                    print_debug('The given match string is found in the response')
+                                else:
+                                    print_debug('The given match string is not found in the response')
+                            else:
+                                result = False
+                                for i in match_string.split('\n'):
+                                    l.append(i)
+                                l = [i for i in l if i!='']
+                                valid = re.search(l[0], reply)
+                                if valid:
+                                    result = True
+                                if result:
+                                    print_debug('The given match string is found in the response')
+                                else:
+                                    print_debug('The given match string is not found in the response')
+
+
+                    else:
+                        reply = netconf_object.request_rpc(config_data['REQUEST'])
+                        print_debug('Reply: {0}'.format(reply))
+                else:
+                    print_error('Provide the value for the key in cfg file')
+        except Exception as e:
+            status = False
+            print_error("exception found:", str(e))
+        return status, reply
+
+
 
     def get_config(self, datastore, system_name,
                    session_name=None,

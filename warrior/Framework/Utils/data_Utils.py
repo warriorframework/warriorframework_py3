@@ -31,6 +31,9 @@ from warrior.Framework.ClassUtils import database_utils_class
 from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
 from warrior.WarriorCore.Classes.warmock_class import mocked
 from warrior.WarriorCore.Classes.testcase_utils_class import TestcaseUtils
+import re
+from configobj import ConfigObj
+
 
 cmd_params = OrderedDict([("command_list", "send"),
                           ("sys_list", "sys"),
@@ -92,6 +95,55 @@ def get_nc_request_rpc_string(config_datafile, xmlns, request_type, xmlns_tag):
         print_exception(exception)
         status = "error"
     return status, configuration
+
+
+def replace_var(r_dict, user_dict):
+    res_dict=r_dict
+    status=True
+    try:
+        for k, v in r_dict.items():
+            regex='{.*}'
+            match=re.findall(regex, v)
+            for i in match:
+                i=i.replace('{', '')
+                i=i.replace('}', '')
+                if i in user_dict.keys() or os.getenv(i, ''):
+                    if i in user_dict.keys():
+                        repl=re.sub('{'+i+'}', user_dict[i], v)
+                        res_dict[k]=repl
+                        v=repl
+                    else:
+                        repl=re.sub('{'+i+'}', os.getenv(i, ''), v)
+                        res_dict[k]=repl
+                        v=repl
+                else:
+                    raise Exception('Provide all the substition for variables')
+    except Exception as e:
+        status=False
+        print_error("exception found:", str(e))
+    print_debug('After replacing result dictionary: {0}'.format(res_dict))
+    return status, res_dict
+
+def get_connection(section, cfg_file_name, device = ''):
+    ''' This method fetches the options from configuration file, from the
+    given section, and return them as dict.
+    '''
+    config=ConfigObj(cfg_file_name)
+    status=True
+    mapper_data=None
+    # Read the config file if exist
+    try:
+        if cfg_file_name:
+            if section:
+                # Fetch options from required section and update in to dict
+                if device=='':
+                    mapper_data=config[section]
+                else:
+                    mapper_data=config[section][device]
+    except Exception as e:
+        status=False
+        print_error("exception found: Check the config file", cfg_file_name, str(e))
+    return status, mapper_data
 
 
 def getSystemData(datafile, system_name, cnode, system='system'):

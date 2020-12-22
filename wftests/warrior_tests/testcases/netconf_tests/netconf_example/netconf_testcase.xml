@@ -1,0 +1,87 @@
+<?xml version="1.0" ?>
+<Testcase>
+        <Details>
+                <Name>tc_netconf_sanity</Name>
+                <Title>tc_netconf_sanity</Title>
+                <Engineer>Anil kumar</Engineer>
+                <Date>29-04-2019</Date>
+                <Time>15:04</Time>
+                <InputDataFile>No_Data</InputDataFile>
+                <MapFile>mapper.cfg</MapFile>
+                <Datatype>Custom</Datatype>
+                <default_onError action="next"/>
+                <Logsdir/>
+                <Resultsdir/>
+                <ExpectedResults/>
+        </Details>
+        <Requirements>
+                <Requirement/>
+        </Requirements>
+        <Steps>
+                <step Driver="netconf_driver" Keyword="connect_netconf" TS="1">
+                        <Arguments>
+                                <argument name="system_name" value="device1"/>
+                                <!--argument name="mapper_file" value="mapper.cfg"/-->
+                                <!--argument name="device" value="device1"/-->
+                        </Arguments>
+                        <onError action="next"/>
+                        <Description>connect_netconf</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+
+                <step Driver="netconf_driver" Keyword="ne_request" TS="2">
+                        <Arguments>
+                                <argument name="system_name" value="device1"/>
+                                <argument name="command" value="DB-BACKUP"/>
+                                <!--argument name="mapper_file" value="mapper.cfg"/-->
+                                <argument name="dict_request" value="{'FILENAME': '/var/ftp/file4.DBS'}"/>
+                        </Arguments>
+                        <Description>send rpc request to NE</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+
+               <step Driver="netconf_driver" Keyword="ne_request" TS="3">
+                        <Arguments>
+                                <argument name="system_name" value="device1"/>
+                                <argument name="command" value="SEND-TRANSFER"/>
+                                <!--argument name="mapper_file" value="mapper.cfg"/-->
+                                <argument name="dict_request" value="{'ACTIONS': 'upload'}"/>
+                        </Arguments>
+                        <Description>send_transfer</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+
+               <step Driver="netconf_driver" Keyword="ne_request" TS="4">
+                        <Arguments>
+                                <argument name="system_name" value="device1"/>
+                                <argument name="command" value="SEND-DB-SHOW"/>
+                                <!--argument name="mapper_file" value="mapper.cfg"/-->
+                        </Arguments>
+                        <Description>send_db_show</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+
+
+
+                <step Driver="netconf_driver" Keyword="close_netconf" TS="5">
+                        <Arguments>
+                                <argument name="system_name" value="device1"/>
+                        </Arguments>
+                        <onError action="next"/>
+                        <Description>close_netconf</Description>
+                        <Execute ExecType="Yes"/>
+                        <context>positive</context>
+                        <impact>impact</impact>
+                </step>
+        </Steps>
+</Testcase>
+
+
