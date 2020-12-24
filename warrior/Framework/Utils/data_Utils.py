@@ -97,7 +97,7 @@ def get_nc_request_rpc_string(config_datafile, xmlns, request_type, xmlns_tag):
     return status, configuration
 
 
-def replace_var(r_dict, user_dict):
+def replace_var(r_dict, user_dict, variable_dict):
     res_dict=r_dict
     status=True
     try:
@@ -107,9 +107,13 @@ def replace_var(r_dict, user_dict):
             for i in match:
                 i=i.replace('{', '')
                 i=i.replace('}', '')
-                if i in user_dict.keys() or os.getenv(i, ''):
+                if i in variable_dict.keys() or user_dict.keys() or os.getenv(i, ''):
                     if i in user_dict.keys():
                         repl=re.sub('{'+i+'}', user_dict[i], v)
+                        res_dict[k]=repl
+                        v=repl
+                    elif i in variable_dict.keys():
+                        repl=re.sub('{'+i+'}', variable_dict[i], v)
                         res_dict[k]=repl
                         v=repl
                     else:

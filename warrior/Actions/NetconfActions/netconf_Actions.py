@@ -137,7 +137,7 @@ class NetconfActions(object):
         report_substep_status(status)
         return status, {reply_key: reply_list}
 
-    def connect_netconf(self, system_name, session_name=None):
+    def connect_netconf(self, system_name='', session_name=None):
         """
         Connects to the Netconf interface of the the given system or subsystems
 
@@ -187,9 +187,15 @@ class NetconfActions(object):
                               'hostkey_verify', 'protocol_version']
         mapfile = data_repository.get('wt_mapfile', None) 
         if data_repository.get('wt_mapfile', None):
-            status, session_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            status, device_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if system_name == '':
+                device=device_credentials.get('DEFAULT', None)
+                if device == None:
+                    device = list(device_credentials.keys())[0]
+                system_name = device
+                data_repository['system_name'] = system_name
+            status, session_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)           
             protocol=session_credentials.get('protocol_version', None)
-            print(session_credentials, 'session cred%%%%%%%%%%%%%%%%%%%%%%')
             if protocol == None:
                 session_credentials['protocol_version'] = False
         else:
@@ -254,8 +260,10 @@ class NetconfActions(object):
         reply_key = '{}_close_netconf_reply'.format(system_name)
         return status, {reply_key: reply}
 
-    def ne_request(self, system_name, command, session_name = None, dict_request = {}):
+    def ne_request(self, command, system_name = '', session_name = None, dict_request = {}):
         status = True
+        if system_name == '':
+            system_name = data_repository.get('system_name', None)
         print_debug(system_name)
         self.clear_notification_buffer_all(system_name, session_name)
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
@@ -271,10 +279,12 @@ class NetconfActions(object):
                     status, optional =  Utils.data_Utils.get_connection('OPTIONS', v)
                     print_debug('config data: {0}'.format(config))
                     print_debug('optional data: {0}'.format(optional))
-                    status, config_data =  Utils.data_Utils.replace_var(config, dict_request)
+                    mapfile=data_repository.get('wt_mapfile', None)
+                    status, variables = Utils.data_Utils.get_connection('VARIABLES', mapfile)
+                    status, config_data =  Utils.data_Utils.replace_var(config, dict_request, variables)
                     l = []
                     if optional:
-                        status, optional_data =  Utils.data_Utils.replace_var(optional, dict_request)
+                        status, optional_data =  Utils.data_Utils.replace_var(optional, dict_request, variables)
                         if 'TIMEOUT' in optional_data.keys():
                             reply = netconf_object.request_rpc(config_data['REQUEST'], int(optional_data['TIMEOUT']))
                             print_debug('reply: {0}'.format(reply))
@@ -295,7 +305,6 @@ class NetconfActions(object):
                                 result = True
                                 for i in match_string.split('AND'):
                                     l.append(i)
-                                l.remove('\n')
                                 for i in l:
                                     i = i.replace('\n', '')
                                     valid = re.search(i, reply)
@@ -309,7 +318,6 @@ class NetconfActions(object):
                                 result = False
                                 for i in match_string.split('OR'):
                                     l.append(i)
-                                l.remove('\n')
                                 for i in l:
                                     i = i.replace('\n', '')
                                     valid = re.search(i, reply)
