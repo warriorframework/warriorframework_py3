@@ -260,111 +260,81 @@ class NetconfActions(object):
         reply_key = '{}_close_netconf_reply'.format(system_name)
         return status, {reply_key: reply}
 
-    def ne_request(self, command, system_name = '', session_name = None, dict_request = {}):
-        status = True
-        if system_name == '':
-            system_name = data_repository.get('system_name', None)
+    def ne_request(self , command , system_name = '' , session_name = None , dict_request = {}):
+        status=True
+        if system_name=='':
+            system_name=data_repository.get('system_name' , None)
         print_debug(system_name)
-        self.clear_notification_buffer_all(system_name, session_name)
-        session_id = Utils.data_Utils.get_session_id(system_name, session_name)
-        netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
-        reply = ''
-        mapfile = data_repository.get('wt_mapfile', None)
+        self.clear_notification_buffer_all(system_name , session_name)
+        session_id=Utils.data_Utils.get_session_id(system_name , session_name)
+        netconf_object=Utils.data_Utils.get_object_from_datarepository(session_id)
+        reply=''
+        mapfile=data_repository.get('wt_mapfile' , None)
+        found = 'The given match string is found in the response'
+        not_found = 'The given match string is not found in the response'
         try:
-            status, mapper_data =  Utils.data_Utils.get_connection('MAP', mapfile)
+            status , mapper_data=Utils.data_Utils.get_connection('MAP' , mapfile)
+            #check if the MAP section is present in the cfg file
             if mapper_data:
-                v = mapper_data[command]
-                if v != '':
-                    status, config =  Utils.data_Utils.get_connection('COMMAND', v)
-                    status, optional =  Utils.data_Utils.get_connection('OPTIONS', v)
-                    print_debug('config data: {0}'.format(config))
-                    print_debug('optional data: {0}'.format(optional))
-                    mapfile=data_repository.get('wt_mapfile', None)
-                    status, variables = Utils.data_Utils.get_connection('VARIABLES', mapfile)
-                    status, config_data =  Utils.data_Utils.replace_var(config, dict_request, variables)
-                    l = []
+                v=mapper_data[command]
+                #Get the command from the mapper file
+                if v!='':
+                    #Get the request and optional data in the dictionary format
+                    status , config=Utils.data_Utils.get_connection('COMMAND' , v)
+                    status , optional=Utils.data_Utils.get_connection('OPTIONS' , v)
+                    mapfile=data_repository.get('wt_mapfile' , None)
+                    status , variables=Utils.data_Utils.get_connection('VARIABLES' , mapfile)
+                    status , config_data=Utils.data_Utils.replace_var(config , dict_request , variables)
+                    l=[]
+                    #Proceed if the optional data is given by the user
+                    #We are replacing all the variables which the user provided inside {}
                     if optional:
-                        status, optional_data =  Utils.data_Utils.replace_var(optional, dict_request, variables)
+                        status , optional_data=Utils.data_Utils.replace_var(optional , dict_request , variables)
+                        #If the timeout is specified by the user, override the default timeout
                         if 'TIMEOUT' in optional_data.keys():
-                            reply = netconf_object.request_rpc(config_data['REQUEST'], int(optional_data['TIMEOUT']))
+                            reply=netconf_object.request_rpc(config_data['REQUEST'] , int(optional_data['TIMEOUT']))
                             print_debug('reply: {0}'.format(reply))
                         else:
-                            reply = netconf_object.request_rpc(config_data['REQUEST'])
+                            reply=netconf_object.request_rpc(config_data['REQUEST'])
                             print_debug('reply: {0}'.format(reply))
+                        #Check if the user gave match string to compare with the response
                         if 'MATCH_STRING' in optional_data.keys():
-                            if re.search('AND', optional['MATCH_STRING']):
-                                match_type = 'AND'
-                            elif re.search('OR', optional['MATCH_STRING']):
-                                match_type = 'OR'
-                            elif re.search('NOT', optional['MATCH_STRING']):
-                                match_type = 'NOT'
-                            else:
-                                match_type = 'NONE'
-                            match_string = optional['MATCH_STRING']
-                            if match_type == 'AND':
-                                result = True
-                                for i in match_string.split('AND'):
-                                    l.append(i)
+                            #Check if the MATCH_STRING contains 'AND', 'OR', 'NOT'
+                            match_string=optional['MATCH_STRING']
+                            match = lambda m_string: 'AND' if re.search('AND', m_string) else (
+                                'OR' if re.search('OR', m_string) else 'NONE')
+                            if match(match_string)=='NONE':
+                                match=lambda m_string: 'NOT' if re.search('NOT' , m_string) else 'NONE'
+                            match_type=match(match_string)
+                            #Based on the match type the operation is performed. Supported operations are 'AND', 'OR', 'NOT'
+                            #After verifying the output is printed
+                            if match_type:
+                                operation_dict = {'AND': True, 'OR': False, 'NOT': False, 'NONE': False}
+                                result=operation_dict[match_type]
+                                l = [i for i in match_string.split(match_type)]
+                                if match_type == 'NOT':
+                                    l.remove('\n')
                                 for i in l:
-                                    i = i.replace('\n', '')
-                                    valid = re.search(i, reply)
-                                    if valid == None:
-                                        result = False
-                                if result:
-                                    print_debug('The given match string is found in the response')
-                                else:
-                                    print_debug('The given match string is not found in the response')
-                            elif match_type == 'OR':
-                                result = False
-                                for i in match_string.split('OR'):
-                                    l.append(i)
-                                for i in l:
-                                    i = i.replace('\n', '')
-                                    valid = re.search(i, reply)
-                                    if valid:
-                                        result = True
-                                if result:
-                                    print_debug('The given match string is found in the response')
-                                else:
-                                    print_debug('The given match string is not found in the response')
-                            elif match_type == 'NOT':
-                                result = True
-                                for i in match_string.split('NOT'):
-                                    l.append(i)
-                                l.remove('\n')
-                                for i in l:
-                                    i = i.replace('\n', '')
-                                    valid = re.search(i, reply)
-                                    if valid:
-                                        result = False
-                                if result:
-                                    print_debug('The given match string is found in the response')
-                                else:
-                                    print_debug('The given match string is not found in the response')
-                            else:
-                                result = False
-                                for i in match_string.split('\n'):
-                                    l.append(i)
-                                l = [i for i in l if i!='']
-                                valid = re.search(l[0], reply)
-                                if valid:
-                                    result = True
-                                if result:
-                                    print_debug('The given match string is found in the response')
-                                else:
-                                    print_debug('The given match string is not found in the response')
-
-
+                                    i=i.replace('\n', '')
+                                    i = i.strip()
+                                    valid=re.search(i, reply)
+                                    if valid is None and match_type == 'AND':
+                                          result = not result
+                                          break
+                                    elif valid is not None and match_type != 'AND':
+                                          result = not result
+                                          break
+                                res = found if result else not_found
+                                print_debug(res)
                     else:
-                        reply = netconf_object.request_rpc(config_data['REQUEST'])
+                        reply=netconf_object.request_rpc(config_data['REQUEST'])
                         print_debug('Reply: {0}'.format(reply))
                 else:
                     print_error('Provide the value for the key in cfg file')
         except Exception as e:
-            status = False
-            print_error("exception found:", str(e))
-        return status, reply
-
+            status=False
+            print_error("exception found:" , str(e))
+        return status , reply
 
 
     def get_config(self, datastore, system_name,

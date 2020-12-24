@@ -98,6 +98,13 @@ def get_nc_request_rpc_string(config_datafile, xmlns, request_type, xmlns_tag):
 
 
 def replace_var(r_dict, user_dict, variable_dict):
+    '''
+    This method substitutes all the varibles which are given inside {}
+    The first priority is given for user_dict which is passed from the testcase argument
+    The second priority is for the varible_dict which is given in the VARIABLE section 
+    in mapper file
+    The third priority is for the environmental variables
+    '''
     res_dict=r_dict
     status=True
     try:
