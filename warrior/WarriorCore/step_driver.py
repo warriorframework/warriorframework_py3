@@ -123,7 +123,6 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     2. step_num        = (int) step number being executed
     3. data_repository = (dict) data_repository of the testcase
     """
-
     tc_junit_object = data_repository['wt_junit_object']
     driver = step.get('Driver')
     plugin = step.get('Plugin')
@@ -214,9 +213,13 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
         print_info("Keyword status will be marked as ERROR as onError action is set to"
                    "'abort_as_error'")
         keyword_status = "ERROR"
+    kw_end_time = Utils.datetime_utils.get_current_timestamp()
+    kw_duration = Utils.datetime_utils.get_time_delta(kw_start_time)
+    hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
+    Utils.data_Utils.update_datarepository({"kw_duration" : hms})
+    print_debug("[{0}] Keyword execution completed".format(kw_end_time))
     Utils.testcase_Utils.reportKeywordStatus(keyword_status, keyword)
-    print_debug("step number: {0}".format(step_num))
-
+    
     # Reporting status to data repo
     string_status = {"TRUE": "PASS", "FALSE": "FAIL",
                      "ERROR": "ERROR", "EXCEPTION": "EXCEPTION", "SKIP": "SKIP", "RAN":"RAN"}
@@ -244,11 +247,6 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
         Utils.testcase_Utils.pNote_level(msg, "debug", "kw", ptc=False)
 
     print_debug("")
-    kw_end_time = Utils.datetime_utils.get_current_timestamp()
-    kw_duration = Utils.datetime_utils.get_time_delta(kw_start_time)
-    hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
-    print_info("Keyword duration= {0}".format(hms))
-    print_debug("[{0}] Keyword execution completed".format(kw_end_time))
     # condition to  print the end of runmode execution when all the attempts finish
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:

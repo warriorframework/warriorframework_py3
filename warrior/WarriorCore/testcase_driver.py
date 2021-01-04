@@ -244,8 +244,9 @@ def report_testcase_result(tc_status, data_repository, tag="Steps"):
         2. data_repository (dict) = data_repository of the executed  testcase
     """
     print_info("**** Testcase Result ***")
-    print_info("TESTCASE:{0}  STATUS:{1}".format(data_repository['wt_name'],
-                                                 convertLogic(tc_status)))
+    tc_duration = Utils.data_Utils.get_object_from_datarepository("tc_duration")
+    print_info("TESTCASE:{0}  STATUS:{1} | Duration = {2}".format(data_repository['wt_name'],
+                                                 convertLogic(tc_status), tc_duration))
     print_info("\n")
     Utils.testcase_Utils.pTestResult(tc_status, data_repository['wt_resultfile'])
     root = Utils.xml_Utils.getRoot(data_repository['wt_resultfile'])
@@ -699,8 +700,7 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     print_debug("[{0}] Testcase execution completed".format(tc_end_time))
     tc_duration = Utils.datetime_utils.get_time_delta(tc_start_time)
     hms = Utils.datetime_utils.get_hms_for_seconds(tc_duration)
-    print_info("Testcase duration= {0}".format(hms))
-
+    Utils.data_Utils.update_datarepository({"tc_duration" : hms})
     tc_junit_object.update_count(tc_status, "1", "ts", data_repository['wt_ts_timestamp'])
     tc_junit_object.update_count("tests", "1", "ts", data_repository['wt_ts_timestamp'])
     tc_junit_object.update_count("tests", "1", "pj", "not appicable")
