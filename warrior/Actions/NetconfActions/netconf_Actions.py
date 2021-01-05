@@ -260,18 +260,17 @@ class NetconfActions(object):
         reply_key = '{}_close_netconf_reply'.format(system_name)
         return status, {reply_key: reply}
 
-    def ne_request(self , command , system_name = '' , session_name = None , dict_request = {}):
+    def ne_request(self , command , system_name = '' , timeout = '',session_name = None , dict_request = {}):
         status=True
         if system_name=='':
             system_name=data_repository.get('system_name' , None)
-        print_debug(system_name)
         self.clear_notification_buffer_all(system_name , session_name)
         session_id=Utils.data_Utils.get_session_id(system_name , session_name)
         netconf_object=Utils.data_Utils.get_object_from_datarepository(session_id)
         reply=''
         mapfile=data_repository.get('wt_mapfile' , None)
         found = 'The given match string is found in the response'
-        not_found = 'The given match string is not found in the response'
+        not_found = 'The given match string is not found in the response as expected'
         try:
             status , mapper_data=Utils.data_Utils.get_connection('MAP' , mapfile)
             #check if the MAP section is present in the cfg file
@@ -291,8 +290,8 @@ class NetconfActions(object):
                     if optional:
                         status , optional_data=Utils.data_Utils.replace_var(optional , dict_request , variables)
                         #If the timeout is specified by the user, override the default timeout
-                        if 'TIMEOUT' in optional_data.keys():
-                            reply=netconf_object.request_rpc(config_data['REQUEST'] , int(optional_data['TIMEOUT']))
+                        if timeout:
+                            reply=netconf_object.request_rpc(config_data['REQUEST'] , int(timeout))
                             print_debug('reply: {0}'.format(reply))
                         else:
                             reply=netconf_object.request_rpc(config_data['REQUEST'])
@@ -334,7 +333,7 @@ class NetconfActions(object):
         except Exception as e:
             status=False
             print_error("exception found:" , str(e))
-        return status , reply
+        return status
 
 
     def get_config(self, datastore, system_name,

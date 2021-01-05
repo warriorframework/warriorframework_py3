@@ -557,7 +557,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                                 "tc", tc_timestamp)
     tc_junit_object.update_attr("title", data_repository['wt_title'], "tc", tc_timestamp)
     tc_junit_object.update_attr("data_file", data_repository['wt_datafile'], "tc", tc_timestamp)
-    tc_junit_object.update_attr("mapfile", data_repository['wt_mapfile'], "tc", tc_timestamp)
+    if data_repository['wt_mapfile']:
+        tc_junit_object.update_attr("mapfile", data_repository['wt_mapfile'], "tc", tc_timestamp)
 
     data_repository['wt_junit_object'] = tc_junit_object
     print_testcase_details_to_console(testcase_filepath, data_repository, steps_tag)

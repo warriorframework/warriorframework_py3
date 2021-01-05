@@ -218,7 +218,7 @@ class KeywordOperations(object):
             value = get_value(args)
             if value is None:
                 continue
-            if sysname in arg_kv:
+            if sysname in arg_kv and self.data_repository['wt_datafile'] != 'NO_DATA':
                 # the args can be direct values or mentioned as
                 # wtag var (except system_name) like 'wtag=<wtag var>',
                 # which would be fetched from the input data file
@@ -244,7 +244,7 @@ class KeywordOperations(object):
                            "argument '{1}'".format(arg_kv[args], args))
         for args in self.optional_args_list:
             # requires another loop since system_name may not be at beginning
-            if args != 'system_name' and 'system_name' in arg_kv:
+            if args != 'system_name' and 'system_name' in arg_kv and self.data_repository['wt_datafile'] != 'NO_DATA':
                 # the args can be direct values or mentioned as
                 # wtag var (except system_name) like 'wtag=<wtag var>',
                 # which would be fetched from the input data file

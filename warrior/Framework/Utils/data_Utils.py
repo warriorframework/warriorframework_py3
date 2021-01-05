@@ -109,7 +109,7 @@ def replace_var(r_dict, user_dict, variable_dict):
     status=True
     try:
         for k, v in r_dict.items():
-            regex='{.*}'
+            regex='{[a-zA-Z/_/-]*}'
             match=re.findall(regex, v)
             for i in match:
                 i=i.replace('{', '')
@@ -132,7 +132,6 @@ def replace_var(r_dict, user_dict, variable_dict):
     except Exception as e:
         status=False
         print_error("exception found:", str(e))
-    print_debug('After replacing result dictionary: {0}'.format(res_dict))
     return status, res_dict
 
 def get_connection(section, cfg_file_name, device = ''):

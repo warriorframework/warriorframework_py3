@@ -106,7 +106,7 @@ class client(Thread):
             self.__sock = socket.create_connection((host, port), 60)
         except (socket.error, socket.herror, socket.gaierror, socket.timeout):
             pNote("netconf: Connection failed", "error")
-            traceback.print_exc()
+            #traceback.print_exc()
             return False
 
         # self.__sock.settimeout(None)
