@@ -39,7 +39,6 @@ from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer
 from warrior.Framework.Utils.data_Utils import getSystemData, _get_system_or_subsystem
 import warrior.Framework.Utils.email_utils as email
 from warrior.WarriorCore import warrior_cli_driver
-from xml.etree import ElementTree
 def get_testcase_details(testcase_filepath, data_repository, jiraproj):
     """Gets all the details of the Testcase
     (like title, resultsfolder, logsfolder, datafile, default on_error
@@ -270,11 +269,11 @@ def report_testcase_result(tc_status, data_repository, tag="Steps"):
             if fail_count == 1:
                 print_info("++++++++++++++++++++++++ Summary of Failed Keywords +++++++++++++++++++"
                            "+++++")
-                print_info("{0:15} {1:45} {2:10}".format('StepNumber', 'KeywordName', 'Status'))
-                print_info("{0:15} {1:45} {2:10}".format(str(step_num), tag+"-"+str(kw_name),
+                print_info("{0:15} {1:60} {2:10}".format('StepNumber', 'KeywordName', 'Status'))
+                print_info("{0:15} {1:60} {2:10}".format(str(step_num), tag+"-"+str(kw_name),
                                                          str(kw_status)))
             elif fail_count > 1:
-                print_info("{0:15} {1:45} {2:10}".format(str(step_num), tag+"-"+str(kw_name),
+                print_info("{0:15} {1:60} {2:10}".format(str(step_num), tag+"-"+str(kw_name),
                                                          str(kw_status)))
     print_info("=================== END OF TESTCASE ===========================")
 
