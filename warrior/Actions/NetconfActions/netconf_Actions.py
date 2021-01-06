@@ -194,7 +194,10 @@ class NetconfActions(object):
                     device = list(device_credentials.keys())[0]
                 system_name = device
                 data_repository['system_name'] = system_name
-            status, session_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)           
+            else:
+                data_repository['system_name'] = system_name
+            status, session = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)          
+            status, session_credentials = Utils.data_Utils.replace_var(session, {}, {}) 
             protocol=session_credentials.get('protocol_version', None)
             if protocol == None:
                 session_credentials['protocol_version'] = False
@@ -223,7 +226,7 @@ class NetconfActions(object):
         else:
             return status
 
-    def close_netconf(self, system_name, session_name=None):
+    def close_netconf(self, system_name='', session_name=None):
         """
         Request graceful termination of netconf session.
         :Arguments:
@@ -233,12 +236,13 @@ class NetconfActions(object):
             1. status(bool)= True / False
             2. Close response from the system to the data repository (data:reply.data(string)}
         """
-
+        if system_name == '':
+            system_name=data_repository.get('system_name' , None)
         wdesc = "Request graceful termination of Netconf session"
         pSubStep(wdesc)
         print_debug(system_name)
         print_debug(self.datafile)
-
+           
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(
             session_id)
@@ -272,7 +276,8 @@ class NetconfActions(object):
         found = 'The given match string is found in the response'
         not_found = 'The given match string is not found in the response as expected'
         try:
-            status , mapper_data=Utils.data_Utils.get_connection('MAP' , mapfile)
+            status , mapper=Utils.data_Utils.get_connection('MAP' , mapfile)
+            status, mapper_data=Utils.data_Utils.replace_var(mapper, {}, {})
             #check if the MAP section is present in the cfg file
             if mapper_data:
                 v=mapper_data[command]
@@ -323,6 +328,10 @@ class NetconfActions(object):
                                     elif valid is not None and match_type != 'AND':
                                           result = not result
                                           break
+                                if result and match_type == 'NOT':
+                                      status = False
+                                elif result == False and match_type in ['OR', 'AND', 'NONE']:
+                                      status = False
                                 res = found if result else not_found
                                 print_debug(res)
                     else:

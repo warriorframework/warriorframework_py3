@@ -107,12 +107,17 @@ def replace_var(r_dict, user_dict, variable_dict):
     '''
     res_dict=r_dict
     status=True
+    env = False
     try:
         for k, v in r_dict.items():
-            regex='{[a-zA-Z/_/-]*}'
+            regex='{[a-zA-Z/_/-/.]*}'
             match=re.findall(regex, v)
             for i in match:
-                i=i.replace('{', '')
+                if 'ENV.' in i:
+                    i = i.replace('{ENV.', '')
+                    env = True
+                else:
+                    i=i.replace('{', '')
                 i=i.replace('}', '')
                 if i in variable_dict.keys() or user_dict.keys() or os.getenv(i, ''):
                     if i in user_dict.keys():
@@ -124,7 +129,10 @@ def replace_var(r_dict, user_dict, variable_dict):
                         res_dict[k]=repl
                         v=repl
                     else:
-                        repl=re.sub('{'+i+'}', os.getenv(i, ''), v)
+                        if env:
+                            repl=re.sub('{ENV.'+i+'}', os.getenv(i, ''), v)
+                        else:
+                            repl=re.sub('{'+i+'}', os.getenv(i, ''), v)
                         res_dict[k]=repl
                         v=repl
                 else:
