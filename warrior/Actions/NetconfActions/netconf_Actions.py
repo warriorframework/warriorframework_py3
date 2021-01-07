@@ -188,6 +188,8 @@ class NetconfActions(object):
         mapfile = data_repository.get('wt_mapfile', None) 
         if data_repository.get('wt_mapfile', None):
             status, device_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
             if system_name == '':
                 device=device_credentials.get('DEFAULT', None)
                 if device == None:
@@ -197,7 +199,9 @@ class NetconfActions(object):
             else:
                 data_repository['system_name'] = system_name
             status, session = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)          
-            status, session_credentials = Utils.data_Utils.replace_var(session, {}, {}) 
+            status, session_credentials = Utils.data_Utils.replace_var(session, {}, {})
+            if status == False:
+                return False 
             protocol=session_credentials.get('protocol_version', None)
             if protocol == None:
                 session_credentials['protocol_version'] = False
@@ -277,7 +281,11 @@ class NetconfActions(object):
         not_found = 'The given match string is not found in the response as expected'
         try:
             status , mapper=Utils.data_Utils.get_connection('MAP' , mapfile)
+            if status == False:
+                return False
             status, mapper_data=Utils.data_Utils.replace_var(mapper, {}, {})
+            if status == False:
+                return False
             #check if the MAP section is present in the cfg file
             if mapper_data:
                 v=mapper_data[command]
@@ -285,15 +293,25 @@ class NetconfActions(object):
                 if v!='':
                     #Get the request and optional data in the dictionary format
                     status , config=Utils.data_Utils.get_connection('COMMAND' , v)
+                    if status == False:
+                        return False
                     status , optional=Utils.data_Utils.get_connection('OPTIONS' , v)
+                    if status == False:
+                        return False
                     mapfile=data_repository.get('wt_mapfile' , None)
                     status , variables=Utils.data_Utils.get_connection('VARIABLES' , mapfile)
+                    if status == False:
+                        return False
                     status , config_data=Utils.data_Utils.replace_var(config , dict_request , variables)
+                    if status == False:
+                        return False
                     l=[]
                     #Proceed if the optional data is given by the user
                     #We are replacing all the variables which the user provided inside {}
                     if optional:
                         status , optional_data=Utils.data_Utils.replace_var(optional , dict_request , variables)
+                        if status == False:
+                            return False
                         #If the timeout is specified by the user, override the default timeout
                         if timeout:
                             reply=netconf_object.request_rpc(config_data['REQUEST'] , int(timeout))
@@ -338,7 +356,7 @@ class NetconfActions(object):
                         reply=netconf_object.request_rpc(config_data['REQUEST'])
                         print_debug('Reply: {0}'.format(reply))
                 else:
-                    print_error('Provide the value for the key in cfg file')
+                    print_error('Provide the value for the key in cfg file', command)
         except Exception as e:
             status=False
             print_error("exception found:" , str(e))

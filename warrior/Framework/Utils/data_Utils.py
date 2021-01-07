@@ -136,7 +136,7 @@ def replace_var(r_dict, user_dict, variable_dict):
                         res_dict[k]=repl
                         v=repl
                 else:
-                    raise Exception('Provide all the substition for variables')
+                    raise Exception('Provide the substitution for variable','{'+ i+'}')
     except Exception as e:
         status=False
         print_error("exception found:", str(e))
@@ -146,11 +146,14 @@ def get_connection(section, cfg_file_name, device = ''):
     ''' This method fetches the options from configuration file, from the
     given section, and return them as dict.
     '''
-    config=ConfigObj(cfg_file_name)
+    if not os.path.exists(cfg_file_name):
+        print_error("exception found: The given file doesn't exist: ", cfg_file_name)
+        return False, None
     status=True
     mapper_data=None
     # Read the config file if exist
     try:
+        config=ConfigObj(cfg_file_name)
         if cfg_file_name:
             if section:
                 # Fetch options from required section and update in to dict
@@ -160,7 +163,7 @@ def get_connection(section, cfg_file_name, device = ''):
                     mapper_data=config[section][device]
     except Exception as e:
         status=False
-        print_error("exception found: Check the config file", cfg_file_name, str(e))
+        print_error("exception found: cmd file ",cfg_file_name ,"is not in the defined format ", str(e))
     return status, mapper_data
 
 
