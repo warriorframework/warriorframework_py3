@@ -297,12 +297,12 @@ class NetconfActions(object):
                 return False
             #check if the MAP section is present in the cfg file
             if mapper_data:
-                v=mapper_data[command]
-                if re.search('{.*}', v):
-                    print_error('Provide the substitution for variable {0}'.format(v))
-                    return False
+                v=mapper_data.get(command, None)
                 #Get the command from the mapper file
-                if v!='':
+                if v:
+                    if re.search('{.*}', v):
+                        print_error('Provide the substitution for variable {0}'.format(v))
+                        return False
                     #Get the request and optional data in the dictionary format
                     status , config=Utils.data_Utils.get_connection('COMMAND' , v)
                     if status == False:
@@ -368,7 +368,7 @@ class NetconfActions(object):
                         reply=netconf_object.request_rpc(config_data['REQUEST'])
                         print_debug('Reply: {0}'.format(reply))
                 else:
-                    print_error('Provide the value for the key in cfg file', command)
+                    print_error('Provide the value for the key in cfg file: ', command)
         except Exception as e:
             status=False
             print_error("exception found:" , str(e))

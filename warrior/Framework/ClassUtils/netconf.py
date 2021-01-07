@@ -398,7 +398,6 @@ class client(Thread):
         '''
         #wait receive for rpc-reply until timeout expires
         '''
-        print_debug("timeout value: ""##{}##".format(timeout))
         self.__wait_resp.clear()
         self.__wait_resp.wait(timeout)
         if self.__wait_resp.isSet():
