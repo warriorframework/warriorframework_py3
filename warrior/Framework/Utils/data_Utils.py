@@ -138,7 +138,8 @@ def replace_var(r_dict, user_dict, variable_dict):
                 elif env == True and user_dict == {} and variable_dict == {}:
                     res_dict[k] = '{'+i+'}'
                 else:
-                    raise Exception('Provide the substitution for variable','{'+ i+'}')
+                    print_error('Provide the substitution for variable {0}'.format(i))
+                    return False, None
     except Exception as e:
         status=False
         print_error("exception found:", str(e))

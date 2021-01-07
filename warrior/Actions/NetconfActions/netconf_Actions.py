@@ -276,6 +276,11 @@ class NetconfActions(object):
         status=True
         if system_name=='':
             system_name=data_repository.get('system_name' , None)
+        sys_name = data_repository.get('system_name' , None)
+        if sys_name is not None:
+             if sys_name != system_name:
+                 print_error('system_name is incorrect')
+                 return False
         self.clear_notification_buffer_all(system_name , session_name)
         session_id=Utils.data_Utils.get_session_id(system_name , session_name)
         netconf_object=Utils.data_Utils.get_object_from_datarepository(session_id)
@@ -294,7 +299,7 @@ class NetconfActions(object):
             if mapper_data:
                 v=mapper_data[command]
                 if re.search('{.*}', v):
-                    print_error('Provide the substitution for variable', v)
+                    print_error('Provide the substitution for variable {0}'.format(v))
                     return False
                 #Get the command from the mapper file
                 if v!='':
