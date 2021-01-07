@@ -135,6 +135,8 @@ def replace_var(r_dict, user_dict, variable_dict):
                             repl=re.sub('{'+i+'}', os.getenv(i, ''), v)
                         res_dict[k]=repl
                         v=repl
+                elif env == True and user_dict == {} and variable_dict == {}:
+                    res_dict[k] = '{'+i+'}'
                 else:
                     raise Exception('Provide the substitution for variable','{'+ i+'}')
     except Exception as e:

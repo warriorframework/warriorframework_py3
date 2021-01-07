@@ -200,6 +200,10 @@ class NetconfActions(object):
                 data_repository['system_name'] = system_name
             status, session = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)          
             status, session_credentials = Utils.data_Utils.replace_var(session, {}, {})
+            for v in session_credentials.values():
+                if re.search('{.*}', v):
+                    print_error('Provide the substitution for variable', v)
+                    return False
             if status == False:
                 return False 
             protocol=session_credentials.get('protocol_version', None)
@@ -289,6 +293,9 @@ class NetconfActions(object):
             #check if the MAP section is present in the cfg file
             if mapper_data:
                 v=mapper_data[command]
+                if re.search('{.*}', v):
+                    print_error('Provide the substitution for variable', v)
+                    return False
                 #Get the command from the mapper file
                 if v!='':
                     #Get the request and optional data in the dictionary format
