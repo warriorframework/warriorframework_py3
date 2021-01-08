@@ -1,6 +1,3 @@
-export TIMEOUTVALUE=50
-export DB_BACKUP_TIMEOUT=200
-export TIME=34
 export FILE=testdata
 export BACKUP_FILE_NAME=file4.DBS
 export FILENAME=/var/ftp/file4.DBS
