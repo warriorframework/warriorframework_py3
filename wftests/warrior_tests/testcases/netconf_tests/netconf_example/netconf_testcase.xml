@@ -1,0 +1,96 @@
+<?xml version="1.0" ?>
+<Testcase>
+        <Details>
+                <!-- The mapper file is given under Mapfile tag. If the InputDataFile is not used, No_data is given as value.-->
+                <Name>tc_netconf_sanity</Name>
+                <Title>tc_netconf_sanity</Title>
+                <Engineer>D S Girish</Engineer>
+                <Date>29-04-2019</Date>
+                <Time>15:04</Time>
+                <InputDataFile>No_Data</InputDataFile>
+                <MapFile>mapper.cfg</MapFile>
+                <Datatype>Custom</Datatype>
+                <default_onError action="next"/>
+                <Logsdir/>
+                <Resultsdir/>
+                <ExpectedResults/>
+        </Details>
+        <Requirements>
+                <Requirement/>
+        </Requirements>
+        <Steps>
+                <step Driver="netconf_driver" Keyword="connect_netconf" TS="1">
+                        <!--
+                             For the connect_netconf,  The arguments can be given as follows.
+                             1. system_name can be passed as an argument
+                             <Arguments>
+                        	<argument name="system_name" value="device1"/>
+                             </Arguments>
+			     2. If the system_name is not passed as an argument. Then netconf checks for the DEFAULT section in the mapper file.
+ 				The value of the DEFAULT section will be considered. ie if DEFAULT = device2 is given, the system_name is taken as device2
+                                <Arguments>
+                        	</Arguments>
+                             3. If the DEFAULT key is not found in the mapper.cfg file, then by default the first device credentials are considered.
+                                <Arguments>
+                                </Arguments>
+                        -->     
+                        <Arguments>
+                        <argument name="system_name" value="device1"/>
+                        </Arguments>
+                        <onError action="goto" value="5"/>
+                        <Description>connect_netconf</Description>
+                        <Execute ExecType="Yes"/>
+                </step>
+
+                <step Driver="netconf_driver" Keyword="ne_request" Label="db_backup" TS="2">
+                        <Arguments>
+                        <!--
+                             For the ne_request keyword, The mandatory argument is command. All others are optional.
+                             1. The mandatory argument is the command. The value will be the key in the mapper file, which is mapping to a file.
+                             <argument name="command" value="DB-BACKUP"/>
+                             2. system_name is optional argument. If it is not provided.
+                             3. If the timout need to be given for this particular step, It can be passed as an argument.
+                             <argument name="timeout" value="50"/>
+                             4. If any substitution is required, we can pass the values through dict_request.
+                             <argument name="dict_request" value="{'FILENAME': '/var/ftp/file4.DBS'}"/>
+                             5. The substitution values can also be passed from VARIABLES section in the mapper.cfg file and also environmental variables.
+                             The priority order for substitution is: dict_request > VARIABLES > environmental variables
+                        -->    
+                                <argument name="command" value="DB-BACKUP"/>
+                                <argument name="timeout" value="50"/>
+                        </Arguments>
+                        <Description>send rpc request to NE</Description>
+                        <Execute ExecType="Yes"/>
+                </step>
+
+               <step Driver="netconf_driver" Keyword="ne_request" Label="send_transfer" TS="3">
+                        <Arguments>
+                                <argument name="command" value="SEND-TRANSFER"/>
+                                <!--argument name="dict_request" value="{'ACTIONS': 'upload'}"/-->
+                        </Arguments>
+                        <Description>send_transfer</Description>
+                        <Execute ExecType="Yes"/>
+                </step>
+
+               <step Driver="netconf_driver" Keyword="ne_request" Label="send_db_show" TS="4">
+                        <Arguments>
+                                <argument name="command" value="SEND-DB-SHOW"/>
+                        </Arguments>
+                        <Description>send_db_show</Description>
+                        <Execute ExecType="Yes"/>
+                </step>
+
+
+
+                <step Driver="netconf_driver" Keyword="close_netconf" TS="5">
+                        <!-- system_name is optional -->
+                        <Arguments>
+                        </Arguments>
+                        <onError action="next"/>
+                        <Description>close_netconf</Description>
+                        <Execute ExecType="Yes"/>
+                </step>
+        </Steps>
+</Testcase>
+
+
