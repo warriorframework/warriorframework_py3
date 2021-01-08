@@ -126,6 +126,8 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     driver = step.get('Driver')
     plugin = step.get('Plugin')
     keyword = step.get('Keyword')
+    label = step.get('Label') or ''
+    keyword_label = keyword+" Label-"+label if label else keyword
     repo_name = step.get('Repo') or 'warrior'
     context = Utils.testcase_Utils.get_context_from_xmlfile(step)
     step_impact = Utils.testcase_Utils.get_impact_from_xmlfile(step)
@@ -159,7 +161,7 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
         print_info("KEYWORD ATTEMPT: {0}".format(
             step.find("runmode").get("attempt")))
     # print keyword to result file
-    Utils.testcase_Utils.pKeyword(keyword, driver)
+    Utils.testcase_Utils.pKeyword(keyword_label, driver)
     print_info("Step number: {0} | TestStep Description: {1}".format(step_num, step_description))
     if step.get("loop_id"):
         print_info("loop id: {0}".format(step.get("loop_id")))

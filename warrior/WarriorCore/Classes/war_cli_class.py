@@ -408,6 +408,9 @@ class WarriorCliClass(object):
             "encrypt command to create a secret key"\
             "...")
 
+        warrior_arg.add_argument('--mapfile', action='store', nargs='*',\
+            dest="mapfile", help="file which maps cmds to cmd files and contains system info")
+
         # Update jira issue based on input ID and detail
         warrior_arg.add_argument('-jiraid', action='store', default=False,\
             help="The issue that will be updated based on current execution result")\

@@ -451,7 +451,11 @@ def decide_overwrite_var(namespace):
         if namespace.datafile[0] != os.sep:
             namespace.datafile = os.getcwd() + os.sep + namespace.datafile
         overwrite['ow_datafile'] = namespace.datafile
-
+    #namespace for mapfile
+    if namespace.mapfile:
+        if namespace.mapfile[0] != os.sep:
+            namespace.mapfile = os.getcwd() + os.sep + namespace.mapfile
+        overwrite['ow_mapfile'] = namespace.mapfile
     # namespace for wrapperfile
     if namespace.wrapperfile:
         if namespace.wrapperfile[0] != os.sep:

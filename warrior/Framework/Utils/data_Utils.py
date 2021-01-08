@@ -31,6 +31,9 @@ from warrior.Framework.ClassUtils import database_utils_class
 from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
 from warrior.WarriorCore.Classes.warmock_class import mocked
 from warrior.WarriorCore.Classes.testcase_utils_class import TestcaseUtils
+import re
+from configobj import ConfigObj
+
 
 cmd_params = OrderedDict([("command_list", "send"),
                           ("sys_list", "sys"),
@@ -92,6 +95,79 @@ def get_nc_request_rpc_string(config_datafile, xmlns, request_type, xmlns_tag):
         print_exception(exception)
         status = "error"
     return status, configuration
+
+
+def replace_var(r_dict, user_dict, variable_dict):
+    '''
+    This method substitutes all the varibles which are given inside {}
+    The first priority is given for user_dict which is passed from the testcase argument
+    The second priority is for the varible_dict which is given in the VARIABLE section 
+    in mapper file
+    The third priority is for the environmental variables
+    '''
+    res_dict=r_dict
+    status=True
+    env = False
+    try:
+        for k, v in r_dict.items():
+            regex='{[a-zA-Z/_/-/.]*}'
+            match=re.findall(regex, v)
+            for i in match:
+                if 'ENV.' in i:
+                    i = i.replace('{ENV.', '')
+                    env = True
+                else:
+                    i=i.replace('{', '')
+                i=i.replace('}', '')
+                if i in variable_dict.keys() or user_dict.keys() or os.getenv(i, ''):
+                    if i in user_dict.keys():
+                        repl=re.sub('{'+i+'}', user_dict[i], v)
+                        res_dict[k]=repl
+                        v=repl
+                    elif i in variable_dict.keys():
+                        repl=re.sub('{'+i+'}', variable_dict[i], v)
+                        res_dict[k]=repl
+                        v=repl
+                    else:
+                        if env:
+                            repl=re.sub('{ENV.'+i+'}', os.getenv(i, ''), v)
+                        else:
+                            repl=re.sub('{'+i+'}', os.getenv(i, ''), v)
+                        res_dict[k]=repl
+                        v=repl
+                elif env == True and user_dict == {} and variable_dict == {}:
+                    res_dict[k] = '{'+i+'}'
+                else:
+                    print_error('Provide the substitution for variable {0}'.format(i))
+                    return False, None
+    except Exception as e:
+        status=False
+        print_error("exception found:", str(e))
+    return status, res_dict
+
+def get_connection(section, cfg_file_name, device = ''):
+    ''' This method fetches the options from configuration file, from the
+    given section, and return them as dict.
+    '''
+    if not os.path.exists(cfg_file_name):
+        print_error("exception found: The given file doesn't exist: ", cfg_file_name)
+        return False, None
+    status=True
+    mapper_data=None
+    # Read the config file if exist
+    try:
+        config=ConfigObj(cfg_file_name)
+        if cfg_file_name:
+            if section:
+                # Fetch options from required section and update in to dict
+                if device=='':
+                    mapper_data=config[section]
+                else:
+                    mapper_data=config[section][device]
+    except Exception as e:
+        status=False
+        print_error("exception found: cmd file ",cfg_file_name ,"is not in the defined format ", str(e))
+    return status, mapper_data
 
 
 def getSystemData(datafile, system_name, cnode, system='system'):

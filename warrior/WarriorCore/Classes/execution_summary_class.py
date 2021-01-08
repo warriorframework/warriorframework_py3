@@ -17,7 +17,7 @@ import os
 from warrior.Framework import Utils
 from warrior.Framework.Utils import xml_Utils, file_Utils, config_Utils
 from warrior.Framework.Utils.print_Utils import print_info, print_debug
-from warrior.WarriorCore import testsuite_utils, common_execution_utils, warrior_cli_driver
+from warrior.WarriorCore import testsuite_utils, common_execution_utils
 
 
 class ExecutionSummary():
