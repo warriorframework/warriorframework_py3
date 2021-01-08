@@ -27,7 +27,7 @@ from warrior.Framework.Utils.print_Utils import print_info, print_warning, print
 try:
     import pandas as pd
 except Exception as exception:
-    print_info("Module pandas not installed, required for repetitive testing feature")
+    print_exception(exception)
 
 def update_generic_database(exec_tag, testcase_name, sample_records):
     """ update tc generic iteration results in persistent db"""

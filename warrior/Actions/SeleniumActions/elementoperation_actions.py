@@ -148,7 +148,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "Clear the text"
-        pNote("Keyword: clear_text | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -329,8 +329,9 @@ class elementoperation_actions(object):
         arguments = locals()
         arguments.pop('self')
         status = False
-        wdesc = "verify the text from the element/input box is matching expected"
-        pNote("Keyword: verify_text | Description: {0}".format(wdesc))
+        wdesc = "verify the text from the element/input box"
+        " is matching expected"
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -512,7 +513,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "Simulate a click"
-        pNote("Keyword: click_an_element | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -675,7 +676,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "Clear all actions performed on an element"
-        pNote("Keyword: clear | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -847,7 +848,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "This would type text into an input element"
-        pNote("Keyword: type_text | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -1022,7 +1023,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "Fills an element"
-        pNote("Keyword: fill_an_element | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -1197,7 +1198,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "This will send Keyboard Keys to an element"
-        pNote("Keyword: send_keys_to_an_element | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -1366,7 +1367,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "Simulate a double-click"
-        pNote("Keyword: double_click_an_element | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -1595,7 +1596,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "Simulate a drag and drop"
-        pNote("Keyword: drag_and_drop_an_element | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -1745,7 +1746,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "simulate a mouse over operation"
-        pNote("Keyword: mouse_over | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -1840,7 +1841,7 @@ class elementoperation_actions(object):
         status = False
 
         wdesc = "To execute a user provided script"
-        pNote("Keyword: execute_script | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -2022,7 +2023,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "Simulate a drag and drop with offset"
-        pNote("Keyword: drag_and_drop_by_offset | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -2182,7 +2183,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "Gets the requested attribute or property of the element."
-        pNote("Keyword: get_property_of_element | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -2358,7 +2359,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = False
         wdesc = "Checks the given attribute or property of the element."
-        pNote("Keyword: check_property_of_element | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}
@@ -2485,7 +2486,7 @@ class elementoperation_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "Simulates key presses for the given keys"
-        pNote("Keyword: perform_keypress | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         Utils.testcase_Utils.pSubStep(wdesc)
         browser_details = {}

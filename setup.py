@@ -22,7 +22,6 @@ setup(
     author_email='frameworkwarrior@gmail.com',
     scripts=['warrior/Warrior',
              'warrior/WarriorTools/warrior_py3_migration_tools/warrior_py3_migration_tool',
-             'warrior/WarriorTools/tc_generator/tc_generator',
              'warrior/warrior_upgrade.py'],
     packages=find_packages(exclude=['warrior/test_WarriorCore']),
     package_data={'':['**/*', '*']},

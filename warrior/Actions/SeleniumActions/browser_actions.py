@@ -187,7 +187,7 @@ class browser_actions(object):
         status = True
         output_dict = {}
         wdesc = "Opens browser instances"
-        pNote("Keyword: browser_launch | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -316,7 +316,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will get maximized"
-        pNote("Keyword: browser_maximize | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -455,7 +455,7 @@ class browser_actions(object):
 
         """
         wdesc = "Opens browser instances and maximizes them"
-        pNote("Keyword: browser_launch_and_maximize | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
 
         status, output_dict = self.browser_launch(system_name=system_name, type=type,
@@ -560,7 +560,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The webpage would be directed to the given URL"
-        pNote("Keyword: navigate_to_url | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -727,7 +727,7 @@ class browser_actions(object):
         """
         wdesc = "The webpage would be directed to the given URL and then whether the navigation " \
                 "was successful or not would be verified."
-        pNote("Keyword: navigate_to_url_with_verification | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
 
         status = self.navigate_to_url(system_name=system_name, type=type, browser_name=browser_name,
@@ -803,7 +803,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will navigate forward"
-        pNote("Keyword: navigate_forward | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -890,7 +890,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will navigate backward"
-        pNote("Keyword: navigate_backward | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -977,7 +977,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will be refreshed"
-        pNote("Keyword: browser_refresh | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -1064,7 +1064,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will be reloaded"
-        pNote("Keyword: browser_reload | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -1151,7 +1151,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will be closed"
-        pNote("Keyword: browser_close | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -1288,7 +1288,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will be resized"
-        pNote("Keyword: set_window_size | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -1428,7 +1428,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will be set to a new position"
-        pNote("Keyword: set_window_position | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -1556,7 +1556,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will open a new tab"
-        pNote("Keyword: open_a_new_tab | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -1691,7 +1691,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will switch between tabs"
-        pNote("Keyword: switch_between_tabs | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -1827,7 +1827,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will switch between tabs"
-        pNote("Keyword: close_a_tab | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -1954,7 +1954,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will return current window size"
-        pNote("Keyword: get_window_size | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -2081,7 +2081,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will return current window position"
-        pNote("Keyword: get_window_position | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -2228,7 +2228,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "A screenshot of the current browser window would be saved"
-        pNote("Keyword: save_screenshot | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -2361,7 +2361,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "All cookies of  this browser instance would be deleted"
-        pNote("Keyword: delete_cookies | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 
@@ -2493,7 +2493,7 @@ class browser_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "A particular cookie of the browser instance would be deleted"
-        pNote("Keyword: delete_a_cookie | Description: {0}".format(wdesc))
+        pNote(wdesc)
         pSubStep(wdesc)
         browser_details = {}
 

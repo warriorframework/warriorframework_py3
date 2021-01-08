@@ -18,8 +18,7 @@ import traceback
 from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
 from warrior.Framework import Utils
 from warrior.Framework.Utils import file_Utils
-from warrior.Framework.Utils.print_Utils import print_info, print_debug,\
-print_error, print_exception
+from warrior.Framework.Utils.print_Utils import print_info, print_debug, print_error, print_exception
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 def get_arguments(step):
@@ -133,7 +132,6 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     step_impact = Utils.testcase_Utils.get_impact_from_xmlfile(step)
     step_description = Utils.testcase_Utils.get_description_from_xmlfile(step)
     parallel = kw_parallel
-    keyword_description = data_repository['wt_title']
 
     if parallel is True:
         step_console_log = get_step_console_log(data_repository['wt_filename'],
@@ -162,10 +160,10 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
             step.find("runmode").get("attempt")))
     # print keyword to result file
     Utils.testcase_Utils.pKeyword(keyword_label, driver)
-    print_info("Step number: {0} | TestStep Description: {1}".format(step_num, step_description))
+    print_info("step number: {0}".format(step_num))
     if step.get("loop_id"):
         print_info("loop id: {0}".format(step.get("loop_id")))
-    # print_info("Teststep Description: {0}".format(step_description))
+    print_info("Teststep Description: {0}".format(step_description))
 
     if step.find("retry") is not None and step.find("retry").get("attempt") is not None:
         print_info("KEYWORD ATTEMPT: {0}".format(
@@ -214,12 +212,8 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
         print_info("Keyword status will be marked as ERROR as onError action is set to"
                    "'abort_as_error'")
         keyword_status = "ERROR"
-    kw_end_time = Utils.datetime_utils.get_current_timestamp()
-    kw_duration = Utils.datetime_utils.get_time_delta(kw_start_time)
-    hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
-    Utils.data_Utils.update_datarepository({"kw_duration" : hms})
-    print_debug("[{0}] Keyword execution completed".format(kw_end_time))
     Utils.testcase_Utils.reportKeywordStatus(keyword_status, keyword)
+    print_debug("step number: {0}".format(step_num))
 
     # Reporting status to data repo
     string_status = {"TRUE": "PASS", "FALSE": "FAIL",
@@ -248,6 +242,11 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
         Utils.testcase_Utils.pNote_level(msg, "debug", "kw", ptc=False)
 
     print_debug("")
+    kw_end_time = Utils.datetime_utils.get_current_timestamp()
+    kw_duration = Utils.datetime_utils.get_time_delta(kw_start_time)
+    hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
+    print_info("Keyword duration= {0}".format(hms))
+    print_debug("[{0}] Keyword execution completed".format(kw_end_time))
     # condition to  print the end of runmode execution when all the attempts finish
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:

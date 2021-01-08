@@ -29,11 +29,10 @@ class MicroappsActions(object):
                 3. failure_reason (str) : failure reason
         """
         wdesc = "to get current status of warrior script and failure reason"
-        Utils.testcase_Utils.pNote("Keyword: get_warrior_result | Description: {0}".format(wdesc))
+        Utils.testcase_Utils.pNote(wdesc)
         script_status = True
         step_status_message = None
         failure_reason = None
-        failed_step = None
         data_repository = Utils.config_Utils.data_repository
         for session_td_key, session_td_value in data_repository.items():
             if session_td_key.startswith('step') and session_td_key.endswith('_result'):
@@ -41,35 +40,32 @@ class MicroappsActions(object):
                     step_impact = data_repository.get(session_td_key.replace('_result', '_impact'))
                     if (step_impact.upper() == "IMPACT"):
                         script_status = False
-                        failed_step = session_td_key.replace('_result', '')
                         step_status_message = "{0} status {1}". \
-                            format(failed_step, session_td_value)
-                        failure_reason = data_repository.get(session_td_key.replace('_result', '_errormessage'), None)
+                            format(session_td_key.replace('_result', ''), session_td_value)
                         break
 
-        if not script_status and not failure_reason:
+        if not script_status:
             for session_td_key, session_td_value in data_repository.items():
                 if '_td_response' in session_td_key:
                     for title_td_key, title_td_value in session_td_value.items():
-                        if failed_step in title_td_key:
-                            for command_key, command_value in title_td_value.items():
-                                if '_status' not in command_key and '_command' not in command_key:
-                                    command = title_td_value.get(command_key + "_command", None)
-                                    status = title_td_value.get(command_key + "_status", None)
-                                    response = title_td_value.get(command_key, None)
-                                    if status is not None and status != "PASS":
-                                        script_status = False
-                                        if command is not None:
-                                            splitted_command = command.split(":")
-                                            if splitted_command[0] == "3" or splitted_command[0] == \
+                        for command_key, command_value in title_td_value.items():
+                            if '_status' not in command_key and '_command' not in command_key:
+                                command = title_td_value.get(command_key + "_command", None)
+                                status = title_td_value.get(command_key + "_status", None)
+                                response = title_td_value.get(command_key, None)
+                                if status is not None and status != "PASS":
+                                    script_status = False
+                                    if command is not None:
+                                        splitted_command = command.split(":")
+                                        if splitted_command[0] == "3" or splitted_command[0] == \
                                                 "wctrl:x" or splitted_command[0] == ";":
-                                                failure_reason = "Communication Failure with device"
-                                            else:
-                                                if "Expected pattern not found" in response:
-                                                    failure_reason = "{} Failed : reason {}".format(splitted_command[0],
+                                            failure_reason = "Communication Failure with device"
+                                        else:
+                                            if "Expected pattern not found" in response:
+                                                failure_reason = "{} Failed : reason {}".format(splitted_command[0],
                                                                                                 response)
-                                                else:
-                                                    failure_reason = "{0} Failed".format(splitted_command[0])
+                                            else:
+                                                failure_reason = "{0} Failed".format(splitted_command[0])
 
         if failure_reason is None and script_status is False:
             failure_reason = "NE response mismatch"
