@@ -50,8 +50,8 @@ class IronClaw(object):
             No return value
         """
         try:
-            print_debug("Validating:{0}".format(file_xml))
-            print_debug("xsd_file:{0}".format(file_xsd))
+            print_info("Validating:{0}".format(file_xml))
+            print_info("xsd_file:{0}".format(file_xsd))
             xml_doc = parse(file_xml)
             xsd_doc = parse(file_xsd)
             xmlschema = XMLSchema(xsd_doc)
@@ -69,9 +69,9 @@ class IronClaw(object):
     def testcase_prerun(self, tc_filepath, check_files_dict=None):
         """Executes prerun of a testcase file """
         print_debug('\n')
-        print_debug('='*40)
+        print_info('='*40)
         print_debug("Validating Test case xml")
-        print_debug('='*40)
+        print_info('='*40)
 
         testcase_xsd_fullpath = self.xsd_dir + os.sep + 'warrior_testcase.xsd'
         #print_info("Test case_xsd_location: {0}".format(testcase_xsd_fullpath))
@@ -94,9 +94,9 @@ class IronClaw(object):
     def testsuite_prerun(self, testsuite_filepath, root, check_files_dict=None):
         """Executes prerun of a testsuite file """
         print_debug('\n')
-        print_debug('*'*40)
+        print_info('*'*40)
         print_debug("Validating Test suite xml")
-        print_debug('*'*40)
+        print_info('*'*40)
 
         testsuite_xsd_fullpath = self.xsd_dir + os.sep + 'warrior_suite.xsd'
         testsuite_status = self.xml_to_xsd_validation(testsuite_filepath, testsuite_xsd_fullpath)
@@ -134,9 +134,9 @@ class IronClaw(object):
         """Executes prerun of a project file """
 
         print_debug('\n')
-        print_debug('+'*40)
+        print_info('+'*40)
         print_debug("Validating Project xml")
-        print_debug('+'*40)
+        print_info('+'*40)
         project_xsd_fullpath = self.xsd_dir + os.sep + 'warrior_project.xsd'
         project_status = self.xml_to_xsd_validation(project_filepath, project_xsd_fullpath)
         if project_status:
@@ -227,15 +227,15 @@ class IronClaw(object):
 
         search_result_list = drv_obj.matching_method_list + drv_obj.matching_function_list
         if len(search_result_list) == 1:
-            print_debug("Found one matching method/function for "\
+            print_info("Found one matching method/function for "\
                        "keyword '{0}'".format(keyword))
         elif len(search_result_list) == 0:
-            print_warning("There is no matching keyword: '{0}' "\
+            print_info("There is no matching keyword: '{0}' "\
             "for the Driver: '{1}'".format(keyword,
                                            driver_name))
             search_result_list = None
         elif len(search_result_list) > 1:
-            print_debug("More than one method/function of same name: '{0}' "\
+            print_info("More than one method/function of same name: '{0}' "\
             "exists for the Driver: '{1}'".format(keyword,
                                                   driver_name))
             search_result_list = None
@@ -414,7 +414,7 @@ class IronClaw(object):
                     filepath)
                 print_debug("default_datafile_path: {0}".format(default_datafilepath))
                 if os.path.exists(default_datafilepath):
-                    print_debug("Default input datafile for the Testcase is available")
+                    print_info("Default input datafile for the Testcase is available")
                     result.append(True)
                 else:
                     print_error("Default input datafile for the Testcase is NOT available")
@@ -443,7 +443,7 @@ def get_action_dirlist(driverpath):
 
             return actions_package_list
         else:
-            print_error(("file {0} does not exist".format(driverpath)))
+            print_info(("file {0} does not exist".format(driverpath)))
             return actions_package_list
     except Exception as exception:
         print_exception(exception)
