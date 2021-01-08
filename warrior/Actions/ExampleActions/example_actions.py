@@ -190,7 +190,7 @@ class CliActions(object):
         Utils.testcase_Utils.pNote("Logfile= %s" % logfile)
 
         """
-        Utils.testcase_Utils.pNote(WDesc)
+        Utils.testcase_Utils.pNote("Keyword: connect_ssh | Description: {0}".format(WDesc))
 
         """3. Get details from input datafile:
         --------------------------------------

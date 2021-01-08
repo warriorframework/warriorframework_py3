@@ -275,7 +275,7 @@ class WarriorCli(object):
             2. The user gives the system and session name in both testcase and testdata file,
             then it takes testdata as priority and updates on testdata's session id
         """
-
+        step_title_row = 'step_{}_{}'.format(data_repository['step_num'], title_row)
         try:
             for resp in list(resp_key_list[i].keys()):
                 td_resp_dict = get_object_from_datarepository(str(session_id))
@@ -284,15 +284,21 @@ class WarriorCli(object):
                 iter_number = get_object_from_datarepository("loop_iter_number")
                 if loop_id is not None and iter_number is not None:
                     title_row = title_row + '_' + str(loop_id) + '_' + str(iter_number)
+                    step_title_row = step_title_row + '_' + str(loop_id) + '_' + str(iter_number)
                 if title_row not in td_resp_dict:
                     # if not available then it first updates the
                     # title_row value to td_resp_dict
                     td_resp_dict[title_row] = {}
+                if step_title_row not in td_resp_dict:
+                    # if not available then it first updates the
+                    # step_title_row value to td_resp_dict
+                    td_resp_dict[step_title_row] = {}
                 # updates td_resp_dict with the key and value
                 status = {True: "PASS", False: "FAIL", "ERROR": "ERROR"}.get(status)
                 temp_resp = {resp: resp_key_list[i][resp], resp+"_status": status,
                              resp+"_command": details_dict["command_list"][i]}
                 td_resp_dict[title_row].update(temp_resp)
+                td_resp_dict[step_title_row].update(temp_resp)
                 if not details_dict["logmsg_list"][i] or details_dict["logmsg_list"][i].lower() != "false":
                     print_debug("Portion of response saved to the data "
                           "repository with key: '{0}.{1}.{2}' and value: '{3}'"
@@ -365,7 +371,7 @@ class WarriorCli(object):
                 response = reobj.group(0) if reobj is not None else ""
                 temp_resp_dict = {resp_ref: response}
                 resp_key_list.append(temp_resp_dict)
-                # storing the value and expected output in data repository
+                # storing the value and expected output in data repository 
                 resp_key_dict = {resp_pat_key: response}
                 data_repository.update(resp_key_dict)
                 pNote(save_msg1+'.')
@@ -691,7 +697,12 @@ class WarriorCli(object):
                         verify_list, remote_resp_dict, endprompt, verify_group, log)
         command_status = {True: "PASS", False: "FAIL", "ERROR": "ERROR"}.get(
             result)
-        pNote("COMMAND STATUS:{0}".format(command_status))
+        duration = data_repository.get("command_duration", None)
+        if command_status == "PASS":
+            pNote("COMMAND STATUS:{} | Duration: {} sec".format(command_status,
+                                                                 duration))
+        else:
+            pNote("COMMAND STATUS:{0}".format(command_status))
 
         return result, response
 
@@ -738,7 +749,6 @@ class WarriorCli(object):
             else:
                 system_name = kw_system_name
             session_id = Utils.data_Utils.get_session_id(system_name, session)
-
 
         if details_dict["sys_list"][index] is not None:
             kw_system_name = details_dict["sys_list"][index]
@@ -1668,17 +1678,24 @@ class PexpectConnect(object):
                 response = self.target_host.before.decode('utf-8')
                 # When the command gets timed out, the pexpect.TIMEOUT exception
                 # will be raised and it is set to the after property of spawn object
+                step_num = data_repository['step_num']
                 if self.target_host.after == self.pexpect.TIMEOUT:
                     pNote("EXCEPTION !! Command Timed Out", 'error')
+                    data_repository['step_%s_errormessage' % step_num] = "command timed out while executing command: {}".format(command.split(":")[0])
                 elif self.target_host.after == self.pexpect.EOF:
                     pNote("EXCEPTION !! Device unresponsive", 'error')
+                    data_repository['step_%s_errormessage' % step_num] = "device unresponsive while executing command: {}".format(command.split(":")[0])
                 else:
-                    response = response + self.target_host.after.decode('utf-8')
+                    try:
+                        response = response + self.target_host.after.decode('utf-8')
+                    except:
+                        pNote("EXCEPTION !! Cannot decode response", 'error')
+                        data_repository['step_%s_errormessage' % step_num] = "Response decode error for command: {}".format(command.split(":")[0])
                 if kwargs.get("log", "true") != "false":
                     print_info("Response:\n{0}\n".format(response))
                 pNote(msg, "debug")
                 if status is True:
                     duration = Utils.datetime_utils.get_time_delta(start_time,
                                                                    end_time)
-                    pNote("Command Duration: {0} sec".format(duration))
+                    data_repository.update({"command_duration" : duration})
         return status, response
