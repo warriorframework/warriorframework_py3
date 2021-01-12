@@ -185,7 +185,7 @@ class NetconfActions(object):
         output_dict = {}
         session_parameters = ['ip', 'nc_port', 'username', 'password',
                               'hostkey_verify', 'protocol_version']
-        mapfile = data_repository.get('wt_mapfile', None) 
+        mapfile = data_repository.get('wt_mapfile', None)
         if data_repository.get('wt_mapfile', None):
             status, device_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
             if status == False:
@@ -198,14 +198,14 @@ class NetconfActions(object):
                 data_repository['system_name'] = system_name
             else:
                 data_repository['system_name'] = system_name
-            status, session = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)          
+            status, session = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
             status, session_credentials = Utils.data_Utils.replace_var(session, {}, {})
             for v in session_credentials.values():
                 if re.search('{.*}', v):
                     print_error('Provide the substitution for variable', v)
                     return False
             if status == False:
-                return False 
+                return False
             protocol=session_credentials.get('protocol_version', None)
             if protocol == None:
                 session_credentials['protocol_version'] = False
@@ -250,7 +250,7 @@ class NetconfActions(object):
         pSubStep(wdesc)
         print_debug(system_name)
         print_debug(self.datafile)
-           
+
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(
             session_id)
@@ -286,8 +286,14 @@ class NetconfActions(object):
         netconf_object=Utils.data_Utils.get_object_from_datarepository(session_id)
         reply=''
         mapfile=data_repository.get('wt_mapfile' , None)
-        found = 'The given match string is found in the response'
-        not_found = 'The given match string is not found in the response as expected'
+        found_dict = {'AND': 'All the given match_string are present in the response as expected',
+                      'OR': 'The given match_string is present in the response ',
+                      'NOT': 'The given match_string is not present in the response as expected',
+                      'NONE': 'The given match_string is present in the response as expected'}
+        not_found_dict = {'AND': 'The given match_string is not present in the response',
+                          'OR': 'None of the match_string are present in the response',
+                          'NOT': 'The given match_string is present in the response',
+                          'NONE': 'The given match_string is not present in the response'}
         try:
             status , mapper=Utils.data_Utils.get_connection('MAP' , mapfile)
             if status == False:
@@ -362,8 +368,20 @@ class NetconfActions(object):
                                       status = False
                                 elif result == False and match_type in ['OR', 'AND', 'NONE']:
                                       status = False
-                                res = found if result else not_found
-                                print_debug(res)
+                                if result:
+                                      res = found_dict[match_type]
+                                      if match_type == 'NOT':
+                                          print_error(not_found_dict['NOT'])
+                                      else:
+                                          print_debug(res)
+                                else:
+                                      res = not_found_dict[match_type]
+                                      if match_type == 'AND':
+                                          print_error('The given match_string is not present in the response {0}'.format(i))
+                                      if match_type == 'NOT':
+                                          print_debug(found_dict['NOT'])
+                                      if match_type in ['OR', 'NONE']:
+                                          print_error(res)
                     else:
                         reply=netconf_object.request_rpc(config_data['REQUEST'])
                         print_debug('Reply: {0}'.format(reply))
@@ -1158,3 +1176,4 @@ class NetconfActions(object):
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
         return netconf_object.clear_notification_buffer_for_print()
+
