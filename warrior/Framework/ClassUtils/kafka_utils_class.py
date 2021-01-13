@@ -17,6 +17,7 @@ try:
     from kafka import TopicPartition
     from kafka.admin import KafkaAdminClient, NewTopic, NewPartitions
     from kafka.errors import KafkaError
+    from confluent_kafka import Consumer, Producer, KafkaException, TopicPartition as TP
 except ImportError as err:
     print_error("Module kafka is not installed, Refer exception below")
     print_exception(err)
@@ -286,5 +287,129 @@ class WarriorKafkaClient():
             result = True
         except KafkaError as exc:
             print_error("Exception during creating partitions - {}".format(exc))
+            result = False
+        return result
+
+#confluent kafka classes
+class WarriorConfluentKafkaConsumer():
+    """
+    This class contains all kafka consumer methods
+    """
+    def __init__(self, *topics, **configs):
+        """
+        Create Kafka Consumer object
+        """
+        self.topics = topics
+        print_info("creating kafka consumer")
+        try:
+            self.kafka_consumer_confluent = Consumer(**configs)
+        except KafkaError as exc:
+            print_error("Kafka consumer - Exception during connecting to broker - {}".format(exc))
+
+    def subscribe_to_topics_confluent(self, topics, **kwargs):
+        """
+        Subscribe to list of specified topics.
+        Arguments:
+          topics(list): list of topic names to subscribe
+          pattern(list): list of topic name patterns to subscribe
+          listener(func): callback function
+        Returns:
+          result(bool) : False if exception occures, True otherwise
+        """
+        pattern = kwargs.get("pattern", None)
+        listener = kwargs.get("listener", None)
+        print_info("subscribe to topics {}".format(topics))
+        try:
+            self.kafka_consumer_confluent.subscribe(topics=topics)
+            result = True
+        except KafkaError as exc:
+            print_error("Exception during subscribing to topics - {}".format(exc))
+            result = False
+        return result
+
+    def get_messages_confluent(self, get_all_messages=False, **kwargs):
+        """
+        Get messages from consumer.
+        Arguments:
+          timeout(int): timeout in milliseconds
+          max_records(int): maximum messages to fetch
+        Returns:
+          messages(list): messages from the consumer
+        """
+        timeout_ms = kwargs.get("timeout", 0)
+        max_records = kwargs.get("max_records", 1)
+        messages = []
+        msg_pack = {}
+        print_info("get messages published to subscribed topics")
+        try:
+            msg_pack = self.kafka_consumer_confluent.consume(max_records, timeout_ms)
+        except KafkaError as exc:
+            print_error("Exception occured in get_messages - {}".format(exc))
+
+        for message_obj in msg_pack:
+                if message_obj.error():
+                    print_error("Unable to fetch the message from the message object{}".format(message_obj))
+                else:
+                    messages.append(message_obj.value())
+        return messages
+
+    def get_topics_confluent(self):
+        """
+        Get subscribed topics of the consumer.
+        Arguments:
+          None.
+        Returns:
+          topic_list(list of lists): list of [topic, partition] lists
+            example : [[topic1,1], [topic2,2]]
+        """
+        print_info("get all the topics consumer is subscribed to")
+        try:
+            topic_partitions = self.kafka_consumer_confluent.assignment()
+            topic_list = [[topic_partition.topic, topic_partition.partition] \
+                       for topic_partition in topic_partitions]
+        except KafkaError as exc:
+            print_error("Exception during getting assigned partitions - {}".format(exc))
+            topic_list = None
+        return topic_list
+
+class WarriorConfluentKafkaProducer():
+    """
+    This class contains all kafka producer methods
+    """
+    def __init__(self, **configs):
+        """
+        Create kafka producer object
+        """
+        print_info("Creating kafka producer")
+        try:
+            self.kafka_producer_confluent = Producer(**configs)
+        except KafkaError as exc:
+            print_error("kafka producer - Exception during connecting to broker - {}".format(exc))
+    
+    def acked(self, err, msg):
+            if err is not None:
+                print_error("Failed to publish messages: {0}: {1}"
+                    .format(msg.value(), err.str()))
+            else:
+                print_info("Messages published: {0}".format(msg.value()))
+
+    def send_messages_confluent(self, topic, value=None, **kwargs):
+        """
+        Publish messages to the desired topic
+        Arguments:
+          topic(str): topic name to publish messages
+          value(str): message to publish
+        Returns:
+          result(bool) : False if exception occures, True otherwise
+        """
+        print_info("publishing messages to the topic")
+        try:
+            self.kafka_producer_confluent.produce(topic,
+                                     value=value,
+                                     callback=self.acked)
+            self.kafka_producer_confluent.flush()
+            result = True
+        except KafkaError as exc:
+            print_error("Exception during publishing messages - {}".format(exc))
             result = False
         return result

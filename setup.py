@@ -56,6 +56,6 @@ setup(
                       "cloudshell-automation-api==9.3.0.175525", "configobj==5.0.6",
                       "pycryptodome==3.6.1", "xmltodict==0.12.0",
                       "xlrd==1.2.0", "openpyxl==3.0.3", "pandas==1.0.3",
-                      "gcg==0.2.0", "termcolor==1.1.0", "pymongo==3.11.0",]
+                      "gcg==0.2.0", "termcolor==1.1.0", "pymongo==3.11.0", "confluent-kafka==1.5.0",]
 
 )
