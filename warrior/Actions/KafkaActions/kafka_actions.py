@@ -17,7 +17,7 @@ from warrior.Framework.Utils.print_Utils import print_error, print_info
 from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.Utils.data_Utils import getSystemData
 from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer,\
-    WarriorKafkaConsumer
+    WarriorKafkaConsumer, WarriorConfluentKafkaProducer, WarriorConfluentKafkaConsumer
 from warrior.Framework.Utils.config_Utils import data_repository
 
 """This is the kafka_actions module that has kafka keywords """
@@ -64,7 +64,7 @@ class KafkaActions():
 
         """
         wdesc = "publish value {} to topic {} in kafka broker {}".format(system_name, topic, value)
-        pNote(wdesc)
+        pNote("Keyword: send_messages | Description: {0}".format(wdesc))
         status = True
         if not data_repository.get("kafka_producer", None):
             print_info("creating kafka producer")
@@ -80,13 +80,15 @@ class KafkaActions():
                 return status
             self.kafka_obj_producer = WarriorKafkaProducer(bootstrap_servers=\
                                                              [kafka_ip+":"+kafka_port],
+                                                           acks='all',
+                                                           request_timeout_ms=1000000,
+                                                           api_version_auto_timeout_ms=1000000,
                                                            ssl_cafile=ca_file,
                                                            ssl_keyfile=key_file,
                                                            ssl_crlfile=crl_file,
                                                            ssl_ciphers=ciphers,
                                                            value_serializer=\
                                                              lambda x: dumps(x).encode('utf-8'))
-            data_repository["kafka_producer"] = self.kafka_obj_producer
         else:
             self.kafka_obj_producer = data_repository["kafka_producer"]
 
@@ -101,6 +103,7 @@ class KafkaActions():
             result = False
             status = status and result
         else:
+            data_repository["kafka_producer"] = self.kafka_obj_producer
             result = self.kafka_obj_producer.send_messages(topic=topic,
                                                            value=value,
                                                            partition=partition,
@@ -144,7 +147,7 @@ class KafkaActions():
 
         """
         wdesc = "get messages subscribed to topics : {}".format(list_topics)
-        pNote(wdesc)
+        pNote("Keyword: get_messages | Description: {0}".format(wdesc))
         status = True
         output_dict = {}
         if not data_repository.get("kafka_consumer", None):
@@ -169,7 +172,6 @@ class KafkaActions():
                                                            auto_offset_reset='earliest',
                                                            value_deserializer=\
                                                              lambda x: loads(x.decode('utf-8')))
-            data_repository["kafka_consumer"] = self.kafka_obj_consumer
         else:
             self.kafka_obj_consumer = data_repository["kafka_consumer"]
 
@@ -178,6 +180,7 @@ class KafkaActions():
             result = False
             status = status and result
         else:
+            data_repository["kafka_consumer"] = self.kafka_obj_consumer
             subscribe_required = False
             assigned_topics = self.kafka_obj_consumer.get_topics()
             if not assigned_topics:
@@ -201,3 +204,150 @@ class KafkaActions():
                 time_stamp = int(time.time())
                 output_dict["kafka_messages_{}".format(time_stamp)] = messages
         return status, output_dict
+
+    def send_messages_confluent(self, system_name, topic, value,
+                        partition=None, headers=None, timestamp=None, key=None):
+            """
+            This keyword publishes messages to the topic in given kafka broker
+
+            Input data file Usage:
+            <credentials>
+                <system name="kafka_server1" type="kafka_producer">
+                    <ip>localhost</ip>
+                    <kafka_port>9092</kafka_port>
+                </system>
+            </credentials>
+
+            For complete list of supported parameters, check
+            https://kafka-python.readthedocs.io/en/master/apidoc/KafkaProducer.html
+
+            :Arguments:
+            1.system_name(string) : kafka broker system name in input data file
+            2.topic(string) : topic name to publish message
+            3.value(string) : message to publish
+            4.partition(int) : partition number, Optional
+            5.headers(list) : list of headers
+            6.timestamp(string) : timestamp
+            5.key(string) : key for the message, Optional
+            :Returns:
+            1.status(bool) : True if message is published, else False
+
+            """
+            wdesc = "publish value {} to topic {} in kafka broker {}".format(system_name, topic, value)
+            pNote(wdesc)
+            status = True
+            if not data_repository.get("kafka_producer_confluent", None):
+                print_info("creating kafka producer")
+                kafka_ip = getSystemData(self.datafile, system_name, "ip")
+                kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
+                if not kafka_ip or not kafka_port:
+                    status = False
+                    print_error("ip, kafka_port should be provided")
+                    return status
+                self.kafka_obj_producer_confluent = WarriorConfluentKafkaProducer(**{"bootstrap.servers":\
+                                                                kafka_ip+":"+kafka_port,
+                                                            })
+                data_repository["kafka_producer_confluent"] = self.kafka_obj_producer_confluent
+            else:
+                self.kafka_obj_producer_confluent = data_repository["kafka_producer_confluent"]
+
+            # handling string and dict as input
+            try:
+                value = eval(value)
+            except:
+                value = value
+            if isinstance(value, dict):
+                value = dumps(value).encode('utf-8')
+
+            if not hasattr(self.kafka_obj_producer_confluent, "kafka_producer_confluent"):
+                print_error("couldn't create connection to the kafka broker")
+                result = False
+                status = status and result
+            else:
+                result = self.kafka_obj_producer_confluent.send_messages_confluent(topic,
+                                                            value=value,
+                                                            )
+                if not result:
+                    print_error("couldn't publish message to topic")
+                status = status and result
+            return status
+
+    def get_messages_confluent(self, system_name, list_topics, group_id='my-group',
+                        timeout=100, list_patterns=None,
+                        max_records=1, get_all_messages=False):
+            """
+            This keyword gets the messages published to the specified topics
+
+            Input data file Usage:
+            <credentials>
+                <system name="kafka_server1" type="kafka_consumer">
+                    <ip>localhost</ip>
+                    <kafka_port>9092</kafka_port>
+                </system>
+            </credentials>
+
+            For complete list of supported parameters, check
+            https://kafka-python.readthedocs.io/en/master/apidoc/KafkaConsumer.html
+
+            :Arguments:
+            1.system_name(string) : kafka broker system name in inputdata file.
+            2.list_topics(list) : list of topics to subscribe.
+            3.group_id(string) : group id to use for subscription.
+            4.timeout(int) : timeout in milliseconds.
+            5.list_patterns(list) : list of patterns of topic names.
+            6.max_records(int) : maximum records to fetch
+            7.get_all_messages(bool) : True to fetch all messages in topic
+
+            :Returns:
+            1.status(bool) : True if messages are fetched successfully, else False
+            2.output_dict : list of messages
+
+            """
+            wdesc = "get messages subscribed to topics : {}".format(list_topics)
+            pNote(wdesc)
+            status = True
+            output_dict = {}
+            if not data_repository.get("kafka_consumer_confluent", None):
+                print_info("creating kafka consumer")
+                kafka_ip = getSystemData(self.datafile, system_name, "ip")
+                kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
+                if not kafka_ip or not kafka_port:
+                    status = False
+                    print_error("ip, kafka_port should be provided")
+                    return status
+                self.kafka_obj_consumer_confluent = WarriorConfluentKafkaConsumer(**{"bootstrap.servers":\
+                                                                kafka_ip+":"+kafka_port, "group.id":group_id
+                                                           }
+                                                            )
+                data_repository["kafka_consumer_confluent"] = self.kafka_obj_consumer_confluent
+            else:
+                self.kafka_obj_consumer_confluent = data_repository["kafka_consumer_confluent"]
+
+            if not hasattr(self.kafka_obj_consumer_confluent, "kafka_consumer_confluent"):
+                print_error("couldn't create connection to the kafka broker")
+                result = False
+                status = status and result
+            else:
+                subscribe_required = False
+                assigned_topics = self.kafka_obj_consumer_confluent.get_topics_confluent()
+                if not assigned_topics:
+                    subscribe_required = True
+                else:
+                    for topic in list_topics:
+                        if topic not in str(assigned_topics):
+                            subscribe_required = True
+                if subscribe_required:
+                    result = self.kafka_obj_consumer_confluent.subscribe_to_topics_confluent(topics=list_topics,
+                                                                        pattern=list_patterns)
+                    if not result:
+                        print_error("cannot subscribe to topics")
+                        status = status and result
+                if status:
+                    messages = self.kafka_obj_consumer_confluent.get_messages_confluent(timeout=timeout,
+                                                                    max_records=max_records,
+                                                                    get_all_messages=get_all_messages)
+                    print_info("messages received from subscribed topics {}".format(messages))
+                if messages:
+                    time_stamp = int(time.time())
+                    output_dict["kafka_messages_{}".format(time_stamp)] = messages
+            return status, output_dict
