@@ -148,7 +148,7 @@ class verify_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will verify page by {0}".format(value_type)
-        pNote("Keyword: verify_page_by_property | Description: {0}".format(wdesc))
+        pNote("KEYWORD: verify_page_by_property | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         browser_details = {}
 
@@ -290,7 +290,7 @@ class verify_actions(object):
             1. status(bool)= True / False.
         """
         wdesc = "to verify whether the user provided texts exist on the web page"
-        pNote("Keyword: verify_text_in_window_pane | Description: {0}".format(wdesc))
+        pNote("KEYWORD: verify_text_in_window_pane | Description: {0}".format(wdesc))
         arguments = locals()
         arguments.pop('self')
         status = True
@@ -423,7 +423,7 @@ class verify_actions(object):
         arguments.pop('self')
         status = True
         wdesc = "The browser will accept or dismiss the alert"
-        pNote("Keyword: verify_alert_is_present | Description: {0}".format(wdesc))
+        pNote("KEYWORD: verify_alert_is_present | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         browser_details = {}
 

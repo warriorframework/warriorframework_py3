@@ -145,7 +145,7 @@ class elementlocator_actions(object):
         status = True
         wdesc = "Finding an element by its given locator and locator type."
         output_dict = {}
-        pNote("Keyword: get_element | Description: {0}".format(wdesc))
+        pNote("KEYWORD: get_element | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         element = None
         browser_details = {}
@@ -430,7 +430,7 @@ class elementlocator_actions(object):
         status = True
         wdesc = "Finding an element by its ID."
         output_dict = {}
-        pNote("Keyword: get_element_by_id | Description: {0}".format(wdesc))
+        pNote("KEYWORD: get_element_by_id | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         element = None
         browser_details = {}
@@ -573,7 +573,7 @@ class elementlocator_actions(object):
         status = True
         wdesc = "Finding an element by its CSS selector."
         output_dict ={}
-        pNote("Keyword: get_element_by_selector | Description: {0}".format(wdesc))
+        pNote("KEYWORD: get_element_by_selector | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         element = None
         browser_details = {}
@@ -717,7 +717,7 @@ class elementlocator_actions(object):
         status = True
         wdesc = "Finding an element by its link text."
         output_dict = {}
-        pNote("Keyword: get_element_by_link_text | Description: {0}".format(wdesc))
+        pNote("KEYWORD: get_element_by_link_text | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         element = None
         browser_details = {}
@@ -863,7 +863,7 @@ class elementlocator_actions(object):
         status = True
         wdesc = "Finding an element by its partial link text."
         output_dict = {}
-        pNote("Keyword: get_element_by_partial_link_text | Description: {0}".format(wdesc))
+        pNote("KEYWORD: get_element_by_partial_link_text | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         element = None
         browser_details = {}
@@ -1007,7 +1007,7 @@ class elementlocator_actions(object):
         status = True
         wdesc = "Finding an element by its TAG name."
         output_dict = {}
-        pNote("Keyword: get_element_by_tagname | Description: {0}".format(wdesc))
+        pNote("KEYWORD: get_element_by_tagname | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         element = None
         browser_details = {}
@@ -1152,7 +1152,7 @@ class elementlocator_actions(object):
         status = True
         wdesc = "Finding an element by its CLASS name."
         output_dict = {}
-        pNote("Keyword: get_element_by_classname | Description: {0}".format(wdesc))
+        pNote("KEYWORD: get_element_by_classname | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         element = None
         browser_details = {}
@@ -1296,7 +1296,7 @@ class elementlocator_actions(object):
         status = True
         wdesc = "Finding an element by its name."
         output_dict = {}
-        pNote("Keyword: get_element_by_name | Description: {0}".format(wdesc))
+        pNote("KEYWORD: get_element_by_name | Description: {0}".format(wdesc))
         pSubStep(wdesc)
         element = None
         browser_details = {}

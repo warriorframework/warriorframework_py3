@@ -3148,7 +3148,7 @@ class RestActions(object):
                      'request_id': request_id,
                      'generate_output_diff_file': generate_output_diff_file}
         wdesc = "Verify API response with the expected API response"
-        pNote("Keyword: verify_response | Description: {0}".format(wdesc))
+        pNote("KEYWORD: verify_response | Description: {0}".format(wdesc))
         output_file = self.logsdir+"/difference_output.log"
         output_file = Utils.file_Utils.addTimeDate(output_file)
         generate_output_diff_file = Utils.rest_Utils.\
@@ -3204,7 +3204,7 @@ class RestActions(object):
 
         """
         wdesc = "Verify the given API response in the console log"
-        pNote("Keyword: verify_response_in_console_log | Description: {0}".format(wdesc))
+        pNote("KEYWORD: verify_response_in_console_log | Description: {0}".format(wdesc))
         data_repository = config_Utils.data_repository
         tc_name = os.path.splitext(data_repository["wt_filename"])[0]
         log_file_name = "{}_consoleLogs.log".format(tc_name)
@@ -3223,7 +3223,7 @@ class RestActions(object):
                 Boolean value : True/False
             """
             wdesc = "Verify the json content in the console log"
-            pNote("Keyword: verify_in_the_console_logs | Description: {0}".format(wdesc))
+            pNote("KEYWORD: verify_in_the_console_logs | Description: {0}".format(wdesc))
             for key, value in data.items():
                 if isinstance(value, dict):
                     if re.search(key, lines):

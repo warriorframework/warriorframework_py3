@@ -163,7 +163,7 @@ class CliActions(object):
 		keywords is described in item #4 below.
 
         """
-        """ 1. Custom Logfile for a Keyword:
+        """ 1. Custom Logfile for a KEYWORD:
         ---------------------------------
         - Warrior framework creates a logfile by default with the name of the testcase
             located in 'Warriorspace/Execution/DateTime/logs'.
@@ -190,7 +190,7 @@ class CliActions(object):
         Utils.testcase_Utils.pNote("Logfile= %s" % logfile)
 
         """
-        Utils.testcase_Utils.pNote("Keyword: connect_ssh | Description: {0}".format(WDesc))
+        Utils.testcase_Utils.pNote("KEYWORD: connect_ssh | Description: {0}".format(WDesc))
 
         """3. Get details from input datafile:
         --------------------------------------

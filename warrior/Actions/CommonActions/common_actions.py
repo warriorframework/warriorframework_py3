@@ -102,7 +102,7 @@ class CommonActions(object):
             status (boolean)
         """
         wDesc = "Verify if response pattern exist in response data_repository"
-        Utils.testcase_Utils.pNote("Keyword: verify_resp_data | Description: {0}".format(wDesc))
+        Utils.testcase_Utils.pNote("KEYWORD: verify_resp_data | Description: {0}".format(wDesc))
 
         status = True
         result = Utils.data_Utils.get_object_from_datarepository(object_key)
@@ -151,7 +151,7 @@ class CommonActions(object):
             is not provided, value will be converted as string by default.
         """
         wDesc = "Stores the values to the data_repository"
-        Utils.testcase_Utils.pNote("Keyword: store_in_repo | Description: {0}".format(wDesc))
+        Utils.testcase_Utils.pNote("KEYWORD: store_in_repo | Description: {0}".format(wDesc))
         status = False
         pass_msg = "Value: {0} is stored in a Key: {1} of Warrior data_repository"
 
@@ -235,7 +235,7 @@ class CommonActions(object):
 
         """
         wDesc = "Print the  value of given key in data_repository "
-        Utils.testcase_Utils.pNote("Keyword: fetch_in_repo | Description: {0}".format(wDesc))
+        Utils.testcase_Utils.pNote("KEYWORD: fetch_in_repo | Description: {0}".format(wDesc))
         status = True
         pass_msg = "Value: {0} is stored in a Key: {1} of Warrior data_repository"
         value = get_object_from_datarepository(datavar)
@@ -262,7 +262,7 @@ class CommonActions(object):
         """
         wDesc = "Verify if value of object_key in data_repository "
         "matches with expected"
-        Utils.testcase_Utils.pNote("Keyword: verify_data | Description: {0}".format(wDesc))
+        Utils.testcase_Utils.pNote("KEYWORD: verify_data | Description: {0}".format(wDesc))
         result, value = Utils.data_Utils.verify_data(expected, object_key, type, comparison)
         if result not in ["FALSE", "TRUE"]:
             return result
@@ -295,7 +295,7 @@ class CommonActions(object):
         """
         wDesc = "Create a temp environment variable, the value will only stay for the \
         current Execution"
-        Utils.testcase_Utils.pNote("Keyword: set_env_var | Description: {0}".format(wDesc))
+        Utils.testcase_Utils.pNote("KEYWORD: set_env_var | Description: {0}".format(wDesc))
         overwrite = overwrite.upper()
         status = False
         if not any([var_key, var_value, filepath]):
@@ -385,7 +385,7 @@ class CommonActions(object):
                 1. status(boolean)
         """
         wdesc = "Verify if the output of the arithmetic expression matches the expected"
-        Utils.testcase_Utils.pNote("Keyword: verify_arith_exp | Description: {0}".format(wdesc))
+        Utils.testcase_Utils.pNote("KEYWORD: verify_arith_exp | Description: {0}".format(wdesc))
         status = Utils.data_Utils.verify_arith_exp(expression, expected,
                                                    comparison, repo_key)
         return status
@@ -404,7 +404,7 @@ class CommonActions(object):
 
         """
         wdesc = "To get the current timestamp in the format of yyyy-mm-dd hh:mm:ss"
-        Utils.testcase_Utils.pNote("Keyword: get_current_timestamp | Description: {0}".\
+        Utils.testcase_Utils.pNote("KEYWORD: get_current_timestamp | Description: {0}".\
             format(wdesc))
         currentdate = datetime_utils.get_current_timestamp()
         print_info("current timestamp : {0}".format(currentdate))
@@ -434,7 +434,7 @@ class CommonActions(object):
 
         """
         wdesc = "To get time difference between two timestamps"
-        Utils.testcase_Utils.pNote("Keyword: get_time_delta | Description: {0}".format(wdesc))
+        Utils.testcase_Utils.pNote("KEYWORD: get_time_delta | Description: {0}".format(wdesc))
         start_time = Utils.data_Utils.get_object_from_datarepository(start_time)
         if end_time:
             end_time = Utils.data_Utils.get_object_from_datarepository(end_time)

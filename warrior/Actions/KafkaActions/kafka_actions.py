@@ -64,7 +64,7 @@ class KafkaActions():
 
         """
         wdesc = "publish value {} to topic {} in kafka broker {}".format(system_name, topic, value)
-        pNote("Keyword: send_messages | Description: {0}".format(wdesc))
+        pNote("KEYWORD: send_messages | Description: {0}".format(wdesc))
         status = True
         if not data_repository.get("kafka_producer", None):
             print_info("creating kafka producer")
@@ -147,7 +147,7 @@ class KafkaActions():
 
         """
         wdesc = "get messages subscribed to topics : {}".format(list_topics)
-        pNote("Keyword: get_messages | Description: {0}".format(wdesc))
+        pNote("KEYWORD: get_messages | Description: {0}".format(wdesc))
         status = True
         output_dict = {}
         if not data_repository.get("kafka_consumer", None):

@@ -374,8 +374,8 @@ class WarriorCli(object):
                 # storing the value and expected output in data repository 
                 resp_key_dict = {resp_pat_key: response}
                 data_repository.update(resp_key_dict)
-                pNote(save_msg1+'.')
-                pNote(save_msg2.format(resp_pat_req))
+                print_debug(save_msg1+'.')
+                print_debug(save_msg2.format(resp_pat_req))
             elif resp_keys is not None:
                 keys = resp_ref.split(',')
                 resp_pat_list = resp_pat_key.split(',')
@@ -1279,7 +1279,7 @@ class ParamikoConnect(object):
 
         try:
             start_time = Utils.datetime_utils.get_current_timestamp()
-            pNote("[{0}] Sending Command: {1}".format(start_time, command))
+            pNote("[{0}] COMMAND: {1}".format(start_time, command))
             stdin, stdout, stderr = self.target_host.\
                 exec_command(command, get_pty=get_pty)
 
@@ -1607,7 +1607,7 @@ class PexpectConnect(object):
         if boolprompt == 0:
             start_time = Utils.datetime_utils.get_current_timestamp()
             if kwargs.get("log", "true") != "false":
-                pNote("[{0}] Sending Command: {1}".format(start_time, command))
+                pNote("[{0}] COMMAND: {1}".format(start_time, command))
             WarriorCli._send_cmd_by_type(self.target_host, command)
 
             if current_process().name == 'MainProcess':
@@ -1692,7 +1692,7 @@ class PexpectConnect(object):
                         pNote("EXCEPTION !! Cannot decode response", 'error')
                         data_repository['step_%s_errormessage' % step_num] = "Response decode error for command: {}".format(command.split(":")[0])
                 if kwargs.get("log", "true") != "false":
-                    print_info("Response:\n{0}\n".format(response))
+                    print_info("RESPONSE:\n{0}\n".format(response))
                 pNote(msg, "debug")
                 if status is True:
                     duration = Utils.datetime_utils.get_time_delta(start_time,
