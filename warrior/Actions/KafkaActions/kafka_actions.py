@@ -64,7 +64,7 @@ class KafkaActions():
 
         """
         wdesc = "publish value {} to topic {} in kafka broker {}".format(system_name, topic, value)
-        pNote(wdesc)
+        pNote("Keyword: send_messages | Description: {0}".format(wdesc))
         status = True
         if not data_repository.get("kafka_producer", None):
             print_info("creating kafka producer")
@@ -80,13 +80,15 @@ class KafkaActions():
                 return status
             self.kafka_obj_producer = WarriorKafkaProducer(bootstrap_servers=\
                                                              [kafka_ip+":"+kafka_port],
+                                                           acks='all',
+                                                           request_timeout_ms=1000000,
+                                                           api_version_auto_timeout_ms=1000000,
                                                            ssl_cafile=ca_file,
                                                            ssl_keyfile=key_file,
                                                            ssl_crlfile=crl_file,
                                                            ssl_ciphers=ciphers,
                                                            value_serializer=\
                                                              lambda x: dumps(x).encode('utf-8'))
-            data_repository["kafka_producer"] = self.kafka_obj_producer
         else:
             self.kafka_obj_producer = data_repository["kafka_producer"]
 
@@ -101,6 +103,7 @@ class KafkaActions():
             result = False
             status = status and result
         else:
+            data_repository["kafka_producer"] = self.kafka_obj_producer
             result = self.kafka_obj_producer.send_messages(topic=topic,
                                                            value=value,
                                                            partition=partition,
@@ -144,7 +147,7 @@ class KafkaActions():
 
         """
         wdesc = "get messages subscribed to topics : {}".format(list_topics)
-        pNote(wdesc)
+        pNote("Keyword: get_messages | Description: {0}".format(wdesc))
         status = True
         output_dict = {}
         if not data_repository.get("kafka_consumer", None):
@@ -169,7 +172,6 @@ class KafkaActions():
                                                            auto_offset_reset='earliest',
                                                            value_deserializer=\
                                                              lambda x: loads(x.decode('utf-8')))
-            data_repository["kafka_consumer"] = self.kafka_obj_consumer
         else:
             self.kafka_obj_consumer = data_repository["kafka_consumer"]
 
@@ -178,6 +180,7 @@ class KafkaActions():
             result = False
             status = status and result
         else:
+            data_repository["kafka_consumer"] = self.kafka_obj_consumer
             subscribe_required = False
             assigned_topics = self.kafka_obj_consumer.get_topics()
             if not assigned_topics:

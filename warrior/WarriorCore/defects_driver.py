@@ -19,7 +19,7 @@ import json
 import time
 from warrior import Tools
 from warrior.WarriorCore.Classes.jira_rest_class import Jira
-from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning, print_debug
 from warrior.Framework.Utils import xml_Utils, file_Utils
 
 class DefectsDriver(object):
@@ -83,7 +83,7 @@ class DefectsDriver(object):
                     j_file.close()
                     status = True
             if failed == 0:
-                print_warning("There are no failed keywords in the testcase result xml file")
+                print_debug("There are no failed keywords in the testcase result xml file")
                 status = False
             return status
     

@@ -408,7 +408,7 @@ def update_datarepository(input_dict):
     data_repository = config_Utils.data_repository
     data_repository.update(input_dict)
 
-def get_object_from_datarepository(object_key, verbose=True):
+def get_object_from_datarepository(object_key, verbose=False):
     """ Gets the value for the object with the provided name from data repository.
     object_key contains .(dot) will be treated as nested key """
     try:
@@ -492,7 +492,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             if general_iter_number is not None:
                 details_dict = sub_from_gen_dict(details_dict, general_iter_number, start_pat, end_pat)
 
-            print_info("var_sub:{0}".format(var_sub))
+            print_debug("var_sub:{0}".format(var_sub))
             td_obj = TestData()
             details_dict = td_obj.varsub_varconfig_substitutions(
                 details_dict, vc_file=None, var_sub=var_sub, start_pat=start_pat, end_pat=end_pat)
