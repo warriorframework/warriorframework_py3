@@ -51,6 +51,6 @@ setup(
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: Apache Software License',
                  'Programming Language :: Python :: 3.6',],
-    install_requires=["lxml==4.4.1", "kafka-python==1.4.6", "pycryptodome==3.6.1", "pandas==1.0.3", "configobj==5.0.6"]
+    install_requires=["kafka-python==1.4.6", "configobj==5.0.6"]
 
 )
