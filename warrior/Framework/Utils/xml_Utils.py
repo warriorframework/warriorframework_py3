@@ -31,8 +31,9 @@ from collections import OrderedDict
 try:
     from lxml import etree, objectify
 except ImportError as err:
-    print_error("Module lxml is not installed, Refer to the exception trace below for more details")
-    print_exception(err)
+    #print_error("Module lxml is not installed, Refer to the exception trace below for more details")
+    #print_exception(err)
+    pass
 
 def create_subelement(parent, tag, attrib):
     """Creates a subelement with given tag
