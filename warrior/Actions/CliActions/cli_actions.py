@@ -36,7 +36,7 @@ class CliActions(object):
 
     @mockready
     def connect(self, system_name, session_name=None, prompt=".*(%|#|\$)",
-                ip_type="ip", via_host=None, tuple_pty_dimensions=None):
+                ip_type="ip", via_host=None, tuple_pty_dimensions=None,cred_file=""):
         """
         This is a generic connect that can connect to ssh/telnet based
         on the conn_type provided by the user in the input datafile.
@@ -113,10 +113,13 @@ class CliActions(object):
         """
 
         wdesc = "Connect to the ssh/telnet port of the system"
-        pNote("KEYWORD: connect | Description: {0}".format(wdesc))
+        pNote("Keyword: connect | Description: {0}".format(wdesc))
         # Resolve system_name and subsystem_list
         # Removing duplicate subsystem entry and blank spaces in entry name
-        system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
+        if cred_file != '':
+             system_name, subsystem_list = system_name, None
+        else:
+             system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
                                                                                      system_name)
         output_dict = {}
         status = True
@@ -130,18 +133,22 @@ class CliActions(object):
             call_system_name = system_name
             if subsystem_name:
                 call_system_name += "[{}]".format(subsystem_name)
-            conn_type = getSystemData(self.datafile, call_system_name, "conn_type")
+            if cred_file != '':
+               cred = Utils.data_Utils.get_cfg_to_dict('credentials', cred_file)
+               conn_type = cred['conn_type']
+            else:
+               conn_type = getSystemData(self.datafile, call_system_name, "conn_type")
 
             if conn_type is not False:
                 if conn_type == "ssh":
                     result, output_dict = \
                      self.connect_ssh(call_system_name, session_name, prompt,
                                       ip_type, via_host=via_host,
-                                      tuple_pty_dimensions=tuple_pty_dimensions)
+                                      tuple_pty_dimensions=tuple_pty_dimensions, cred_file=cred_file)
                 elif conn_type == "telnet":
                     result, output_dict = \
                      self.connect_telnet(call_system_name, session_name, ip_type,
-                                         tuple_pty_dimensions=tuple_pty_dimensions)
+                                         tuple_pty_dimensions=tuple_pty_dimensions, cred_file=cred_file)
                 else:
                     pNote("<conn_type>={0} provided for '{1}' is  not "
                           "supported".format(conn_type, call_system_name), "error")
@@ -149,6 +156,7 @@ class CliActions(object):
                 pNote("conn_type not provided for system={0}".format(call_system_name), "warn")
             status = status and result
         return status, output_dict
+
 
     @mockready
     def disconnect(self, system_name, session_name=None):
@@ -225,7 +233,7 @@ class CliActions(object):
     @mockready
     def connect_ssh(self, system_name, session_name=None, prompt=".*(%|#|\$)",
                     ip_type="ip", int_timeout=60, via_host=None,
-                    tuple_pty_dimensions=None):
+                    tuple_pty_dimensions=None, cred_file = ''):
         """Connects to the ssh port of the the given system or subsystems
 
         :Datafile usage:
@@ -293,11 +301,15 @@ class CliActions(object):
                 and can be retrieved using the key= "session_id + _td_response".
         """
         wdesc = "Connect to the ssh port of the system/subsystem and creates a session"
-        pNote("KEYWORD: connect_ssh | Description: {0}".format(wdesc))
+        pNote("Keyword: connect_ssh | Description: {0}".format(wdesc))
         # Resolve system_name and subsystem_list
         # Removing duplicate subsystem entry and blank spaces in entry name
-        system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
+        if cred_file == '':
+              system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
                                                                                      system_name)
+        else:
+              subsystem_list = None
+              system_name = system_name
         output_dict = {}
         status = True
 
@@ -309,7 +321,10 @@ class CliActions(object):
             call_system_name = system_name
             if subsystem_name:
                 call_system_name += "[{}]".format(subsystem_name)
-            credentials = get_credentials(self.datafile, call_system_name,
+            if cred_file:
+                credentials = Utils.data_Utils.get_cfg_to_dict('credentials', cred_file)
+            else:
+                credentials = get_credentials(self.datafile, call_system_name,
                                           [ip_type, 'ssh_port', 'username',
                                            'password', 'prompt', 'timeout',
                                            'conn_options', 'custom_keystroke',
@@ -405,7 +420,7 @@ class CliActions(object):
 
     @mockready
     def connect_telnet(self, system_name, session_name=None, ip_type="ip",
-                       int_timeout=60, tuple_pty_dimensions=None):
+                       int_timeout=60, tuple_pty_dimensions=None, cred_file=None):
         """Connects to the telnet port of the the given system and/or subsystem and creates a
         pexpect session object for the system
 
@@ -476,14 +491,13 @@ class CliActions(object):
         """
 
         wdesc = "Connect to the telnet port of the system and creates a session"
-        pNote("KEYWORD: connect_telnet | Description: {0}".format(wdesc))
+        pNote("Keyword: connect_telnet | Description: {0}".format(wdesc))
         # Resolve system_name and subsystem_list
         # Removing duplicate subsystem entry and blank spaces in entry name
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
                                                                                      system_name)
         output_dict = {}
         status = True
-
         attempt = 1 if subsystem_list is None else len(subsystem_list)
         for i in range(attempt):
             Utils.testcase_Utils.pSubStep(wdesc)
@@ -492,7 +506,10 @@ class CliActions(object):
             call_system_name = system_name
             if subsystem_name:
                 call_system_name += "[{}]".format(subsystem_name)
-            credentials = get_credentials(self.datafile, call_system_name,
+            if cred_file != None:
+                credentials = Utils.data_Utils.get_cfg_to_dict('credentials', cred_file)
+            else:
+                credentials = get_credentials(self.datafile, call_system_name,
                                           [ip_type, 'telnet_port', 'username',
                                            'prompt', 'password', 'timeout',
                                            'conn_options', 'custom_keystroke',
@@ -562,6 +579,7 @@ class CliActions(object):
             status = status and result
         return status, output_dict
 
+
     @mockready
     def send_command(self, command, system_name, session_name=None,
                      start_prompt='.*', end_prompt='.*', int_timeout=60):
@@ -604,6 +622,56 @@ class CliActions(object):
 
         Utils.testcase_Utils.report_substep_status(command_status)
         return command_status
+
+    def send_commands(self,title, system_name, command, session_name = None,
+                                        var_sub = None, description = None,
+                                        td_tag = None, vc_tag = None):
+        """Sends all the commands from testdata that has title equal to the
+        provided title
+        This keyword expects the usage of warrior framework's
+        recommended testdata xml files, sample testdata file is
+        available in Warriorspace/Config_files/sample/testdata_sample.xml
+        :Datafile usage:
+            Tags or attributes to be used in input datafile for the system or subsystem
+            If both tag and attribute is provided the attribute will be used.
+            1. testdata = absolute/relative path of the testdata file.
+            2. variable_config = absolute/relative path of the variable
+                                config file.
+            By default the "testdata" and "variable_config" tag/attribute
+            will be used to get the details of testdata and variable config file.
+            If a different tag/attribute name is used, provide the tagname
+            as the value to the arguments td_tag and vc_tag.
+        :Arguments:
+            1. title (string) = title in string representation
+            2. system_name (string) = This can be name of the
+                system or a subsystem. In case of subsystem only
+                single subsystem is supported. Format for subsystem
+                is "system_name[subsystem_name]"
+            3. session_name(string) = name of the session to the string
+            4. var_sub(string) = the pattern [var_sub] in the testdata commands,
+                                 start_prompt, end_prompt, verification search
+                                 will substituted with this value.
+            5. description(string) = optional description string that overwrites the
+                                default description(wdesc) of the keyword.
+                                This string will be printed as the keyword description
+                                in console logs and result files.
+            6. td_tag = custom tag/attribute name of testdata file.
+            7. vc_tag = custom tag/attribute name of variable config file.
+        :Returns:
+            1. status(bool)
+            2. response dictionary(dict): a dictionary having the responses of all
+                commands sent to the particular system or subsystem. This dictionary
+                is available in warrior frameworks global data_repository and can be
+                retrieved using the key= "session_id + _td_response" where
+                session_id="system_name+subsystem_name+session_name"
+        """
+
+        wdesc = "Send commands by title of testdata file"
+        pNote("Keyword: send_commands_by_testdata_title | Description: {0}".format(wdesc))
+        desc = wdesc if description is None else description
+        return self.send_testdata_command_kw(system_name, session_name,  desc, var_sub,
+                                             title = title, td_tag = td_tag, vc_tag = vc_tag, command = command)
+
 
     @mockready
     def send_all_testdata_commands(self, system_name, session_name=None, var_sub=None,
@@ -836,7 +904,7 @@ class CliActions(object):
 
     @mockready
     def send_testdata_command_kw(self, system_name, session_name=None, wdesc='', var_sub=None,
-                                 title=None, row_num=None, td_tag=None, vc_tag=None):
+                                  title=None, row_num=None, td_tag=None, vc_tag=None, command=None):
         """
         UseAsKeyword=No
         - This will not be listed as a keyword in Katana
@@ -875,7 +943,8 @@ class CliActions(object):
                                                                      row=row_num,
                                                                      system_name=system_name,
                                                                      session_name=session_name,
-                                                                     datafile=self.datafile)
+                                                                     datafile=self.datafile,
+                                                                     command=command)
 
         Utils.testcase_Utils.report_substep_status(status)
         return status, td_resp_dict

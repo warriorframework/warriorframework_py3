@@ -169,6 +169,32 @@ def get_connection(section, cfg_file_name, device = ''):
         print_error("exception found: cmd file ",cfg_file_name ,"is not in the defined format ", str(e))
     return status, mapper_data
 
+def get_cfg_to_dict(block, cfg_file_name):
+    ''' This method fetches the options from configuration file, from the
+    given section, and return them as dict.
+    '''
+    d = {}
+    d[block] = {}
+    if not os.path.exists(cfg_file_name):
+        print("exception found: The given file doesn't exist: ", cfg_file_name)
+        return False, None
+    status=True
+    mapper_data=None
+    # Read the config file if exist
+    try:
+        config=ConfigObj(cfg_file_name)
+        if cfg_file_name:
+            mapper_data=config
+            final_dict = mapper_data[block]
+            final_dict['conn_options'] = False
+            final_dict['custom_keystroke'] = False
+            final_dict['escape'] = False
+            final_dict['pty_dimensions'] = False
+
+    except Exception as e:
+        status=False
+        print("exception found: cmd file ",cfg_file_name ,"is not in the defined format ", str(e))
+    return final_dict
 
 def getSystemData(datafile, system_name, cnode, system='system'):
     """

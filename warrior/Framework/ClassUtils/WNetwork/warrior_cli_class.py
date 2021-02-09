@@ -33,6 +33,7 @@ from timeit import itertools
 from warrior.Framework.Utils.config_Utils import data_repository
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 from multiprocessing import current_process
+from configobj import ConfigObj
 
 """ Module for performing CLI operations """
 
@@ -190,6 +191,7 @@ class WarriorCli(object):
         :Returns:
             1. finalresult = boolean
         """
+        a = args.get('command')
         responses_dict = {}
         resp_key_list = []
         td_resp_dict = {}
@@ -202,9 +204,12 @@ class WarriorCli(object):
         session_name = args.get("session_name")
         if session_name is not None:
             system_name = system_name + "." + session_name
-        testdata_dict = Utils.data_Utils.get_command_details_from_testdata(
-            testdatafile, varconfigfile, var_sub=var_sub, title=title, row=row,
-            system_name=system_name, datafile=datafile)
+        if a == None:
+           testdata_dict = Utils.data_Utils.get_command_details_from_testdata(
+              testdatafile, varconfigfile, var_sub=var_sub, title=title, row=row,
+               system_name=system_name, datafile=datafile)
+        else:
+           testdata_dict = self.get_connection(a, 'sample1.cfg', system_name)
         finalresult = True if len(testdata_dict) > 0 else False
         for key, details_dict in testdata_dict.items():
             responses_dict[key] = ""
@@ -264,6 +269,128 @@ class WarriorCli(object):
                         break;
             responses_dict[key] = {k: v for d in resp_key_list for k, v in d.items()}
         return finalresult, td_resp_dict
+
+
+    def get_connection(self, block, cfg_file_name, system_name):
+        ''' This method fetches the options from configuration file, from the
+        given section, and return them as dict.
+        '''
+        final_dict = {}
+        final_dict[block] = {'command_list': [], 'startprompt_list': [], 'endprompt_list': [], 'verify_list': [], 'verify_text_list': [],
+                             'return_on_fail_list': [], 'sleeptime_before_match_list': [], 'resp_ref_list': [], 'resp_key_list': [],
+                             'inorder_resp_ref_list': [], 'timeout_list': [], 'verify_context_list': [], 'verify_map_list': [],
+                             'verify_on_list': []}
+        section = 'blocks'
+        arg_list = ['send', 'end', 'start', 'return_on_fail', 'sleep_before_match', 'resp_ref', 'resp_keys', 'inorder_resp_ref', 'timeout', 'verify']
+        if not os.path.exists(cfg_file_name):
+            print("exception found: The given file doesn't exist: ", cfg_file_name)
+            return False, None
+        status = True
+        mapper_data = None
+        regex = '{[a-zA-Z\'\-\_]*}'
+        # Read the config file if exist
+        try:
+            config = ConfigObj(cfg_file_name)
+            if cfg_file_name:
+                mapper_data = config[section][block]
+                for command in mapper_data:
+                    d = config['commands'][command]
+                    cmd_arg_list = []
+                    for k, v in d.items():
+                        cmd_arg_list.append(k)
+                    for cmd in arg_list:
+                        if cmd not in cmd_arg_list:
+                            d[cmd] = None
+                    for k, v in d.items():
+                        if type(v) == str:
+                            match = re.findall(regex, v)
+                            if match:
+                                v = self.replace_var(match)
+                        if k == 'send':
+                            final_dict[block].get('command_list').append(v)
+                        if k == 'start':
+                            final_dict[block].get('startprompt_list').append(v)
+                        if k == 'end':
+                            final_dict[block].get('endprompt_list').append(v)
+                        if k == 'return_on_fail':
+                            final_dict[block].get('return_on_fail_list').append(v)
+                        if k == 'sleep_before_match':
+                            final_dict[block].get('sleeptime_before_match_list').append(v)
+                        if k == 'resp_ref':
+                            final_dict[block].get('resp_ref_list').append(v)
+                        if k == 'resp_keys':
+                            final_dict[block].get('resp_key_list').append(v)
+                        if k == 'inorder_resp_ref':
+                            final_dict[block].get('inorder_resp_ref_list').append(v)
+                        if k == 'timeout':
+                            final_dict[block].get('timeout_list').append(v)
+                        if k == 'verify' and v != None:
+                            if type(v) == str:
+                                ver = d[v].split('\n')
+                                final_dict[block].get('verify_list').append(v)
+                                final_dict[block].get('verify_text_list').append([ver[1]])
+                                final_dict[block].get('verify_context_list').append([ver[2]])
+                                final_dict[block].get('verify_map_list').append(['1'])
+                                final_dict[block].get('verify_on_list').append([system_name])
+                            else:
+                                s = ''
+                                s1 = []
+                                context = []
+                                map_list = []
+                                v_on_list = []
+                                s = ','.join(v)
+                                for i in v:
+                                    ver_list = d[i].split('\n')
+                                    s1.append(ver_list[1])
+                                    context.append(ver_list[2])
+                                    map_list.append('1')
+                                    v_on_list.append(system_name)
+                                final_dict[block].get('verify_list').append(s)
+                                final_dict[block].get('verify_text_list').append(s1)
+                                final_dict[block].get('verify_context_list').append(context)
+                                final_dict[block].get('verify_map_list').append(map_list)
+                                final_dict[block].get('verify_on_list').append(v_on_list)
+                        if k == 'verify' and v == None:
+                            final_dict[block].get('verify_list').append(None)
+                            final_dict[block].get('verify_text_list').append(None)
+                            final_dict[block].get('verify_context_list').append(None)
+                            final_dict[block].get('verify_map_list').append(None)
+                            final_dict[block].get('verify_on_list').append(None)
+                n = len(mapper_data)
+                final_dict[block]['sys_list'] = [None]*n
+                final_dict[block]['vc_file_list'] = [None]*n
+                final_dict[block]['session_list'] = [None]*n
+                final_dict[block]['sleeptime_list'] = [None]*n
+                final_dict[block]['retry_list'] = [None]*n
+                final_dict[block]['retry_timer_list'] = [None]*n
+                final_dict[block]['retry_count_list'] = [None]*n
+                final_dict[block]['retry_onmatch_list'] = [None]*n
+                final_dict[block]['resp_req_list'] = [None]*n
+                final_dict[block]['resp_pat_req_list'] = [None]*n
+                final_dict[block]['resp_pat_key_list'] = [None]*n
+                final_dict[block]['log_list'] = [None]*n
+                final_dict[block]['inorder_search_list'] = [None]*n
+                final_dict[block]['operator_list'] = [None]*n
+                final_dict[block]['cond_value_list'] = [None]*n
+                final_dict[block]['cond_type_list'] = [None]*n
+                final_dict[block]['repeat_list'] = [None]*n
+                final_dict[block]['logmsg_list'] = [None]*n
+
+
+        except Exception as e:
+            status = False
+            print("exception found: cmd file ", cfg_file_name, "is not in the defined format ", str(e))
+        return final_dict
+
+    def replace_var(self, match):
+        var = match[0]
+        var = var.replace('{', '')
+        var = var.replace('}', '')
+        con = ConfigObj('cred.cfg')
+        v_dict = con['VARIABLES']
+        if var in v_dict.keys():
+           return v_dict[var]
+
 
     def update_resp_ref_to_repo(self, details_dict, resp_key_list, i,
                                 title_row, td_resp_dict, session_id, status=True):
