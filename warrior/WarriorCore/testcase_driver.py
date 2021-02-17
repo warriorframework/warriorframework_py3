@@ -468,9 +468,8 @@ def get_testwrapper_file_details(testcase_filepath, data_repository):
     abs_cur_dir = os.path.dirname(testcase_filepath)
     abs_testwrapperfile = Utils.file_Utils.getAbsPath(testwrapperfile, abs_cur_dir)
     Utils.xml_Utils.getRoot(abs_testwrapperfile)
-    jfile_obj = execution_files_class.ExecFilesClass(abs_testwrapperfile, "tc", None, None)
-    j_data_type = jfile_obj.check_get_datatype(data_repository['wt_datafile'])
-    j_runtype = jfile_obj.check_get_runtype()
+    j_data_type = common_execution_utils.check_get_datatype(abs_testwrapperfile, data_repository['wt_datafile'])
+    j_runtype = common_execution_utils.check_get_runtype(abs_testwrapperfile)
     setup_on_error_action = Utils.testcase_Utils.get_setup_on_error(abs_testwrapperfile)
     return [abs_testwrapperfile, j_data_type, j_runtype, setup_on_error_action]
 
@@ -707,7 +706,27 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     tc_junit_object.update_count("tests", "1", "pj", "not appicable")
     tc_junit_object.update_attr("status", str(tc_status), "tc", tc_timestamp)
     tc_junit_object.update_attr("time", str(tc_duration), "tc", tc_timestamp)
-    tc_junit_object.add_testcase_message(tc_timestamp, tc_status)
+    try:
+        files = []
+        logs_dir = data_repository['wt_logsdir']
+        for root, dirs, file_list in os.walk(logs_dir):
+            for file in file_list:
+                if 'consoleLog' in file: files.append(os.path.join(root, file))
+        for file in files:  console_log_file = file
+        job_url = os.getenv('JOB_URL')
+        if job_url:
+            job_base_name = os.getenv('JOB_BASE_NAME')
+            stage_name = os.getenv('STAGE_NAME')
+            build_url = os.getenv('BUILD_URL')
+            file_path = console_log_file.split(job_base_name, maxsplit=1)[1]
+            fail_msg = f'{build_url}execution/node/3/ws{file_path}' if stage_name else f'{job_url}ws{file_path}'
+            print_info("console_log_file:{}".format(fail_msg))
+        else:
+            fail_msg = "failure message"
+    except Exception as e:
+        print('Exception:', e)
+        fail_msg = 'failure message'
+    tc_junit_object.add_testcase_message(tc_timestamp, tc_status, fail_msg)
     if str(tc_status).upper() in ["FALSE", "ERROR", "EXCEPTION"]:
         tc_junit_object.update_attr("defects", defectsdir, "tc", tc_timestamp)
 
