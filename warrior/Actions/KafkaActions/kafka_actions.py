@@ -69,22 +69,25 @@ class KafkaActions():
         status = True
         if not data_repository.get("kafka_producer", None):
             print_info("creating kafka producer")
-            # mapper will be avaible for netconf backup
+            # mapper file will be available for netconf backup
             map_file = data_repository.get('wt_mapfile', None)
             if map_file:
+                ca_file = key_file = crl_file= ciphers = None
                 config = ConfigObj(map_file)
                 mapper = config["CREDENTIALS"]["kafka_server"]
                 status, mapper_data = Utils.data_Utils.replace_var(mapper, {}, {})
                 if status == False:
                     return False
-                credentials = config["CREDENTIALS"]["kafka_server"]
                 kafka_ip = config["CREDENTIALS"]["kafka_server"]["kafka_host"]
                 kafka_port = config["CREDENTIALS"]["kafka_server"]["kafka_port"]
-                ca_file = config["CREDENTIALS"]["kafka_server"]["ca_file"]
-                key_file = config["CREDENTIALS"]["kafka_server"]["key_file"]
-                crl_file = config["CREDENTIALS"]["kafka_server"]["crl_file"]
-                ciphers = config["CREDENTIALS"]["kafka_server"]["ciphers"]
-                print("kafka_ip and port", kafka_ip, kafka_port )
+                if "ca_file" in config["CREDENTIALS"]["kafka_server"]:
+                    ca_file = config["CREDENTIALS"]["kafka_server"]["ca_file"]
+                if "key_file" in config["CREDENTIALS"]["kafka_server"]:
+                    key_file = config["CREDENTIALS"]["kafka_server"]["key_file"]
+                if "crl_file" in config["CREDENTIALS"]["kafka_server"]:
+                    crl_file = config["CREDENTIALS"]["kafka_server"]["crl_file"]
+                if "ciphers" in config["CREDENTIALS"]["kafka_server"]:
+                    ciphers = config["CREDENTIALS"]["kafka_server"]["ciphers"]
             else:
                 kafka_ip = getSystemData(self.datafile, system_name, "ip")
                 kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
@@ -222,3 +225,4 @@ class KafkaActions():
                 time_stamp = int(time.time())
                 output_dict["kafka_messages_{}".format(time_stamp)] = messages
         return status, output_dict
+
