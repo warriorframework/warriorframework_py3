@@ -19,6 +19,7 @@ from warrior.Framework.Utils.data_Utils import getSystemData
 from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer,\
     WarriorKafkaConsumer
 from warrior.Framework.Utils.config_Utils import data_repository
+from configobj import ConfigObj
 
 """This is the kafka_actions module that has kafka keywords """
 
@@ -68,12 +69,29 @@ class KafkaActions():
         status = True
         if not data_repository.get("kafka_producer", None):
             print_info("creating kafka producer")
-            kafka_ip = getSystemData(self.datafile, system_name, "ip")
-            kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
-            ca_file = getSystemData(self.datafile, system_name, "ssl_cafile")
-            key_file = getSystemData(self.datafile, system_name, "ssl_keyfile")
-            crl_file = getSystemData(self.datafile, system_name, "ssl_crlfile")
-            ciphers = getSystemData(self.datafile, system_name, "ssl_ciphers")
+            # mapper will be avaible for netconf backup
+            map_file = data_repository.get('wt_mapfile', None)
+            if map_file:
+                config = ConfigObj(map_file)
+                mapper = config["CREDENTIALS"]["kafka_server"]
+                status, mapper_data = Utils.data_Utils.replace_var(mapper, {}, {})
+                if status == False:
+                    return False
+                credentials = config["CREDENTIALS"]["kafka_server"]
+                kafka_ip = config["CREDENTIALS"]["kafka_server"]["kafka_host"]
+                kafka_port = config["CREDENTIALS"]["kafka_server"]["kafka_port"]
+                ca_file = config["CREDENTIALS"]["kafka_server"]["ca_file"]
+                key_file = config["CREDENTIALS"]["kafka_server"]["key_file"]
+                crl_file = config["CREDENTIALS"]["kafka_server"]["crl_file"]
+                ciphers = config["CREDENTIALS"]["kafka_server"]["ciphers"]
+                print("kafka_ip and port", kafka_ip, kafka_port )
+            else:
+                kafka_ip = getSystemData(self.datafile, system_name, "ip")
+                kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
+                ca_file = getSystemData(self.datafile, system_name, "ssl_cafile")
+                key_file = getSystemData(self.datafile, system_name, "ssl_keyfile")
+                crl_file = getSystemData(self.datafile, system_name, "ssl_crlfile")
+                ciphers = getSystemData(self.datafile, system_name, "ssl_ciphers")
             if not kafka_ip or not kafka_port:
                 status = False
                 print_error("ip, kafka_port should be provided")

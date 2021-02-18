@@ -22,6 +22,7 @@ from warrior.Framework.Utils.print_Utils import  print_info, print_debug,\
 from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep, report_substep_status
 from warrior.Framework.ClassUtils.netconf_utils_class import WNetConf
 from warrior.Framework.Utils.encryption_utils import decrypt
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, update_datarepository, getSystemData, get_credentials, _get_system_or_subsystem
 import re
 from configobj import ConfigObj
 from xml.etree import ElementTree
@@ -289,6 +290,8 @@ class NetconfActions(object):
         self.clear_notification_buffer_all(system_name , session_name)
         session_id=Utils.data_Utils.get_session_id(system_name , session_name)
         netconf_object=Utils.data_Utils.get_object_from_datarepository(session_id)
+        step_num = data_repository["step_num"]
+        update_datarepository({"step_{0}_command".format(step_num): command})
         reply=''
         mapfile=data_repository.get('wt_mapfile' , None)
         found_dict = {'AND': 'All the given match_string are present in the response as expected',

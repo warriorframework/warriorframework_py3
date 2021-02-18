@@ -16,12 +16,10 @@ import os
 from warrior.Framework import Utils
 from warrior.Framework.Utils.testcase_Utils import pNote
 
-
-
 class MicroappsActions(object):
     """class MicroappsActions having method that are for warrior_result product"""
 
-    def get_warrior_result(self):
+    def get_warrior_result(self, type =""):
         """Returns warrior status and failed command details.
            :Returns:
                 1. script_status(boolean) : True if all steps Passed else False
@@ -29,11 +27,10 @@ class MicroappsActions(object):
                 3. failure_reason (str) : failure reason
         """
         wdesc = "to get current status of warrior script and failure reason"
-        Utils.testcase_Utils.pNote("KEYWORD: get_warrior_result | Description: {0}".format(wdesc))
+        Utils.testcase_Utils.pNote(wdesc)
         script_status = True
         step_status_message = None
         failure_reason = None
-        failed_step = None
         data_repository = Utils.config_Utils.data_repository
         for session_td_key, session_td_value in data_repository.items():
             if session_td_key.startswith('step') and session_td_key.endswith('_result'):
@@ -41,17 +38,18 @@ class MicroappsActions(object):
                     step_impact = data_repository.get(session_td_key.replace('_result', '_impact'))
                     if (step_impact.upper() == "IMPACT"):
                         script_status = False
-                        failed_step = session_td_key.replace('_result', '')
                         step_status_message = "{0} status {1}". \
-                            format(failed_step, session_td_value)
-                        failure_reason = data_repository.get(session_td_key.replace('_result', '_errormessage'), None)
+                            format(session_td_key.replace('_result', ''), session_td_value)
+                        if type:
+                            command = data_repository.get(session_td_key.replace('_result', '_command'))
+                            if command != None:
+                                failure_reason = "{0} failed".format(command)
                         break
-
-        if not script_status and not failure_reason:
-            for session_td_key, session_td_value in data_repository.items():
-                if '_td_response' in session_td_key:
-                    for title_td_key, title_td_value in session_td_value.items():
-                        if failed_step in title_td_key:
+        if not type:
+            if not script_status:
+                for session_td_key, session_td_value in data_repository.items():
+                    if '_td_response' in session_td_key:
+                        for title_td_key, title_td_value in session_td_value.items():
                             for command_key, command_value in title_td_value.items():
                                 if '_status' not in command_key and '_command' not in command_key:
                                     command = title_td_value.get(command_key + "_command", None)
@@ -62,12 +60,12 @@ class MicroappsActions(object):
                                         if command is not None:
                                             splitted_command = command.split(":")
                                             if splitted_command[0] == "3" or splitted_command[0] == \
-                                                "wctrl:x" or splitted_command[0] == ";":
+                                                    "wctrl:x" or splitted_command[0] == ";":
                                                 failure_reason = "Communication Failure with device"
                                             else:
                                                 if "Expected pattern not found" in response:
                                                     failure_reason = "{} Failed : reason {}".format(splitted_command[0],
-                                                                                                response)
+                                                                                                    response)
                                                 else:
                                                     failure_reason = "{0} Failed".format(splitted_command[0])
 
