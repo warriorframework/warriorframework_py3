@@ -190,6 +190,7 @@ class NetconfActions(object):
         if data_repository.get('wt_mapfile', None):
             status, device_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
             if status == False:
+                update_datarepository({"FAILURE_REASON": "Connect netconf failed due to Invalid mapper file"})
                 return False
             if system_name == '':
                 device=device_credentials.get('DEFAULT', None)
@@ -207,8 +208,10 @@ class NetconfActions(object):
             for v in session_credentials.values():
                 if re.search('{.*}', v):
                     print_error('Provide the substitution for variable', v)
+                    update_datarepository({"FAILURE_REASON": "Connect netconf failed due to missing variable substitution."})
                     return False
             if status == False:
+                update_datarepository({"FAILURE_REASON": "Connect netconf failed due to missing variable substitution."})
                 return False
             protocol=session_credentials.get('protocol_version', None)
             if protocol == None:
