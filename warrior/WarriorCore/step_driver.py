@@ -68,16 +68,18 @@ def send_keyword_to_productdriver(driver_name, plugin_name, keyword,
             try:
                 import_name = "{0}.ProductDrivers.{1}".format(repo_name, driver_name)
                 driver_call = __import__(import_name, fromlist=[driver_name])
-            except:
-                    try:
-                        import_name = "warrior{0}.ProductDrivers.{1}".format(driver_name.split("_")[0].lower(), driver_name.lower())
-                        driver_call = __import__(import_name, fromlist=[driver_name])
-                    except:
-                        err = f'Coudn\'t find the {driver_name}, please make sure the \'{driver_name.split("_")[0]}\' module is installed.'
+            except Exception:
+                    if repo_name == "warrior":
+                        try:
+                            import_name = "warrior{0}.ProductDrivers.{1}".format(driver_name.split("_")[0].lower(), driver_name.lower())
+                            driver_call = __import__(import_name, fromlist=[driver_name])
+                        except:
+                            raise
+                    else:
                         raise
         # driver_call = __import__(import_name, fromlist=[driver_name])
     except Exception:
-        trcback = print_exception(err)
+        trcback = print_exception(Exception)
         data_repository['step-%s_status' % step_num] = 'ERROR'
         data_repository['step-%s_exception' % step_num] = trcback
         Utils.testcase_Utils.pStep()
