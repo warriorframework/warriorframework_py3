@@ -24,7 +24,7 @@ setup(
     packages=find_packages(),
     package_data={'':['**/*', '*']},
     include_package_data=True,
-    long_description= "kafka package for warrior framework",
+    long_description= "kafka_driver package for warrior framework",
     description="Warrior Framework is an open source Automation Framework",
     url="https://github.com/warriorframework/warriorframework_py3",
     project_urls={

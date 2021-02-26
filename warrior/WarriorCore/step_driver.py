@@ -71,7 +71,7 @@ def send_keyword_to_productdriver(driver_name, plugin_name, keyword,
             except Exception:
                     if repo_name == "warrior":
                         try:
-                            import_name = "warrior{0}.ProductDrivers.{1}".format(driver_name.split("_")[0].lower(), driver_name.lower())
+                            import_name = "warrior{0}.ProductDrivers.{1}".format("".join(driver_name.split("_")[:-1]).lower(), driver_name.lower())
                             driver_call = __import__(import_name, fromlist=[driver_name])
                         except:
                             raise
