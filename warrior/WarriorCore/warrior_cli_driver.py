@@ -341,7 +341,7 @@ def decide_runcat_actions(w_cli_obj, namespace):
     if len(filepath) == 0:
         print_error("No matching Testcases found for the provided category(ies)")
         exit(1)
-    print_info("file path for runcat actions is ", filepath)
+    print_info("file path for runcat actions is ", str(filepath))
     return filepath
 
 
