@@ -63,7 +63,6 @@ class NetconfActions(object):
                 xmlns_tag = xmlns(default value, no need pass this argument)
                 xmlns = "urn:params:xml:ns:yang:perfmon"
                 request_type= "init-pm"
-
             For Request Type :
             <org-openroadm-de-operations:restart xmlns:
              org-openroadm-de-operations="http://org/openroadm/de/operations">
@@ -138,12 +137,10 @@ class NetconfActions(object):
         report_substep_status(status)
         return status, {reply_key: reply_list}
 
-    def connect_netconf(self, system_name='', session_name=None, gne_password_heirarchy=None):
+    def connect_netconf(self, system_name='', session_name=None, credentials=None):
         """
         Connects to the Netconf interface of the the given system or subsystems
-
         :Datafile usage:
-
             Tags or attributes to be used in input datafile for the system or subsystem
             If both tag and attribute is provided the attribute will be used.
             1. ip = IP address of the system/subsystem
@@ -166,15 +163,12 @@ class NetconfActions(object):
            12. ssh_config = Enables parsing of OpenSSH configuration file.
            13. device_params = netconf client device name, by default the name
                "default" is used.
-
         :Arguments:
             1. system_name(string) = Name of the system from the input datafile.
             2. session_name(string) = Name of the session to the system
-
         :Returns:
             1. status(bool)= True / False
             2. session_id (dict element)= key, value
-
         :DESCRIPTION:
             This Keyword is used to connect to the netconf interface of the system.
             The keyword upon executing saves the System_name and Session_id,
@@ -190,30 +184,28 @@ class NetconfActions(object):
         if data_repository.get('wt_mapfile', None):
             status, device_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
             if status == False:
-                update_datarepository({"FAILURE_REASON": "Connect netconf failed due to Invalid mapper file"})
                 return False
-            if system_name == '':
-                device=device_credentials.get('DEFAULT', None)
-                if device == None:
-                    device = list(device_credentials.keys())[0]
-                system_name = device
-                data_repository['system_name'] = system_name
-            else:
-                data_repository['system_name'] = system_name
+            if not system_name:
+                system_name = Utils.data_Utils.get_system_name(device_credentials)
+            data_repository['system_name'] = system_name
+            if not data_repository['system_name']:
+                print_error('Invalid system_name')
+                return False
             status, session = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
-            if gne_password_heirarchy:
-                session.pop('substitutions')
-                session = {**session, **gne_password_heirarchy}
+            if credentials:
+                if session.get('substitutions', None):
+                    session.pop('substitutions')
+                session['username'] = credentials['username']
+                session['password'] = credentials['password']
             status, session_credentials = Utils.data_Utils.replace_var(session, {}, {})
             for v in session_credentials.values():
                 if re.search('{.*}', v):
                     print_error('Provide the substitution for variable', v)
-                    update_datarepository({"FAILURE_REASON": "Connect netconf failed due to missing variable substitution."})
                     return False
             if status == False:
-                update_datarepository({"FAILURE_REASON": "Connect netconf failed due to missing variable substitution."})
                 return False
             protocol=session_credentials.get('protocol_version', None)
+            session_credentials['hostkey_verify'] = 'False'
             if protocol == None:
                 session_credentials['protocol_version'] = False
         else:
@@ -483,7 +475,6 @@ class NetconfActions(object):
 
     def delete_config(self, datastore, system_name, session_name=None):
         """Delete a configuration datastore
-
         :Arguments:
             1. datastore(string) = name of the configuration datastore to be deleted
             2. system_name(string)  = Name of the system from the input datafile
@@ -517,7 +508,6 @@ class NetconfActions(object):
     def discard_changes(self, system_name, session_name=None):
         """Revert the candidate configuration to the currently running configuration.
         Uncommitted changes will be discarded.
-
         :Arguments:
             1. system_name(string)  = Name of the system from the input datafile
             2. session_name(string) = Name of the session to the system
@@ -654,7 +644,6 @@ class NetconfActions(object):
 
     def lock(self, datastore, system_name, session_name=None):
         """Lock the configuration system
-
         :Arguments:
             1. datastore(string) = name of the configuration datastore to be locked
             2. system_name(string)  = Name of the system from the input datafile
@@ -688,7 +677,6 @@ class NetconfActions(object):
 
     def unlock(self, datastore, system_name, session_name=None):
         """Release the configuration lock
-
         :Arguments:
             1. datastore(string) = name of the configuration datastore to be unlocked
             2. system_name(string)  = Name of the system from the input datafile
@@ -722,7 +710,6 @@ class NetconfActions(object):
 
     def get(self, system_name, session_name=None, filter_string=None, filter_type=None):
         """Retrieve operational state information.
-
         :Arguments:
             1. system_name(string)  = Name of the system from the input datafile
             2. session_name(string) = Name of the session to the system
@@ -927,7 +914,6 @@ class NetconfActions(object):
              for checking single data
              waitString = ".//ns:event[./ns:eventClass/text()='fault']"
              Note that "ns" = namespace prefix
-
              for checking multiple data
              waitString = ".//ns1:event1[text()='fault1'] and
                             .//ns1:event2[text()='fault2']"
@@ -1187,4 +1173,5 @@ class NetconfActions(object):
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
         return netconf_object.clear_notification_buffer_for_print()
+
 
