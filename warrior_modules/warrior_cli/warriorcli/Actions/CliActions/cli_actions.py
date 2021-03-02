@@ -536,7 +536,7 @@ class CliActions(object):
                                                                   subsystem_name, session_name))
 
                         # execute smart action to produce user report
-                        smart_result = warriorcli_Utils.smart_action(self.datafile,
+                        smart_result = cli_Utils.smart_action(self.datafile,
                                                                     call_system_name,
                                                                     conn_string,
                                                                     wc_obj.conn_obj.target_host,
