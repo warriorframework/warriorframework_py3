@@ -362,11 +362,11 @@ class CliActions(object):
                     result = True
                 else:
                     if credentials['conn_type'] == "SSH_NESTED":
-                        from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class\
+                        from warriorcli.ClassUtils.WNetwork.warrior_cli_class\
                         import ParamikoConnect
                         wc_obj.conn_obj = ParamikoConnect(credentials)
                     else:
-                        from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class\
+                        from warriorcli.ClassUtils.WNetwork.warrior_cli_class\
                         import PexpectConnect
                         wc_obj.conn_obj = PexpectConnect(credentials)
                     wc_obj.conn_obj.connect_ssh()
@@ -526,7 +526,7 @@ class CliActions(object):
                     output_dict[session_id + "_td_response"] = {}
                     result = True
                 else:
-                    from warrior.Framework.ClassUtils.WNetwork.warrior_cli_class\
+                    from warriorcli.ClassUtils.WNetwork.warrior_cli_class\
                     import PexpectConnect
                     wc_obj.conn_obj = PexpectConnect(credentials)
                     wc_obj.conn_obj.connect_telnet()
