@@ -13,7 +13,7 @@ limitations under the License.
 
 """Warrior Network diagnostics module """
 import re
-from warrior.Framework.ClassUtils.WNetwork.base_class import Base
+from warriorcli.ClassUtils.WNetwork.base_class import Base
 from warrior.Framework.Utils.testcase_Utils import pNote
 
 

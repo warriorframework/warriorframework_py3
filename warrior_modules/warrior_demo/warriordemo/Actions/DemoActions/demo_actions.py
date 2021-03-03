@@ -16,7 +16,7 @@ import base64
 import json
 import urllib.request, urllib.error, urllib.parse
 import os
-from warriordemo.Utils import demo_utils
+
 from warrior.Framework import Utils
 from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep
 from warrior.Framework.Utils.data_Utils import getSystemData, get_credentials
@@ -45,7 +45,7 @@ class DemoActions(object):
         lab PC or test set calibration are up-to-date or not.
         """
         wdesc = "Check lab PC replacement or test set calibration status"
-        pNote(wdesc)
+        pNote("KEYWORD: check_lab_equipment | Description: {0}".format(wdesc))
         #Resolve system_name and subsystem_list
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile, system_name)
         output_dict = {}
@@ -113,7 +113,7 @@ class DemoActions(object):
                 fail_msg = "Lab PC {0} is NOT current, it's more than than 4 "\
                            "years old. Please schedule for a replacement."\
                            .format(call_system_name)
-                result = demo_utils.lab_eqpt_status(date_of_mfg, num_of_year, pass_msg, fail_msg)
+                result = Utils.demo_utils.lab_eqpt_status(date_of_mfg, num_of_year, pass_msg, fail_msg)
 
             Utils.data_Utils.update_datarepository(output_dict)
             Utils.testcase_Utils.report_substep_status(result)
@@ -160,7 +160,7 @@ class DemoActions(object):
                 fail_msg = "Lab Test set {0} calibration is NOT current, it's "\
                            "more than than 1 year old. Re-calibration is "\
                            "required".format(call_system_name)
-                result = demo_utils.lab_eqpt_status(calibrated_date, num_of_year, pass_msg, fail_msg)
+                result = Utils.demo_utils.lab_eqpt_status(calibrated_date, num_of_year, pass_msg, fail_msg)
 
             Utils.data_Utils.update_datarepository(output_dict)
             Utils.testcase_Utils.report_substep_status(result)

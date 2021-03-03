@@ -103,7 +103,7 @@ class gnmiactions(object):
         __gnmi_obj = Utils.data_Utils.get_object_from_datarepository(str(system_name)+"_gnmi_session")
         file_dir = os.path.dirname(os.path.abspath(__file__))
         war_dir = os.path.abspath(os.path.join(file_dir, '../..'))
-        binary = os.path.join(war_dir, 'Gnmi/gnmi_cli')
+        binary = os.path.join(war_dir, 'Framework/Gnmi/gnmi_cli')
         
         testcase_Utils.pNote("***** Binary path: {0} *****".format(binary))
         if __gnmi_obj:
@@ -221,7 +221,7 @@ class gnmiactions(object):
                                                                      "_gnmi_session")
         file_dir = os.path.dirname(os.path.abspath(__file__))
         war_dir = os.path.abspath(os.path.join(file_dir, '../..'))
-        binary = os.path.join(war_dir, 'Gnmi/gnmi_cli')
+        binary = os.path.join(war_dir, 'Framework/Gnmi/gnmi_cli')
         testcase_Utils.pNote("***** Binary path: {0} *****".format(binary))
         if __gnmi_obj:
             gnmi_obj = __gnmi_obj

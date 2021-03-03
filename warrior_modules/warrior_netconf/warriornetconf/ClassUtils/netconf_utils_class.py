@@ -83,7 +83,7 @@ class WNetConf(object):
         '''
         return self.nc_manager.close_session()
 
-    def request_rpc(self, request):
+    def request_rpc(self, request, timeout = 1800):
         '''Send RPC command
         :Arguments:
             1. request = command to be sent as xml string
@@ -91,7 +91,7 @@ class WNetConf(object):
             rpc_reply
         '''
 
-        return self.nc_manager.rpc(request)
+        return self.nc_manager.rpc(request, timeout)
 
     def get_config(self, datastore, filter_string=None, filter_type='subtree'):
         '''Get configuration data from datastore

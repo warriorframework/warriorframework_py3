@@ -13,7 +13,7 @@ limitations under the License.
 from warrior.Framework import Utils
 import re
 from warrior.Framework.Utils.testcase_Utils import pNote, pStep
-from warriorfile.Utils import file_Utils
+from warrior.Framework.Utils import file_Utils
 """This is file_actions module that has all file related keywords """
 
 
@@ -41,7 +41,7 @@ class FileActions(object):
             True if successful otherwise False
         """
         wdesc = "write string in the filename at index location"
-        pNote(wdesc)
+        pNote("KEYWORD: write | Description: {0}".format(wdesc))
         status = True
 
         fd = file_Utils.open_file(filename, "a")
@@ -74,7 +74,7 @@ class FileActions(object):
         """
         wdesc = ("find regex/string in the filename and replace it with "
                  "newstring")
-        pNote(wdesc)
+        pNote("KEYWORD: findreplace | Description: {0}".format(wdesc))
         lines_to_replace = occurrence.split(',') if occurrence else []
         rec = re.compile(regex)
         status = True
@@ -135,7 +135,7 @@ class FileActions(object):
             True if successfully checked for all occurrences else False
         """
         wdesc = "find regex/string in the filename in the desired location"
-        pNote(wdesc)
+        pNote("KEYWORD: check_text_occurrence | Description: {0}".format(wdesc))
         lines_to_check = occurrence.split(',') if occurrence else []
         rec = re.compile(regex)
         status = True
@@ -173,7 +173,7 @@ class FileActions(object):
             True if successful otherwise False
         """
         wdesc = "remove the filename from the system"
-        pNote(wdesc)
+        pNote("KEYWORD: remove | Description: {0}".format(wdesc))
         status = file_Utils.remove(filename)
         pStep('removing {!r}'.format(filename))
         file_Utils.log_result("remove", status)
@@ -188,7 +188,7 @@ class FileActions(object):
             True if successful otherwise False
         """
         wdesc = "rename or move a file"
-        pNote(wdesc)
+        pNote("KEYWORD: rename | Description: {0}".format(wdesc))
         status = file_Utils.move(filename, newname)
         pStep('renaming {!r} to {!r}'.format(filename, newname))
         file_Utils.log_result("rename", status)
@@ -203,7 +203,7 @@ class FileActions(object):
             True if successful otherwise False
         """
         wdesc = "copy filename to newname"
-        pNote(wdesc)
+        pNote("KEYWORD: copy | Description: {0}".format(wdesc))
         status = file_Utils.copy(filename, newname)
         pStep('Copying {!r} to {!r}'.format(filename, newname))
         file_Utils.log_result("copy", status)
@@ -218,7 +218,7 @@ class FileActions(object):
             True if successful otherwise False
         """
         wdesc = "copy stats of filename to newname"
-        pNote(wdesc)
+        pNote("KEYWORD: copystat | Description: {0}".format(wdesc))
         status = file_Utils.copystat(filename, newname)
         pStep('Copying stat of {!r} to {!r}'.format(filename, newname))
         file_Utils.log_result("copystat", status)
@@ -234,7 +234,7 @@ class FileActions(object):
             True if successful otherwise False
         """
         wdesc = "copy filename to newname along with stats"
-        pNote(wdesc)
+        pNote("KEYWORD: copy2 | Description: {0}".format(wdesc))
         status = file_Utils.copy2(filename, newname)
         pStep('Copying contents with stats of {!r} to {!r}'.format(filename, newname))
         file_Utils.log_result("copy2", status)

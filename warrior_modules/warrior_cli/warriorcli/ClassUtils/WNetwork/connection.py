@@ -12,7 +12,7 @@ limitations under the License.
 '''
 
 
-from warrior.Framework.ClassUtils.WNetwork.base_class import Base
+from warriorcli.ClassUtils.WNetwork.base_class import Base
 from warrior.Framework.Utils.print_Utils import print_error
 
 class Connection(Base):

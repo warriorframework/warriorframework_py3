@@ -12,10 +12,10 @@ limitations under the License.
 '''
 
 
-from warrior.Framework.ClassUtils.WNetwork.connection import Connection
-from warrior.Framework.ClassUtils.WNetwork.diagnostics import Diag
-from warrior.Framework.ClassUtils.WNetwork.file_ops import FileOps
-from warrior.Framework.ClassUtils.WNetwork.base_class import Base
+from warriorcli.ClassUtils.WNetwork.connection import Connection
+from warriorcli.ClassUtils.WNetwork.diagnostics import Diag
+from warriorcli.ClassUtils.WNetwork.file_ops import FileOps
+from warriorcli.ClassUtils.WNetwork.base_class import Base
 
 
 class Network(Connection, Diag, FileOps, Base):

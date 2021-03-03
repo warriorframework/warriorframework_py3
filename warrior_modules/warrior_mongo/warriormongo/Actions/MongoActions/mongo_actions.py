@@ -1,18 +1,32 @@
+'''
+Copyright 2017, Fujitsu Network Communications, Inc.
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+http://www.apache.org/licenses/LICENSE-2.0
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+'''
+
+
 from pymongo import MongoClient
 from warrior.Framework.Utils.print_Utils import print_info, print_error
-from warrior.Framework.Utils import config_Utils
-from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, \
-    update_datarepository, getSystemData
+import warrior.Framework.Utils as Utils
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, update_datarepository
+from warrior.Framework.Utils.data_Utils import getSystemData
 
 class MongoActions(object):
     def __init__(self):
         """
             Set defaults for MySqlActions.
         """
-        self.resultfile = config_Utils.resultfile
-        self.datafile = config_Utils.datafile
-        self.logsdir = config_Utils.logsdir
-        self.filename = config_Utils.filename
+        self.resultfile = Utils.config_Utils.resultfile
+        self.datafile = Utils.config_Utils.datafile
+        self.logsdir = Utils.config_Utils.logsdir
+        self.filename = Utils.config_Utils.filename
 
     def update_mongo_db(self, system_name, collection, update_json=None, filter_json=None):
         '''

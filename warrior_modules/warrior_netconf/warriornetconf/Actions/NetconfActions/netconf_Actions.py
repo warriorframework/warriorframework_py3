@@ -22,6 +22,11 @@ from warrior.Framework.Utils.print_Utils import  print_info, print_debug,\
 from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep, report_substep_status
 from warriornetconf.ClassUtils.netconf_utils_class import WNetConf
 from warrior.Framework.Utils.encryption_utils import decrypt
+import re
+from configobj import ConfigObj
+from xml.etree import ElementTree
+from warrior.Framework.Utils.config_Utils import data_repository
+import os
 
 class NetconfActions(object):
     """NetconfActions class which has methods(keywords)
@@ -132,7 +137,7 @@ class NetconfActions(object):
         report_substep_status(status)
         return status, {reply_key: reply_list}
 
-    def connect_netconf(self, system_name, session_name=None):
+    def connect_netconf(self, system_name='', session_name=None):
         """
         Connects to the Netconf interface of the the given system or subsystems
 
@@ -180,7 +185,32 @@ class NetconfActions(object):
         output_dict = {}
         session_parameters = ['ip', 'nc_port', 'username', 'password',
                               'hostkey_verify', 'protocol_version']
-        session_credentials = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None) 
+        if data_repository.get('wt_mapfile', None):
+            status, device_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+            if system_name == '':
+                device=device_credentials.get('DEFAULT', None)
+                if device == None:
+                    device = list(device_credentials.keys())[0]
+                system_name = device
+                data_repository['system_name'] = system_name
+            else:
+                data_repository['system_name'] = system_name
+            status, session = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)          
+            status, session_credentials = Utils.data_Utils.replace_var(session, {}, {})
+            for v in session_credentials.values():
+                if re.search('{.*}', v):
+                    print_error('Provide the substitution for variable', v)
+                    return False
+            if status == False:
+                return False 
+            protocol=session_credentials.get('protocol_version', None)
+            if protocol == None:
+                session_credentials['protocol_version'] = False
+        else:
+            session_credentials = Utils.data_Utils.get_credentials(self.datafile,
                                                                system_name,
                                                                session_parameters)
         session_credentials["password"] = decrypt(session_credentials["password"])
@@ -204,7 +234,7 @@ class NetconfActions(object):
         else:
             return status
 
-    def close_netconf(self, system_name, session_name=None):
+    def close_netconf(self, system_name='', session_name=None):
         """
         Request graceful termination of netconf session.
         :Arguments:
@@ -214,12 +244,13 @@ class NetconfActions(object):
             1. status(bool)= True / False
             2. Close response from the system to the data repository (data:reply.data(string)}
         """
-
+        if system_name == '':
+            system_name=data_repository.get('system_name' , None)
         wdesc = "Request graceful termination of Netconf session"
         pSubStep(wdesc)
         print_debug(system_name)
         print_debug(self.datafile)
-
+           
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(
             session_id)
@@ -240,6 +271,109 @@ class NetconfActions(object):
         report_substep_status(status)
         reply_key = '{}_close_netconf_reply'.format(system_name)
         return status, {reply_key: reply}
+
+    def ne_request(self , command , system_name = '' , timeout = '',session_name = None , dict_request = {}):
+        status=True
+        if system_name=='':
+            system_name=data_repository.get('system_name' , None)
+        sys_name = data_repository.get('system_name' , None)
+        if sys_name is not None:
+             if sys_name != system_name:
+                 print_error('system_name is incorrect')
+                 return False
+        self.clear_notification_buffer_all(system_name , session_name)
+        session_id=Utils.data_Utils.get_session_id(system_name , session_name)
+        netconf_object=Utils.data_Utils.get_object_from_datarepository(session_id)
+        reply=''
+        mapfile=data_repository.get('wt_mapfile' , None)
+        found = 'The given match string is found in the response'
+        not_found = 'The given match string is not found in the response as expected'
+        try:
+            status , mapper=Utils.data_Utils.get_connection('MAP' , mapfile)
+            if status == False:
+                return False
+            status, mapper_data=Utils.data_Utils.replace_var(mapper, {}, {})
+            if status == False:
+                return False
+            #check if the MAP section is present in the cfg file
+            if mapper_data:
+                v=mapper_data.get(command, None)
+                #Get the command from the mapper file
+                if v:
+                    if re.search('{.*}', v):
+                        print_error('Provide the substitution for variable {0}'.format(v))
+                        return False
+                    #Get the request and optional data in the dictionary format
+                    status , config=Utils.data_Utils.get_connection('COMMAND' , v)
+                    if status == False:
+                        return False
+                    status , optional=Utils.data_Utils.get_connection('OPTIONS' , v)
+                    if status == False:
+                        return False
+                    mapfile=data_repository.get('wt_mapfile' , None)
+                    status , variables=Utils.data_Utils.get_connection('VARIABLES' , mapfile)
+                    if status == False:
+                        return False
+                    status , config_data=Utils.data_Utils.replace_var(config , dict_request , variables)
+                    if status == False:
+                        return False
+                    l=[]
+                    #Proceed if the optional data is given by the user
+                    #We are replacing all the variables which the user provided inside {}
+                    if optional:
+                        status , optional_data=Utils.data_Utils.replace_var(optional , dict_request , variables)
+                        if status == False:
+                            return False
+                        #If the timeout is specified by the user, override the default timeout
+                        if timeout:
+                            reply=netconf_object.request_rpc(config_data['REQUEST'] , int(timeout))
+                            print_debug('reply: {0}'.format(reply))
+                        else:
+                            reply=netconf_object.request_rpc(config_data['REQUEST'])
+                            print_debug('reply: {0}'.format(reply))
+                        #Check if the user gave match string to compare with the response
+                        if 'MATCH_STRING' in optional_data.keys():
+                            #Check if the MATCH_STRING contains 'AND', 'OR', 'NOT'
+                            match_string=optional['MATCH_STRING']
+                            match = lambda m_string: 'AND' if re.search('AND', m_string) else (
+                                'OR' if re.search('OR', m_string) else 'NONE')
+                            if match(match_string)=='NONE':
+                                match=lambda m_string: 'NOT' if re.search('NOT' , m_string) else 'NONE'
+                            match_type=match(match_string)
+                            #Based on the match type the operation is performed. Supported operations are 'AND', 'OR', 'NOT'
+                            #After verifying the output is printed
+                            if match_type:
+                                operation_dict = {'AND': True, 'OR': False, 'NOT': False, 'NONE': False}
+                                result=operation_dict[match_type]
+                                l = [i for i in match_string.split(match_type)]
+                                if match_type == 'NOT':
+                                    l.remove('\n')
+                                for i in l:
+                                    i=i.replace('\n', '')
+                                    i = i.strip()
+                                    valid=re.search(i, reply)
+                                    if valid is None and match_type == 'AND':
+                                          result = not result
+                                          break
+                                    elif valid is not None and match_type != 'AND':
+                                          result = not result
+                                          break
+                                if result and match_type == 'NOT':
+                                      status = False
+                                elif result == False and match_type in ['OR', 'AND', 'NONE']:
+                                      status = False
+                                res = found if result else not_found
+                                print_debug(res)
+                    else:
+                        reply=netconf_object.request_rpc(config_data['REQUEST'])
+                        print_debug('Reply: {0}'.format(reply))
+                else:
+                    print_error('Provide the value for the key in cfg file: ', command)
+        except Exception as e:
+            status=False
+            print_error("exception found:" , str(e))
+        return status
+
 
     def get_config(self, datastore, system_name,
                    session_name=None,
