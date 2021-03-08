@@ -205,15 +205,10 @@ def check_match_string(match_string, reply):
             i = i.replace('\n', '')
             i = i.strip()
             valid = re.search(i, reply)
-            if valid is None and match_type == 'AND':
+            if (not valid and match_type == 'AND') or (valid and match_type != 'AND'):
                 result = not result
                 break
-            elif valid is not None and match_type != 'AND':
-                result = not result
-                break
-        if result and match_type == 'NOT':
-            status = False
-        elif result == False and match_type in ['OR', 'AND', 'NONE']:
+        if (result and match_type == 'NOT') or (not result and match_type in ['OR', 'AND', 'NONE']):
             status = False
         if result:
             res = found_dict[match_type]

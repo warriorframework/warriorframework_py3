@@ -74,20 +74,18 @@ class KafkaActions():
             if map_file:
                 ca_file = key_file = crl_file= ciphers = None
                 config = ConfigObj(map_file)
+                if "CREDENTIALS" not in config and "kafka_server" not in config["CREDENTIALS"]:
+                    return False
                 mapper = config["CREDENTIALS"]["kafka_server"]
                 status, mapper_data = Utils.data_Utils.replace_var(mapper, {}, {})
-                if status == False:
-                    return False
-                kafka_ip = config["CREDENTIALS"]["kafka_server"]["kafka_host"]
-                kafka_port = config["CREDENTIALS"]["kafka_server"]["kafka_port"]
-                if "ca_file" in config["CREDENTIALS"]["kafka_server"]:
-                    ca_file = config["CREDENTIALS"]["kafka_server"]["ca_file"]
-                if "key_file" in config["CREDENTIALS"]["kafka_server"]:
-                    key_file = config["CREDENTIALS"]["kafka_server"]["key_file"]
-                if "crl_file" in config["CREDENTIALS"]["kafka_server"]:
-                    crl_file = config["CREDENTIALS"]["kafka_server"]["crl_file"]
-                if "ciphers" in config["CREDENTIALS"]["kafka_server"]:
-                    ciphers = config["CREDENTIALS"]["kafka_server"]["ciphers"]
+                if not status:
+                    return status
+                kafka_ip = config["CREDENTIALS"]["kafka_server"].get("kafka_host", None)
+                kafka_port = config["CREDENTIALS"]["kafka_server"].get("kafka_port", None)
+                ca_file = config["CREDENTIALS"]["kafka_server"].get("ca_file", None)
+                key_file = config["CREDENTIALS"]["kafka_server"].get("key_file", None)
+                crl_file = config["CREDENTIALS"]["kafka_server"].get("crl_file", None)
+                ciphers = config["CREDENTIALS"]["kafka_server"].get("ciphers", None)
             else:
                 kafka_ip = getSystemData(self.datafile, system_name, "ip")
                 kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
