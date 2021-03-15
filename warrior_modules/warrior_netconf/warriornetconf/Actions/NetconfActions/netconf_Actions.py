@@ -22,6 +22,7 @@ from warrior.Framework.Utils.print_Utils import  print_info, print_debug,\
 from warrior.Framework.Utils.testcase_Utils import pNote, pSubStep, report_substep_status
 from warriornetconf.ClassUtils.netconf_utils_class import WNetConf
 from warrior.Framework.Utils.encryption_utils import decrypt
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, update_datarepository, getSystemData, get_credentials, _get_system_or_subsystem
 import re
 from configobj import ConfigObj
 from xml.etree import ElementTree
@@ -62,7 +63,6 @@ class NetconfActions(object):
                 xmlns_tag = xmlns(default value, no need pass this argument)
                 xmlns = "urn:params:xml:ns:yang:perfmon"
                 request_type= "init-pm"
-
             For Request Type :
             <org-openroadm-de-operations:restart xmlns:
              org-openroadm-de-operations="http://org/openroadm/de/operations">
@@ -137,12 +137,10 @@ class NetconfActions(object):
         report_substep_status(status)
         return status, {reply_key: reply_list}
 
-    def connect_netconf(self, system_name='', session_name=None):
+    def connect_netconf(self, system_name='', session_name=None, credentials=None):
         """
         Connects to the Netconf interface of the the given system or subsystems
-
         :Datafile usage:
-
             Tags or attributes to be used in input datafile for the system or subsystem
             If both tag and attribute is provided the attribute will be used.
             1. ip = IP address of the system/subsystem
@@ -165,15 +163,12 @@ class NetconfActions(object):
            12. ssh_config = Enables parsing of OpenSSH configuration file.
            13. device_params = netconf client device name, by default the name
                "default" is used.
-
         :Arguments:
             1. system_name(string) = Name of the system from the input datafile.
             2. session_name(string) = Name of the session to the system
-
         :Returns:
             1. status(bool)= True / False
             2. session_id (dict element)= key, value
-
         :DESCRIPTION:
             This Keyword is used to connect to the netconf interface of the system.
             The keyword upon executing saves the System_name and Session_id,
@@ -185,28 +180,32 @@ class NetconfActions(object):
         output_dict = {}
         session_parameters = ['ip', 'nc_port', 'username', 'password',
                               'hostkey_verify', 'protocol_version']
-        mapfile = data_repository.get('wt_mapfile', None) 
+        mapfile = data_repository.get('wt_mapfile', None)
         if data_repository.get('wt_mapfile', None):
             status, device_credentials = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
             if status == False:
                 return False
-            if system_name == '':
-                device=device_credentials.get('DEFAULT', None)
-                if device == None:
-                    device = list(device_credentials.keys())[0]
-                system_name = device
-                data_repository['system_name'] = system_name
-            else:
-                data_repository['system_name'] = system_name
-            status, session = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)          
+            if not system_name:
+                system_name = Utils.data_Utils.get_system_name(device_credentials)
+            data_repository['system_name'] = system_name
+            if not data_repository['system_name']:
+                print_error('Invalid system_name')
+                return False
+            status, session = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if credentials:
+                if session.get('substitutions', None):
+                    session.pop('substitutions')
+                session['username'] = credentials['username']
+                session['password'] = credentials['password']
             status, session_credentials = Utils.data_Utils.replace_var(session, {}, {})
             for v in session_credentials.values():
                 if re.search('{.*}', v):
                     print_error('Provide the substitution for variable', v)
                     return False
             if status == False:
-                return False 
+                return False
             protocol=session_credentials.get('protocol_version', None)
+            session_credentials['hostkey_verify'] = 'False'
             if protocol == None:
                 session_credentials['protocol_version'] = False
         else:
@@ -228,11 +227,13 @@ class NetconfActions(object):
                 output_dict["netconf_session_id"] = self.netconf_object.session_id
                 print_info("netconf session-id = %s" % self.netconf_object.session_id)
                 output_dict[session_id] = self.netconf_object
+                data_repository["netconf_session_id"] = self.netconf_object.session_id
+                data_repository[session_id] = self.netconf_object
         report_substep_status(status)
         if output_dict:
             return status, output_dict
         else:
-            return status
+            return status, {}
 
     def close_netconf(self, system_name='', session_name=None):
         """
@@ -250,7 +251,7 @@ class NetconfActions(object):
         pSubStep(wdesc)
         print_debug(system_name)
         print_debug(self.datafile)
-           
+
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(
             session_id)
@@ -272,108 +273,61 @@ class NetconfActions(object):
         reply_key = '{}_close_netconf_reply'.format(system_name)
         return status, {reply_key: reply}
 
-    def ne_request(self , command , system_name = '' , timeout = '',session_name = None , dict_request = {}):
-        status=True
-        if system_name=='':
-            system_name=data_repository.get('system_name' , None)
-        sys_name = data_repository.get('system_name' , None)
-        if sys_name is not None:
-             if sys_name != system_name:
-                 print_error('system_name is incorrect')
-                 return False
-        self.clear_notification_buffer_all(system_name , session_name)
-        session_id=Utils.data_Utils.get_session_id(system_name , session_name)
-        netconf_object=Utils.data_Utils.get_object_from_datarepository(session_id)
-        reply=''
-        mapfile=data_repository.get('wt_mapfile' , None)
-        found = 'The given match string is found in the response'
-        not_found = 'The given match string is not found in the response as expected'
+    def ne_request(self, command, system_name = '', timeout = '', session_name = None, dict_request = {}):
+        status = True
+        if system_name and system_name != data_repository.get('system_name', None):
+            print_error('system_name is incorrect')
+            return False
+        system_name = data_repository.get('system_name', None) if not system_name and data_repository.get('system_name', None) else system_name
+        if not system_name:
+            print_error('Invalid system_name')
+            return False
+        self.clear_notification_buffer_all(system_name, session_name)
+        session_id = Utils.data_Utils.get_session_id(system_name, session_name)
+        netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
+        step_num = data_repository["step_num"]
+        update_datarepository({"step_{0}_command".format(step_num): command})
+        reply = ''
+        mapfile = data_repository.get('wt_mapfile', None)
         try:
-            status , mapper=Utils.data_Utils.get_connection('MAP' , mapfile)
-            if status == False:
+            status, mapper_data = Utils.data_Utils.replace_var(Utils.data_Utils.get_connection('MAP', mapfile)[1], {}, {})
+            if not status:
                 return False
-            status, mapper_data=Utils.data_Utils.replace_var(mapper, {}, {})
-            if status == False:
-                return False
-            #check if the MAP section is present in the cfg file
+            # check if the MAP section is present in the cfg file
             if mapper_data:
-                v=mapper_data.get(command, None)
-                #Get the command from the mapper file
-                if v:
-                    if re.search('{.*}', v):
-                        print_error('Provide the substitution for variable {0}'.format(v))
+                command = mapper_data.get(command, None)
+                # Get the command from the mapper file
+                if command and not re.search('{.*}', command):
+                    # Get the request and optional data in the dictionary format
+                    status_var, variables = Utils.data_Utils.get_connection('VARIABLES', mapfile)
+                    status, config_data = Utils.data_Utils.replace_var(Utils.data_Utils.get_connection('COMMAND', command)[1], dict_request, variables)
+                    if not status:
                         return False
-                    #Get the request and optional data in the dictionary format
-                    status , config=Utils.data_Utils.get_connection('COMMAND' , v)
-                    if status == False:
-                        return False
-                    status , optional=Utils.data_Utils.get_connection('OPTIONS' , v)
-                    if status == False:
-                        return False
-                    mapfile=data_repository.get('wt_mapfile' , None)
-                    status , variables=Utils.data_Utils.get_connection('VARIABLES' , mapfile)
-                    if status == False:
-                        return False
-                    status , config_data=Utils.data_Utils.replace_var(config , dict_request , variables)
-                    if status == False:
-                        return False
-                    l=[]
-                    #Proceed if the optional data is given by the user
-                    #We are replacing all the variables which the user provided inside {}
-                    if optional:
-                        status , optional_data=Utils.data_Utils.replace_var(optional , dict_request , variables)
-                        if status == False:
-                            return False
-                        #If the timeout is specified by the user, override the default timeout
+                    status_opt, optional_data = Utils.data_Utils.replace_var(Utils.data_Utils.get_connection('OPTIONS', command)[1], dict_request, variables)
+                    l = []
+                    # Proceed if the optional data is given by the user
+                    # We are replacing all the variables which the user provided inside {}
+                    if optional_data:
+                        # If the timeout is specified by the user, override the default timeout
                         if timeout:
-                            reply=netconf_object.request_rpc(config_data['REQUEST'] , int(timeout))
-                            print_debug('reply: {0}'.format(reply))
+                            reply = netconf_object.request_rpc(config_data['REQUEST'], int(timeout))
                         else:
-                            reply=netconf_object.request_rpc(config_data['REQUEST'])
-                            print_debug('reply: {0}'.format(reply))
-                        #Check if the user gave match string to compare with the response
+                            reply = netconf_object.request_rpc(config_data['REQUEST'])
+                        print_debug('reply: {0}'.format(reply))
+                        # Check if the user gave match string to compare with the response
                         if 'MATCH_STRING' in optional_data.keys():
-                            #Check if the MATCH_STRING contains 'AND', 'OR', 'NOT'
-                            match_string=optional['MATCH_STRING']
-                            match = lambda m_string: 'AND' if re.search('AND', m_string) else (
-                                'OR' if re.search('OR', m_string) else 'NONE')
-                            if match(match_string)=='NONE':
-                                match=lambda m_string: 'NOT' if re.search('NOT' , m_string) else 'NONE'
-                            match_type=match(match_string)
-                            #Based on the match type the operation is performed. Supported operations are 'AND', 'OR', 'NOT'
-                            #After verifying the output is printed
-                            if match_type:
-                                operation_dict = {'AND': True, 'OR': False, 'NOT': False, 'NONE': False}
-                                result=operation_dict[match_type]
-                                l = [i for i in match_string.split(match_type)]
-                                if match_type == 'NOT':
-                                    l.remove('\n')
-                                for i in l:
-                                    i=i.replace('\n', '')
-                                    i = i.strip()
-                                    valid=re.search(i, reply)
-                                    if valid is None and match_type == 'AND':
-                                          result = not result
-                                          break
-                                    elif valid is not None and match_type != 'AND':
-                                          result = not result
-                                          break
-                                if result and match_type == 'NOT':
-                                      status = False
-                                elif result == False and match_type in ['OR', 'AND', 'NONE']:
-                                      status = False
-                                res = found if result else not_found
-                                print_debug(res)
+                            # Check if the MATCH_STRING contains 'AND', 'OR', 'NOT'
+                            status = Utils.data_Utils.check_match_string(optional_data['MATCH_STRING'], reply)
                     else:
-                        reply=netconf_object.request_rpc(config_data['REQUEST'])
+                        reply = netconf_object.request_rpc(config_data['REQUEST'])
                         print_debug('Reply: {0}'.format(reply))
                 else:
-                    print_error('Provide the value for the key in cfg file: ', command)
+                    print_error('Provide the substitution for variable {0}'.format(command))
+                    return False
         except Exception as e:
-            status=False
-            print_error("exception found:" , str(e))
+            status = False
+            print_error("exception found:", str(e))
         return status
-
 
     def get_config(self, datastore, system_name,
                    session_name=None,
@@ -454,7 +408,6 @@ class NetconfActions(object):
 
     def delete_config(self, datastore, system_name, session_name=None):
         """Delete a configuration datastore
-
         :Arguments:
             1. datastore(string) = name of the configuration datastore to be deleted
             2. system_name(string)  = Name of the system from the input datafile
@@ -488,7 +441,6 @@ class NetconfActions(object):
     def discard_changes(self, system_name, session_name=None):
         """Revert the candidate configuration to the currently running configuration.
         Uncommitted changes will be discarded.
-
         :Arguments:
             1. system_name(string)  = Name of the system from the input datafile
             2. session_name(string) = Name of the session to the system
@@ -625,7 +577,6 @@ class NetconfActions(object):
 
     def lock(self, datastore, system_name, session_name=None):
         """Lock the configuration system
-
         :Arguments:
             1. datastore(string) = name of the configuration datastore to be locked
             2. system_name(string)  = Name of the system from the input datafile
@@ -659,7 +610,6 @@ class NetconfActions(object):
 
     def unlock(self, datastore, system_name, session_name=None):
         """Release the configuration lock
-
         :Arguments:
             1. datastore(string) = name of the configuration datastore to be unlocked
             2. system_name(string)  = Name of the system from the input datafile
@@ -693,7 +643,6 @@ class NetconfActions(object):
 
     def get(self, system_name, session_name=None, filter_string=None, filter_type=None):
         """Retrieve operational state information.
-
         :Arguments:
             1. system_name(string)  = Name of the system from the input datafile
             2. session_name(string) = Name of the session to the system
@@ -898,7 +847,6 @@ class NetconfActions(object):
              for checking single data
              waitString = ".//ns:event[./ns:eventClass/text()='fault']"
              Note that "ns" = namespace prefix
-
              for checking multiple data
              waitString = ".//ns1:event1[text()='fault1'] and
                             .//ns1:event2[text()='fault2']"
@@ -1158,3 +1106,5 @@ class NetconfActions(object):
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
         return netconf_object.clear_notification_buffer_for_print()
+
+
