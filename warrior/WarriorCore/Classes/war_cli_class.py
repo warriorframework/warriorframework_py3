@@ -321,6 +321,10 @@ class WarriorCliClass(object):
             help="overwrite the path of datafile in execution "\
             "ignore the datafile specified in testcase.xml")
 
+        warrior_arg.add_argument('-mapfile', action='store', nargs='?',\
+            help="overwrite the path of mapfile in execution "\
+            "ignore the mapfile specified in testcase.xml")
+
         #to accept -wrapperfile as command line argument
         warrior_arg.add_argument('-wrapperfile', action='store', nargs='?',\
             help="overwrite the path of wrapperfile in execution "\
