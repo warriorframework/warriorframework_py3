@@ -313,14 +313,14 @@ class NetconfActions(object):
                             reply = netconf_object.request_rpc(config_data['REQUEST'], int(timeout))
                         else:
                             reply = netconf_object.request_rpc(config_data['REQUEST'])
-                        print_debug('reply: {0}'.format(reply))
+                        print_info('reply: {0}'.format(reply))
                         # Check if the user gave match string to compare with the response
                         if 'MATCH_STRING' in optional_data.keys():
                             # Check if the MATCH_STRING contains 'AND', 'OR', 'NOT'
                             status = Utils.data_Utils.check_match_string(optional_data['MATCH_STRING'], reply)
                     else:
                         reply = netconf_object.request_rpc(config_data['REQUEST'])
-                        print_debug('Reply: {0}'.format(reply))
+                        print_info('Reply: {0}'.format(reply))
                 else:
                     print_error('Provide the substitution for variable {0}'.format(command))
                     return False
