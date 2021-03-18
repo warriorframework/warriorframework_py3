@@ -19,7 +19,7 @@ from warrior.Framework.Utils.testcase_Utils import pNote
 class MicroappsActions(object):
     """class MicroappsActions having method that are for warrior_result product"""
 
-    def get_warrior_result(self, type =""):
+    def get_warrior_result(self, type = None):
         """Returns warrior status and failed command details.
            :Returns:
                 1. script_status(boolean) : True if all steps Passed else False
