@@ -464,13 +464,8 @@ class WarriorCliClass(object):
             "Multiple paths can be provided"\
             "(separated by a colon)")
 
-        warrior_arg.add_argument('--loglevel', action='store',\
-            help="logging level, debug:10, info:20, warning:30, error:40, critical:50 \
-                  defaults to 'info'. example usage '--loglevel error'\
-                  --loglevel warning'")
-
-        warrior_arg.add_argument('--no_logger', action='store_true', default=False,\
-            help=":This option will enable backward compatibility of warrior logging")
+        warrior_arg.add_argument('--nodebug', action='store_true', default=False,\
+            help="use to prevent debug messages from being printed")
 
         tools_arg = parser.add_argument_group('warrior tools')
         tools_arg.add_argument('-tc_gen', action='store',\
