@@ -321,6 +321,10 @@ class WarriorCliClass(object):
             help="overwrite the path of datafile in execution "\
             "ignore the datafile specified in testcase.xml")
 
+        warrior_arg.add_argument('-mapfile', action='store', nargs='?',\
+            help="overwrite the path of mapfile in execution "\
+            "ignore the mapfile specified in testcase.xml")
+
         #to accept -wrapperfile as command line argument
         warrior_arg.add_argument('-wrapperfile', action='store', nargs='?',\
             help="overwrite the path of wrapperfile in execution "\
@@ -407,9 +411,6 @@ class WarriorCliClass(object):
             help=":secretkey: It should be used along with the "\
             "encrypt command to create a secret key"\
             "...")
-
-        warrior_arg.add_argument('--mapfile', action='store', nargs='*',\
-            dest="mapfile", help="file which maps cmds to cmd files and contains system info")
 
         # Update jira issue based on input ID and detail
         warrior_arg.add_argument('-jiraid', action='store', default=False,\
