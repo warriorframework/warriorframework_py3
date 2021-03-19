@@ -449,10 +449,6 @@ class WarriorCliClass(object):
             "or other CLI related operation."
             "User can verify input value from console output/result file")
 
-        warrior_arg.add_argument('-headless', action='store_true', default=False,\
-            help="If headless mode is enabled, all selenium tests will run in xfvb "\
-            "which will not need a GUI")
-
         #Running testcases in suite in random order
         warrior_arg.add_argument('-random_tc_execution', action='store_true', default=False,\
             help=":random_tc_execution mode: In this mode, testcases will be "\
