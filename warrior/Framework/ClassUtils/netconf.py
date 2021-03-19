@@ -208,7 +208,7 @@ class client(Thread):
             #
             dispdata = data.replace("\n", "")
             dispdata = re.sub("> +<", "><", dispdata)
-            print_debug("netconf send: \n" + \
+            print_info("netconf send: \n" + \
                   parseString(dispdata).toprettyxml(indent="  "))
 
             try:
@@ -313,7 +313,7 @@ class client(Thread):
                         self.__notification_list_print.append(recv_data)
                     elif resType == "hello":
                         self.__hello_buffer = recv_data
-                        print_debug(recv_data)
+                        print_info(recv_data)
                         cap = recv_dom.getElementsByTagName("capability")
                         for c in cap:
                             if c.childNodes[0].data == "urn:ietf:params:netconf:base:1.1":
