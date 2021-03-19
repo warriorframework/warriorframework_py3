@@ -65,8 +65,18 @@ def send_keyword_to_productdriver(driver_name, plugin_name, keyword,
                                     plugin_name[:-7]+'_driver'])
         else:
             #import_name = "user_repo.ProductDrivers.{0}".format(driver_name)
-            import_name = "{0}.ProductDrivers.{1}".format(repo_name, driver_name)
-        driver_call = __import__(import_name, fromlist=[driver_name])
+            try:
+                import_name = "{0}.ProductDrivers.{1}".format(repo_name, driver_name)
+                driver_call = __import__(import_name, fromlist=[driver_name])
+            except Exception:
+                    if repo_name == "warrior":
+                        try:
+                            import_name = "warrior{0}.ProductDrivers.{1}".format("".join(driver_name.split("_")[:-1]).lower(), driver_name.lower())
+                            driver_call = __import__(import_name, fromlist=[driver_name])
+                        except:
+                            raise
+                    else:
+                        raise
     except Exception:
         trcback = print_exception(Exception)
         data_repository['step-%s_status' % step_num] = 'ERROR'

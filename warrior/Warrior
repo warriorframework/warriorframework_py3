@@ -22,6 +22,7 @@ if sys.version_info < (3, 4):
 try:
     from warrior.WarriorCore import warrior_cli_driver
     virtual_env = os.getenv('VIRTUAL_ENV')
+    os.environ["pipmode"] = "True"
     if virtual_env:
         war_tools_dir = virtual_env + os.sep + "warrior_settings/Tools"
     else:
@@ -33,6 +34,7 @@ try:
             Print("-- An error occured: Can not find the warrior_settings directory.")
             sys.exit()
 except:
+    os.environ["pipmode"] = "False"
     WARRIORDIR = dirname(dirname(abspath(__file__)))
     sys.path.append(WARRIORDIR)
     try:

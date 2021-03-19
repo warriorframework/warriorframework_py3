@@ -28,7 +28,8 @@ from warrior.WarriorCore import testsuite_utils
 try:
     from lxml.etree import parse, XMLSchema, XMLSyntaxError
 except Exception as exception:
-    print_exception(exception)
+    #print_exception(exception)
+    pass
 
 
 class IronClaw(object):
