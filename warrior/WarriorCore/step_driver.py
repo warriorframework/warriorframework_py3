@@ -15,6 +15,8 @@ limitations under the License.
 # step driver module
 
 import traceback
+import sys
+from os.path import abspath, dirname
 from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
 from warrior.Framework import Utils
 from warrior.Framework.Utils import file_Utils
@@ -71,6 +73,10 @@ def send_keyword_to_productdriver(driver_name, plugin_name, keyword,
             except Exception:
                     if repo_name == "warrior":
                         try:
+                            WARRIORDIR = dirname(dirname(dirname(abspath(__file__))))
+                            module_dir = "/warrior_modules/warrior_{0}".format("".join(driver_name.split("_")[:-1]).lower())
+                            if WARRIORDIR+module_dir not in sys.path:
+                                sys.path.append(WARRIORDIR+module_dir)
                             import_name = "warrior{0}.ProductDrivers.{1}".format("".join(driver_name.split("_")[:-1]).lower(), driver_name.lower())
                             driver_call = __import__(import_name, fromlist=[driver_name])
                         except:

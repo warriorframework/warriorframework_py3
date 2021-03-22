@@ -24,11 +24,6 @@ from warrior.Framework import Utils
 from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error,\
     print_debug, print_exception
 
-try:
-    import pandas as pd
-except Exception as exception:
-    #print_info("Module pandas not installed, required for repetitive testing feature")
-    pass
 
 def update_generic_database(exec_tag, testcase_name, sample_records):
     """ update tc generic iteration results in persistent db"""
@@ -281,6 +276,14 @@ def get_iterations_from_generic_data(testcase_filepath, data_repository={}):
     """ get iterations from generic data"""
     '''genericdatafile can be passed to test by below two methods and its priority
        in order'''
+    try:
+        import pandas as pd
+    except Exception as exception:
+        print_error("Module pandas not installed, required for repetitive testing feature."
+                    "\nInstall pandas,openpyxml to use generic xls testing feature"
+                    "\nThis is not installed by default as of now to reduce memory usage")
+        print_error(exception)
+        exit(1)
     generic_data_dict = []
     genericdatafile = data_repository.get('genericdatafile', None)
     no_of_samples = data_repository.get('gen_no_of_samples', None)
