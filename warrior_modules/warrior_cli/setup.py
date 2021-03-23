@@ -41,7 +41,6 @@ else:
         data_files=[(warrior_path+"/Actions/CliActions", [os.path.join("warriorcli", "Actions", "CliActions", "__init__.py")]),
                     (warrior_path+"/Actions/CliActions", [os.path.join("warriorcli", "Actions", "CliActions", "cli_actions.py")]),
                     (warrior_path+"/ProductDrivers", [os.path.join("warriorcli", "ProductDrivers", "cli_driver.py")]),
-                    (warrior_path+"/ProductDrivers", [os.path.join("warriorcli", "ProductDrivers", "cli_driver.py")]),
                     (warrior_path+"/Framework/Utils", [os.path.join("warriorcli", "Utils", "cli_Utils.py")]),
                     (warrior_path+"/Framework/Utils", [os.path.join("warriorcli", "Utils", "list_Utils.py")]),
                     (warrior_path+"/Framework/ClassUtils", [os.path.join("warriorcli", "ClassUtils", "ssh_utils_class.py")]),
@@ -53,7 +52,6 @@ else:
                     (warrior_path+"/Framework/ClassUtils/WNetwork", [os.path.join("warriorcli", "ClassUtils", "WNetwork", "__init__.py")]),
                     (warrior_path+"/Framework/ClassUtils/WNetwork", [os.path.join("warriorcli", "ClassUtils", "WNetwork", "network_class.py")]),
                     (warrior_path+"/Framework/ClassUtils/WNetwork", [os.path.join("warriorcli", "ClassUtils", "WNetwork", "warrior_cli_class.py")]),
-
                     ],
         long_description="cli_driver package for warrior framework",
         description="Warrior Framework is an open source Automation Framework",
