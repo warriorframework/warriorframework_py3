@@ -21,14 +21,14 @@ try:
     import warrior
 except:
     print('\033[91m' +
-          f"Can't install {PACKAGE_NAME}, first you need to install warriorframework package" + '\033[0m')
+          f"Couldn't install {PACKAGE_NAME}, first you need to install warriorframework package" + '\033[0m')
 
 else:
     if os.getenv('VIRTUAL_ENV'):
         warrior_path = "/".join(os.path.abspath(warrior.__file__).split(os.getenv('VIRTUAL_ENV'))[1].split("/")[1:-1])
     else:
         warrior_path = "/".join(os.path.abspath(warrior.__file__).split(site.getuserbase())[1].split("/")[1:-1])
-        print(f"Found warriorframework package at:'{warrior_path}'")
+    print(f"Found warriorframework package at:'{warrior_path}'")
     setup(
         name=PACKAGE_NAME,
         version=PACKAGE_VERSION,
