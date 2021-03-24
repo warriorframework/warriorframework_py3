@@ -22,7 +22,7 @@ try:
         from warrior.Framework import Utils
     except Exception as e:
         e = str(e)
-        if e.startswith("No module named"):
+        if e.startswith("No module named 'warrior"):
             pkg_name = e.split("No module named")[-1].split("'")[1]
             pkg_parent = "warrior_" + pkg_name.split("warrior")[-1]
             pkg_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "warrior_modules", pkg_parent)
