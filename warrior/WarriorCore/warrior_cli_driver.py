@@ -12,12 +12,27 @@ limitations under the License.
 '''
 
 try:
-    # Framework related import
     import site
     import os
+    import sys
     from collections import OrderedDict
 
     print("import os was successful")
+    try:
+        from warrior.Framework import Utils
+    except Exception as e:
+        e = str(e)
+        if e.startswith("No module named"):
+            pkg_name = e.split("No module named")[-1].split("'")[1]
+            pkg_parent = "warrior_" + pkg_name.split("warrior")[-1]
+            pkg_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "warrior_modules", pkg_parent)
+            if pkg_full_path not in sys.path:
+                sys.path.append(pkg_full_path)
+        else:
+            pass
+    else:
+        print("import Utils was successful")
+
     from warrior.WarriorCore.Classes.rerun_testsuite import execute_failedsuite
     from warrior.WarriorCore.Classes.rerun_project import execute_failedproject
 
@@ -26,12 +41,11 @@ try:
     import shutil
 
     print("import shutil was successful")
+
     import warrior.Framework.Utils.email_utils as email
 
     print("import email was successful")
-    from warrior.Framework import Utils
 
-    print("import Utils was successful")
     from warrior.Framework.Utils.print_Utils import print_error, print_info, print_debug
 
     print("import print_Utils was successful")
@@ -60,7 +74,6 @@ except:
     raise
 
 import re
-import sys
 import multiprocessing
 from os.path import dirname, abspath
 from warrior.Framework.Utils import config_Utils, file_Utils, xml_Utils

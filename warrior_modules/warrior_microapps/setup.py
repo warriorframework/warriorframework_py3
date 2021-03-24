@@ -11,47 +11,30 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 from setuptools import setup, find_packages
-import os
-import site
+
 
 PACKAGE_NAME = "warriormicroapps"
 PACKAGE_VERSION = "1.0.0"
 
-try:
-    import warrior
-except:
-    print('\033[91m' +
-          f"Couldn't install {PACKAGE_NAME}, first you need to install warriorframework package" + '\033[0m')
+setup(
+    name=PACKAGE_NAME,
+    version=PACKAGE_VERSION,
+    author="warriorteam",
+    author_email='frameworkwarrior@gmail.com',
+    scripts=[],
+    packages=find_packages(),
+    package_data={'':['**/*', '*']},
+    include_package_data=True,
+    long_description= "microapps_driver package for warrior framework",
+    description="Warrior Framework is an open source Automation Framework",
+    url="https://github.com/warriorframework/warriorframework_py3",
+    project_urls={
+        "Documentation": "http://warriorframework.org/",
+        "Source Code": "https://github.com/warriorframework/warriorframework_py3",
+    },
+    classifiers=['Development Status :: 5 - Production/Stable',
+                'License :: OSI Approved :: Apache Software License',
+                'Programming Language :: Python :: 3.6',],
+    install_requires=[]
 
-else:
-    if os.getenv('VIRTUAL_ENV'):
-        warrior_path = "/".join(os.path.abspath(warrior.__file__).split(os.getenv('VIRTUAL_ENV'))[1].split("/")[1:-1])
-    else:
-        warrior_path = "/".join(os.path.abspath(warrior.__file__).split(site.getuserbase())[1].split("/")[1:-1])
-    print(f"Found warriorframework package at:'{warrior_path}'")
-    setup(
-        name=PACKAGE_NAME,
-        version=PACKAGE_VERSION,
-        author="warriorteam",
-        author_email='frameworkwarrior@gmail.com',
-        scripts=[],
-        packages=find_packages(),
-        package_data={'':['**/*', '*']},
-        data_files=[(warrior_path+"/Actions/MicroappsActions", [os.path.join("warriormicroapps", "Actions", "MicroappsActions", "__init__.py")]),
-                    (warrior_path+"/Actions/MicroappsActions", [os.path.join("warriormicroapps", "Actions", "MicroappsActions", "microapps_actions.py")]),
-                    (warrior_path+"/ProductDrivers", [os.path.join("warriormicroapps", "ProductDrivers", "microapps_driver.py")]),
-                    ],
-        include_package_data=True,
-        long_description= "microapps_driver package for warrior framework",
-        description="Warrior Framework is an open source Automation Framework",
-        url="https://github.com/warriorframework/warriorframework_py3",
-        project_urls={
-            "Documentation": "http://warriorframework.org/",
-            "Source Code": "https://github.com/warriorframework/warriorframework_py3",
-        },
-        classifiers=['Development Status :: 5 - Production/Stable',
-                    'License :: OSI Approved :: Apache Software License',
-                    'Programming Language :: Python :: 3.6',],
-        install_requires=[]
-
-    )
+)
