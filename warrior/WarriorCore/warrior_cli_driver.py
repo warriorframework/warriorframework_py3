@@ -33,6 +33,10 @@ try:
     else:
         print("import Utils was successful")
 
+    from warrior.Framework import Utils
+
+    print("import Utils was successful")
+
     from warrior.WarriorCore.Classes.rerun_testsuite import execute_failedsuite
     from warrior.WarriorCore.Classes.rerun_project import execute_failedproject
 
