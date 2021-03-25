@@ -18,25 +18,26 @@ try:
     from collections import OrderedDict
 
     print("import os was successful")
-    try:
-        from warrior.Framework import Utils
-    except Exception as e:
-        e = str(e)
-        if e.startswith("No module named 'warrior"):
-            pkg_name = e.split("No module named")[-1].split("'")[1]
-            pkg_parent = "warrior_" + pkg_name.split("warrior")[-1]
-            pkg_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "warrior_modules", pkg_parent)
-            if pkg_full_path not in sys.path:
-                sys.path.append(pkg_full_path)
+    def check_warrior_default_modules_import():
+        try:
+            from warrior.Framework import Utils
+        except Exception as e:
+            e = str(e)
+            if e.startswith("No module named 'warrior"):
+                pkg_name = e.split("No module named")[-1].split("'")[1]
+                pkg_parent = "warrior_" + pkg_name.split("warrior")[-1]
+                pkg_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "warrior_modules", pkg_parent)
+                if pkg_full_path not in sys.path:
+                    sys.path.append(pkg_full_path)
+                check_warrior_default_modules_import()
+            else:
+                raise
         else:
-            pass
-    else:
-        print("import Utils was successful")
+            print("import Utils was successful")
+
+    check_warrior_default_modules_import()
 
     from warrior.Framework import Utils
-
-    print("import Utils was successful")
-
     from warrior.WarriorCore.Classes.rerun_testsuite import execute_failedsuite
     from warrior.WarriorCore.Classes.rerun_project import execute_failedproject
 

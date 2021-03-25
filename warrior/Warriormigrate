@@ -31,7 +31,7 @@ if len(cli_args) > 1:
     if "--help" in cli_args:
         print("You can use this to migrate/merge the default warrior sub modules into warrior."
             "\nUsage:"
-            "\n1. To install specific packages: -pkgs_list pkg1,pk2,pkgn"
+            "\n1. To install specific packages: -pkgs_list pkg1,pkg2,pkgn"
             "\n2. To install all packages: -pkgs_list all"
             "\n3. To specify mode: -mode git (or) -mode pip"
         )
@@ -61,7 +61,7 @@ if len(cli_args) > 1:
 else:
     print("You can use this to migrate/merge the default warrior sub modules into warrior."
             "\nUsage:"
-            "\n1. To install specific packages: -pkgs_list pkg1,pk2,pkgn"
+            "\n1. To install specific packages: -pkgs_list pkg1,pkg2,pkgn"
             "\n2. To install all packages: -pkgs_list all"
             "\n3. To specify mode: -mode git (or) -mode pip"
     )
