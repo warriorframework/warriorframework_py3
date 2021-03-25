@@ -74,9 +74,9 @@ class KafkaActions():
             if map_file:
                 ca_file = key_file = crl_file= ciphers = None
                 config = ConfigObj(map_file)
-                if "CREDENTIALS" not in config and "kafka_server" not in config["CREDENTIALS"]:
+                mapper = config.get('CREDENTIALS', None).get('kafka_server', None) if config.get('CREDENTIALS', None) else None
+                if not mapper:
                     return False
-                mapper = config["CREDENTIALS"]["kafka_server"]
                 status, mapper_data = Utils.data_Utils.replace_var(mapper, {}, {})
                 if not status:
                     return status
