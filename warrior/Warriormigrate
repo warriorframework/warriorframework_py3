@@ -16,13 +16,26 @@ import os
 import site
 import sys
 import shutil
- 
+
+
+if sys.version_info < (3, 6):
+    print("Warriormigrate doesn't support Python version lower than 3.6, now exiting")
+    sys.exit(0)
+
 PIP_MODE = False
 GIT_MODE = False
 
 
 cli_args = sys.argv
 if len(cli_args) > 1:
+    if "--help" in cli_args:
+        print("You can use this to migrate/merge the default warrior sub modules into warrior."
+            "\nUsage:"
+            "\n1. To install specific packages: -pkgs_list pkg1,pk2,pkgn"
+            "\n2. To install all packages: -pkgs_list all"
+            "\n3. To specify mode: -mode git (or) -mode pip"
+        )
+        exit(1)
     if "-mode" in cli_args:
         mode_idx = cli_args.index("-mode")
         if len(cli_args) > mode_idx+1:
@@ -40,14 +53,17 @@ if len(cli_args) > 1:
                 f"Mode not specified; it should be either 'git' or 'pip'" + '\033[0m')
             exit(1)
     else:
-        print('\033[91m' +
-            f"Missing -mode option; it should be either '-mode git' or '-mode pip'" + '\033[0m')
-        exit(1)
+        try:
+            import warrior
+            PIP_MODE = True
+        except:
+            GIT_MODE = True
 else:
     print("You can use this to migrate/merge the default warrior sub modules into warrior."
-            "\n Usage:"
-            "\n For git version: ./Warriormigrate -mode git -pkgs_list [pkg1,pk2,pkgn]"
-            "\n For pip version: Warriormigrate -mode pip -pkgs_list [pkg1,pk2,pkgn]"
+            "\nUsage:"
+            "\n1. To install specific packages: -pkgs_list pkg1,pk2,pkgn"
+            "\n2. To install all packages: -pkgs_list all"
+            "\n3. To specify mode: -mode git (or) -mode pip"
     )
 
 def parse_input_packages():
@@ -55,20 +71,24 @@ def parse_input_packages():
             pkgs_list_idx = cli_args.index("-pkgs_list")
             if len(cli_args) > pkgs_list_idx+1:
                 pkgs_str = cli_args[pkgs_list_idx+1]
-                if pkgs_str.startswith("[") and pkgs_str.endswith("]"):
-                    parsed_pkgs = pkgs_str[1:-1].split(",")
+                if pkgs_str.strip().lower() != 'all' and pkgs_str.strip().lower() != "":
+                    parsed_pkgs = pkgs_str.split(",")
                     print("Input packages are: ", parsed_pkgs)
                     return parsed_pkgs
+                elif pkgs_str.strip().lower() == 'all':
+                    return ["warriorciregression", "warriorcli", "warriorcloudshell", 
+                    "warriordemo", "warriorfile", "warriorgnmi", "warriorkafka", 
+                    "warriormicroapps", "warriormongo", "warriornetconf", 
+                    "warriornetwork", "warriorrest", "warriorselenium", "warriorserver", "warriorsnmp", "warriorwapp"]
                 else:
                     print('\033[91m' +
-                        f"Invalid list format: \nMake sure your input package list satisfies the following condtions:\
-                        \n1. No white spaces allowed inside pkgs_list[]\
-                        \n2. Make sure pkgs_list is properly enclosed\
-                        \nExample: [pkg1,pkg2,pkg3,pkgn]" + '\033[0m')
+                        f"Invalid value for -pkgs_list: \nSupported values are:\
+                        \n1. To install specific packages: -pkgs_list pkg1,pkg2,pkg3,pkgn \
+                        \n2. To install all warrior default modules: -pkgs_list all" + '\033[0m')
                     exit(1)
             else:
                 print('\033[91m' +
-                    f"Packages list not provided." + '\033[0m')
+                    f"Packages info not provided." + '\033[0m')
                 exit(1)
     else:
         print('\033[91m' +
