@@ -15,7 +15,7 @@ limitations under the License.
 import os
 import site
 import sys
-from shutil import copytree, ignore_patterns
+import shutil
  
 PIP_MODE = False
 GIT_MODE = False
@@ -75,6 +75,23 @@ def parse_input_packages():
             f"Missing -pkgs_list option." + '\033[0m')
         exit(1)
 
+def recursive_copy_with_exist_ok(src, dest, ignore=None):
+    if os.path.isdir(src):
+        if not os.path.isdir(dest):
+            os.makedirs(dest)
+        files = os.listdir(src)
+        if ignore is not None:
+            ignored = ignore
+        else:
+            ignored = []
+        for f in files:
+            if f not in ignored:
+                recursive_copy_with_exist_ok(os.path.join(src, f),
+                                    os.path.join(dest, f),
+                                    ignore)
+    else:
+        shutil.copyfile(src, dest)
+
 def copy_warrior_module_files(pkg_dir, warrior_path):
     pkg_actions_dir = os.path.join(pkg_dir, "Actions") if os.path.exists(os.path.join(pkg_dir, "Actions")) else ""
     pkg_driver_dir = os.path.join(pkg_dir, "ProductDrivers") if os.path.exists(os.path.join(pkg_dir, "ProductDrivers")) else ""
@@ -97,7 +114,7 @@ def copy_warrior_module_files(pkg_dir, warrior_path):
         actions = os.listdir(pkg_actions_dir)
         actions = list(set(actions) - {"__init__.py"})
         if actions:
-            copytree(pkg_actions_dir, warrior_actions_dir, dirs_exist_ok=True, ignore=ignore_patterns('*.pyc'))
+            recursive_copy_with_exist_ok(pkg_actions_dir, warrior_actions_dir)
         else:
             print('\033[91m' + f"Empty dir: {pkg_actions_dir}" + '\033[0m')
     #copy ProductDrivers files
@@ -105,7 +122,7 @@ def copy_warrior_module_files(pkg_dir, warrior_path):
         drivers = os.listdir(pkg_driver_dir)
         drivers = list(set(drivers) - {"__init__.py"})
         if drivers:
-            copytree(pkg_driver_dir, warrior_productdrivers_dir, dirs_exist_ok=True, ignore=ignore_patterns('*.pyc', '__init__.py'))
+            recursive_copy_with_exist_ok(pkg_driver_dir, warrior_productdrivers_dir, ignore=['__init__.py'])
         else:
             print('\033[91m' + f"Empty dir: {pkg_driver_dir}" + '\033[0m')
     #copy Utils
@@ -113,7 +130,7 @@ def copy_warrior_module_files(pkg_dir, warrior_path):
         utils = os.listdir(pkg_utils_dir)
         utils = list(set(utils) - {"__init__.py"})
         if utils:
-            copytree(pkg_utils_dir, warrior_utils_dir, dirs_exist_ok=True, ignore=ignore_patterns('*.pyc', '__init__.py'))
+            recursive_copy_with_exist_ok(pkg_utils_dir, warrior_utils_dir, ignore=['__init__.py'])
         else:
             print('\033[91m' + f"Empty dir: {pkg_utils_dir}" + '\033[0m')
     #copy ClassUtils
@@ -121,7 +138,7 @@ def copy_warrior_module_files(pkg_dir, warrior_path):
         classutils = os.listdir(pkg_classutils_dir)
         classutils = list(set(classutils) - {"__init__.py"})
         if classutils:
-            copytree(pkg_classutils_dir, warrior_classutils_dir, dirs_exist_ok=True, ignore=ignore_patterns('*.pyc'))
+            recursive_copy_with_exist_ok(pkg_classutils_dir, warrior_classutils_dir)
         else:
             print('\033[91m' + f"Empty dir: {pkg_classutils_dir}" + '\033[0m')
             
@@ -165,7 +182,7 @@ if GIT_MODE:
     input_packages = parse_input_packages()
     for pkg in input_packages:
         if pkg.strip() != "":
-            pkg_parent = "warrior_"+pkg.split("warrior")[1]
+            pkg_parent = "warrior_"+pkg.split("warrior")[1] if pkg.startswith("warrior") else "warrior_"+pkg
             pkg_dir = os.path.join(warrior_modules_path, pkg_parent, pkg)
             if os.path.exists(pkg_dir):
                 print(f"\n=================================== Migrating {pkg} package===================================")
