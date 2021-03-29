@@ -105,6 +105,8 @@ def replace_var(r_dict, user_dict, variable_dict):
     in mapper file
     The third priority is for the environmental variables
     '''
+    if not r_dict:
+        return bool(r_dict), {}
     res_dict=r_dict
     status=True
     env = False
@@ -139,7 +141,7 @@ def replace_var(r_dict, user_dict, variable_dict):
                     res_dict[k] = '{'+i+'}'
                 else:
                     print_error('Provide the substitution for variable {0}'.format(i))
-                    return False, None
+                    return False, {}
     except Exception as e:
         status=False
         print_error("exception found:", str(e))
@@ -167,7 +169,62 @@ def get_connection(section, cfg_file_name, device = ''):
     except Exception as e:
         status=False
         print_error("exception found: cmd file ",cfg_file_name ,"is not in the defined format ", str(e))
-    return status, mapper_data
+    return [status, mapper_data]
+
+def get_system_name(session):
+    if not session:
+        return None
+    system_name = session.get('DEFAULT', None)
+    if system_name is None:
+        system_name = list(session.keys())[0]
+    return system_name
+
+def check_match_string(match_string, reply):
+    status = True
+    found_dict = {'AND': 'All the given match_string are present in the response as expected',
+                  'OR': 'The given match_string is present in the response ',
+                  'NOT': 'The given match_string is not present in the response as expected',
+                  'NONE': 'The given match_string is present in the response as expected'}
+    not_found_dict = {'AND': 'The given match_string is not present in the response',
+                      'OR': 'None of the match_string are present in the response',
+                      'NOT': 'The given match_string is present in the response',
+                      'NONE': 'The given match_string is not present in the response'}
+    match = lambda m_string: 'AND' if re.search('AND', m_string) else ('OR' if re.search('OR', m_string) else 'NONE')
+    if match(match_string) == 'NONE':
+        match = lambda m_string: 'NOT' if re.search('NOT', m_string) else 'NONE'
+    match_type = match(match_string)
+    # Based on the match type the operation is performed. Supported operations are 'AND', 'OR', 'NOT'
+    # After verifying the output is printed
+    if match_type:
+        operation_dict = {'AND': True, 'OR': False, 'NOT': False, 'NONE': False}
+        result = operation_dict[match_type]
+        l = [i for i in match_string.split(match_type)]
+        if match_type == 'NOT':
+            l.remove('\n')
+        for i in l:
+            i = i.replace('\n', '')
+            i = i.strip()
+            valid = re.search(i, reply)
+            if (not valid and match_type == 'AND') or (valid and match_type != 'AND'):
+                result = not result
+                break
+        if (result and match_type == 'NOT') or (not result and match_type in ['OR', 'AND', 'NONE']):
+            status = False
+        if result:
+            res = found_dict[match_type]
+            if match_type == 'NOT':
+                print_error(not_found_dict['NOT'])
+            else:
+                print_debug(res)
+        else:
+            res = not_found_dict[match_type]
+            if match_type == 'AND':
+                print_error('The given match_string is not present in the response {0}'.format(i))
+            if match_type == 'NOT':
+                print_debug(found_dict['NOT'])
+            if match_type in ['OR', 'NONE']:
+                print_error(res)
+    return status
 
 
 def getSystemData(datafile, system_name, cnode, system='system'):
