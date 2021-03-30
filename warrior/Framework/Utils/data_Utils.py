@@ -141,7 +141,7 @@ def replace_var(r_dict, user_dict, variable_dict):
                     res_dict[k] = '{'+i+'}'
                 else:
                     print_error('Provide the substitution for variable {0}'.format(i))
-                    return False, None
+                    return False, {}
     except Exception as e:
         status=False
         print_error("exception found:", str(e))
