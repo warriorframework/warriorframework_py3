@@ -25,6 +25,7 @@ from warrior.Framework.Utils import testcase_Utils, config_Utils, data_Utils
 from warriorsnmp.Utils import snmp_utils
 from threading import Thread
 from time import sleep
+from warrior.Framework.Utils.config_Utils import data_repository
 try:
     from pysnmp.entity.rfc3413 import ntfrcv
     from pysnmp.smi import builder, view, compiler, rfc1902, error
@@ -56,7 +57,7 @@ class CommonSnmpActions(object):
                  userName=None, authKey=None, privKey=None, authProtocol=None,
                  privProtocol=None,
                  custom_mib_paths=None,
-                 load_mib_modules=None):
+                 load_mib_modules=None, credentials=None):
         """
         snmp_get uses the SNMP GET request to query for information on a
         network entity
@@ -128,7 +129,13 @@ class CommonSnmpActions(object):
         Utils.testcase_Utils.pSubStep(wdesc)
         status = False
         snmp_parameters = ['ip', 'snmp_port']
-        snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None)
+        if data_repository.get('wt_mapfile', None):
+            status, snmp_param_dic = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+        else:
+            snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
                                                           system_name,
                                                           snmp_parameters)
         ipaddr = snmp_param_dic.get('ip')
@@ -267,7 +274,13 @@ class CommonSnmpActions(object):
         Utils.testcase_Utils.pSubStep(wdesc)
         status = False
         snmp_parameters = ['ip', 'snmp_port']
-        snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None)
+        if data_repository.get('wt_mapfile', None):
+            status, snmp_param_dic = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+        else:
+            snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
                                                           system_name,
                                                           snmp_parameters)
         ipaddr = snmp_param_dic.get('ip')
@@ -407,7 +420,13 @@ class CommonSnmpActions(object):
         Utils.testcase_Utils.pSubStep(wdesc)
         status = False
         snmp_parameters = ['ip', 'snmp_port']
-        snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None)
+        if data_repository.get('wt_mapfile', None):
+            status, snmp_param_dic = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+        else:
+            snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
                                                           system_name,
                                                           snmp_parameters)
         ipaddr = snmp_param_dic.get('ip')
@@ -553,7 +572,13 @@ class CommonSnmpActions(object):
         Utils.testcase_Utils.pSubStep(wdesc)
         status = False
         snmp_parameters = ['ip', 'snmp_port']
-        snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None)
+        if data_repository.get('wt_mapfile', None):
+            status, snmp_param_dic = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+        else:
+            snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
                                                           system_name,
                                                           snmp_parameters)
         ipaddr = snmp_param_dic.get('ip')
@@ -801,10 +826,15 @@ class CommonSnmpActions(object):
         snmp_parameters = ['ip', 'snmp_trap_port', 'community', 'snmp_username',
                             'securityEngineId', 'authkey', 'privkey',
                             'authProtocol', 'privProtocol']
-        snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None)
+        if data_repository.get('wt_mapfile', None):
+            status, snmp_param_dic = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+        else:
+            snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
                                                           system_name,
                                                           snmp_parameters)
-
         ip = snmp_param_dic.get('ip')
         port = snmp_param_dic.get('snmp_trap_port')
         community = snmp_param_dic.get('community', None)
@@ -850,7 +880,13 @@ class CommonSnmpActions(object):
         wdesc = "Stop Trap listener"
         Utils.testcase_Utils.pSubStep(wdesc)
         snmp_parameters = ['ip', 'snmp_trap_port']
-        snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None)
+        if data_repository.get('wt_mapfile', None):
+            status, snmp_param_dic = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+        else:
+            snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
                                                           system_name,
                                                           snmp_parameters)
         ip = snmp_param_dic.get('ip')
@@ -878,7 +914,13 @@ class CommonSnmpActions(object):
         wdesc = "Validate the Received Trap Messages from {}".format(system_name)
         Utils.testcase_Utils.pSubStep(wdesc)
         snmp_parameters = ['ip', 'snmp_trap_port']
-        snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None)
+        if data_repository.get('wt_mapfile', None):
+            status, snmp_param_dic = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+        else:
+            snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
                                                           system_name,
                                                           snmp_parameters)
         agent_ip = snmp_param_dic.get('ip')
@@ -926,7 +968,13 @@ class CommonSnmpActions(object):
         wdesc = "List out the trap messages from {}".format(system_name)
         Utils.testcase_Utils.pSubStep(wdesc)
         snmp_parameters = ['ip', 'snmp_trap_port']
-        snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None)
+        if data_repository.get('wt_mapfile', None):
+            status, snmp_param_dic = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+        else:
+            snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
                                                           system_name,
                                                           snmp_parameters)
         agent_ip = snmp_param_dic.get('ip')
@@ -1000,7 +1048,13 @@ class CommonSnmpActions(object):
         wdesc = "Clear trap messages from {}".format(system_name)
         Utils.testcase_Utils.pSubStep(wdesc)
         snmp_parameters = ['ip', 'snmp_trap_port']
-        snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
+        mapfile = data_repository.get('wt_mapfile', None)
+        if data_repository.get('wt_mapfile', None):
+            status, snmp_param_dic = Utils.data_Utils.get_connection('CREDENTIALS', mapfile, system_name)
+            if status == False:
+                return False
+        else:
+            snmp_param_dic = Utils.data_Utils.get_credentials(self.datafile,
                                                           system_name,
                                                           snmp_parameters)
         agent_ip = snmp_param_dic.get('ip')
