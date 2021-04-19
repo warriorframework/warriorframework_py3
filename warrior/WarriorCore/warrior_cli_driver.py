@@ -27,9 +27,13 @@ try:
                 pkg_name = e.split("No module named")[-1].split("'")[1]
                 pkg_parent = "warrior_" + pkg_name.split("warrior")[-1]
                 pkg_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "warrior_modules", pkg_parent)
-                if pkg_full_path not in sys.path:
-                    sys.path.append(pkg_full_path)
-                check_warrior_default_modules_import()
+                if os.path.exists(pkg_full_path):
+                    if pkg_full_path not in sys.path:
+                        sys.path.append(pkg_full_path)
+                    check_warrior_default_modules_import()
+                else:
+                    print_error("{0}\n".format(str(e)))
+                    exit(1)
             else:
                 raise
         else:
