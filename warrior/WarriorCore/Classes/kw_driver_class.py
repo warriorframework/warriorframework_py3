@@ -59,24 +59,24 @@ class ModuleOperations(object):
                 if os.path.exists(pkg_full_path):
                     if pkg_full_path not in sys.path:
                         sys.path.append(pkg_full_path)
+                        self.check_warrior_default_modules_import(package)
                 else:
-                    print_error("{0}\n".format(str(err)))
-                    exit(1)
-                self.check_warrior_default_modules_import(package)
+                    print_error("{0}: \n".format(str(err)))
+                    print_error('unexpected error: {0}'.format(traceback.format_exc()))
 
     def import_sub_modules(self):
         """Import sub modules for the given package """
         try:
             for package in self.package_list:
                 Utils.import_utils.import_submodules(package)
-        except ImportError as err:
+        except:
             self.check_warrior_default_modules_import(package)
             try:
                 for package in self.package_list:
                     Utils.import_utils.import_submodules(package)
             except ImportError as err:
-                print_error("{0}\n".format(str(err)))
-                # print_error('unexpected error: {0}'.format(traceback.format_exc()))
+                print_error("{0}: \n".format(str(err)))
+                print_error('unexpected error: {0}'.format(traceback.format_exc()))
 
     def get_module_list_from_pkglist(self):
         """Get the list of modules for the provided package list"""

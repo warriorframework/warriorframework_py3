@@ -12,7 +12,7 @@ limitations under the License.
 '''
 from setuptools import setup, find_packages
 
-PACKAGE_NAME = "warriormodules"
+PACKAGE_NAME = "warriorframeworkallmodules"
 PACKAGE_VERSION = "1.0.0"
 
 setup(
@@ -22,9 +22,9 @@ setup(
     author_email='frameworkwarrior@gmail.com',
     scripts=[],
     packages=find_packages(),
-    package_data={'':['**/*', '*']},
+    package_data={'': ['**/*', '*']},
     include_package_data=True,
-    long_description= "Complete package of all warrior driver modules for warrior framework",
+    long_description="Complete package of all warrior driver modules for warrior framework",
     description="Warrior Framework is an open source Automation Framework",
     url="https://github.com/warriorframework/warriorframework_py3",
     project_urls={
@@ -33,7 +33,10 @@ setup(
     },
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: Apache Software License',
-                 'Programming Language :: Python :: 3.6',],
-    install_requires=["all packages here"]
+                 'Programming Language :: Python :: 3.6', ],
+    install_requires=["warriorframework", "warriorciregression", "warriorcli",
+                      "warriorcloudshell", "warriordemo", "warriorfile", "warriorgnmi", "warriorkafka",
+                      "warriormicroapps", "warriormongo", "warriornetconf", "warriornetwork", "warriorrest",
+                      "warriorselenium", "warriorserver", "warriorsnmp", "warriorwapp"]
 
 )
