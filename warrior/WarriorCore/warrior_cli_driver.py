@@ -12,11 +12,35 @@ limitations under the License.
 '''
 
 try:
-    # Framework related import
     import site
     import os
+    import sys
+    from collections import OrderedDict
 
     print("import os was successful")
+    def check_warrior_default_modules_import():
+        try:
+            from warrior.Framework import Utils
+        except Exception as e:
+            e = str(e)
+            if e.startswith("No module named 'warrior"):
+                pkg_name = e.split("No module named")[-1].split("'")[1]
+                pkg_parent = "warrior_" + pkg_name.split("warrior")[-1]
+                pkg_full_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "warrior_modules", pkg_parent)
+                if os.path.exists(pkg_full_path):
+                    if pkg_full_path not in sys.path:
+                        sys.path.append(pkg_full_path)
+                        check_warrior_default_modules_import()
+                else:
+                    print_error("{0}\n".format(str(e)))
+            else:
+                raise
+        else:
+            print("import Utils was successful")
+
+    check_warrior_default_modules_import()
+
+    from warrior.Framework import Utils
     from warrior.WarriorCore.Classes.rerun_testsuite import execute_failedsuite
     from warrior.WarriorCore.Classes.rerun_project import execute_failedproject
 
@@ -25,12 +49,11 @@ try:
     import shutil
 
     print("import shutil was successful")
+
     import warrior.Framework.Utils.email_utils as email
 
     print("import email was successful")
-    from warrior.Framework import Utils
 
-    print("import Utils was successful")
     from warrior.Framework.Utils.print_Utils import print_error, print_info, print_debug
 
     print("import print_Utils was successful")
@@ -59,7 +82,6 @@ except:
     raise
 
 import re
-import sys
 import multiprocessing
 from os.path import dirname, abspath
 from warrior.Framework.Utils import config_Utils, file_Utils, xml_Utils
@@ -182,7 +204,7 @@ def group_execution(parameter_list, cli_args, db_obj, overwrite, livehtmlobj):
 
     iter_count = 0  ## this iter is used for live html results
     for parameter in parameter_list:
-        default_repo = {}
+        default_repo = OrderedDict()
         result = False
         # check if the input parameter is an xml file
         if Utils.file_Utils.get_extension_from_path(parameter) == '.xml':

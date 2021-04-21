@@ -13,7 +13,7 @@ limitations under the License.
 from setuptools import setup, find_packages
 
 PACKAGE_NAME = "warriorframework"
-PACKAGE_VERSION = "4.5.0"
+PACKAGE_VERSION = "4.6.0"
 
 setup(
     name=PACKAGE_NAME,
@@ -21,8 +21,10 @@ setup(
     author="warriorteam",
     author_email='frameworkwarrior@gmail.com',
     scripts=['warrior/Warrior',
+             'warrior/Warriormigrate',
              'warrior/WarriorTools/warrior_py3_migration_tools/warrior_py3_migration_tool',
-             'warrior/warrior_upgrade.py'],
+             'warrior/WarriorTools/tc_generator/tc_generator',
+             'warrior/warrior_upgrade'],
     packages=find_packages(exclude=['warrior/test_WarriorCore']),
     package_data={'':['**/*', '*']},
     include_package_data=True,
@@ -50,12 +52,6 @@ setup(
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: Apache Software License',
                  'Programming Language :: Python :: 3.6',],
-    install_requires=["pexpect==4.8.0", "requests==2.21.0", "selenium==3.8.0",
-                      "lxml==4.4.1", "paramiko==2.7.2", "pysnmp==4.4.12",
-                      "pyvirtualdisplay==0.2.1", "kafka-python==1.4.6",
-                      "cloudshell-automation-api==9.3.0.175525", "configobj==5.0.6",
-                      "pycryptodome==3.6.1", "xmltodict==0.12.0",
-                      "xlrd==1.2.0", "openpyxl==3.0.3", "pandas==1.0.3",
-                      "gcg==0.2.0", "termcolor==1.1.0", "pymongo==3.11.0",]
+    install_requires=["kafka-python==1.4.6", "configobj==5.0.6", "requests==2.21.0"]
 
 )

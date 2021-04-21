@@ -321,6 +321,10 @@ class WarriorCliClass(object):
             help="overwrite the path of datafile in execution "\
             "ignore the datafile specified in testcase.xml")
 
+        warrior_arg.add_argument('-mapfile', action='store', nargs='?',\
+            help="overwrite the path of mapfile in execution "\
+            "ignore the mapfile specified in testcase.xml")
+
         #to accept -wrapperfile as command line argument
         warrior_arg.add_argument('-wrapperfile', action='store', nargs='?',\
             help="overwrite the path of wrapperfile in execution "\
@@ -408,9 +412,6 @@ class WarriorCliClass(object):
             "encrypt command to create a secret key"\
             "...")
 
-        warrior_arg.add_argument('--mapfile', action='store', nargs='*',\
-            dest="mapfile", help="file which maps cmds to cmd files and contains system info")
-
         # Update jira issue based on input ID and detail
         warrior_arg.add_argument('-jiraid', action='store', default=False,\
             help="The issue that will be updated based on current execution result")\
@@ -445,10 +446,6 @@ class WarriorCliClass(object):
             "or other CLI related operation."
             "User can verify input value from console output/result file")
 
-        warrior_arg.add_argument('-headless', action='store_true', default=False,\
-            help="If headless mode is enabled, all selenium tests will run in xfvb "\
-            "which will not need a GUI")
-
         #Running testcases in suite in random order
         warrior_arg.add_argument('-random_tc_execution', action='store_true', default=False,\
             help=":random_tc_execution mode: In this mode, testcases will be "\
@@ -464,13 +461,8 @@ class WarriorCliClass(object):
             "Multiple paths can be provided"\
             "(separated by a colon)")
 
-        warrior_arg.add_argument('--loglevel', action='store',\
-            help="logging level, debug:10, info:20, warning:30, error:40, critical:50 \
-                  defaults to 'info'. example usage '--loglevel error'\
-                  --loglevel warning'")
-
-        warrior_arg.add_argument('--no_logger', action='store_true', default=False,\
-            help=":This option will enable backward compatibility of warrior logging")
+        warrior_arg.add_argument('--nodebug', action='store_true', default=False,\
+            help="use to prevent debug messages from being printed")
 
         tools_arg = parser.add_argument_group('warrior tools')
         tools_arg.add_argument('-tc_gen', action='store',\

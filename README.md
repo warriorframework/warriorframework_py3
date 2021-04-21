@@ -13,46 +13,57 @@ Follow these [Instructions](https://www.lifewire.com/run-ubuntu-within-windows-v
 ###### Python 3.6+ &amp; pip
 Follow this [tutorial](http://thelazylog.com/install-python-as-local-user-on-linux/) to get the Python you need.
 
-######  Python Packages used by warriorframework
-pexpect<br/>
-requests<br/>
-selenium<br/>
-pysnmp<br/>
-kafka-python<br/>
-pyvirtualdisplay<br/>
-pycryptodome<br/>
-paramiko<br/>
-lxml<br/>
-xlrd<br/>
-cloudshell-automation-api<br/>
-pytest<br/>
-openpyxl<br/>
-pandas<br/>
+#### Procedure to install warrior framework
+###### Create and Activate virtual environment<br/>
+   `python3 -m venv warriorenv`<br/>
+   `source warriorenv/bin/activate`<br/>   
+###### Procedure to install warrior pip module (from pypi server)<br/>
+1. Install warriorframework, This installs only warrior without any warrior modules.<br/>
+    1. Latest version warriorframework from PyPI server<br/>
+           `pip install warriorframework`<br/>
+    2. Specfic Version warriorframework from PyPI Server<br/>
+	   `pip install warriorframework==4.3.0`<br/>
+    3. Uninstall warriorframework<br/>
+	   `pip uninstall warriorframework`<br/> 
+2. Install required warrior modules.<br/>
+    1. Required warrior modules can be installed from PyPI Server.<br/> 
+       For Example, Install only warriorcli module if you have only cli automation tasks<br/>
+       `pip install warriorcli`<br/> 
+       `pip install warriornetconf`<br/> 
+       `pip install warriorsnmp`<br/> 
+       `pip install warriorgnmi`<br/> 
+       `pip install warriorcloudshell`<br/> 
+       `pip install warriorrest`<br/> 
+       `pip install warriorselenium`<br/> 
+       `pip install warriorkafka`<br/> 
+       `pip install warriornetwork`<br/> 
+       `pip install warriorserver`<br/> 
+       `pip install warriormongo`<br/> 
+       `pip install warriordemo`<br/> 
+       `pip install warriorfile`<br/> 
+       `pip install warriorciregression`<br/> 
+       `pip install warriormicroapps`<br/> 
+       `pip install warriorwapp`<br/> 
+    2. Specfic Version warrior module from PyPI Server<br/>
+	   `pip install warriorcli==1.0.0`<br/> 
+3. Install warrior framework and all modules<br/>
+        `pip install warriorframeworkallmodules`
 
-#### Procedure to install pip module
-    1. Latest version warriorframework from PyPI server
-       `pip install warriorframework`
-    2. Specfic Version warriorframework from PyPI Server
-	   `pip install warriorframework==4.3.0`
-    3. Uninstall warriorframework
-	   `pip uninstall warriorframework` 
+###### Procedure to install warrior from git (this step is not required if you have installed warrior from pypi server)<br/>
+We strongly recommend getting the latest released version.<br/>
 
-#### Clone warriorframework
+1. Get the Repository<br/>
+`git clone https://github.com/warriorframework/warriorframework_py3.git`<br/>
 
-We strongly recommend getting the latest released version.
+2. Go into warriorframework_py3 Directory<br/>
+`cd warriorframework_py3`<br/>
 
-###### Get the Repository
-`git clone https://github.com/warriorframework/warriorframework_py3.git`
+3. Get List of Versions Available<br/>
+`git tag --list" command`<br/>
 
-###### Go into warriorframework_py3 Directory
-`cd warriorframework_py3`
-
-###### Get List of Versions Available
-`git tag --list" command`
-
-Output:
-`warrior-4.3.0<br/>
-`warrior-4.2.0<br/>
+Output:<br/>
+`warrior-4.3.0`<br/>
+`warrior-4.2.0`<br/>
 `warrior-4.1.0`<br/>
 `warrior-4.1.0-beta`<br/>
 `warrior-4.0.0-beta`<br/>
@@ -60,8 +71,8 @@ Output:
 `warrior-3.3.0` <br/>
 `warrior-3.2.0`<br/>
 
-###### Check the Current Version You Are At
-`git branch`
+4. Check the Current Version You Are At<br/>
+`git branch`<br/>
 
 Output:
 
@@ -70,10 +81,10 @@ Output:
 `In the above example master is the active version.`<br/>
 `If the active version is master it means you are not using a standard release version of warriorframework and hence it may not be a stable tested version.`<br/>
 
-###### Get A Specific Version from master
-`git checkout warrior-4.3.0`
+5. Get A Specific Version from master<br/>
+`git checkout warrior-4.3.0`<br/>
 
-Output:
+Output:<br/>
 
 `Note: checking out 'warrior-4.3.0'.`
 
@@ -85,12 +96,48 @@ Output:
 
 `HEAD is now at 2bba292... Merge pull request #234 from warriorframework/release-warrior-4.1.0`
 
-###### Verify the Active Version. <br/>
-`git branch`
+6. Verify the Active Version. <br/>
+`git branch`<br/>
 
-Output:
+Output:<br/>
 
 `\* (HEAD detached at warrior-4.3.0)` <br/>
 `master` <br/>
 
-`\* indicates the active version.`
+`\* indicates the active version.`<br/> 
+
+7. Install requirements (make sure you are in virtual environment)<br/>
+  `pip install -r requirements.txt`<br/>
+  
+   Python Packages used by warriorframework<br/>
+	pexpect<br/>
+	requests<br/>
+	selenium<br/>
+	pysnmp<br/>
+	kafka-python<br/>
+	pyvirtualdisplay<br/>
+	pycryptodome<br/>
+	paramiko<br/>
+	lxml<br/>
+	xlrd<br/>
+	cloudshell-automation-api<br/>
+	pytest<br/>
+	openpyxl<br/>
+	pandas<br/>
+	configobj<br/>
+###### Execute Warriormigrate command (this is required if custom lib is using warrior imports)<br/>
+ 1. pip installation<br/>
+   `Warriormigrate -pkgs_list all`<br/>
+   `Warriormigrate -pkgs_list warriorcli,warriornetconf`<br/>
+   (or) <br/>
+ 2. git installation <br/>
+   `./warrior/Warriormigrate -pkgs_list all` (to use all inbuilt warrior keywords, utils in custom lib)<br/>
+   `./warrior/Warriormigrate -pkgs_list warriorcli,warriornetconf` (to use only cli, netconf keywords, utils in custom lib)<br/> 
+   
+###### Execute scripts<br/>
+ 1. pip installation<br/>
+    `Warrior -pythonpath <customlibpath> <testcase.xml>`<br/>
+    (or)<br/>
+ 2. git installation<br/>
+    `./warrior/Warrior -pythonpath <customlibpath> <testcase.xml>`<br/>
+   

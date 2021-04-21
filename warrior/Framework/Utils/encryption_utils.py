@@ -28,7 +28,8 @@ try:
     from Crypto.Cipher import AES
     from Crypto import Random
 except ImportError as err:
-    pNote("Please Install Pycryptodome 3.6.1 and above", "error")
+    # pNote("Please Install Pycryptodome 3.6.1 and above", "error")
+    pass
 
 def get_key(encoded_key):
     """
