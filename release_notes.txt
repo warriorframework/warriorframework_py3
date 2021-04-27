@@ -72,3 +72,8 @@ warriorserver
 warriorsnmp 
 warriorwapp
 
+=================================================
+4. Execute Warriormigrate
+=================================================
+Warriormigrate -pkgs_list all (if you have installed all warrior modules)
+Warriormigrate -pkgs_list warriorcli,warriornetconf (if only required modules are installed, ex: warriorcli,warriornetconf)
