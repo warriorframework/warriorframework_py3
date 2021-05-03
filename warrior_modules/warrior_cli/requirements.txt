@@ -1,2 +1,2 @@
 pexpect==4.8.0
-pycryptodome==3.6.1
+pycryptodome==3.6.6
