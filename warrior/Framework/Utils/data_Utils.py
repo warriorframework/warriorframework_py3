@@ -31,6 +31,9 @@ from warrior.Framework.ClassUtils import database_utils_class
 from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
 from warrior.WarriorCore.Classes.warmock_class import mocked
 from warrior.WarriorCore.Classes.testcase_utils_class import TestcaseUtils
+import re
+from configobj import ConfigObj
+
 
 cmd_params = OrderedDict([("command_list", "send"),
                           ("sys_list", "sys"),
@@ -92,6 +95,136 @@ def get_nc_request_rpc_string(config_datafile, xmlns, request_type, xmlns_tag):
         print_exception(exception)
         status = "error"
     return status, configuration
+
+
+def replace_var(r_dict, user_dict, variable_dict):
+    '''
+    This method substitutes all the varibles which are given inside {}
+    The first priority is given for user_dict which is passed from the testcase argument
+    The second priority is for the varible_dict which is given in the VARIABLE section 
+    in mapper file
+    The third priority is for the environmental variables
+    '''
+    if not r_dict:
+        return bool(r_dict), {}
+    res_dict=r_dict
+    status=True
+    env = False
+    try:
+        for k, v in r_dict.items():
+            regex='{[a-zA-Z/_/-/.]*}'
+            match=re.findall(regex, v)
+            for i in match:
+                if 'ENV.' in i:
+                    i = i.replace('{ENV.', '')
+                    env = True
+                else:
+                    i=i.replace('{', '')
+                i=i.replace('}', '')
+                if i in variable_dict.keys() or user_dict.keys() or os.getenv(i, ''):
+                    if i in user_dict.keys():
+                        repl=re.sub('{'+i+'}', user_dict[i], v)
+                        res_dict[k]=repl
+                        v=repl
+                    elif i in variable_dict.keys():
+                        repl=re.sub('{'+i+'}', variable_dict[i], v)
+                        res_dict[k]=repl
+                        v=repl
+                    else:
+                        if env:
+                            repl=re.sub('{ENV.'+i+'}', os.getenv(i, ''), v)
+                        else:
+                            repl=re.sub('{'+i+'}', os.getenv(i, ''), v)
+                        res_dict[k]=repl
+                        v=repl
+                elif env == True and user_dict == {} and variable_dict == {}:
+                    res_dict[k] = '{'+i+'}'
+                else:
+                    print_error('Provide the substitution for variable {0}'.format(i))
+                    return False, {}
+    except Exception as e:
+        status=False
+        print_error("exception found:", str(e))
+    return status, res_dict
+
+def get_connection(section, cfg_file_name, device = ''):
+    ''' This method fetches the options from configuration file, from the
+    given section, and return them as dict.
+    '''
+    if not os.path.exists(cfg_file_name):
+        print_error("exception found: The given file doesn't exist: ", cfg_file_name)
+        return False, None
+    status=True
+    mapper_data=None
+    # Read the config file if exist
+    try:
+        config=ConfigObj(cfg_file_name)
+        if cfg_file_name:
+            if section:
+                # Fetch options from required section and update in to dict
+                if device=='':
+                    mapper_data=config[section]
+                else:
+                    mapper_data=config[section][device]
+    except Exception as e:
+        status=False
+        print_error("exception found: cmd file ",cfg_file_name ,"is not in the defined format ", str(e))
+    return [status, mapper_data]
+
+def get_system_name(session):
+    if not session:
+        return None
+    system_name = session.get('DEFAULT', None)
+    if system_name is None:
+        system_name = list(session.keys())[0]
+    return system_name
+
+def check_match_string(match_string, reply):
+    status = True
+    found_dict = {'AND': 'All the given match_string are present in the response as expected',
+                  'OR': 'The given match_string is present in the response ',
+                  'NOT': 'The given match_string is not present in the response as expected',
+                  'NONE': 'The given match_string is present in the response as expected'}
+    not_found_dict = {'AND': 'The given match_string is not present in the response',
+                      'OR': 'None of the match_string are present in the response',
+                      'NOT': 'The given match_string is present in the response',
+                      'NONE': 'The given match_string is not present in the response'}
+    match = lambda m_string: 'AND' if re.search('AND', m_string) else ('OR' if re.search('OR', m_string) else 'NONE')
+    if match(match_string) == 'NONE':
+        match = lambda m_string: 'NOT' if re.search('NOT', m_string) else 'NONE'
+    match_type = match(match_string)
+    # Based on the match type the operation is performed. Supported operations are 'AND', 'OR', 'NOT'
+    # After verifying the output is printed
+    if match_type:
+        operation_dict = {'AND': True, 'OR': False, 'NOT': False, 'NONE': False}
+        result = operation_dict[match_type]
+        l = [i for i in match_string.split(match_type)]
+        if match_type == 'NOT':
+            l.remove('\n')
+        for i in l:
+            i = i.replace('\n', '')
+            i = i.strip()
+            valid = re.search(i, reply)
+            if (not valid and match_type == 'AND') or (valid and match_type != 'AND'):
+                result = not result
+                break
+        if (result and match_type == 'NOT') or (not result and match_type in ['OR', 'AND', 'NONE']):
+            status = False
+        if result:
+            res = found_dict[match_type]
+            if match_type == 'NOT':
+                print_error(not_found_dict['NOT'])
+            else:
+                print_debug(res)
+        else:
+            res = not_found_dict[match_type]
+            if match_type == 'AND':
+                print_error('The given match_string is not present in the response {0}'.format(i))
+            if match_type == 'NOT':
+                print_debug(found_dict['NOT'])
+            if match_type in ['OR', 'NONE']:
+                print_error(res)
+    return status
 
 
 def getSystemData(datafile, system_name, cnode, system='system'):
@@ -332,7 +465,7 @@ def update_datarepository(input_dict):
     data_repository = config_Utils.data_repository
     data_repository.update(input_dict)
 
-def get_object_from_datarepository(object_key, verbose=True):
+def get_object_from_datarepository(object_key, verbose=False):
     """ Gets the value for the object with the provided name from data repository.
     object_key contains .(dot) will be treated as nested key """
     try:
@@ -416,7 +549,7 @@ def get_command_details_from_testdata(testdatafile, varconfigfile=None, **attr):
             if general_iter_number is not None:
                 details_dict = sub_from_gen_dict(details_dict, general_iter_number, start_pat, end_pat)
 
-            print_info("var_sub:{0}".format(var_sub))
+            print_debug("var_sub:{0}".format(var_sub))
             td_obj = TestData()
             details_dict = td_obj.varsub_varconfig_substitutions(
                 details_dict, vc_file=None, var_sub=var_sub, start_pat=start_pat, end_pat=end_pat)

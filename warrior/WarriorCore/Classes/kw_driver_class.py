@@ -10,6 +10,8 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+import os
+import sys
 import inspect
 import traceback
 from warrior.Framework import Utils
@@ -39,17 +41,42 @@ class ModuleOperations(object):
         self.class_list = self.get_class_list_from_modulelist()
         self.method_list = self.get_method_list_from_classlist()
         self.function_list = self.get_function_list_from_modlist()
-        self.matching_method_list = self.search_keyword_in_list(keyword, self.method_list)
-        self.matching_function_list = self.search_keyword_in_list(keyword, self.function_list)
+        self.matching_method_list = self.search_keyword_in_list(
+            keyword, self.method_list)
+        self.matching_function_list = self.search_keyword_in_list(
+            keyword, self.function_list)
+
+    def check_warrior_default_modules_import(self, package):
+        try:
+            Utils.import_utils.import_submodules(package)
+        except ImportError as err:
+            e = str(err)
+            if e.startswith("No module named 'warrior"):
+                pkg_name = e.split("No module named")[-1].split("'")[1]
+                pkg_parent = "warrior_" + pkg_name.split("warrior")[-1]
+                pkg_full_path = os.path.join(os.path.dirname(os.path.dirname(
+                    os.path.dirname(os.path.dirname(__file__)))), "warrior_modules", pkg_parent)
+                if os.path.exists(pkg_full_path):
+                    if pkg_full_path not in sys.path:
+                        sys.path.append(pkg_full_path)
+                        self.check_warrior_default_modules_import(package)
+                else:
+                    print_error("{0}: \n".format(str(err)))
+                    print_error('unexpected error: {0}'.format(traceback.format_exc()))
 
     def import_sub_modules(self):
         """Import sub modules for the given package """
         try:
             for package in self.package_list:
                 Utils.import_utils.import_submodules(package)
-        except ImportError as err:
-            print_error("{0} : \n".format(str(err)))
-            print_error('unexpected error: {0}'.format(traceback.format_exc()))
+        except:
+            self.check_warrior_default_modules_import(package)
+            try:
+                for package in self.package_list:
+                    Utils.import_utils.import_submodules(package)
+            except ImportError as err:
+                print_error("{0}: \n".format(str(err)))
+                print_error('unexpected error: {0}'.format(traceback.format_exc()))
 
     def get_module_list_from_pkglist(self):
         """Get the list of modules for the provided package list"""
@@ -118,9 +145,11 @@ class ModuleOperations(object):
             if element.__name__ == keyword:
                 if WarriorCliClass.mock or WarriorCliClass.sim:
                     if element.__dict__.get("mockready") is None:
-                        pNote_level("The selected keyword {} isn't supported in trial mode".format(element.__name__), "ERROR")
+                        pNote_level("The selected keyword {} isn't supported in trial mode".format(
+                            element.__name__), "ERROR")
                     else:
-                        pNote_level("Keyword {} is being mocked".format(element.__name__), "INFO")
+                        pNote_level("Keyword {} is being mocked".format(
+                            element.__name__), "INFO")
                         match_list.append(element)
                 else:
                     match_list.append(element)
@@ -142,7 +171,8 @@ class KeywordOperations(object):
 
         self.all_args_list = self.get_all_arguments()
         self.req_args_list = self.get_mandatory_arguments()
-        self.optional_args_list = list(set(self.all_args_list) - set(self.req_args_list))
+        self.optional_args_list = list(
+            set(self.all_args_list) - set(self.req_args_list))
         self.default_dict = self.get_defaults()
 
     def get_all_arguments(self):
@@ -218,7 +248,7 @@ class KeywordOperations(object):
             value = get_value(args)
             if value is None:
                 continue
-            if sysname in arg_kv:
+            if sysname in arg_kv and self.data_repository['wt_datafile'] != 'NO_DATA':
                 # the args can be direct values or mentioned as
                 # wtag var (except system_name) like 'wtag=<wtag var>',
                 # which would be fetched from the input data file
@@ -241,14 +271,15 @@ class KeywordOperations(object):
             else:
                 arg_kv[args] = self.default_dict[args]
                 print_debug("executing with default value '{0}' for optional "
-                           "argument '{1}'".format(arg_kv[args], args))
+                            "argument '{1}'".format(arg_kv[args], args))
         for args in self.optional_args_list:
             # requires another loop since system_name may not be at beginning
-            if args != 'system_name' and 'system_name' in arg_kv:
+            if args != 'system_name' and 'system_name' in arg_kv and self.data_repository['wt_datafile'] != 'NO_DATA':
                 # the args can be direct values or mentioned as
                 # wtag var (except system_name) like 'wtag=<wtag var>',
                 # which would be fetched from the input data file
-                value = self.get_credential_value(arg_kv[args], arg_kv['system_name'])
+                value = self.get_credential_value(
+                    arg_kv[args], arg_kv['system_name'])
                 if value is not None:
                     arg_kv[args] = value
         else:
@@ -263,7 +294,8 @@ class KeywordOperations(object):
         arg_kv = self.get_values_for_mandatory_args()
         if len(arg_kv) != len(self.req_args_list):
             msg = 'could not execute %s without mandatory arguments' % (object)
-            self.data_repository = skip_and_report_status(self.data_repository, msg)
+            self.data_repository = skip_and_report_status(
+                self.data_repository, msg)
             status = False
         arg_kv = self.get_values_for_optional_args(arg_kv)
         return arg_kv, status
@@ -272,7 +304,8 @@ class KeywordOperations(object):
         """Executes a method corresponding to keyword """
 
         kwargs, kw_status = self.get_argument_as_keywords()
-        print_info("The Arguments passed for the current Step is: '{0}'".format(kwargs))
+        print_info(
+            "The Arguments passed for the current Step is: '{0}'".format(kwargs))
         if kw_status:
             # Execute the corresponding method
             try:
@@ -298,7 +331,8 @@ class KeywordOperations(object):
         """Executes a function for a keyword"""
         kwargs, kw_status = self.get_argument_as_keywords()
 
-        print_info("The Arguments passed for the current Step is: '{0}'".format(kwargs))
+        print_info(
+            "The Arguments passed for the current Step is: '{0}'".format(kwargs))
         if kw_status:
             # Execute the corresponding function
             try:
@@ -329,7 +363,8 @@ class KeywordOperations(object):
             if keyword_result.upper() in ["ERROR", "EXCEPTION", "RAN"]:
                 pNote_level("Keyword '{0}' returned an {1}".format(keyword, keyword_result),
                             "debug", "kw")
-                data_repository['step-%s_status' % step_num] = keyword_result.upper()
+                data_repository['step-%s_status' %
+                                step_num] = keyword_result.upper()
 
         elif isinstance(keyword_result, bool):
             pNote_level("Keyword '{0}' returned a status only....".format(keyword),
@@ -348,10 +383,12 @@ class KeywordOperations(object):
             if isinstance(keyword_result[0], str) and keyword_result[0] == "EXCEPTION":
                 pNote_level("Keyword  '{0}' execution raised an"
                             "exception".format(keyword), "debug", "kw")
-                data_repository['step-%s_status' % step_num] = keyword_result[0]
-                data_repository['step-%s_exception' % step_num] = keyword_result[1]
+                data_repository['step-%s_status' %
+                                step_num] = keyword_result[0]
+                data_repository['step-%s_exception' %
+                                step_num] = keyword_result[1]
             elif isinstance(keyword_result[0], str) and keyword_result[0].upper() == "RAN":
-                pNote_level("Keyword '{0}' returned "\
+                pNote_level("Keyword '{0}' returned "
                             "a status..".format(keyword), "debug", "kw")
                 data_repository['step-%s_status' % step_num] = "RAN"
             else:
@@ -365,7 +402,8 @@ class KeywordOperations(object):
                         data_repository['step-%s_status' % step_num] = element
                     elif isinstance(element, dict):
                         pNote_level("Keyword '{0}' returned a dictionary.. "
-                                    "will update data_repository".format(keyword),
+                                    "will update data_repository".format(
+                                        keyword),
                                     "debug", "kw")
                         data_repository.update(element)
                     else:

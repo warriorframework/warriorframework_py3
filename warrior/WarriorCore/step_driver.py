@@ -15,10 +15,13 @@ limitations under the License.
 # step driver module
 
 import traceback
+import sys
+from os.path import abspath, dirname
 from warrior.WarriorCore.Classes.argument_datatype_class import ArgumentDatatype
 from warrior.Framework import Utils
 from warrior.Framework.Utils import file_Utils
-from warrior.Framework.Utils.print_Utils import print_info, print_debug, print_error, print_exception
+from warrior.Framework.Utils.print_Utils import print_info, print_debug,\
+print_error, print_exception
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 
 def get_arguments(step):
@@ -64,8 +67,22 @@ def send_keyword_to_productdriver(driver_name, plugin_name, keyword,
                                     plugin_name[:-7]+'_driver'])
         else:
             #import_name = "user_repo.ProductDrivers.{0}".format(driver_name)
-            import_name = "{0}.ProductDrivers.{1}".format(repo_name, driver_name)
-        driver_call = __import__(import_name, fromlist=[driver_name])
+            try:
+                import_name = "{0}.ProductDrivers.{1}".format(repo_name, driver_name)
+                driver_call = __import__(import_name, fromlist=[driver_name])
+            except Exception:
+                    if repo_name == "warrior":
+                        try:
+                            WARRIORDIR = dirname(dirname(dirname(abspath(__file__))))
+                            module_dir = "/warrior_modules/warrior_{0}".format("".join(driver_name.split("_")[:-1]).lower())
+                            if WARRIORDIR+module_dir not in sys.path:
+                                sys.path.append(WARRIORDIR+module_dir)
+                            import_name = "warrior{0}.ProductDrivers.{1}".format("".join(driver_name.split("_")[:-1]).lower(), driver_name.lower())
+                            driver_call = __import__(import_name, fromlist=[driver_name])
+                        except:
+                            raise
+                    else:
+                        raise
     except Exception:
         trcback = print_exception(Exception)
         data_repository['step-%s_status' % step_num] = 'ERROR'
@@ -125,11 +142,14 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
     driver = step.get('Driver')
     plugin = step.get('Plugin')
     keyword = step.get('Keyword')
+    label = step.get('Label') or ''
+    keyword_label = keyword+" Label-"+label if label else keyword
     repo_name = step.get('Repo') or 'warrior'
     context = Utils.testcase_Utils.get_context_from_xmlfile(step)
     step_impact = Utils.testcase_Utils.get_impact_from_xmlfile(step)
     step_description = Utils.testcase_Utils.get_description_from_xmlfile(step)
     parallel = kw_parallel
+    keyword_description = data_repository['wt_title']
 
     if parallel is True:
         step_console_log = get_step_console_log(data_repository['wt_filename'],
@@ -157,11 +177,11 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
         print_info("KEYWORD ATTEMPT: {0}".format(
             step.find("runmode").get("attempt")))
     # print keyword to result file
-    Utils.testcase_Utils.pKeyword(keyword, driver)
-    print_info("step number: {0}".format(step_num))
+    Utils.testcase_Utils.pKeyword(keyword_label, driver)
+    print_info("Step number: {0} | TestStep Description: {1}".format(step_num, step_description))
     if step.get("loop_id"):
         print_info("loop id: {0}".format(step.get("loop_id")))
-    print_info("Teststep Description: {0}".format(step_description))
+    # print_info("Teststep Description: {0}".format(step_description))
 
     if step.find("retry") is not None and step.find("retry").get("attempt") is not None:
         print_info("KEYWORD ATTEMPT: {0}".format(
@@ -210,8 +230,12 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
         print_info("Keyword status will be marked as ERROR as onError action is set to"
                    "'abort_as_error'")
         keyword_status = "ERROR"
+    kw_end_time = Utils.datetime_utils.get_current_timestamp()
+    kw_duration = Utils.datetime_utils.get_time_delta(kw_start_time)
+    hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
+    Utils.data_Utils.update_datarepository({"kw_duration" : hms})
+    print_debug("[{0}] Keyword execution completed".format(kw_end_time))
     Utils.testcase_Utils.reportKeywordStatus(keyword_status, keyword)
-    print_debug("step number: {0}".format(step_num))
 
     # Reporting status to data repo
     string_status = {"TRUE": "PASS", "FALSE": "FAIL",
@@ -240,11 +264,6 @@ def execute_step(step, step_num, data_repository, system_name, kw_parallel, queu
         Utils.testcase_Utils.pNote_level(msg, "debug", "kw", ptc=False)
 
     print_debug("")
-    kw_end_time = Utils.datetime_utils.get_current_timestamp()
-    kw_duration = Utils.datetime_utils.get_time_delta(kw_start_time)
-    hms = Utils.datetime_utils.get_hms_for_seconds(kw_duration)
-    print_info("Keyword duration= {0}".format(hms))
-    print_debug("[{0}] Keyword execution completed".format(kw_end_time))
     # condition to  print the end of runmode execution when all the attempts finish
     if step.find("runmode") is not None and \
        step.find("runmode").get("attempt") is not None:
