@@ -34,6 +34,6 @@ setup(
     classifiers=['Development Status :: 5 - Production/Stable',
                  'License :: OSI Approved :: Apache Software License',
                  'Programming Language :: Python :: 3.6',],
-    install_requires=["lxml==4.4.1", "paramiko==2.7.2", "pycryptodome==3.6.1"]
+    install_requires=["lxml==4.6.3", "paramiko==2.7.2", "pycryptodome==3.6.1"]
 
 )
