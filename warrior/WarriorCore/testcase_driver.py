@@ -894,13 +894,15 @@ def check_robot_wrapper_case(testcase_filepath):
 
 def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
          runtype='SEQUENTIAL_KEYWORDS', tc_parallel=False, auto_defects=False, suite=None,
-         tc_onError_action=None, iter_ts_sys=None, queue=None, jiraproj=None, jiraid=None):
+         tc_onError_action=None, iter_ts_sys=None, queue=None, jiraproj=None, jiraid=None,
+         stage_name=None, kafka_system=None):
 
     """ Executes a testcase """
     tc_start_time = Utils.datetime_utils.get_current_timestamp()
     if Utils.file_Utils.fileExists(testcase_filepath):
         try:
             Utils.config_Utils.set_datarepository(data_repository)
+            Utils.data_Utils.update_datarepository({"stage_name" : stage_name, "kafka_system" : kafka_system})
             if Utils.testrandom_utils.get_generic_datafile(testcase_filepath, data_repository):
                 init_datarepository = copy.deepcopy(data_repository)
                 exec_tag = data_repository.get("gen_exec_tag", 'default')

@@ -54,7 +54,8 @@ def get_step_list(filepath,
                   step_tag,
                   sub_step_tag,
                   randomize=False,
-                  loop_tag="Loop"):
+                  loop_tag="Loop",
+                  stage_tag="Stage"):
     """
     Takes the location of Testcase/Suite/Project file as input
     Returns a list of all the step/testcase/testsuite elements
@@ -65,17 +66,44 @@ def get_step_list(filepath,
         2. step_tag     = xml tag for group of step in the file
         3. sub_step_tag = xml tag for each step in the file
         4. loop_tag     = xml tag for loop. Loop by default
+        5. stage_tag    = xml tag for stage. Stage by default
     """
     step_list_with_rmt_retry = []
     root = Utils.xml_Utils.getRoot(filepath)
     steps = root.find(step_tag)
+    stage_name_pattern = get_object_from_datarepository("stage_name")
     if steps is None:
         print_warning("The file: '{0}' has no {1} to be executed".format(
             filepath, step_tag))
     step_list = []
     for child_node in steps:
         if child_node.tag == sub_step_tag:
+            if stage_name_pattern is not None:
+                continue
             step_list.append(child_node)
+        elif child_node.tag == stage_tag:
+            stage_name = child_node.get("name")
+            if stage_name is None:
+                print_error('`name` attribute is mandatory in Stage tag.'
+                            ' example : <Stage name="download">')
+                return False
+            if stage_name_pattern is not None:
+                if stage_name not in ['setup', stage_name_pattern, 'cleanup']:
+                    continue
+            stage_steps = child_node.findall(sub_step_tag)
+            if len(stage_steps) == 0:
+                print_warning('There are no steps in Stage={0} and will not'
+                              'be executed'.format(stage_name))
+                continue
+            first_step = copy.deepcopy(stage_steps[0])
+            first_step.set("stage_start", stage_name)
+            first_step.set("stage_step_count", len(stage_steps))
+            step_list.append(first_step)
+            if len(stage_steps) > 2:
+                step_list += stage_steps[1:-1]
+            last_step = copy.deepcopy(stage_steps[-1])
+            last_step.set("stage_end", stage_name)
+            step_list.append(last_step)
         elif child_node.tag == loop_tag:
             loop_count = child_node.get("id")
             if loop_count is None:
