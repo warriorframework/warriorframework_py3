@@ -22,9 +22,10 @@ from warrior.Framework.Utils.testcase_Utils import pNote, convertLogic
 from warrior.Framework.Utils.print_Utils import print_info, print_warning, print_error,\
  print_normal, print_debug
 from warrior.Framework.Utils.datetime_utils import wait_for_timeout
-from warrior.Framework.Utils.data_Utils import getSystemData
+from warrior.Framework.Utils.data_Utils import getSystemData, get_object_from_datarepository,\
+ update_datarepository
 from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer,\
-    WarriorKafkaConsumer
+ WarriorKafkaConsumer
 
 """This module is used for sequential execution of testcase steps """
 
@@ -82,11 +83,11 @@ class TestCaseStepsExecutionClass:
         self.current_step = self.step_list[current_step_number]
         #store loop iter number in data repository
         loop_iter_number = self.current_step.get("loop_iter_number", None)
-        Utils.data_Utils.update_datarepository({"loop_iter_number" : loop_iter_number})
+        update_datarepository({"loop_iter_number" : loop_iter_number})
 
         #store loop id in data repository
         loop_id = self.current_step.get("loopid", None)
-        Utils.data_Utils.update_datarepository({"loopid" : loop_id})
+        update_datarepository({"loopid" : loop_id})
         # Incrementing current_step_number for printing purposes.
         self.current_step_number = current_step_number + 1
 
@@ -405,7 +406,7 @@ class KafkaBasedExecution:
         """
         This function publish messages to desired topic
         """
-        topic_name = getSystemData(self.datafile, self.system_name, "topic_pub")
+        topic_name = getSystemData(self.datafile, self.system_name, "kafka_topic")
         if stage_status:
             stage_status = "SKIPPED" if stage_status == "SKIPPED" else convertLogic(stage_status)
             msg_dict = {
@@ -472,7 +473,7 @@ class KafkaBasedExecution:
             do_continue = 'continue'
         elif do_continue == 'break':
             to_cancel = True
-            Utils.data_Utils.update_datarepository({'to_cancel': to_cancel})
+            update_datarepository({'to_cancel': to_cancel})
             if self.cleanup_stage:
                 goto_step = str(self.cleanup_stage)
                 do_continue ='continue'
@@ -496,7 +497,7 @@ def execute_steps(step_list, data_repository, system_name, parallel, queue, skip
         get status and report to term and log
     """
 
-    kafka_sys = Utils.data_Utils.get_object_from_datarepository("kafka_system")
+    kafka_sys = get_object_from_datarepository("kafka_system")
     stage_begin = False
     stage_result_list = []
     stage_impact_list = []
@@ -514,6 +515,7 @@ def execute_steps(step_list, data_repository, system_name, parallel, queue, skip
         kafka_obj = KafkaBasedExecution(step_list, kafka_sys)
         producer_inst, consumer_inst = kafka_obj.get_kafka_obj()
         kafka_obj.get_cleanup_stage()
+        default_stage_list = get_object_from_datarepository("default_stage_list")
 
     if step_num is None:
         step_num = 0
@@ -534,7 +536,7 @@ def execute_steps(step_list, data_repository, system_name, parallel, queue, skip
 
             if step.get("stage_start") and kafka_sys and not goto_stepnum:
                 stage_name = step.get("stage_start")
-                if not stage_name == 'setup' and not stage_name == 'cleanup':
+                if stage_name not in default_stage_list:
                     stage_begin = True
                     kafka_obj.publish_message(producer_inst, stage_name)
                     do_continue, goto_stepnum, to_cancel = kafka_obj.get_message(consumer_inst,
@@ -556,7 +558,7 @@ def execute_steps(step_list, data_repository, system_name, parallel, queue, skip
 
             # Publishing kafka message after step execution
             if kafka_sys and step.get("stage_end"):
-                if step.get("stage_end") not in ['setup', 'cleanup'] and not to_cancel:
+                if step.get("stage_end") not in default_stage_list and not to_cancel:
                     stage_status = Utils.testcase_Utils.compute_status_using_impact(
                         stage_result_list, stage_impact_list)
                     if not stage_result_list:
@@ -567,7 +569,7 @@ def execute_steps(step_list, data_repository, system_name, parallel, queue, skip
 
                 if step.get("stage_end") == 'cleanup':
                     do_continue = 'break'
-                    to_cancel = Utils.data_Utils.get_object_from_datarepository('to_cancel')
+                    to_cancel = get_object_from_datarepository('to_cancel')
                     if to_cancel:
                         tc_step_exec_obj.update_cancel_status()
 

@@ -49,6 +49,27 @@ def append_step_list(step_list, step, value, go_next, mode, tag):
         step_list.append(copy_step)
     return step_list
 
+def get_stage_list():
+    """
+    This function creates a list of stages which needs to be executed
+    by default
+
+    :Arguments:
+        NA
+
+    :Return:
+        stage_name_pattern = Stage name
+        default_stage_list = List of stages to be executed
+    """
+
+    default_stage_list = []
+    stage_name_pattern = get_object_from_datarepository("stage_name")
+    kafka_system = get_object_from_datarepository("kafka_system")
+    default_stage_list += ['setup', 'cleanup']
+    if stage_name_pattern:
+        default_stage_list.append(stage_name_pattern)
+    update_datarepository({"default_stage_list" : default_stage_list})
+    return stage_name_pattern, default_stage_list 
 
 def get_step_list(filepath,
                   step_tag,
@@ -71,7 +92,9 @@ def get_step_list(filepath,
     step_list_with_rmt_retry = []
     root = Utils.xml_Utils.getRoot(filepath)
     steps = root.find(step_tag)
-    stage_name_pattern = get_object_from_datarepository("stage_name")
+    #stage_name_pattern = get_object_from_datarepository("stage_name")
+    stage_name_pattern, default_stage_list = get_stage_list() 
+    
     if steps is None:
         print_warning("The file: '{0}' has no {1} to be executed".format(
             filepath, step_tag))
@@ -88,7 +111,7 @@ def get_step_list(filepath,
                             ' example : <Stage name="download">')
                 return False
             if stage_name_pattern is not None:
-                if stage_name not in ['setup', stage_name_pattern, 'cleanup']:
+                if stage_name not in default_stage_list:
                     continue
             stage_steps = child_node.findall(sub_step_tag)
             if len(stage_steps) == 0:
