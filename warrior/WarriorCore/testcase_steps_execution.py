@@ -350,6 +350,8 @@ class TestCaseStepsExecutionClass:
 
     def update_cancel_status(self):
         """
+        This function updates the status with failure in case
+        of user interruption
         """
         self.step_status_list.append(False)
         self.step_impact_list.append('IMPACT')
@@ -357,18 +359,25 @@ class TestCaseStepsExecutionClass:
 
 class KafkaBasedExecution:
     """
+    Kafka handling in case of stage execution class
     """
 
     def __init__(self, step_list, system_name):
-        """constructor"""
+        """
+        Constructor
+
+        :param step_list: List of steps
+        :system_name: System name
+        """
+
         self.datafile = Utils.config_Utils.datafile
         self.system_name = system_name
-        self.step_stage = {}
         self.step_list = step_list
         self.cleanup_stage = None
 
     def get_kafka_obj(self):
         """
+        This function creates Kafka Consumer and Producer objects
         """
         kafka_ip = getSystemData(self.datafile, self.system_name, "ip")
         kafka_port = getSystemData(self.datafile, self.system_name, "kafka_port")
@@ -383,7 +392,7 @@ class KafkaBasedExecution:
         # Consumer
         consumer = WarriorKafkaConsumer(
             bootstrap_servers = ip_port,
-            #value_deserializer = lambda x: json.loads(x.decode('utf-8')),
+            value_deserializer = lambda x: json.loads(x.decode('utf-8')),
             auto_offset_reset='latest',
             group_id='my-group',
             enable_auto_commit=False
@@ -391,8 +400,10 @@ class KafkaBasedExecution:
 
         return producer, consumer
 
-    def publish_message(self, producer_inst, stage_name=None, stage_status=None):
+    def publish_message(self, producer_inst, stage_name=None, stage_status=None,
+                        abort=None):
         """
+        This function publish messages to desired topic
         """
         topic_name = getSystemData(self.datafile, self.system_name, "topic_pub")
         if stage_status:
@@ -401,6 +412,11 @@ class KafkaBasedExecution:
                 "stage_name" : stage_name,
                 "status" : stage_status,
                 "timestamp" : str(Utils.datetime_utils.get_current_timestamp())
+                }
+        elif abort:
+            message = "Operation Aborted by user"
+            msg_dict = {
+                "message" : message
                 }
         else:
             message = "Provide an action (continue/skip/cancel) for next stage: {0}".format(stage_name)
@@ -416,13 +432,15 @@ class KafkaBasedExecution:
 
     def get_message(self, consumer_inst, step_num, goto_step, step=None):
         """
+        This function internally calls kafka utils 
+        to consume messages
         """
         messages = None
         do_continue = 'continue'
         to_cancel = False
         if step:
             topic_name = getSystemData(self.datafile, self.system_name, "stage_topic")
-            t_wait = 30000
+            t_wait = 120000
         else:
             topic_name = getSystemData(self.datafile, self.system_name, "step_topic")
             t_wait = 100
@@ -434,16 +452,16 @@ class KafkaBasedExecution:
             if step:
                 print_info("WAITING FOR KAFKA Message")
                 print_info("STAGE execution : ", step.get('stage_start'))
-                print_info("If not received in 30secs, will continue with next step in testcase")
+                print_info("If not received in 120secs, will continue with next step in testcase")
             messages = consumer_inst.get_messages(timeout=t_wait,
                                               max_records=10,
                                               get_all_messages=None)
         consumer_inst.kafka_consumer.commit()
-        value_deserializer = lambda x: json.loads(x.decode('utf-8'))
         if messages:
-            kafka_dict = value_deserializer(messages[-1])
+            kafka_dict = messages[-1]
             print_info("Received=", json.dumps(kafka_dict))
-            do_continue = kafka_dict["action"] if kafka_dict["action"] else 'continue'
+            if 'action' in kafka_dict:
+                do_continue = kafka_dict["action"] if kafka_dict["action"] else 'continue'
         else:
             if step:
                 print_error("No message received from Kafka")
@@ -463,9 +481,8 @@ class KafkaBasedExecution:
 
     def get_cleanup_stage(self):
         """
+        This function finds the step number for cleanup stage
         """
-        count = 0
-        step_count = 0
         for index, step in enumerate(self.step_list):
             if step.get("stage_start") == "cleanup":
                 self.cleanup_stage = index + 1
@@ -504,9 +521,13 @@ def execute_steps(step_list, data_repository, system_name, parallel, queue, skip
             step = step_list[step_num]
             current_step = step_num + 1
 
-            # Kafka processing
+            # Kafka processing before step execution
             if kafka_sys and not goto_stepnum:
-                do_continue, goto_stepnum, to_cancel = kafka_obj.get_message(consumer_inst, current_step, goto_stepnum)
+                do_continue, goto_stepnum, to_cancel = kafka_obj.get_message(consumer_inst,
+                                                                             current_step,
+                                                                             goto_stepnum)
+                if to_cancel:
+                    kafka_obj.publish_message(producer_inst, abort=True)
                 if do_continue == "break":
                     tc_step_exec_obj.update_cancel_status()
                     break
@@ -516,27 +537,33 @@ def execute_steps(step_list, data_repository, system_name, parallel, queue, skip
                 if not stage_name == 'setup' and not stage_name == 'cleanup':
                     stage_begin = True
                     kafka_obj.publish_message(producer_inst, stage_name)
-                    do_continue, goto_stepnum, to_cancel = kafka_obj.get_message(consumer_inst, current_step, goto_stepnum, step)
+                    do_continue, goto_stepnum, to_cancel = kafka_obj.get_message(consumer_inst,
+                                                                                 current_step,
+                                                                                 goto_stepnum,
+                                                                                 step)
+                    if to_cancel:
+                        kafka_obj.publish_message(producer_inst, abort=True)
                 if do_continue == "break":
                     tc_step_exec_obj.update_cancel_status()
                     break
 
             step_num, goto_stepnum, do_continue = tc_step_exec_obj.execute_step(step_num,
                                                                                 goto_stepnum)
-
+            # Result processing for stage
             if stage_begin and not goto_stepnum:
                 stage_result_list.append(tc_step_exec_obj.step_status_list[-1])
                 stage_impact_list.append(tc_step_exec_obj.step_impact_list[-1])
 
-            if kafka_sys:
-                if step.get("stage_end") or (stage_begin and do_continue == 'break') :
-                    if step.get("stage_end") not in ['setup', 'cleanup'] and not to_cancel:
-                        stage_status = Utils.testcase_Utils.compute_status_using_impact(stage_result_list, stage_impact_list)
-                        if not stage_result_list:
-                            stage_status = "SKIPPED"
-                        kafka_obj.publish_message(producer_inst, step.get("stage_end"), stage_status)
-                        stage_begin = False
-                        stage_result_list.clear()
+            # Publishing kafka message after step execution
+            if kafka_sys and step.get("stage_end"):
+                if step.get("stage_end") not in ['setup', 'cleanup'] and not to_cancel:
+                    stage_status = Utils.testcase_Utils.compute_status_using_impact(
+                        stage_result_list, stage_impact_list)
+                    if not stage_result_list:
+                        stage_status = "SKIPPED"
+                    kafka_obj.publish_message(producer_inst, step.get("stage_end"), stage_status)
+                    stage_begin = False
+                    stage_result_list.clear()
 
                 if step.get("stage_end") == 'cleanup':
                     do_continue = 'break'

@@ -902,7 +902,8 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
     if Utils.file_Utils.fileExists(testcase_filepath):
         try:
             Utils.config_Utils.set_datarepository(data_repository)
-            Utils.data_Utils.update_datarepository({"stage_name" : stage_name, "kafka_system" : kafka_system})
+            Utils.data_Utils.update_datarepository({"stage_name" : stage_name,
+                                                    "kafka_system" : kafka_system})
             if Utils.testrandom_utils.get_generic_datafile(testcase_filepath, data_repository):
                 init_datarepository = copy.deepcopy(data_repository)
                 exec_tag = data_repository.get("gen_exec_tag", 'default')
