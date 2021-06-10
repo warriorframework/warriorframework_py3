@@ -64,7 +64,6 @@ def get_stage_list():
 
     default_stage_list = []
     stage_name_pattern = get_object_from_datarepository("stage_name")
-    kafka_system = get_object_from_datarepository("kafka_system")
     default_stage_list += ['setup', 'cleanup']
     if stage_name_pattern:
         default_stage_list.append(stage_name_pattern)
@@ -92,7 +91,6 @@ def get_step_list(filepath,
     step_list_with_rmt_retry = []
     root = Utils.xml_Utils.getRoot(filepath)
     steps = root.find(step_tag)
-    #stage_name_pattern = get_object_from_datarepository("stage_name")
     stage_name_pattern, default_stage_list = get_stage_list() 
     
     if steps is None:
@@ -106,6 +104,7 @@ def get_step_list(filepath,
             step_list.append(child_node)
         elif child_node.tag == stage_tag:
             stage_name = child_node.get("name")
+            wait_timeout = child_node.get("wait_timeout")
             if stage_name is None:
                 print_error('`name` attribute is mandatory in Stage tag.'
                             ' example : <Stage name="download">')
@@ -121,6 +120,8 @@ def get_step_list(filepath,
             first_step = copy.deepcopy(stage_steps[0])
             first_step.set("stage_start", stage_name)
             first_step.set("stage_step_count", len(stage_steps))
+            if wait_timeout:
+                first_step.set("wait_timeout", wait_timeout)
             step_list.append(first_step)
             if len(stage_steps) > 2:
                 step_list += stage_steps[1:-1]

@@ -773,6 +773,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                     value = ast.literal_eval(item.text)
                 except ValueError:
                     value = item.text
+                except SyntaxError:
+                    value = Utils.data_Utils.sub_from_env_var(item.text)
                 data.update({item.tag: value})
 
             ip_port = ["{}:{}".format(ip_address, ssh_port)]
