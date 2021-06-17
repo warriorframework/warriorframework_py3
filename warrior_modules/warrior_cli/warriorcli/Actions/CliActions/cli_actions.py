@@ -10,15 +10,19 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+
+import json
 from warrior.Framework import Utils
 from warriorcli.Utils import cli_Utils
-from warrior.Framework.Utils.print_Utils import print_warning, print_debug
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning, print_debug
 from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.Utils.data_Utils import getSystemData, get_session_id, get_credentials
 from warrior.Framework.Utils.encryption_utils import decrypt
 from warrior.WarriorCore.Classes.warmock_class import mockready
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 from warriorcli.ClassUtils.WNetwork.warrior_cli_class import WarriorCli
+from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer,\
+    WarriorKafkaConsumer, WarriorKafkaClient
 """This is the cli_actions module that has all cli related keywords """
 
 
@@ -33,6 +37,8 @@ class CliActions(object):
         self.logsdir = Utils.config_Utils.logsdir
         self.filename = Utils.config_Utils.filename
         self.logfile = Utils.config_Utils.logfile
+        self.kafka_producer_inst = None
+        self.kafka_consumer_inst = None
 
     @mockready
     def connect(self, system_name, session_name=None, prompt=".*(%|#|\$)",
@@ -148,6 +154,139 @@ class CliActions(object):
             else:
                 pNote("conn_type not provided for system={0}".format(call_system_name), "warn")
             status = status and result
+        return status, output_dict
+
+    def connect_to_session_manager(self, system_name, session_name=None):
+        """
+        This keyword checks whether the command can be published to the kafka topic
+        to which the session manager will be listening to and can recieve the response
+        by subscribing to the uniquely created kafka topic(tid_operation).
+
+        """
+
+        wdesc = "Check Session manager connectivity"
+        pNote(
+            "KEYWORD: connect_to_session_manager | Description: {0}".format(wdesc))
+        system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
+                                                                                     system_name)
+        output_dict = {}
+        status = True
+        wc_obj = WarriorCli()
+        session_id = get_session_id(system_name, session_name)
+        output_dict[session_id] = wc_obj
+        output_dict[session_id + "_td_response"] = {}
+        wait_timeout_ms = 120000
+
+        # We should get these parameters from payload or input data file
+        tid = Utils.data_Utils.get_object_from_datarepository("ne_data").get("tid")
+        operation = Utils.data_Utils.get_object_from_datarepository("operation")
+        kafka_send_topic = Utils.data_Utils.get_object_from_datarepository("session_mgr_kafka_topic")
+        kafka_ip = getSystemData(self.datafile, system_name, "ip")
+        kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
+        bootstrap_servers = ["{}:{}".format(kafka_ip, kafka_port)]
+
+        # create a kafka producer instance and send hello
+        producer = WarriorKafkaProducer(
+            bootstrap_servers=bootstrap_servers,
+            value_serializer=lambda x: json.dumps(x).encode('utf-8')
+        )
+
+        # create a kafka consumer instance to listen to response
+        consumer = WarriorKafkaConsumer(
+            bootstrap_servers=bootstrap_servers,
+            value_deserializer=lambda x: json.loads(x.decode('utf-8')),
+            auto_offset_reset='latest',
+            group_id='some-group',
+            enable_auto_commit=False
+        )
+
+        kafka_receive_topic = tid+"_"+operation
+        output_dict[session_id + "_kafka_producer_instance"] = producer
+        output_dict[session_id + "_kafka_consumer_instance"] = consumer
+        output_dict[session_id + "_kafka_receive_topic"] = kafka_receive_topic
+
+        command_payload = {
+            "tid": tid,
+            "command": "hello from warrior",
+            "kafka_topic": kafka_receive_topic
+
+        }
+
+        result = producer.send_messages(kafka_send_topic, command_payload)
+        if result:
+            print_debug(
+                "Command succesfully published to the kafka topic: {}".format(kafka_send_topic))
+            print_debug("Warrior will wait for {} seconds to get response from session manager".format(
+                wait_timeout_ms//1000))
+            result = consumer.subscribe_to_topics(topics=[kafka_receive_topic])
+            if not result:
+                print_error("Can not subscribe to the topic: {}".format(
+                    kafka_receive_topic))
+                status, output_dict = False, output_dict
+            else:
+                Utils.data_Utils.update_datarepository(output_dict)
+                messages = []
+                messages = consumer.get_messages(timeout=wait_timeout_ms,
+                                                 get_all_messages=None)
+                if messages:
+                    if messages[0].get("response", None) == "hello from session manager":
+                        print_info(
+                            "Response recevied from session manager: {}".format(messages))
+                        status, output_dict = True, output_dict
+                    else:
+                        print_error("No response from session manager")
+                        status, output_dict = False, output_dict
+                else:
+                    print_error("No response from session manager")
+                    status, output_dict = False, output_dict
+            consumer.kafka_consumer.commit()
+        else:
+            print_debug("Failed to publish command to the given kafka topic: {}".format(
+                kafka_send_topic))
+            status, output_dict = False, output_dict
+        Utils.data_Utils.update_datarepository(output_dict)
+        return status, output_dict
+
+    def disconnect_from_session_manager(self, system_name, session_name=None):
+        """
+        This keyword deletes the uniquely created kafka topic(tid_operation).
+
+        """
+
+        wdesc = "Delete kafka topic"
+        pNote(
+            "KEYWORD: disconnect_from_session_manager | Description: {0}".format(wdesc))
+        system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
+                                                                                     system_name)
+        output_dict = {}
+        status = True
+        kafka_result = False
+        session_id = get_session_id(system_name, session_name)
+        kafka_receive_topic = Utils.data_Utils.get_object_from_datarepository(
+            session_id + "_kafka_receive_topic")
+        kafka_ip = getSystemData(self.datafile, system_name, "ip")
+        kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
+        bootstrap_servers = ["{}:{}".format(kafka_ip, kafka_port)]
+        war_kafka_client = WarriorKafkaClient(
+            bootstrap_servers=bootstrap_servers,
+        )
+        if kafka_receive_topic:
+            try:
+                kafka_result = war_kafka_client.delete_topics(
+                    [kafka_receive_topic], timeout=30)
+                kafka_result = kafka_result
+            except:
+                print_error("Failed to delete topic {}: {}".format(
+                    kafka_receive_topic))
+                status, output_dict = False, {}
+            if kafka_result:
+                print_info("Topic {} deleted".format(kafka_receive_topic))
+            else:
+                print_error("Failed to delete topic {}: {}".format(
+                    kafka_receive_topic))
+        else:
+            print_warning("Kafka topic not found, so skipping")
+
         return status, output_dict
 
     @mockready
@@ -833,6 +972,50 @@ class CliActions(object):
         return self.send_testdata_command_kw(system_name, session_name,
                                              desc, var_sub, title=title, row_num=row_num,
                                              td_tag=td_tag, vc_tag=vc_tag)
+
+    def publish_testdata_command_to_kafka(self, system_name, session_name=None, wdesc='', var_sub=None,
+                                          title=None, row_num=None, td_tag=None, vc_tag=None):
+        """
+        Publish all the commands from testdata to kafka topic that has title equal to the
+        provided title
+        :Arguments:
+            1. system_name (string) = name of the system in the input datafile
+            2. session_name(string) = name of the session to the string
+            3. wdesc(string) = Keyword description
+            4. var_sub(string) = the pattern [var_sub] in the testdata commands,
+                                 start_prompt, end_prompt, verification search
+                                 will substituted with this value.
+            5. title = title from the testdata file.
+            6. row_num = row from the testdata file.
+            7. td_tag = tag/attribute name of testdata file.
+            8. vc_tag = tag/attribute name of variable config file.
+        :Returns:
+            1. status(bool)
+            2. response dictionary(dict): a dictionary having the responses of all
+                commands sent to the particular system or subsystem. This dictionary
+                is available in warrior frameworks global data_repository and can be
+                retrieved using the key= "session_id + _td_response" where
+                session_id="system_name+subsystem_name+session_name"
+        """
+        wdesc = "publish testdata command to kafka"
+        Utils.testcase_Utils.pSubStep(wdesc)
+        print_debug("System Name: {0}".format(system_name))
+        print_debug("Datafile: {0}".format(self.datafile))
+        session_id = Utils.data_Utils.get_session_id(system_name, session_name)
+        warcli_object = Utils.data_Utils.get_object_from_datarepository(
+            session_id)
+        testdata, varconfigfile = Utils.data_Utils.get_td_vc(self.datafile,
+                                                             system_name, td_tag, vc_tag)
+        status, td_resp_dict = cli_Utils.publish_commands_to_kafka_from_testdata(testdata,
+                                                                                 warcli_object,
+                                                                                 varconfigfile=varconfigfile,
+                                                                                 var_sub=var_sub, title=title,
+                                                                                 row=row_num,
+                                                                                 system_name=system_name,
+                                                                                 session_name=session_name,
+                                                                                 datafile=self.datafile)
+        Utils.testcase_Utils.report_substep_status(status)
+        return status, td_resp_dict
 
     @mockready
     def send_testdata_command_kw(self, system_name, session_name=None, wdesc='', var_sub=None,

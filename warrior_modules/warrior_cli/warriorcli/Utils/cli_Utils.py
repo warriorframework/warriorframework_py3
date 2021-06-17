@@ -340,7 +340,35 @@ def send_commands_from_testdata(testdatafile, obj_session, **args):
         wc_obj.conn_obj = WNetwork.warrior_cli_class.PexpectConnect()
         wc_obj.conn_obj.target_host = obj_session
         finalresult, td_resp_dict = wc_obj.send_commands_from_testdata(testdatafile, **args)
+    return finalresult, td_resp_dict
 
+
+def publish_commands_to_kafka_from_testdata(testdatafile, obj_session, **args):
+    """
+    - Parses the testdata file and gets the command details
+    for rows marked execute=yes and row=str_rownum.
+    - Publish the obtained commands to the kafka topic.
+    - If the commands have verification attribute set,
+    then verifies the verification text for presence/absence as defined
+    in the respective found attribute in the testdatfile.
+
+    :Arguments:
+        1. testdatafile = the xml file where command details are available.
+        2. obj_session = warrior_cli_class session object.
+        3. logfile.
+        4. varconfigfile=  xml file from which the values will be taken for subtitution
+        5. var_sub(string) = the pattern [var_sub] in the testdata commands,
+                                 start_prompt, end_prompt, verification search
+                                 will substituted with this value.
+        6. args = Optional filter to specify title/rownum
+    :Returns:
+        1. finalresult = boolean
+    """
+    if isinstance(obj_session, WNetwork.warrior_cli_class.WarriorCli):
+        finalresult, td_resp_dict = obj_session.publish_commands_to_kafka_from_testdata(testdatafile, **args)
+    else:
+        wc_obj = WNetwork.warrior_cli_class.WarriorCli()
+        finalresult, td_resp_dict = wc_obj.publish_commands_to_kafka_from_testdata(testdatafile, **args)
     return finalresult, td_resp_dict
 
 
