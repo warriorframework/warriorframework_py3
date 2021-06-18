@@ -156,11 +156,22 @@ class CliActions(object):
             status = status and result
         return status, output_dict
 
-    def connect_to_session_manager(self, system_name, session_name=None):
+    def connect_to_session_manager(self, system_name, kafka_system_name, tid, operation, session_name=None):
         """
         This keyword checks whether the command can be published to the kafka topic
         to which the session manager will be listening to and can recieve the response
         by subscribing to the uniquely created kafka topic(tid_operation).
+
+        Arguments:
+            1. system_name = This can be name of the system or a subsystem.
+            2. tid = This is a task id, each task will have it's own unique id.
+            3. operation = operation type
+            4. session_name = name of the session to the system.
+
+        Returns:
+            1. status(bool) = True/False
+            2. response dictionary(dict): an empty dictionary to store the responses of all
+                commands sent to the particular system or subsystem.
 
         """
 
@@ -178,20 +189,21 @@ class CliActions(object):
         wait_timeout_ms = 120000
 
         # We should get these parameters from payload or input data file
-        tid = Utils.data_Utils.get_object_from_datarepository("ne_data").get("tid")
-        operation = Utils.data_Utils.get_object_from_datarepository("operation")
-        kafka_send_topic = Utils.data_Utils.get_object_from_datarepository("session_mgr_kafka_topic")
-        kafka_ip = getSystemData(self.datafile, system_name, "ip")
-        kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
+        # tid = Utils.data_Utils.get_object_from_datarepository("ne_data").get("tid")
+        # operation = Utils.data_Utils.get_object_from_datarepository("operation")
+        # kafka_send_topic = Utils.data_Utils.get_object_from_datarepository("session_mgr_kafka_topic")
+        kafka_send_topic = "SESSION-MGR"
+        kafka_ip = getSystemData(self.datafile, kafka_system_name, "ip")
+        kafka_port = getSystemData(self.datafile, kafka_system_name, "kafka_port")
         bootstrap_servers = ["{}:{}".format(kafka_ip, kafka_port)]
 
-        # create a kafka producer instance and send hello
+        # kafka producer instance to send commands to the session manager
         producer = WarriorKafkaProducer(
             bootstrap_servers=bootstrap_servers,
             value_serializer=lambda x: json.dumps(x).encode('utf-8')
         )
 
-        # create a kafka consumer instance to listen to response
+        # kafka consumer instance to receive response from session manager
         consumer = WarriorKafkaConsumer(
             bootstrap_servers=bootstrap_servers,
             value_deserializer=lambda x: json.loads(x.decode('utf-8')),
@@ -200,23 +212,25 @@ class CliActions(object):
             enable_auto_commit=False
         )
 
-        kafka_receive_topic = tid+"_"+operation
+        kafka_receive_topic = tid + "_" + operation
         output_dict[session_id + "_kafka_producer_instance"] = producer
         output_dict[session_id + "_kafka_consumer_instance"] = consumer
+        output_dict[session_id + "_kafka_send_topic"] = kafka_send_topic
         output_dict[session_id + "_kafka_receive_topic"] = kafka_receive_topic
-
+        output_dict["tid"] = tid
+        output_dict["kafka_ip_port"] = "{}:{}".format(kafka_ip, kafka_port)
+        Utils.data_Utils.update_datarepository(output_dict)
         command_payload = {
             "tid": tid,
-            "command": "hello from warrior",
-            "kafka_topic": kafka_receive_topic
-
+            "session_validation": "true",
+            "cmd": "",
+            "kafka_produc_topic": kafka_receive_topic
         }
-
         result = producer.send_messages(kafka_send_topic, command_payload)
         if result:
-            print_debug(
-                "Command succesfully published to the kafka topic: {}".format(kafka_send_topic))
-            print_debug("Warrior will wait for {} seconds to get response from session manager".format(
+            print_info(
+                "Command payload successfully published to the kafka topic: {}".format(kafka_send_topic))
+            print_info("Warrior will wait for {} seconds to get response from session manager".format(
                 wait_timeout_ms//1000))
             result = consumer.subscribe_to_topics(topics=[kafka_receive_topic])
             if not result:
@@ -224,24 +238,22 @@ class CliActions(object):
                     kafka_receive_topic))
                 status, output_dict = False, output_dict
             else:
-                Utils.data_Utils.update_datarepository(output_dict)
                 messages = []
                 messages = consumer.get_messages(timeout=wait_timeout_ms,
                                                  get_all_messages=None)
                 if messages:
-                    if messages[0].get("response", None) == "hello from session manager":
-                        print_info(
-                            "Response recevied from session manager: {}".format(messages))
+                    print_info(
+                            "Response received from session manager: {}".format(messages))
+                    if messages[0].get("status") in ["true", "True"]:
                         status, output_dict = True, output_dict
                     else:
-                        print_error("No response from session manager")
                         status, output_dict = False, output_dict
                 else:
                     print_error("No response from session manager")
                     status, output_dict = False, output_dict
             consumer.kafka_consumer.commit()
         else:
-            print_debug("Failed to publish command to the given kafka topic: {}".format(
+            print_error("Failed to publish command to the kafka topic: {}".format(
                 kafka_send_topic))
             status, output_dict = False, output_dict
         Utils.data_Utils.update_datarepository(output_dict)
@@ -251,6 +263,13 @@ class CliActions(object):
         """
         This keyword deletes the uniquely created kafka topic(tid_operation).
 
+        Arguments:
+            1. system_name = This can be name of the system or a subsystem.
+            2. session_name = name of the session to the system.
+
+        Returns:
+            1. status(bool) = True/False
+
         """
 
         wdesc = "Delete kafka topic"
@@ -258,15 +277,13 @@ class CliActions(object):
             "KEYWORD: disconnect_from_session_manager | Description: {0}".format(wdesc))
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
                                                                                      system_name)
-        output_dict = {}
         status = True
         kafka_result = False
         session_id = get_session_id(system_name, session_name)
         kafka_receive_topic = Utils.data_Utils.get_object_from_datarepository(
             session_id + "_kafka_receive_topic")
-        kafka_ip = getSystemData(self.datafile, system_name, "ip")
-        kafka_port = getSystemData(self.datafile, system_name, "kafka_port")
-        bootstrap_servers = ["{}:{}".format(kafka_ip, kafka_port)]
+        kafka_ip_port = Utils.data_Utils.get_object_from_datarepository("kafka_ip_port")
+        bootstrap_servers = [kafka_ip_port]
         war_kafka_client = WarriorKafkaClient(
             bootstrap_servers=bootstrap_servers,
         )
@@ -278,16 +295,15 @@ class CliActions(object):
             except:
                 print_error("Failed to delete topic {}: {}".format(
                     kafka_receive_topic))
-                status, output_dict = False, {}
+                status = False
             if kafka_result:
-                print_info("Topic {} deleted".format(kafka_receive_topic))
+                print_info("Kafka topic: {}, deleted successfully".format(kafka_receive_topic))
             else:
-                print_error("Failed to delete topic {}: {}".format(
+                print_error("Failed to delete kafka topic: {}".format(
                     kafka_receive_topic))
         else:
             print_warning("Kafka topic not found, so skipping")
-
-        return status, output_dict
+        return status
 
     @mockready
     def disconnect(self, system_name, session_name=None):

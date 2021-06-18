@@ -428,7 +428,10 @@ class WarriorCli(object):
         return result, response
 
     def _publish_cmd_to_kafka(self, session_id, **kwargs):
-        """method to publish command"""
+        """method to publish command to kafka topic to which
+         session manager will be listening to
+         
+        """
 
         result = False
         response = ""
@@ -440,25 +443,24 @@ class WarriorCli(object):
             session_id + "_kafka_producer_instance")
         consumer = get_object_from_datarepository(
             session_id + "_kafka_consumer_instance")
-        kafka_send_topic = Utils.data_Utils.get_object_from_datarepository("session_mgr_kafka_topic")
+        kafka_send_topic = get_object_from_datarepository(
+            session_id + "_kafka_send_topic")
         kafka_receive_topic = get_object_from_datarepository(
             session_id + "_kafka_receive_topic")
-        tid = Utils.data_Utils.get_object_from_datarepository("ne_data").get("tid")
-
+        tid = get_object_from_datarepository("tid")
         command_payload = {
             "tid": tid,
-            "command": command,
+            "session_validation": "false",
+            "cmd": command,
             "startprompt": startprompt,
             "endprompt": endprompt,
-            "kafka_topic": kafka_receive_topic
+            "kafka_produc_topic": kafka_receive_topic
         }
-
         producer_result = producer.send_messages(kafka_send_topic, command_payload)
-
         if producer_result:
-            print_debug(
-                "Command succesfully published to kafka topic: {}".format(kafka_send_topic))
-            print_debug("Warrior will wait for {} seconds to get response from session manager".format(
+            print_info(
+                "Command payload successfully published to the kafka topic: {}".format(kafka_send_topic))
+            print_info("Warrior will wait for {} seconds to get response from session manager".format(
                 cmd_timeout//1000))
             consumer_result = consumer.subscribe_to_topics(topics=[kafka_receive_topic])
             if not consumer_result:
@@ -471,15 +473,16 @@ class WarriorCli(object):
                                                  get_all_messages=None)
                 if messages:
                         print_info(
-                            "Response recevied from session manager: {}".format(messages))
-                        status, response = True, messages[0].get("response")
+                            "Response received from session manager: {}".format(messages))
+                        status = True if messages[0].get("status") in ["True", "true"] else False
+                        response = messages[0].get("cmdRes")
                 else:
                     print_error("No response from session manager")
                     status = False
             consumer.kafka_consumer.commit()
-            return consumer_result and consumer_result and status, response
+            return consumer_result and status, response
         else:
-            print_debug("Failed to publish command to the given kafka topic: {}".format(
+            print_error("Failed to publish command to the given kafka topic: {}".format(
                 kafka_send_topic))
             return result, response
 
@@ -610,7 +613,7 @@ class WarriorCli(object):
 
         :Returns:
         started_thread_for_system (list[str]) = Stores the system names for
-        which threads were succesfully created
+        which threads were successfully created
 
         thread_instance_list (list[str]) = stores the instances of thread
         created for corresponding system in the started_thread_for_system list,
