@@ -100,7 +100,7 @@ def get_step_list(filepath,
     for child_node in steps:
         if child_node.tag == sub_step_tag:
             if stage_name_pattern is not None:
-                continue
+                child_node.set("skip", "yes")
             step_list.append(child_node)
         elif child_node.tag == stage_tag:
             stage_name = child_node.get("name")
@@ -109,10 +109,14 @@ def get_step_list(filepath,
                 print_error('`name` attribute is mandatory in Stage tag.'
                             ' example : <Stage name="download">')
                 return False
+            stage_steps = child_node.findall(sub_step_tag)
             if stage_name_pattern is not None:
                 if stage_name not in default_stage_list:
+                    for step in stage_steps:
+                        step.set("skip", "yes")
+                        step_list.append(step)
                     continue
-            stage_steps = child_node.findall(sub_step_tag)
+
             if len(stage_steps) == 0:
                 print_warning('There are no steps in Stage={0} and will not'
                               'be executed'.format(stage_name))
@@ -232,7 +236,6 @@ def get_step_list(filepath,
                                 arg_value, iter_number)
                             argument.set("value", arg_value)
                     step_list.append(copy_step)
-
     if root.tag == 'Project' or root.tag == 'TestSuite':
         step_list = []
         orig_step_list = steps.findall(sub_step_tag)

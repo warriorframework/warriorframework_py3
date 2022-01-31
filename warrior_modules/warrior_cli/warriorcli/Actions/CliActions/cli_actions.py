@@ -10,15 +10,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 '''
+
+import json
+import time
 from warrior.Framework import Utils
 from warriorcli.Utils import cli_Utils
-from warrior.Framework.Utils.print_Utils import print_warning, print_debug
+from warrior.Framework.Utils.print_Utils import print_error, print_info, print_warning, print_debug
 from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.Utils.data_Utils import getSystemData, get_session_id, get_credentials
 from warrior.Framework.Utils.encryption_utils import decrypt
 from warrior.WarriorCore.Classes.warmock_class import mockready
 from warrior.WarriorCore.Classes.war_cli_class import WarriorCliClass
 from warriorcli.ClassUtils.WNetwork.warrior_cli_class import WarriorCli
+from warrior.Framework.ClassUtils.confluent_kafka_utils_class import WarriorConfluentKafkaConsumer,\
+        WarriorConfluentKafkaProducer, WarriorConfluentKafkaClient
 """This is the cli_actions module that has all cli related keywords """
 
 
@@ -33,6 +38,8 @@ class CliActions(object):
         self.logsdir = Utils.config_Utils.logsdir
         self.filename = Utils.config_Utils.filename
         self.logfile = Utils.config_Utils.logfile
+        self.kafka_producer_inst = None
+        self.kafka_consumer_inst = None
 
     @mockready
     def connect(self, system_name, session_name=None, prompt=".*(%|#|\$)",
@@ -149,6 +156,183 @@ class CliActions(object):
                 pNote("conn_type not provided for system={0}".format(call_system_name), "warn")
             status = status and result
         return status, output_dict
+
+    def connect_to_session_manager(self, system_name, kafka_system_name, tid, operation, session_name=None,
+                                   wait_timeout=120):
+        """
+        This keyword checks whether the command can be published to the kafka topic
+        to which the session manager will be listening to and can recieve the response
+        by subscribing to the uniquely created kafka topic(tid_operation).
+
+        Arguments:
+            1. system_name = This can be name of the system or a subsystem.
+            2. tid = This is a task id, each task will have it's own unique id.
+            3. operation = operation type
+            4. session_name = name of the session to the system.
+            5. wait_timeout = timeout value in seconds
+
+        Returns:
+            1. status(bool) = True/False
+            2. response dictionary(dict): an empty dictionary to store the responses of all
+                commands sent to the particular system or subsystem.
+
+        """
+
+        wdesc = "Check Session manager connectivity"
+        pNote(
+            "KEYWORD: connect_to_session_manager | Description: {0}".format(wdesc))
+        system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,system_name)
+        kafka_topics = Utils.data_Utils.get_object_from_datarepository("kafka_topics") or []
+        output_dict = {}
+        time_list = []
+        status = True
+        status_message = ""
+        wc_obj = WarriorCli()
+        session_id = get_session_id(system_name, session_name)
+        output_dict[session_id] = wc_obj
+        output_dict[session_id + "_td_response"] = {}
+        wait_timeout_ms = int(wait_timeout)
+
+        # We should get these parameters from payload or input data file
+        # tid = Utils.data_Utils.get_object_from_datarepository("ne_data").get("tid")
+        # operation = Utils.data_Utils.get_object_from_datarepository("operation")
+        # kafka_send_topic = Utils.data_Utils.get_object_from_datarepository("session_mgr_kafka_topic")
+        kafka_send_topic = "SESSION-MGR"
+        kafka_ip = getSystemData(self.datafile, kafka_system_name, "ip")
+        kafka_port = getSystemData(self.datafile, kafka_system_name, "kafka_port")
+        #bootstrap_servers = ["{}:{}".format(kafka_ip, kafka_port)]
+        bootstrap_servers = kafka_ip + ':' + kafka_port
+
+        # kafka producer instance to send commands to the session manager
+        conf = {'bootstrap.servers' : bootstrap_servers}
+        producer = WarriorConfluentKafkaProducer(conf)
+
+        # kafka consumer instance to receive response from session manager
+        grp = 'group' + '_' + str(int(time.time()))
+        conf={'bootstrap.servers' : bootstrap_servers,
+              'group.id' : grp,
+              'auto.offset.reset' : 'earliest',
+              'max.poll.interval.ms' : 1020000,
+              'value.deserializer':lambda m, n: json.loads(m.decode('utf-8')),
+              'enable.auto.commit': False}
+
+        consumer = WarriorConfluentKafkaConsumer(
+            conf, data_format='Json')
+
+        kafka_receive_topic = tid + "_" + operation + "_" + str(int(time.time()))
+        kafka_topics.append(kafka_receive_topic)
+        Utils.data_Utils.update_datarepository({"kafka_topics": kafka_topics})
+        output_dict[session_id + "_kafka_producer_instance"] = producer
+        output_dict[session_id + "_kafka_consumer_instance"] = consumer
+        output_dict[session_id + "_kafka_receive_topic"] = kafka_receive_topic
+        output_dict["tid"] = tid
+        output_dict["kafka_ip_port"] = "{}:{}".format(kafka_ip, kafka_port)
+        Utils.data_Utils.update_datarepository(output_dict)
+        command_payload = {
+            "tid": tid,
+            "session_validation": "true",
+            "cmd": "",
+            "kafka_produc_topic": kafka_receive_topic
+        }
+
+        # create kafka topic
+        conf = {'bootstrap.servers' : bootstrap_servers}
+        war_kafka_client = WarriorConfluentKafkaClient(conf)
+        topic_result = war_kafka_client.create_topics([[kafka_receive_topic, 1, 1]], timeout=30)
+        if topic_result:
+            print_info("Topic {} created successfully".format(kafka_receive_topic))
+        time.sleep(60)
+ 
+        result = producer.send_messages(kafka_send_topic, command_payload)
+        if result:
+            print_info(
+                "Command payload successfully published to the kafka topic: {}".format(kafka_send_topic))
+            print_info("Warrior will wait for {} seconds to get response from session manager".format(
+                wait_timeout_ms))
+            result = consumer.subscribe_to_topics(topics=[kafka_receive_topic])
+            if not result:
+                print_error("Can not subscribe to the topic: {}".format(kafka_receive_topic))
+                status_message = "Can not subscribe to the topic"
+                status, output_dict = False, output_dict
+            else:
+                messages = []
+                messages = consumer.get_messages(timeout=wait_timeout_ms,
+                                                 get_all_messages=None)
+                if messages:
+                    print_info("Response received from session manager: {}".format(messages))
+                    if messages.get("cmdRes", None) == "NE Session Inactive":
+                        status_message = "NE Session Inactive"
+                    if (messages.get("status") in ["true", "True"]
+                            and isinstance(messages.get("kafkaPublishTopic"), str)):
+                        kafka_send_topic = messages.get("kafkaPublishTopic")
+                        status, output_dict = True, output_dict
+                    else:
+                        status, output_dict = False, output_dict
+                else:
+                    print_error("No response from session manager")
+                    status_message = "No response from session manager while connecting to session mgr"
+                    status, output_dict = False, output_dict
+                consumer.kafka_consumer.commit()
+        else:
+            print_error("Failed to publish command to the kafka topic: {}".format(
+                kafka_send_topic))
+            status_message = "Failed to publish command to the kafka topic"
+            status, output_dict = False, output_dict
+
+        output_dict[session_id + "_kafka_send_topic"] = kafka_send_topic
+        Utils.data_Utils.update_datarepository({"FAILURE_REASON": status_message})
+        Utils.data_Utils.update_datarepository(output_dict)
+        return status, output_dict
+
+    def disconnect_from_session_manager(self, system_name, session_name=None):
+        """
+        This keyword deletes the uniquely created kafka topic(tid_operation).
+
+        Arguments:
+            1. system_name = This can be name of the system or a subsystem.
+            2. session_name = name of the session to the system.
+
+        Returns:
+            1. status(bool) = True/False
+
+        """
+
+        wdesc = "Delete kafka topic"
+        pNote("KEYWORD: disconnect_from_session_manager | Description: {0}".format(wdesc))
+        system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
+                                                                                     system_name)
+        kafka_topics = Utils.data_Utils.get_object_from_datarepository("kafka_topics") or []
+        status = True
+        kafka_result = False
+        session_id = get_session_id(system_name, session_name)
+        
+        producer = Utils.data_Utils.get_object_from_datarepository(session_id + "_kafka_producer_instance")
+        consumer = Utils.data_Utils.get_object_from_datarepository(session_id + "_kafka_consumer_instance")
+
+        kafka_ip_port = Utils.data_Utils.get_object_from_datarepository("kafka_ip_port")
+        conf = {'bootstrap.servers': kafka_ip_port}
+        if kafka_topics:
+            producer.kafka_producer.flush(60)
+            consumer.kafka_consumer.unsubscribe()
+            consumer.kafka_consumer.close()
+
+            war_kafka_client = WarriorConfluentKafkaClient(conf)
+            time = len(kafka_topics)*360
+            for kafka_receive_topic in kafka_topics:
+                try:
+                    kafka_result = war_kafka_client.delete_topics([kafka_receive_topic], timeout=time)
+                    kafka_result = kafka_result
+                except:
+                    print_error("Failed to delete topic : {}".format(kafka_receive_topic))
+                    status = False
+                if kafka_result:
+                    print_info("Kafka topic: {}, deleted successfully".format(kafka_receive_topic))
+                else:
+                    print_error("Failed to delete kafka topic: {}".format(kafka_receive_topic))
+        else:
+            print_warning("Kafka topic not found, so skipping")
+
+        return status
 
     @mockready
     def disconnect(self, system_name, session_name=None):
@@ -834,6 +1018,50 @@ class CliActions(object):
                                              desc, var_sub, title=title, row_num=row_num,
                                              td_tag=td_tag, vc_tag=vc_tag)
 
+    def publish_testdata_command_to_kafka(self, system_name, session_name=None, wdesc='', var_sub=None,
+                                          title=None, row_num=None, td_tag=None, vc_tag=None):
+        """
+        Publish all the commands from testdata to kafka topic that has title equal to the
+        provided title
+        :Arguments:
+            1. system_name (string) = name of the system in the input datafile
+            2. session_name(string) = name of the session to the string
+            3. wdesc(string) = Keyword description
+            4. var_sub(string) = the pattern [var_sub] in the testdata commands,
+                                 start_prompt, end_prompt, verification search
+                                 will substituted with this value.
+            5. title = title from the testdata file.
+            6. row_num = row from the testdata file.
+            7. td_tag = tag/attribute name of testdata file.
+            8. vc_tag = tag/attribute name of variable config file.
+        :Returns:
+            1. status(bool)
+            2. response dictionary(dict): a dictionary having the responses of all
+                commands sent to the particular system or subsystem. This dictionary
+                is available in warrior frameworks global data_repository and can be
+                retrieved using the key= "session_id + _td_response" where
+                session_id="system_name+subsystem_name+session_name"
+        """
+        wdesc = "publish testdata command to kafka"
+        Utils.testcase_Utils.pSubStep(wdesc)
+        print_debug("System Name: {0}".format(system_name))
+        print_debug("Datafile: {0}".format(self.datafile))
+        session_id = Utils.data_Utils.get_session_id(system_name, session_name)
+        warcli_object = Utils.data_Utils.get_object_from_datarepository(
+            session_id)
+        testdata, varconfigfile = Utils.data_Utils.get_td_vc(self.datafile,
+                                                             system_name, td_tag, vc_tag)
+        status, td_resp_dict = cli_Utils.publish_commands_to_kafka_from_testdata(testdata,
+                                                                                 warcli_object,
+                                                                                 varconfigfile=varconfigfile,
+                                                                                 var_sub=var_sub, title=title,
+                                                                                 row=row_num,
+                                                                                 system_name=system_name,
+                                                                                 session_name=session_name,
+                                                                                 datafile=self.datafile)
+        Utils.testcase_Utils.report_substep_status(status)
+        return status, td_resp_dict
+
     @mockready
     def send_testdata_command_kw(self, system_name, session_name=None, wdesc='', var_sub=None,
                                  title=None, row_num=None, td_tag=None, vc_tag=None):
@@ -1051,3 +1279,5 @@ class CliActions(object):
             sys_status = self.disconnect(system_name)
             status = status and sys_status
         return status
+
+

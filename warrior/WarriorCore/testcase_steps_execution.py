@@ -24,8 +24,8 @@ from warrior.Framework.Utils.print_Utils import print_info, print_warning, print
 from warrior.Framework.Utils.datetime_utils import wait_for_timeout
 from warrior.Framework.Utils.data_Utils import getSystemData, get_object_from_datarepository,\
  update_datarepository
-from warrior.Framework.ClassUtils.kafka_utils_class import WarriorKafkaProducer,\
- WarriorKafkaConsumer
+from warrior.Framework.ClassUtils.confluent_kafka_utils_class import WarriorConfluentKafkaConsumer,\
+        WarriorConfluentKafkaProducer
 
 """This module is used for sequential execution of testcase steps """
 
@@ -382,22 +382,24 @@ class KafkaBasedExecution:
         """
         kafka_ip = getSystemData(self.datafile, self.system_name, "ip")
         kafka_port = getSystemData(self.datafile, self.system_name, "kafka_port")
-        ip_port = ["{}:{}".format(kafka_ip, kafka_port)]
+        ip_port = kafka_ip + ':' + kafka_port
 
         # Producer
-        producer = WarriorKafkaProducer(
-            bootstrap_servers = ip_port,
-            value_serializer = lambda x: json.dumps(x).encode('utf-8')
-            )
+        conf = {'bootstrap.servers' : ip_port}
+        producer = WarriorConfluentKafkaProducer(conf)
 
         # Consumer
-        consumer = WarriorKafkaConsumer(
-            bootstrap_servers = ip_port,
-            value_deserializer = lambda x: json.loads(x.decode('utf-8')),
-            auto_offset_reset='latest',
-            group_id='my-group',
-            enable_auto_commit=False
-            )
+        conf={'bootstrap.servers' : ip_port,
+              'group.id' : 'my-group',
+              'auto.offset.reset' : 'latest',
+              'value.deserializer':lambda m, n: json.loads(m.decode('utf-8')),
+              'enable.auto.commit': False}
+
+        consumer = WarriorConfluentKafkaConsumer(
+            conf, data_format='Json')
+
+        update_datarepository({"step_consumer" : consumer})
+        update_datarepository({"step_producer": producer})
 
         return producer, consumer
 
@@ -408,6 +410,7 @@ class KafkaBasedExecution:
         """
         kafka_msg_identifier = get_object_from_datarepository("kafka_msg_identifier")
         message = None
+        message_list = [message_list]
 
         if kafka_msg_identifier:
             for msg in message_list:
@@ -476,10 +479,10 @@ class KafkaBasedExecution:
         if stage_exec:
             topic_name = getSystemData(self.datafile, self.system_name, "stage_topic")
             wait_timeout_secs = step.get("wait_timeout") if step.get("wait_timeout") else 120
-            wait_timeout_ms = int(wait_t) * 1000
+            wait_timeout_secs = int(wait_timeout_secs)
         else:
             topic_name = getSystemData(self.datafile, self.system_name, "step_topic")
-            wait_timeout_ms = 100
+            wait_timeout_secs = 1.0
         result = consumer_inst.subscribe_to_topics(topics=[topic_name])
         if not result:
             print_info("Cannot subscribe to topics")
@@ -489,9 +492,9 @@ class KafkaBasedExecution:
                 print_info("STAGE execution : ", step.get('stage_start'))
                 print_info("If not received in {0}secs, will continue with next step "
                            "in testcase".format(wait_timeout_secs))
-            messages = consumer_inst.get_messages(timeout=wait_timeout_ms,
+            messages = consumer_inst.get_messages(timeout=wait_timeout_secs,
                                                   get_all_messages=None)
-        consumer_inst.kafka_consumer.commit()
+            consumer_inst.kafka_consumer.commit()
         if messages:
             do_continue = self.verify_message(messages)
         else:
@@ -502,8 +505,11 @@ class KafkaBasedExecution:
             step_count = step.get("stage_step_count") if step.get("stage_step_count") else 0
             goto_step = str(step_num + step_count)
             do_continue = 'continue'
-        elif do_continue == 'break':
+        elif do_continue == 'cancel':
+            do_continue = 'break'
             to_cancel = True
+            update_datarepository({"EXEC_STATUS" : "Failure"})
+            update_datarepository({"FAILURE_REASON" : "OPERATION ABORTED BY USER !!"})
             update_datarepository({'to_cancel': to_cancel})
             if self.cleanup_stage:
                 goto_step = str(self.cleanup_stage)
@@ -553,6 +559,9 @@ def execute_steps(step_list, data_repository, system_name, parallel, queue, skip
         while step_num < len(step_list):
             step = step_list[step_num]
             current_step = step_num + 1
+            if step.get("skip") == "yes":
+                step_num = current_step
+                continue
 
             # Kafka processing before step execution
             if kafka_sys and not goto_stepnum:
@@ -604,6 +613,8 @@ def execute_steps(step_list, data_repository, system_name, parallel, queue, skip
 
             if do_continue == "break":
                 break
+        if kafka_sys:
+            consumer_inst.kafka_consumer.close()
     else:
         for _step_num in step_num:
             if 0 <= _step_num < len(step_list):
