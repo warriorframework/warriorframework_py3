@@ -483,7 +483,7 @@ class WarriorCli(object):
                         status = True if messages.get("status") in ["True", "true"] else False
                         response = messages.get('cmdRes', '')
                         # Create the tl1 log file and append the command, response to it
-                        filename = 'tl1_log_{}.log'.format(tid)
+                        filename = 'tl1_cmd_res.log'
                         if os.path.exists(filename):
                             append_write = 'a'
                         else:
