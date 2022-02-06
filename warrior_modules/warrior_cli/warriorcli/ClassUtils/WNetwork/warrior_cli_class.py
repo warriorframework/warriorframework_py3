@@ -475,13 +475,13 @@ class WarriorCli(object):
                 status = False
             else:
                 messages = []
-                messages = consumer.get_messages(timeout=cmd_timeout,
+                messages = consumer.get_messages(timeout=cmd_timeout,max_records=1,
                                                  get_all_messages=None)
                 if messages:
                         print_info(
                             "Response received from session manager: {}".format(messages))
-                        status = True if messages.get("status") in ["True", "true"] else False
-                        response = messages.get('cmdRes', '')
+                        status = True if messages[0].get("status") in ["True", "true"] else False
+                        response = messages[0].get('cmdRes', '')
                         # Create the tl1 log file and append the command, response to it
                         filename = 'tl1_cmd_res.log'
                         if os.path.exists(filename):
@@ -490,7 +490,7 @@ class WarriorCli(object):
                             append_write = 'w'
                         # Open the file in write mode if not exists else in append mode
                         f = open(filename, append_write)
-                        f.write(messages.get('cmd', '') + '\n' + '\n' + response)
+                        f.write(messages[0].get('cmd', '') + '\n' + '\n' + response)
                         f.close()
                 else:
                     print_error("No response from session manager")

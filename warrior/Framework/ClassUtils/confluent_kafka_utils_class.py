@@ -24,17 +24,13 @@ class WarriorConfluentKafkaConsumer():
     """
     This class contains all Confluent kafka consumer methods
     """
-    def __init__(self, configs, data_format='Json'):
+    def __init__(self, configs):
         """
         Create Kafka Consumer object
         """
         print_info("creating kafka consumer")
-        self.data_format = data_format
         try:
-            if self.data_format == 'Json':
-                self.kafka_consumer = DeserializingConsumer(configs)
-            else:
-                self.kafka_consumer = Consumer(configs)
+            self.kafka_consumer = Consumer(configs)
         except KafkaException as exc:
             print_error("Kafka consumer - Exception during connecting to broker - {}".format(exc))
 
@@ -125,21 +121,27 @@ class WarriorConfluentKafkaConsumer():
         Returns:
           messages(list): messages from the consumer
         """
-        timeout_sec = kwargs.get("timeout", 60)
-        messages = ''
+        timeout_sec = kwargs.get("timeout", 1.0)
+        max_records = kwargs.get("max_records", 200)
+        messages = []
+        msg_pack = []
         print_info("get messages published to subscribed topics")
         try:
-            msg = self.kafka_consumer.poll(timeout=timeout_sec)
-            if msg is None:
-                messages = msg
+            msg_pack = self.kafka_consumer.consume(int(max_records), int(timeout_sec))
+            if msg_pack is None:
+                messages = []
             else:
-                if msg.error():
-                    raise KafkaException(msg.error())
-                else:
-                    messages = msg.value()
+                for message in msg_pack:
+                    if message.error():
+                        raise KafkaException(message.error())
+                    else:
+                        dict_str = message.value()
+                        data = json.loads(dict_str.decode("UTF-8"))
+                        messages.append(data)
         except KafkaException as exc:
             print_error("Exception occured in get_messages - {}".format(exc))
-
+        except json.JSONDecodeError as exc:
+            print_error("Received incorrect Kafka payload format {}".format(exc))
         return messages
 
     def get_topics(self):
@@ -243,8 +245,7 @@ class WarriorConfluentKafkaClient():
         """
         timeout = kwargs.get("timeout", None)
         validate = kwargs.get("validate", False)
-        new_topics = [NewTopic(topic=tup[0], num_partitions=tup[1],\
-                      replication_factor=tup[2]) for tup in topic_sets]
+        new_topics = [NewTopic(topic=tup[0], num_partitions=tup[1]) for tup in topic_sets]
         print_info("creating topics")
         try:
             fs = self.kafka_client.create_topics(new_topics=new_topics,

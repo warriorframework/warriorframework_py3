@@ -213,11 +213,9 @@ class CliActions(object):
               'group.id' : grp,
               'auto.offset.reset' : 'earliest',
               'max.poll.interval.ms' : 1020000,
-              'value.deserializer':lambda m, n: json.loads(m.decode('utf-8')),
               'enable.auto.commit': False}
 
-        consumer = WarriorConfluentKafkaConsumer(
-            conf, data_format='Json')
+        consumer = WarriorConfluentKafkaConsumer(conf)
 
         kafka_receive_topic = tid + "_" + operation + "_" + str(int(time.time()))
         kafka_topics.append(kafka_receive_topic)
@@ -238,7 +236,7 @@ class CliActions(object):
         # create kafka topic
         conf = {'bootstrap.servers' : bootstrap_servers}
         war_kafka_client = WarriorConfluentKafkaClient(conf)
-        topic_result = war_kafka_client.create_topics([[kafka_receive_topic, 1, 1]], timeout=30)
+        topic_result = war_kafka_client.create_topics([[kafka_receive_topic, 1]], timeout=30)
         if topic_result:
             print_info("Topic {} created successfully".format(kafka_receive_topic))
         time.sleep(60)
@@ -256,15 +254,15 @@ class CliActions(object):
                 status, output_dict = False, output_dict
             else:
                 messages = []
-                messages = consumer.get_messages(timeout=wait_timeout_ms,
+                messages = consumer.get_messages(timeout=wait_timeout_ms,max_records=1,
                                                  get_all_messages=None)
                 if messages:
                     print_info("Response received from session manager: {}".format(messages))
-                    if messages.get("cmdRes", None) == "NE Session Inactive":
+                    if messages[0].get("cmdRes", None) == "NE Session Inactive":
                         status_message = "NE Session Inactive"
-                    if (messages.get("status") in ["true", "True"]
-                            and isinstance(messages.get("kafkaPublishTopic"), str)):
-                        kafka_send_topic = messages.get("kafkaPublishTopic")
+                    if (messages[0].get("status") in ["true", "True"]
+                            and isinstance(messages[0].get("kafkaPublishTopic"), str)):
+                        kafka_send_topic = messages[0].get("kafkaPublishTopic")
                         status, output_dict = True, output_dict
                     else:
                         status, output_dict = False, output_dict

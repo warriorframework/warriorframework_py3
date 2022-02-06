@@ -392,11 +392,9 @@ class KafkaBasedExecution:
         conf={'bootstrap.servers' : ip_port,
               'group.id' : 'my-group',
               'auto.offset.reset' : 'latest',
-              'value.deserializer':lambda m, n: json.loads(m.decode('utf-8')),
               'enable.auto.commit': False}
 
-        consumer = WarriorConfluentKafkaConsumer(
-            conf, data_format='Json')
+        consumer = WarriorConfluentKafkaConsumer(conf)
 
         update_datarepository({"step_consumer" : consumer})
         update_datarepository({"step_producer": producer})
@@ -410,7 +408,6 @@ class KafkaBasedExecution:
         """
         kafka_msg_identifier = get_object_from_datarepository("kafka_msg_identifier")
         message = None
-        message_list = [message_list]
 
         if kafka_msg_identifier:
             for msg in message_list:
