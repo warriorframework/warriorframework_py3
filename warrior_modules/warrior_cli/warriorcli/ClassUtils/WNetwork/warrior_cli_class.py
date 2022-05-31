@@ -427,6 +427,56 @@ class WarriorCli(object):
                                                           log=log)
         return result, response
 
+    def compare_req_res(self, command, msg_cmd):
+        cmd1 = command.split(':')[0]
+        tid1 = command.split(':')[1]
+        request_cmd = cmd1 + ':' + tid1
+        cmd2 = msg_cmd.split(':')[0]
+        tid2 = msg_cmd.split(':')[1]
+        response_cmd = cmd2 + ':' + tid2
+        if request_cmd == response_cmd:
+            return True
+        return False
+
+    def verify_through_all_messages(self, topic=None, consumer_inst=None, command=None):
+        response = ''
+        if topic:
+            consumer_inst.assign_to_beginning(topic=topic)
+            messages = consumer_inst.get_messages(timeout=30, get_all_messages=None)
+            for message in messages:
+                if command:
+                    msg_cmd = message.get('cmd', '')
+                    #print('command value {}'.format(msg_cmd))
+                    if not msg_cmd:
+                        continue
+                    status = self.compare_req_res(command, msg_cmd)
+                    if status:
+                        response = message
+                        break
+                else:
+                    msg_value = message.get('kafkaPublishTopic', '')
+                    if msg_value:
+                        response = message
+                        break
+        if not response:
+            print_info('---------------------------------------------------------------------------')
+            print_info('List of all messages in topic {}'.format(messages))
+            print_info('---------------------------------------------------------------------------')
+        return response
+
+    def create_tl1_log(self, messages, response):
+        # Create the tl1 log file and append the command, response to it
+        filename = 'tl1_cmd_res.log'
+        if os.path.exists(filename):
+            append_write = 'a'
+        else:
+            append_write = 'w'
+        # Open the file in write mode if not exists else in append mode
+        f = open(filename, append_write)
+        f.write(messages.get('cmd', '') + '\n' + '\n' + response)
+        f.close()
+
+
     def _publish_cmd_to_kafka(self, session_id, **kwargs):
         """method to publish command to kafka topic to which
          session manager will be listening to
@@ -440,7 +490,7 @@ class WarriorCli(object):
         notexpect = kwargs.get('notexpect', "")
         autonomous = kwargs.get('autonomous', 'false')
         #cmd_timeout = 300000
-        cmd_timeout = kwargs.get('cmd_timeout') if kwargs.get('cmd_timeout') else 120
+        cmd_timeout = kwargs.get('cmd_timeout') if kwargs.get('cmd_timeout') else 300
         cmd_timeout = int(cmd_timeout)
         producer = get_object_from_datarepository(
             session_id + "_kafka_producer_instance")
@@ -452,6 +502,7 @@ class WarriorCli(object):
             session_id + "_kafka_receive_topic")
         #tid = get_object_from_datarepository("tid")
         tid = command.split(':')[1]
+        step_impact = get_object_from_datarepository("wt_step_impact","")
         command_payload = {
             "tid": tid,
             "session_validation": "false",
@@ -464,7 +515,7 @@ class WarriorCli(object):
         producer_result = producer.send_messages(kafka_send_topic, command_payload)
         if producer_result:
             print_info(
-                "Command payload successfully published to the kafka topic: {}".format(kafka_send_topic))
+                "Command payload successfully published at {} to the kafka topic: {}".format(int(time.time()), kafka_send_topic))
             print_info("Warrior will wait for {} seconds to get response from session manager".format(
                 cmd_timeout))
             consumer_result = consumer.subscribe_to_topics(topics=[kafka_receive_topic])
@@ -479,23 +530,34 @@ class WarriorCli(object):
                                                  get_all_messages=None)
                 if messages:
                         print_info(
-                            "Response received from session manager: {}".format(messages))
-                        status = True if messages[0].get("status") in ["True", "true"] else False
-                        response = messages[0].get('cmdRes', '')
-                        # Create the tl1 log file and append the command, response to it
-                        filename = 'tl1_cmd_res.log'
-                        if os.path.exists(filename):
-                            append_write = 'a'
+                            "Response received from session manager [{}]: {}".format(int(time.time()), messages))
+                        msg_cmd = messages[0].get('cmd', '')
+                        if msg_cmd:
+                            status = self.compare_req_res(command, msg_cmd)
+                            if status:
+                                status = True if messages[0].get("status") in ["True", "true"] else False
+                                response = messages[0].get('cmdRes', '')
+                                self.create_tl1_log(messages[0], response)
+                            else:
+                                status = False
+                                print_error("Response payload mismatch from session manager.")
+                                update_datarepository({"FAILURE_REASON": "Response payload mismatch from session manager"})
                         else:
-                            append_write = 'w'
-                        # Open the file in write mode if not exists else in append mode
-                        f = open(filename, append_write)
-                        f.write(messages[0].get('cmd', '') + '\n' + '\n' + response)
-                        f.close()
+                            status = False
                 else:
-                    print_error("No response from session manager")
-                    update_datarepository({"FAILURE_REASON": "No response from session manager while executing command: {}".format(command.split(":")[0])})
-                    status = False
+                    print('In warrior cli else section')
+                    #time.sleep(120)
+                    message = self.verify_through_all_messages(topic=kafka_receive_topic, consumer_inst=consumer, command=command)
+                    if message:
+                        print_info('Response received from session manager [{}] : {}'.format(int(time.time()), message))
+                        response = message.get('cmdRes','')
+                        self.create_tl1_log(message, response)
+                        status = True if message.get("status") in ["True", "true"] else False
+                    else:
+                        print_error("No response from session manager")
+                        if step_impact != "noimpact":
+                            update_datarepository({"FAILURE_REASON": "No response from session manager while executing command: {}".format(command.split(":")[0])})
+                        status = False
             consumer.kafka_consumer.commit()
             return consumer_result and status, response
         else:

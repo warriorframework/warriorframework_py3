@@ -110,6 +110,23 @@ class WarriorConfluentKafkaConsumer():
             result = False
         return result
 
+    def assign_to_beginning(self, topic=None):
+        topic_partitions = []
+        if topic is None:
+            print_info("Topic not provided for assign to beginning")
+        else:
+            ltopics = self.kafka_consumer.list_topics()
+            dict_topics = ltopics.topics
+            if topic not in dict_topics:
+                print_info("Topic not present in kafka environment")
+            else:
+                dict_partitions = dict_topics[topic].partitions
+                partitions = list(dict_partitions.keys())
+                for partition in partitions:
+                    topic_partitions.append(TopicPartition(topic,partition,offset=-2))
+                self.kafka_consumer.assign(topic_partitions)
+
+
     def get_messages(self, get_all_messages=False, **kwargs):
         """
         Get messages from consumer.
@@ -243,13 +260,14 @@ class WarriorConfluentKafkaClient():
           result(bool) : False if exception occures, True otherwise
          None.
         """
-        timeout = kwargs.get("timeout", None)
+        timeout = kwargs.get("timeout", 0)
         validate = kwargs.get("validate", False)
         new_topics = [NewTopic(topic=tup[0], num_partitions=tup[1]) for tup in topic_sets]
         print_info("creating topics")
         try:
             fs = self.kafka_client.create_topics(new_topics=new_topics,
                                             operation_timeout=float(timeout),
+                                            request_timeout=float(timeout),
                                             validate_only=validate)
             for topic, f in fs.items():
                 f.result()
@@ -272,7 +290,8 @@ class WarriorConfluentKafkaClient():
         print_info("deleting topics {}".format(topics))
         try:
             fs = self.kafka_client.delete_topics(topics=topics,
-                                                 operation_timeout=timeout)
+                                                 operation_timeout=float(timeout),
+                                                 request_timeout=float(timeout))
             for topic, f in fs.items():
                 f.result()
                 print_info("Topic {} deleted".format(topic))

@@ -204,7 +204,10 @@ class CliActions(object):
         bootstrap_servers = kafka_ip + ':' + kafka_port
 
         # kafka producer instance to send commands to the session manager
-        conf = {'bootstrap.servers' : bootstrap_servers}
+        conf = {'bootstrap.servers' : bootstrap_servers,
+                'request.timeout.ms' : 800000,
+                'api.version.request.timeout.ms' : 200000
+                }
         producer = WarriorConfluentKafkaProducer(conf)
 
         # kafka consumer instance to receive response from session manager
@@ -212,7 +215,7 @@ class CliActions(object):
         conf={'bootstrap.servers' : bootstrap_servers,
               'group.id' : grp,
               'auto.offset.reset' : 'earliest',
-              'max.poll.interval.ms' : 1020000,
+              'max.poll.interval.ms' : 1500000,
               'enable.auto.commit': False}
 
         consumer = WarriorConfluentKafkaConsumer(conf)
@@ -234,9 +237,14 @@ class CliActions(object):
         }
 
         # create kafka topic
-        conf = {'bootstrap.servers' : bootstrap_servers}
+        conf = {'bootstrap.servers' : bootstrap_servers,
+                'request.timeout.ms' : 600000}
         war_kafka_client = WarriorConfluentKafkaClient(conf)
-        topic_result = war_kafka_client.create_topics([[kafka_receive_topic, 1]], timeout=30)
+        start = int(time.time())
+        topic_result = war_kafka_client.create_topics([[kafka_receive_topic, 1]], timeout=900)
+        end = int(time.time())
+        time_diff = end - start
+        print("Took {} sec to create topic".format(time_diff))
         if topic_result:
             print_info("Topic {} created successfully".format(kafka_receive_topic))
         time.sleep(60)
@@ -257,7 +265,7 @@ class CliActions(object):
                 messages = consumer.get_messages(timeout=wait_timeout_ms,max_records=1,
                                                  get_all_messages=None)
                 if messages:
-                    print_info("Response received from session manager: {}".format(messages))
+                    print_info("Response received from session manager [{}]: {}".format(int(time.time()), messages))
                     if messages[0].get("cmdRes", None) == "NE Session Inactive":
                         status_message = "NE Session Inactive"
                     if (messages[0].get("status") in ["true", "True"]
@@ -267,9 +275,23 @@ class CliActions(object):
                     else:
                         status, output_dict = False, output_dict
                 else:
-                    print_error("No response from session manager")
-                    status_message = "No response from session manager while connecting to session mgr"
-                    status, output_dict = False, output_dict
+                    print_info('Inside else part of get messages.')
+                    #time.sleep(120)
+                    res = wc_obj.verify_through_all_messages(topic=kafka_receive_topic, consumer_inst=consumer)
+                    if res:
+                        print_info('Response received from session manager [{}] : {}'.format(int(time.time()), res))
+                        if res.get("cmdRes", None) == "NE Session Inactive":
+                            status_message = "NE Session Inactive"
+                        if (res.get("status") in ["true", "True"]
+                                and isinstance(res.get("kafkaPublishTopic"), str)):
+                            kafka_send_topic = res.get("kafkaPublishTopic")
+                            status, output_dict = True, output_dict
+                        else:
+                            status, output_dict = False, output_dict
+                    else:
+                        print_error("No response from session manager")
+                        status_message = "No response from session manager while connecting to session mgr"
+                        status, output_dict = False, output_dict
                 consumer.kafka_consumer.commit()
         else:
             print_error("Failed to publish command to the kafka topic: {}".format(
@@ -318,7 +340,8 @@ class CliActions(object):
             time = len(kafka_topics)*360
             for kafka_receive_topic in kafka_topics:
                 try:
-                    kafka_result = war_kafka_client.delete_topics([kafka_receive_topic], timeout=time)
+                    kafka_result = war_kafka_client.delete_topics([kafka_receive_topic], timeout=900)#time)
+                    #print_info("skipping topic deletion")
                     kafka_result = kafka_result
                 except:
                     print_error("Failed to delete topic : {}".format(kafka_receive_topic))
