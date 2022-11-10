@@ -287,6 +287,7 @@ class NetconfActions(object):
         netconf_object = Utils.data_Utils.get_object_from_datarepository(session_id)
         step_num = data_repository["step_num"]
         update_datarepository({"step_{0}_command".format(step_num): command})
+        command_data = command
         reply = ''
         mapfile = data_repository.get('wt_mapfile', None)
         try:
@@ -314,6 +315,7 @@ class NetconfActions(object):
                         else:
                             reply = netconf_object.request_rpc(config_data['REQUEST'])
                         print_info('reply: {0}'.format(reply))
+                        update_datarepository({command_data + "_reply": reply })
                         # Check if the user gave match string to compare with the response
                         if 'MATCH_STRING' in optional_data.keys():
                             # Check if the MATCH_STRING contains 'AND', 'OR', 'NOT'

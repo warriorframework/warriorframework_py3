@@ -1407,6 +1407,7 @@ class PexpectConnect(object):
                                                  self.ip, conn_options)
         # command = ('ssh -p '+ port + ' ' + username + '@' + ip)
         print_debug("connectSSH: cmd = %s" % command)
+        print_info("connectSSH: cmd = %s" % command)
         child = WarriorCli.pexpect_spawn_with_env(self.pexpect, command,
                                                   self.timeout,
                                                   escape=self.escape,
