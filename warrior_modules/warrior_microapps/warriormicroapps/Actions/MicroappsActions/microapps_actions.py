@@ -68,12 +68,47 @@ class MicroappsActions(object):
                                                 if splitted_command[0] == "3" or splitted_command[0] == \
                                                         "wctrl:x" or splitted_command[0] == ";":
                                                     failure_reason = "Communication Failure with device"
+                                                    if "Connection closed by foreign host" in response:
+                                                        failure_reason = "Communication Failure - Connection closed by foreign host"
+
+                                                    if "Unable to connect to remote host: Connection refused" in response:
+                                                        failure_reason = "Unable to connect to remote host: Connection refused"
+
+                                                    if "Unable to connect to remote host: Connection timed out" in response:
+                                                        failure_reason = "Unable to connect to remote host: Connection timed out"
+
+                                                    if "Connection closed by remote host" in response:
+                                                        failure_reason = "Communication Failure - Connection closed by remote host"
+
                                                 else:
                                                     if "Expected pattern not found" in response:
                                                         failure_reason = "{} Failed : reason {}".format(splitted_command[0],
                                                                                                         response)
                                                     else:
-                                                        failure_reason = "{0} Failed".format(splitted_command[0])
+
+                                                        if "Connection closed by remote host" in response:
+                                                            failure_reason = "Communication Failure - Connection closed by remote host"
+
+                                                        elif "Connection closed by foreign host" in response:
+                                                            failure_reason = "Communication Failure - Connection closed by foreign host"
+
+                                                        elif "Unable to connect to remote host: Connection refused" in response:
+                                                            failure_reason = "Unable to connect to remote host: Connection refused"
+
+                                                        elif "Unable to connect to remote host: Connection timed out" in response:
+                                                             failure_reason = "Unable to connect to remote host: Connection timed out"
+
+                                                        elif "TID Unreachable Error" in response:
+                                                            failure_reason = "{} failed - TID Unreachable Error".format(splitted_command[0])
+
+                                                        elif "Input, Syntax invalid CHaracter" in response:
+                                                            failure_reason = "{} failed - input, Syntax invalid CHaracter".format(splitted_command[0])
+
+                                                        elif "Status Remote Session Dropped (sent by T-TD TL1_TTD)" in response:
+                                                            failure_reason = "{} failed - Status Remote Session Dropped".format(splitted_command[0])
+
+                                                        else:
+                                                            failure_reason = "{0} Failed".format(splitted_command[0])
 
         if failure_reason is None and script_status is False:
             failure_reason = "NE response mismatch"

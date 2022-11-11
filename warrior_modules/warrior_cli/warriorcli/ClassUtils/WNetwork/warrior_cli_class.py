@@ -371,7 +371,7 @@ class WarriorCli(object):
                 response = reobj.group(0) if reobj is not None else ""
                 temp_resp_dict = {resp_ref: response}
                 resp_key_list.append(temp_resp_dict)
-                # storing the value and expected output in data repository 
+                # storing the value and expected output in data repository
                 resp_key_dict = {resp_pat_key: response}
                 data_repository.update(resp_key_dict)
                 print_debug(save_msg1+'.')
@@ -1682,10 +1682,18 @@ class PexpectConnect(object):
                 step_num = data_repository['step_num']
                 if self.target_host.after == self.pexpect.TIMEOUT:
                     pNote("EXCEPTION !! Command Timed Out", 'error')
-                    data_repository['step_%s_errormessage' % step_num] = "command timed out while executing command: {}".format(command.split(":")[0])
+                    data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing command: {}".format(command.split(":")[0])
+                    if command.split(":")[0] == "ACT-USER":
+                        data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing ACT-USER command - ip/port details used for NE session is invalid"
+                    if command.split(":")[0] == ";":
+                        data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing ; - ip/port details used for NE session is invalid"
                 elif self.target_host.after == self.pexpect.EOF:
                     pNote("EXCEPTION !! Device unresponsive", 'error')
-                    data_repository['step_%s_errormessage' % step_num] = "device unresponsive while executing command: {}".format(command.split(":")[0])
+                    data_repository['step_%s_errormessage' % step_num] = "Device unresponsive while executing command: {}".format(command.split(":")[0])
+                    if command.split(":")[0] == "ACT-USER":
+                        data_repository['step_%s_errormessage' % step_num] = "No response received for ACT-USER command - ip/port details used for NE session is invalid"
+                    if command.split(":")[0] == ";":
+                        data_repository['step_%s_errormessage' % step_num] = "No response received for ; - ip/port details used for NE session is invalid"
                 else:
                     try:
                         response = response + self.target_host.after.decode('utf-8')
@@ -1700,3 +1708,4 @@ class PexpectConnect(object):
                                                                    end_time)
                     data_repository.update({"command_duration" : duration})
         return status, response
+
