@@ -233,7 +233,8 @@ class CliActions(object):
             "tid": tid,
             "session_validation": "true",
             "cmd": "",
-            "kafka_produc_topic": kafka_receive_topic
+            "kafka_produc_topic": kafka_receive_topic,
+            "createProducer": "true"
         }
 
         # create kafka topic
@@ -329,6 +330,9 @@ class CliActions(object):
         producer = Utils.data_Utils.get_object_from_datarepository(session_id + "_kafka_producer_instance")
         consumer = Utils.data_Utils.get_object_from_datarepository(session_id + "_kafka_consumer_instance")
 
+        tid = Utils.data_Utils.get_object_from_datarepository("tid")
+        kafka_send_topic = Utils.data_Utils.get_object_from_datarepository(session_id + "_kafka_send_topic")
+
         kafka_ip_port = Utils.data_Utils.get_object_from_datarepository("kafka_ip_port")
         conf = {'bootstrap.servers': kafka_ip_port}
         if kafka_topics:
@@ -339,9 +343,23 @@ class CliActions(object):
             war_kafka_client = WarriorConfluentKafkaClient(conf)
             time = len(kafka_topics)*360
             for kafka_receive_topic in kafka_topics:
+                #sending message to session manager to close producer instance
+                command_payload = {
+                    "tid": tid,
+                    "session_validation": "true",
+                    "cmd": "",
+                    "kafka_produc_topic": kafka_receive_topic,
+                    "closeProducer": "true"
+                }
+                producer_result = producer.send_messages(kafka_send_topic, command_payload)
+                if producer_result:
+                    print_info(
+                        "Command payload successfully published to the kafka topic: {}".format(kafka_send_topic))
+                else:
+                    print_info("Failed to publish command payload to the given kafka topic: {}".format(kafka_send_topic))
+
                 try:
                     kafka_result = war_kafka_client.delete_topics([kafka_receive_topic], timeout=900)#time)
-                    #print_info("skipping topic deletion")
                     kafka_result = kafka_result
                 except:
                     print_error("Failed to delete topic : {}".format(kafka_receive_topic))
