@@ -1680,19 +1680,28 @@ class PexpectConnect(object):
                 # When the command gets timed out, the pexpect.TIMEOUT exception
                 # will be raised and it is set to the after property of spawn object
                 step_num = data_repository['step_num']
+                gne_tid = os.getenv('GNE_TID', '')
+                sne_tid = ""
+                if os.getenv('NETYPE', '') == "SNE":
+                    sne_tid = os.getenv('SNE_TID', '')
                 if self.target_host.after == self.pexpect.TIMEOUT:
                     pNote("EXCEPTION !! Command Timed Out", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing command: {}".format(command.split(":")[0])
-                    if command.split(":")[0] == "ACT-USER":
-                        data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing ACT-USER command - ip/port details used for NE session is invalid"
-                    if command.split(":")[0] == ";":
+                    if command.split(":")[0] == "ACT-USER" and command.split(":")[1] == gne_tid:
+                        data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing GNE ACT-USER command - ip/port details used for NE session is invalid"
+                    elif command.split(":")[0] == "ACT-USER" and command.split(":")[1] == sne_tid:
+                        data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing SNE ACT-USER command - ip/port details used for NE session is invalid"
+                    elif command.split(":")[0] == ";":
                         data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing ; - ip/port details used for NE session is invalid"
+                        
                 elif self.target_host.after == self.pexpect.EOF:
                     pNote("EXCEPTION !! Device unresponsive", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "Device unresponsive while executing command: {}".format(command.split(":")[0])
-                    if command.split(":")[0] == "ACT-USER":
-                        data_repository['step_%s_errormessage' % step_num] = "No response received for ACT-USER command - ip/port details used for NE session is invalid"
-                    if command.split(":")[0] == ";":
+                    if command.split(":")[0] == "ACT-USER" and command.split(":")[1] == gne_tid:
+                        data_repository['step_%s_errormessage' % step_num] = "No response received for GNE ACT-USER command - ip/port details used for NE session is invalid"
+                    elif command.split(":")[0] == "ACT-USER" and command.split(":")[1] == sne_tid:
+                        data_repository['step_%s_errormessage' % step_num] = "No response received for SNE ACT-USER command - ip/port details used for NE session is invalid"
+                    elif command.split(":")[0] == ";":
                         data_repository['step_%s_errormessage' % step_num] = "No response received for ; - ip/port details used for NE session is invalid"
                 else:
                     try:

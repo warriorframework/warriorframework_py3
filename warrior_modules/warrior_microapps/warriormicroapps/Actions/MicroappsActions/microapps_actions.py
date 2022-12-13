@@ -96,7 +96,13 @@ class MicroappsActions(object):
                                                             failure_reason = "Unable to connect to remote host: Connection refused"
 
                                                         elif "Unable to connect to remote host: Connection timed out" in response:
-                                                             failure_reason = "Unable to connect to remote host: Connection timed out"
+                                                            failure_reason = "Unable to connect to remote host: Connection timed out"
+
+                                                        elif "Connection timed out" in response:
+                                                            failure_reason = "Connection timed out"
+                                                        
+                                                        elif "Connection refused" in response:
+                                                            failure_reason = "Connection refused"
 
                                                         elif "TID Unreachable Error" in response:
                                                             failure_reason = "{} failed - TID Unreachable Error".format(splitted_command[0])
@@ -116,4 +122,5 @@ class MicroappsActions(object):
                        "failure_reason": failure_reason}
         status = True
         return status, output_dict
+
 
