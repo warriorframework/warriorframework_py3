@@ -1680,6 +1680,7 @@ class PexpectConnect(object):
                 # When the command gets timed out, the pexpect.TIMEOUT exception
                 # will be raised and it is set to the after property of spawn object
                 step_num = data_repository['step_num']
+                conn_type = os.getenv('CONN_TYPE', '')
                 gne_tid = os.getenv('GNE_TID', '')
                 sne_tid = ""
                 if os.getenv('NETYPE', '') == "SNE":
@@ -1688,21 +1689,29 @@ class PexpectConnect(object):
                     pNote("EXCEPTION !! Command Timed Out", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing command: {}".format(command.split(":")[0])
                     if command.split(":")[0] == "ACT-USER" and command.split(":")[1] == gne_tid:
-                        data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing GNE ACT-USER command - ip/port details used for NE session is invalid"
+                        if conn_type == "SSH":
+                            data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing GNE ACT-USER command - verify the login manually with ip, port and tid"
+                        if conn_type == "Telnet":
+                            data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing GNE ACT-USER command- check if the TID is valid"
                     elif command.split(":")[0] == "ACT-USER" and command.split(":")[1] == sne_tid:
-                        data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing SNE ACT-USER command - ip/port details used for NE session is invalid"
-                    elif command.split(":")[0] == ";":
-                        data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing ; - ip/port details used for NE session is invalid"
-                        
+                        if conn_type == "SSH":
+                            data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing SNE ACT-USER command - verify the login manually with ip, port and tid"
+                        if conn_type == "Telnet":
+                            data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing SNE ACT-USER command- check if the TID is valid"
+
                 elif self.target_host.after == self.pexpect.EOF:
                     pNote("EXCEPTION !! Device unresponsive", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "Device unresponsive while executing command: {}".format(command.split(":")[0])
-                    if command.split(":")[0] == "ACT-USER" and command.split(":")[1] == gne_tid:
-                        data_repository['step_%s_errormessage' % step_num] = "No response received for GNE ACT-USER command - ip/port details used for NE session is invalid"
-                    elif command.split(":")[0] == "ACT-USER" and command.split(":")[1] == sne_tid:
-                        data_repository['step_%s_errormessage' % step_num] = "No response received for SNE ACT-USER command - ip/port details used for NE session is invalid"
-                    elif command.split(":")[0] == ";":
-                        data_repository['step_%s_errormessage' % step_num] = "No response received for ; - ip/port details used for NE session is invalid"
+                    if command.split(":")[0] == "ACT-USER" and command.split(":")[1] == gne_tid :
+                        if conn_type == "SSH":
+                            data_repository['step_%s_errormessage' % step_num] = "No response received for GNE ACT-USER command - verify the login manually with ip, port and tid"
+                        if conn_type == "Telnet":
+                            data_repository['step_%s_errormessage' % step_num] = "No response received for GNE ACT-USER command - check if the TID is valid"
+                    elif command.split(":")[0] == "ACT-USER" and command.split(":")[1] == sne_tid :
+                        if conn_type == "SSH":
+                            data_repository['step_%s_errormessage' % step_num] = "No response received for SNE ACT-USER command - verify the login manually with ip, port and tid"
+                        if conn_type == "Telnet":
+                            data_repository['step_%s_errormessage' % step_num] = "No response received for SNE ACT-USER command - check if the TID is valid"
                 else:
                     try:
                         response = response + self.target_host.after.decode('utf-8')
@@ -1717,4 +1726,5 @@ class PexpectConnect(object):
                                                                    end_time)
                     data_repository.update({"command_duration" : duration})
         return status, response
+
 
