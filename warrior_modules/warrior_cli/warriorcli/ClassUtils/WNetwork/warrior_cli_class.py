@@ -27,7 +27,7 @@ from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.ClassUtils import database_utils_class
 from warriorcli.ClassUtils.WNetwork.loging import ThreadedLog
 from warriorcli.Utils.list_Utils import get_list_by_separating_strings
-from warrior.Framework.Utils.data_Utils import get_object_from_datarepository
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, update_datarepository
 from warrior.WarriorCore.Classes.warmock_class import mocked
 from timeit import itertools
 from warrior.Framework.Utils.config_Utils import data_repository
@@ -1715,6 +1715,20 @@ class PexpectConnect(object):
                 else:
                     try:
                         response = response + self.target_host.after.decode('utf-8')
+                        # Below code is specific for nortel opc and adtran ta5000 for better error messages in case of connection failures
+                        if os.getenv('MODEL', '') == "opc-oc192" or os.getenv('MODEL', '') == "ta5000":
+                            if "Unable to connect to remote host: Connection timed out" in response:
+                                update_datarepository({"FAILURE_REASON": "Unable to connect to remote host: Connection timed out"})
+
+                            elif "Unable to connect to remote host: Connection refused" in response:
+                                update_datarepository({"FAILURE_REASON": "Unable to connect to remote host: Connection refused"})
+
+                            elif "Connection closed by remote host" in response:
+                                update_datarepository({"FAILURE_REASON": "Communication Failure - Connection closed by remote host"})
+
+                            elif "Connection closed by foreign host" in response:
+                                update_datarepository({"FAILURE_REASON": "Communication Failure - Connection closed by foreign host"})
+
                     except:
                         pNote("EXCEPTION !! Cannot decode response", 'error')
                         data_repository['step_%s_errormessage' % step_num] = "Response decode error for command: {}".format(command.split(":")[0])
@@ -1726,5 +1740,4 @@ class PexpectConnect(object):
                                                                    end_time)
                     data_repository.update({"command_duration" : duration})
         return status, response
-
 

@@ -100,7 +100,7 @@ class MicroappsActions(object):
 
                                                         elif "Connection timed out" in response:
                                                             failure_reason = "Connection timed out"
-                                                        
+
                                                         elif "Connection refused" in response:
                                                             failure_reason = "Connection refused"
 
@@ -113,6 +113,9 @@ class MicroappsActions(object):
                                                         elif "Status Remote Session Dropped (sent by T-TD TL1_TTD)" in response:
                                                             failure_reason = "{} failed - Status Remote Session Dropped".format(splitted_command[0])
 
+                                                        elif "Login incorrect" in response:
+                                                            failure_reason = "Login incorrect - Invalid username or password"
+
                                                         else:
                                                             failure_reason = "{0} Failed".format(splitted_command[0])
 
@@ -122,5 +125,3 @@ class MicroappsActions(object):
                        "failure_reason": failure_reason}
         status = True
         return status, output_dict
-
-
