@@ -116,6 +116,9 @@ class MicroappsActions(object):
                                                         elif "Login incorrect" in response:
                                                             failure_reason = "Login incorrect - Invalid username or password"
 
+                                                        elif "Invalid Login" in response:
+                                                            failure_reason = "Invalid Login - username or password is incorrect"
+                                                            
                                                         else:
                                                             failure_reason = "{0} Failed".format(splitted_command[0])
 

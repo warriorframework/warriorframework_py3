@@ -1688,6 +1688,13 @@ class PexpectConnect(object):
                 if self.target_host.after == self.pexpect.TIMEOUT:
                     pNote("EXCEPTION !! Command Timed Out", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing command: {}".format(command.split(":")[0])
+                    # Below code is specific for nortel opc and ta5000
+                    if os.getenv('MODEL', '') == "opc-oc192" or os.getenv('MODEL', '') == "ta5000":
+                        if "Login incorrect" in response:
+                            data_repository['step_%s_errormessage' % step_num] = "Login incorrect - Invalid username or password"
+                        if "Invalid Login" in response:
+                            data_repository['step_%s_errormessage' % step_num] = "Invalid Login - username or password is incorrect"
+                            
                     if command.split(":")[0] == "ACT-USER" and command.split(":")[1] == gne_tid:
                         if conn_type == "SSH":
                             data_repository['step_%s_errormessage' % step_num] = "Command timed out while executing GNE ACT-USER command - verify the login manually with ip, port and tid"
@@ -1702,6 +1709,12 @@ class PexpectConnect(object):
                 elif self.target_host.after == self.pexpect.EOF:
                     pNote("EXCEPTION !! Device unresponsive", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "Device unresponsive while executing command: {}".format(command.split(":")[0])
+                    # Below code is specific for nortel opc and ta5000
+                    if os.getenv('MODEL', '') == "opc-oc192" or os.getenv('MODEL', '') == "ta5000":
+                        if "Login incorrect" in response:
+                            data_repository['step_%s_errormessage' % step_num] = "Login incorrect - Invalid username or password"
+                        if "Invalid Login" in response:
+                            data_repository['step_%s_errormessage' % step_num] = "Invalid Login - username or password is incorrect"
                     if command.split(":")[0] == "ACT-USER" and command.split(":")[1] == gne_tid :
                         if conn_type == "SSH":
                             data_repository['step_%s_errormessage' % step_num] = "No response received for GNE ACT-USER command - verify the login manually with ip, port and tid"
@@ -1740,4 +1753,5 @@ class PexpectConnect(object):
                                                                    end_time)
                     data_repository.update({"command_duration" : duration})
         return status, response
+
 
