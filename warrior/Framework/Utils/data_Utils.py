@@ -2011,13 +2011,15 @@ def split_system_subsystem(system_name):
     return system_name, subsystem_name
 
 
-def get_td_vc(datafile, system_name, td_tag, vc_tag):
+def get_td_vc(datafile, system_name, td_tag, vc_tag, test_data):
     """
     Get the testdata and varconfig file paths
     from the datafile using the
     testdata nd varconfig tag given as input
     """
     testdata_tag = td_tag if td_tag else "testdata"
+    if test_data:
+       testdata_tag = test_data
     status = _check_tag_or_attr_exists(datafile, system_name,
                                        "var_config_file", "system")
     var_tag = "var_config_file" if status is True else "variable_config"
@@ -2028,6 +2030,7 @@ def get_td_vc(datafile, system_name, td_tag, vc_tag):
 
     testdata = abspaths[0]
     varconfigfile = abspaths[1]
+    #print("test data file===========================:", testdata)
 
     return testdata, varconfigfile
 

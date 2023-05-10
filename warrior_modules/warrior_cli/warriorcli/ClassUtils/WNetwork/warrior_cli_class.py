@@ -1056,7 +1056,7 @@ class WarriorCli(object):
                 the smart testdata file that contains the smart cmd
         """
         testdata, _ = Utils.data_Utils.get_td_vc(datafile, call_system_name,
-                                                 None, None)
+                                                 None, None, test_data=None)
         pre_tag = False
         if connect_testdata is None:
             connect_testdata = self.smart_analyze(raw_prompt, testdata)

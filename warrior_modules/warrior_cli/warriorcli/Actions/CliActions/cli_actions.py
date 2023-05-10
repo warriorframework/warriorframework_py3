@@ -722,7 +722,7 @@ class CliActions(object):
     @mockready
     def send_commands_by_testdata_title(self, title, system_name, session_name=None,
                                         var_sub=None, description=None,
-                                        td_tag=None, vc_tag=None):
+                                        td_tag=None, vc_tag=None, test_data=None):
         """Sends all the commands from testdata that has title equal to the
         provided title
 
@@ -774,7 +774,7 @@ class CliActions(object):
         pNote("KEYWORD: send_commands_by_testdata_title | Description: {0}".format(wdesc))
         desc = wdesc if description is None else description
         return self.send_testdata_command_kw(system_name, session_name, desc, var_sub,
-                                             title=title, td_tag=td_tag, vc_tag=vc_tag)
+                                             title=title, td_tag=td_tag, vc_tag=vc_tag, test_data=test_data)
 
     @mockready
     def send_commands_by_testdata_title_rownum(self, title, row_num, system_name,
@@ -836,7 +836,7 @@ class CliActions(object):
 
     @mockready
     def send_testdata_command_kw(self, system_name, session_name=None, wdesc='', var_sub=None,
-                                 title=None, row_num=None, td_tag=None, vc_tag=None):
+                                 title=None, row_num=None, td_tag=None, vc_tag=None, test_data=None):
         """
         UseAsKeyword=No
         - This will not be listed as a keyword in Katana
@@ -867,7 +867,7 @@ class CliActions(object):
         session_id = Utils.data_Utils.get_session_id(system_name, session_name)
         session_object = Utils.data_Utils.get_object_from_datarepository(session_id)
         testdata, varconfigfile = Utils.data_Utils.get_td_vc(self.datafile,
-                                                             system_name, td_tag, vc_tag)
+                                                             system_name, td_tag, vc_tag, test_data)
         status, td_resp_dict = cli_Utils.send_commands_from_testdata(testdata,
                                                                      session_object,
                                                                      varconfigfile=varconfigfile,
