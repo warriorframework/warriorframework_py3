@@ -20,6 +20,29 @@ var katana = {
   initApp: function() {
     katana.loadView();
     katana.setActiveTab();
+    const urlParams = new URLSearchParams(window.location.search);
+    const auth = urlParams.get('auth');
+    if(auth){
+      let decodedAuth = atob(auth);
+
+      let authArr = decodedAuth.split(":");
+
+      if(authArr && authArr.length==2){
+
+      document.getElementsByName("username")[0].value = authArr[0];
+
+      document.getElementsByName("password")[0].value = authArr[1];
+
+      const form = document.querySelector('form');
+
+      const submitButton = form.querySelector('[type=Submit]');
+
+      submitButton.click();
+
+      }
+
+    }
+
   },
 
   loadView: function() {
