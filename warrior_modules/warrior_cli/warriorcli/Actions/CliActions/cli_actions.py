@@ -215,7 +215,8 @@ class CliActions(object):
         conf={'bootstrap.servers' : bootstrap_servers,
               'group.id' : grp,
               'auto.offset.reset' : 'earliest',
-              'max.poll.interval.ms' : 1500000,
+              'max.poll.interval.ms' : 2400000,
+              'session.timeout.ms' : 900000,
               'enable.auto.commit': False}
 
         consumer = WarriorConfluentKafkaConsumer(conf)
@@ -293,7 +294,7 @@ class CliActions(object):
                         print_error("No response from session manager")
                         status_message = "No response from session manager while connecting to session mgr"
                         status, output_dict = False, output_dict
-                consumer.kafka_consumer.commit()
+                #consumer.kafka_consumer.commit()
         else:
             print_error("Failed to publish command to the kafka topic: {}".format(
                 kafka_send_topic))

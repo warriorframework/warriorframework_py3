@@ -558,7 +558,7 @@ class WarriorCli(object):
                         if step_impact != "noimpact":
                             update_datarepository({"FAILURE_REASON": "No response from session manager while executing command: {}".format(command.split(":")[0])})
                         status = False
-            consumer.kafka_consumer.commit()
+            #consumer.kafka_consumer.commit()
             return consumer_result and status, response
         else:
             print_error("Failed to publish command to the given kafka topic: {}".format(

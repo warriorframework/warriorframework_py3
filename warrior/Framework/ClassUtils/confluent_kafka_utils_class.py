@@ -11,11 +11,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 '''
 from warrior.Framework.Utils.print_Utils import print_info, print_error, print_exception
+from warrior.Framework.Utils import config_Utils
 import json
+import time
 try:
     from confluent_kafka import Producer, DeserializingConsumer, Consumer
     from confluent_kafka.admin import AdminClient, NewTopic
-    from confluent_kafka import KafkaException, TopicPartition
+    from confluent_kafka import KafkaException, TopicPartition, KafkaError
 except ImportError as err:
     print_error("Module kafka is not installed, Refer exception below")
     print_exception(err)
@@ -127,7 +129,7 @@ class WarriorConfluentKafkaConsumer():
                 self.kafka_consumer.assign(topic_partitions)
 
 
-    def get_messages(self, get_all_messages=False, **kwargs):
+    def get_messages(self, get_all_messages=False, topic=None, **kwargs):
         """
         Get messages from consumer.
         Arguments:
@@ -142,23 +144,40 @@ class WarriorConfluentKafkaConsumer():
         max_records = kwargs.get("max_records", 200)
         messages = []
         msg_pack = []
+        max_attempts=5
         print_info("get messages published to subscribed topics")
-        try:
-            msg_pack = self.kafka_consumer.consume(int(max_records), int(timeout_sec))
-            if msg_pack is None:
-                messages = []
-            else:
-                for message in msg_pack:
-                    if message.error():
-                        raise KafkaException(message.error())
-                    else:
-                        dict_str = message.value()
-                        data = json.loads(dict_str.decode("UTF-8"))
-                        messages.append(data)
-        except KafkaException as exc:
-            print_error("Exception occured in get_messages - {}".format(exc))
-        except json.JSONDecodeError as exc:
-            print_error("Received incorrect Kafka payload format {}".format(exc))
+        for i in range(max_attempts):
+            print_info('Try: {0}'.format(i+1))
+            try:
+                msg_pack = self.kafka_consumer.consume(int(max_records), int(timeout_sec))
+                if msg_pack is None:
+                    messages = []
+                else:
+                    for message in msg_pack:
+                        if message.error():
+                            raise KafkaException(message.error())
+                        else:
+                            print("Reading from topic:%s partition:%d offset:%d" % (message.topic(),message.partition(),message.offset()))
+                            dict_str = message.value()
+                            data = json.loads(dict_str.decode("UTF-8"))
+                            messages.append(data)
+                            self.kafka_consumer.commit(message)
+                break
+            except KafkaException as exc:
+                if exc.args[0].code() == KafkaError.UNKNOWN_TOPIC_OR_PART:
+                    print_error("Topic or partition not available. Creating topic.")
+                    if "kafka_client" in config_Utils.data_repository:
+                        war_kafka_client = config_Utils.data_repository["kafka_client"]
+                        topic_result = war_kafka_client.create_topics([[topic, 1]], timeout=900)
+                        if topic_result:
+                            print_info("Topic {} created successfully".format(topic))
+                else:
+                    print_error("Exception occured in get_messages - {}".format(exc))
+                    print_error("Attempt failed, Retrying")
+                    time.sleep(180)
+            except json.JSONDecodeError as exc:
+                print_error("Received incorrect Kafka payload format {}".format(exc))
+                break
         return messages
 
     def get_topics(self):
@@ -218,19 +237,28 @@ class WarriorConfluentKafkaProducer():
             else:
                 print_info('Message delivered to {}'.format(msg.topic()))
 
-        try:
-            if partition:
-                self.kafka_producer.produce(topic=topic,
-                                        value=value,
-                                        partition=partition,
-                                        callback=delivery_report)
-            else:
-                self.kafka_producer.produce(topic=topic, value=value)
-            self.kafka_producer.flush()
-            result = True
-        except KafkaException as exc:
-            print_error("Exception during publishing messages - {}".format(exc))
-            result = False
+        for i in range(5):
+            print_info('Try: {0}'.format(i+1))
+            try:
+                if partition:
+                    self.kafka_producer.produce(topic=topic,
+                                            value=value,
+                                            partition=partition,
+                                            callback=delivery_report)
+                else:
+                    self.kafka_producer.produce(topic=topic, value=value)
+                self.kafka_producer.flush()
+                result = True
+                break
+            except BufferError:
+                print_error('Local producer queue is full ({0} messages awaiting delivery): '
+                        'try again\n'.format(len(self.kafka_producer)))
+                result = False
+            except KafkaException as exc:
+                print_error("Exception during publishing messages - {}".format(exc))
+                print("============sleeping for 3 minutes before attempt to reconnect==============")
+                time.sleep(180)
+                result = False
         return result
 
 class WarriorConfluentKafkaClient():

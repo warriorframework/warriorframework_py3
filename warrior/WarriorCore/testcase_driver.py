@@ -730,11 +730,11 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     if data_repository.get("kafka_producer", None):
         war_producer = data_repository.get("kafka_producer")
         war_producer.kafka_producer.flush(60)
-        war_producer.kafka_producer.close()
+        #war_producer.kafka_producer.close()
         print_info("Producer Closed connection with kafka broker")
     elif data_repository.get("kafka_consumer", None):
         war_consumer = data_repository.get("kafka_consumer")
-        war_consumer.kafka_consumer.close()
+        #war_consumer.kafka_consumer.close()
         print_info("Consumer closed connection with kafka broker")
         
     data_file = data_repository["wt_datafile"]
@@ -749,6 +749,9 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                         break
     except:
         pass
+
+    # Setting system_name to empty since not needed to send Kafka message
+    system_name = ""
 
     if system_name:
         junit_file_obj = data_repository['wt_junit_object']
