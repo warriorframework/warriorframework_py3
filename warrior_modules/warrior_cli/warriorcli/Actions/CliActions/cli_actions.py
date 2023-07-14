@@ -12,6 +12,7 @@ limitations under the License.
 '''
 
 import json
+import os
 import time
 from warrior.Framework import Utils
 from warriorcli.Utils import cli_Utils
@@ -182,7 +183,7 @@ class CliActions(object):
         pNote(
             "KEYWORD: connect_to_session_manager | Description: {0}".format(wdesc))
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,system_name)
-        kafka_topics = Utils.data_Utils.get_object_from_datarepository("kafka_topics") or []
+        kafka_consumers = Utils.data_Utils.get_object_from_datarepository("kafka_consumers") or []
         output_dict = {}
         time_list = []
         status = True
@@ -197,7 +198,9 @@ class CliActions(object):
         # tid = Utils.data_Utils.get_object_from_datarepository("ne_data").get("tid")
         # operation = Utils.data_Utils.get_object_from_datarepository("operation")
         # kafka_send_topic = Utils.data_Utils.get_object_from_datarepository("session_mgr_kafka_topic")
-        kafka_send_topic = "SESSION-MGR"
+        #kafka_send_topic = "SESSION-MGR"
+        kafka_send_topic = os.getenv("SC_PRODUCER_TOPIC")
+        kafka_receive_topic = os.getenv("SC_CONSUMER_TOPIC")
         kafka_ip = getSystemData(self.datafile, kafka_system_name, "ip")
         kafka_port = getSystemData(self.datafile, kafka_system_name, "kafka_port")
         #bootstrap_servers = ["{}:{}".format(kafka_ip, kafka_port)]
@@ -211,21 +214,32 @@ class CliActions(object):
         producer = WarriorConfluentKafkaProducer(conf)
 
         # kafka consumer instance to receive response from session manager
-        grp = 'group' + '_' + str(int(time.time()))
-        conf={'bootstrap.servers' : bootstrap_servers,
-              'group.id' : grp,
-              'auto.offset.reset' : 'earliest',
-              'max.poll.interval.ms' : 1500000,
-              'enable.auto.commit': False}
+        #grp = 'group' + '_' + str(int(time.time()))
+        #grp = 'group' + kafka_receive_topic
+        if not kafka_consumers:
+            grp = 'group' + '_' + kafka_receive_topic
+            client_id = 'my-client-' + str(int(time.time()))
+            conf={'bootstrap.servers' : bootstrap_servers,
+                  'group.id' : grp,
+                  'client.id': client_id,
+                  'auto.offset.reset' : 'latest',
+                  'max.poll.interval.ms' : 2400000,
+                  'session.timeout.ms' : 900000,
+                  'debug' : 'consumer',
+                  'enable.auto.commit': False}
 
-        consumer = WarriorConfluentKafkaConsumer(conf)
+            consumer = WarriorConfluentKafkaConsumer(conf)
+        else:
+            # Use the existing consumer instance
+            consumer = kafka_consumers[0]
 
-        kafka_receive_topic = tid + "_" + operation + "_" + str(int(time.time()))
-        kafka_topics.append(kafka_receive_topic)
-        Utils.data_Utils.update_datarepository({"kafka_topics": kafka_topics})
+        #kafka_receive_topic = tid + "_" + operation + "_" + str(int(time.time()))
+        #kafka_consumers.append(consumer)
+        #Utils.data_Utils.update_datarepository({"kafka_consumers": kafka_consumers})
         output_dict[session_id + "_kafka_producer_instance"] = producer
         output_dict[session_id + "_kafka_consumer_instance"] = consumer
         output_dict[session_id + "_kafka_receive_topic"] = kafka_receive_topic
+        output_dict[session_id + "_kafka_send_topic"] = kafka_send_topic
         output_dict["tid"] = tid
         output_dict["kafka_ip_port"] = "{}:{}".format(kafka_ip, kafka_port)
         Utils.data_Utils.update_datarepository(output_dict)
@@ -242,26 +256,55 @@ class CliActions(object):
                 'request.timeout.ms' : 600000}
         war_kafka_client = WarriorConfluentKafkaClient(conf)
         start = int(time.time())
-        topic_result = war_kafka_client.create_topics([[kafka_receive_topic, 1]], timeout=900)
-        end = int(time.time())
-        time_diff = end - start
-        print("Took {} sec to create topic".format(time_diff))
-        if topic_result:
-            print_info("Topic {} created successfully".format(kafka_receive_topic))
-        time.sleep(60)
- 
-        result = producer.send_messages(kafka_send_topic, command_payload)
-        if result:
-            print_info(
-                "Command payload successfully published to the kafka topic: {}".format(kafka_send_topic))
-            print_info("Warrior will wait for {} seconds to get response from session manager".format(
-                wait_timeout_ms))
+        topic_metadata = war_kafka_client.kafka_client.list_topics(timeout=180)
+        if kafka_receive_topic not in topic_metadata.topics:
+            topic_result = war_kafka_client.create_topics([[kafka_receive_topic, 1]], timeout=900)
+            print_info("Topic creation call took {0} secs".format(time.time()-start))
+            if topic_result:
+                print_info("Topic {} created successfully".format(kafka_receive_topic))
+            else:
+                print_info("Failed to create Topic: {}".format(kafka_receive_topic))
+
+        # Subscribe to the topic to listen to Session-manager responses
+        if not kafka_consumers:
             result = consumer.subscribe_to_topics(topics=[kafka_receive_topic])
+            kafka_consumers.append(consumer)
+            Utils.data_Utils.update_datarepository({"kafka_consumers": kafka_consumers})
+        else:
+            # No need to subscribe again, use the existing consumer instance
+            result = True
+
+        if result:
+            # Waiting for the partition assignment to happen before consuming data
+            start_time = time.time()
+            while True:
+                partitions = consumer.kafka_consumer.assignment()
+                if partitions:
+                    print_info("Partitions assignment completed")
+                    committed = consumer.kafka_consumer.committed(partitions, timeout=10)
+                    print("Committed offsets: ",committed)
+                    break
+                if time.time() - start_time >= 180:
+                    print_info("Partitions assignment for Topic:{0} was not completed".format(kafka_receive_topic))
+                    break
+                consumer.kafka_consumer.poll(0)
+            print_info("Waited {0} secs for partition assignment to happen".format(time.time() - start_time))
+
+            # Adding sleep to let all the consumer internal calls get finished
+            time.sleep(5)
+
+            # Produce message to SM
+            result = producer.send_messages(kafka_send_topic, command_payload)
             if not result:
-                print_error("Can not subscribe to the topic: {}".format(kafka_receive_topic))
-                status_message = "Can not subscribe to the topic"
+                print_error("Failed to publish command to the kafka topic: {}".format(
+                kafka_send_topic))
+                status_message = "Failed to publish command to the kafka topic"
                 status, output_dict = False, output_dict
             else:
+                print_info(
+                    "Command payload successfully published to the kafka topic: {}".format(kafka_send_topic))
+                print_info("Warrior will wait for {} seconds to get response from session manager".format(
+                    wait_timeout_ms))
                 messages = []
                 messages = consumer.get_messages(timeout=wait_timeout_ms,max_records=1,
                                                  get_all_messages=None)
@@ -269,12 +312,13 @@ class CliActions(object):
                     print_info("Response received from session manager [{}]: {}".format(int(time.time()), messages))
                     if messages[0].get("cmdRes", None) == "NE Session Inactive":
                         status_message = "NE Session Inactive"
-                    if (messages[0].get("status") in ["true", "True"]
-                            and isinstance(messages[0].get("kafkaPublishTopic"), str)):
-                        kafka_send_topic = messages[0].get("kafkaPublishTopic")
+                    if messages[0].get("status") in ["true", "True"]:
+                            #and isinstance(messages[0].get("kafkaPublishTopic"), str)):
+                        #kafka_send_topic = messages[0].get("kafkaPublishTopic")
                         status, output_dict = True, output_dict
                     else:
                         status, output_dict = False, output_dict
+                    #consumer.kafka_consumer.commit()
                 else:
                     print_info('Inside else part of get messages.')
                     #time.sleep(120)
@@ -283,9 +327,9 @@ class CliActions(object):
                         print_info('Response received from session manager [{}] : {}'.format(int(time.time()), res))
                         if res.get("cmdRes", None) == "NE Session Inactive":
                             status_message = "NE Session Inactive"
-                        if (res.get("status") in ["true", "True"]
-                                and isinstance(res.get("kafkaPublishTopic"), str)):
-                            kafka_send_topic = res.get("kafkaPublishTopic")
+                        if res.get("status") in ["true", "True"]:
+                                #and isinstance(res.get("kafkaPublishTopic"), str)):
+                            #kafka_send_topic = res.get("kafkaPublishTopic")
                             status, output_dict = True, output_dict
                         else:
                             status, output_dict = False, output_dict
@@ -293,21 +337,20 @@ class CliActions(object):
                         print_error("No response from session manager")
                         status_message = "No response from session manager while connecting to session mgr"
                         status, output_dict = False, output_dict
-                consumer.kafka_consumer.commit()
+                #consumer.kafka_consumer.commit()
         else:
-            print_error("Failed to publish command to the kafka topic: {}".format(
-                kafka_send_topic))
-            status_message = "Failed to publish command to the kafka topic"
+            print_error("Can not subscribe to the topic: {}".format(kafka_receive_topic))
+            status_message = "Can not subscribe to the topic"
             status, output_dict = False, output_dict
 
-        output_dict[session_id + "_kafka_send_topic"] = kafka_send_topic
         Utils.data_Utils.update_datarepository({"FAILURE_REASON": status_message})
         Utils.data_Utils.update_datarepository(output_dict)
         return status, output_dict
 
     def disconnect_from_session_manager(self, system_name, session_name=None):
         """
-        This keyword deletes the uniquely created kafka topic(tid_operation).
+        This keyword closes all the Kafka related instances and sends the topic name
+        to Session Controller so that it can reuse the topic
 
         Arguments:
             1. system_name = This can be name of the system or a subsystem.
@@ -318,58 +361,72 @@ class CliActions(object):
 
         """
 
-        wdesc = "Delete kafka topic"
+        wdesc = "Disconnect_from_session_manager kafka topic"
         pNote("KEYWORD: disconnect_from_session_manager | Description: {0}".format(wdesc))
         system_name, subsystem_list = Utils.data_Utils.resolve_system_subsystem_list(self.datafile,
                                                                                      system_name)
-        kafka_topics = Utils.data_Utils.get_object_from_datarepository("kafka_topics") or []
+        kafka_consumers = Utils.data_Utils.get_object_from_datarepository("kafka_consumers") or []
+
         status = True
-        kafka_result = False
+        producer_result = None
         session_id = get_session_id(system_name, session_name)
-        
+
         producer = Utils.data_Utils.get_object_from_datarepository(session_id + "_kafka_producer_instance")
-        consumer = Utils.data_Utils.get_object_from_datarepository(session_id + "_kafka_consumer_instance")
 
         tid = Utils.data_Utils.get_object_from_datarepository("tid")
+        kafka_receive_topic = Utils.data_Utils.get_object_from_datarepository(session_id + "_kafka_receive_topic")
         kafka_send_topic = Utils.data_Utils.get_object_from_datarepository(session_id + "_kafka_send_topic")
 
-        kafka_ip_port = Utils.data_Utils.get_object_from_datarepository("kafka_ip_port")
-        conf = {'bootstrap.servers': kafka_ip_port}
-        if kafka_topics:
-            producer.kafka_producer.flush(60)
-            consumer.kafka_consumer.unsubscribe()
-            consumer.kafka_consumer.close()
+        if kafka_consumers:
+            # In case of Restore and Upgrades, where we login twice
+            # We will have multiple consumers which needs to be closed
+            for kafka_consumer in kafka_consumers:
+                print_info("Closing Consumer instance: ")
+                kafka_consumer.kafka_consumer.unsubscribe()
+                kafka_consumer.kafka_consumer.poll(0)
+                kafka_consumer.kafka_consumer.close()
 
-            war_kafka_client = WarriorConfluentKafkaClient(conf)
-            time = len(kafka_topics)*360
-            for kafka_receive_topic in kafka_topics:
-                #sending message to session manager to close producer instance
-                command_payload = {
-                    "tid": tid,
-                    "session_validation": "true",
-                    "cmd": "",
-                    "kafka_produc_topic": kafka_receive_topic,
-                    "closeProducer": "true"
+        if producer:
+            #sending message to session manager to close producer instance
+            command_payload = {
+                "tid": tid,
+                "session_validation": "true",
+                "cmd": "",
+                "kafka_produc_topic": kafka_receive_topic,
+                "closeProducer": "true"
+            }
+
+            producer_result = producer.send_messages(kafka_send_topic, command_payload)
+
+            if producer_result:
+                print_info(
+                      "Command payload:{0} successfully published to the kafka topic: {1}".format(
+                          command_payload, kafka_send_topic))
+            else:
+                print_info("Failed to publish command payload:{0} to the given kafka topic: {1}".format(
+                    command_payload, kafka_send_topic))
+
+            # Need to send this payload so that SC can resue this topic
+            sc_topic = "SESSION_CTRL"
+
+            command_payload = {
+                    "operation": "WARRIOR",
+                    "topic": kafka_receive_topic
                 }
-                producer_result = producer.send_messages(kafka_send_topic, command_payload)
-                if producer_result:
-                    print_info(
-                        "Command payload successfully published to the kafka topic: {}".format(kafka_send_topic))
-                else:
-                    print_info("Failed to publish command payload to the given kafka topic: {}".format(kafka_send_topic))
 
-                try:
-                    kafka_result = war_kafka_client.delete_topics([kafka_receive_topic], timeout=900)#time)
-                    kafka_result = kafka_result
-                except:
-                    print_error("Failed to delete topic : {}".format(kafka_receive_topic))
-                    status = False
-                if kafka_result:
-                    print_info("Kafka topic: {}, deleted successfully".format(kafka_receive_topic))
-                else:
-                    print_error("Failed to delete kafka topic: {}".format(kafka_receive_topic))
-        else:
-            print_warning("Kafka topic not found, so skipping")
+            producer_result = producer.send_messages(sc_topic, command_payload)
+
+            if producer_result:
+                print_info(
+                      "Command payload:{0} successfully published to the kafka topic: {1}".format(
+                          command_payload, sc_topic))
+            else:
+                print_info("Failed to publish command payload:{0} to the given kafka topic: {1}".format(
+                    command_payload, sc_topic))
+
+            print_info("closing producer instance")
+            producer.kafka_producer.poll(0)
+            producer.kafka_producer = None
 
         return status
 

@@ -170,7 +170,7 @@ class WarriorKafkaProducer():
         """
         print_info("Creating kafka producer")
         try:
-            self.kafka_producer = KafkaProducer(**configs)
+            self.kafka_producer = KafkaProducer(**configs, max_block_ms=300000)
         except KafkaError as exc:
             print_error("kafka producer - Exception during connecting to broker - {}".format(exc))
 

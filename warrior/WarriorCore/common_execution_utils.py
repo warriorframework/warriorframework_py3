@@ -458,7 +458,7 @@ def compute_runmode_status(global_status_list, runmode, global_xml):
     return status_value
 
 
-def compute_status(element, status_list, impact_list, status, impact):
+def compute_status(element, status_list, impact_list, status, impact, step_number):
     """
         This function computes the overall status in case/suite/project
         execution
@@ -485,6 +485,8 @@ def compute_status(element, status_list, impact_list, status, impact):
                 impact_list.append(impact)
             elif element.find('runmode').get('status') == 'last_instance' or \
                     element.find('runmode').get('status') == 'expected':
+                if element.find('runmode').get('attempt') != element.find('runmode').get('runmode_val'):
+                    update_datarepository({"RUP_{0}_result".format(step_number): "IGNORE"})
                 if status is True or \
                     (element.find('runmode').get('attempt') ==
                      element.find('runmode').get('runmode_val')):

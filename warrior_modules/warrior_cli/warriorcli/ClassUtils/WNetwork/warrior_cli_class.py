@@ -428,21 +428,27 @@ class WarriorCli(object):
         return result, response
 
     def compare_req_res(self, command, msg_cmd):
-        cmd1 = command.split(':')[0]
-        tid1 = command.split(':')[1]
-        request_cmd = cmd1 + ':' + tid1
-        cmd2 = msg_cmd.split(':')[0]
-        tid2 = msg_cmd.split(':')[1]
-        response_cmd = cmd2 + ':' + tid2
-        if request_cmd == response_cmd:
-            return True
-        return False
+        status = False
+        if 'c_tag' in command:
+            request_cmd = command.split('c_tag')[0]
+            if request_cmd in msg_cmd:
+                status = True
+        else:                
+            cmd1 = command.split(':')[0]
+            tid1 = command.split(':')[1]
+            request_cmd = cmd1 + ':' + tid1
+            cmd2 = msg_cmd.split(':')[0]
+            tid2 = msg_cmd.split(':')[1]
+            response_cmd = cmd2 + ':' + tid2
+            if request_cmd == response_cmd:
+                status = True
+        return status
 
     def verify_through_all_messages(self, topic=None, consumer_inst=None, command=None):
         response = ''
         if topic:
-            consumer_inst.assign_to_beginning(topic=topic)
-            messages = consumer_inst.get_messages(timeout=30, get_all_messages=None)
+            consumer_inst.assign_to_previous_offset(topic=topic)
+            messages = consumer_inst.get_messages(timeout=60, get_all_messages=None)
             for message in messages:
                 if command:
                     msg_cmd = message.get('cmd', '')
@@ -475,6 +481,23 @@ class WarriorCli(object):
         f = open(filename, append_write)
         f.write(messages.get('cmd', '') + '\n' + '\n' + response)
         f.close()
+
+    def _get_cmd_response(self, messages):
+        """
+        method to get the response from kafka message
+        """
+        #if "async response
+        resp = ''
+        if isinstance(messages, list):
+            resp = messages[0].get('cmdRes', '')
+        if isinstance(resp, dict) and "async response" in resp:
+            resp = resp.get("async response", {}).get("rawMsg", "")
+            try:
+                data_repository["cmdRes"].append(messages[0])
+            except KeyError:
+                data_repository["cmdRes"] = [messages[0]]
+
+        return resp
 
 
     def _publish_cmd_to_kafka(self, session_id, **kwargs):
@@ -518,48 +541,44 @@ class WarriorCli(object):
                 "Command payload successfully published at {} to the kafka topic: {}".format(int(time.time()), kafka_send_topic))
             print_info("Warrior will wait for {} seconds to get response from session manager".format(
                 cmd_timeout))
-            consumer_result = consumer.subscribe_to_topics(topics=[kafka_receive_topic])
-            if not consumer_result:
-                print_error("Can not subscribe to the topic: {}".format(
-                    kafka_receive_topic))
-                update_datarepository({"FAILURE_REASON": "Can not subscribe to the topic"})
-                status = False
-            else:
-                messages = []
-                messages = consumer.get_messages(timeout=cmd_timeout,max_records=1,
-                                                 get_all_messages=None)
-                if messages:
-                        print_info(
-                            "Response received from session manager [{}]: {}".format(int(time.time()), messages))
-                        msg_cmd = messages[0].get('cmd', '')
-                        if msg_cmd:
-                            status = self.compare_req_res(command, msg_cmd)
-                            if status:
-                                status = True if messages[0].get("status") in ["True", "true"] else False
-                                response = messages[0].get('cmdRes', '')
-                                self.create_tl1_log(messages[0], response)
-                            else:
-                                status = False
-                                print_error("Response payload mismatch from session manager.")
-                                update_datarepository({"FAILURE_REASON": "Response payload mismatch from session manager"})
+
+            messages = []
+            messages = consumer.get_messages(timeout=cmd_timeout,max_records=1,
+                                             get_all_messages=None)
+            if messages:
+                    print_info(
+                        "Response received from session manager [{}]: {}".format(int(time.time()), messages))
+                    msg_cmd = messages[0].get('cmd', '')
+                    if msg_cmd:
+                        status = self.compare_req_res(command, msg_cmd)
+                        if status:
+                            status = True if messages[0].get("status") in ["True", "true"] else False
+                            #response = messages[0].get('cmdRes', '')
+                            response = self._get_cmd_response(messages)
+                            self.create_tl1_log(messages[0], response)
                         else:
                             status = False
-                else:
-                    print('In warrior cli else section')
-                    #time.sleep(120)
-                    message = self.verify_through_all_messages(topic=kafka_receive_topic, consumer_inst=consumer, command=command)
-                    if message:
-                        print_info('Response received from session manager [{}] : {}'.format(int(time.time()), message))
-                        response = message.get('cmdRes','')
-                        self.create_tl1_log(message, response)
-                        status = True if message.get("status") in ["True", "true"] else False
+                            print_error("Response payload mismatch from session manager.")
+                            update_datarepository({"FAILURE_REASON": "Response payload mismatch from session manager"})
                     else:
-                        print_error("No response from session manager")
-                        if step_impact != "noimpact":
-                            update_datarepository({"FAILURE_REASON": "No response from session manager while executing command: {}".format(command.split(":")[0])})
                         status = False
-            consumer.kafka_consumer.commit()
-            return consumer_result and status, response
+            else:
+                print('Did not get response from SM, checking previous messages in topic')
+                #time.sleep(120)
+                message = self.verify_through_all_messages(topic=kafka_receive_topic, consumer_inst=consumer, command=command)
+                if message:
+                    print_info('Response received from session manager [{}] : {}'.format(int(time.time()), message))
+                    #response = message.get('cmdRes','')
+                    response = self._get_cmd_response([message])
+                    self.create_tl1_log(message, response)
+                    status = True if message.get("status") in ["True", "true"] else False
+                else:
+                    print_error("No response from session manager")
+                    if step_impact != "noimpact":
+                        update_datarepository({"FAILURE_REASON": "No response from session manager while executing command: {}".format(command.split(":")[0])})
+                    status = False
+            #consumer.kafka_consumer.commit()
+            return status, response
         else:
             print_error("Failed to publish command to the given kafka topic: {}".format(
                 kafka_send_topic))
@@ -2038,12 +2057,33 @@ class PexpectConnect(object):
                 if self.target_host.after == self.pexpect.TIMEOUT:
                     pNote("EXCEPTION !! Command Timed Out", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "command timed out while executing command: {}".format(command.split(":")[0])
+                    # Below code is specific for nortel vendor
+                    if os.getenv('VENDOR', '') == "nortel":
+                        if "Login incorrect" in response:
+                            data_repository['step_%s_errormessage' % step_num] = "Login incorrect - Invalid username or password"
                 elif self.target_host.after == self.pexpect.EOF:
                     pNote("EXCEPTION !! Device unresponsive", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "device unresponsive while executing command: {}".format(command.split(":")[0])
+                    # Below code is specific for nortel vendor
+                    if os.getenv('VENDOR', '') == "nortel":
+                        if "Login incorrect" in response:
+                            data_repository['step_%s_errormessage' % step_num] = "Login incorrect - Invalid username or password"
                 else:
                     try:
                         response = response + self.target_host.after.decode('utf-8')
+                         # Below code is specific for nortel vendor for better error messages
+                        if os.getenv('VENDOR', '') == "nortel":
+                            if "Unable to connect to remote host: Connection timed out" in response:
+                                update_datarepository({"FAILURE_REASON": "Unable to connect to remote host: Connection timed out"})
+
+                            elif "Unable to connect to remote host: Connection refused" in response:
+                                update_datarepository({"FAILURE_REASON": "Unable to connect to remote host: Connection refused"})
+
+                            elif "Connection closed by remote host" in response:
+                                update_datarepository({"FAILURE_REASON": "Communication Failure - Connection closed by remote host"})
+
+                            elif "Connection closed by foreign host" in response:
+                                update_datarepository({"FAILURE_REASON": "Communication Failure - Connection closed by foreign host"})
                     except:
                         pNote("EXCEPTION !! Cannot decode response", 'error')
                         data_repository['step_%s_errormessage' % step_num] = "Response decode error for command: {}".format(command.split(":")[0])

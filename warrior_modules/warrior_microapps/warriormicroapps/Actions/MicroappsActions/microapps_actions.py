@@ -36,6 +36,9 @@ class MicroappsActions(object):
         for session_td_key, session_td_value in data_repository.items():
             if session_td_key.startswith('step') and session_td_key.endswith('_result'):
                 if session_td_value != "PASS" and session_td_value.lower() != "skipped":
+                    rt_val = session_td_key.replace('step', 'RUP')
+                    if rt_val in data_repository and data_repository[rt_val] == "IGNORE":
+                        continue
                     step_impact = data_repository.get(session_td_key.replace('_result', '_impact'))
                     if (step_impact.upper() == "IMPACT"):
                         script_status = False
@@ -73,7 +76,29 @@ class MicroappsActions(object):
                                                         failure_reason = "{} Failed : reason {}".format(splitted_command[0],
                                                                                                         response)
                                                     else:
-                                                        failure_reason = "{0} Failed".format(splitted_command[0])
+                                                        if "Connection closed by remote host" in response:
+                                                            failure_reason = "Communication Failure - Connection closed by remote host"
+
+                                                        elif "Connection closed by foreign host" in response:
+                                                            failure_reason = "Communication Failure - Connection closed by foreign host"
+
+                                                        elif "Unable to connect to remote host: Connection refused" in response:
+                                                            failure_reason = "Unable to connect to remote host: Connection refused"
+
+                                                        elif "Unable to connect to remote host: Connection timed out" in response:
+                                                            failure_reason = "Unable to connect to remote host: Connection timed out"
+
+                                                        elif "Connection timed out" in response:
+                                                            failure_reason = "Connection timed out"
+
+                                                        elif "Connection refused" in response:
+                                                            failure_reason = "Connection refused"
+
+                                                        elif "Login incorrect" in response:
+                                                            failure_reason = "Login incorrect - Invalid username or password"
+
+                                                        else:
+                                                            failure_reason = "{0} Failed".format(splitted_command[0])
 
         if failure_reason is None and script_status is False:
             failure_reason = "NE response mismatch"
@@ -81,5 +106,4 @@ class MicroappsActions(object):
                        "failure_reason": failure_reason}
         status = True
         return status, output_dict
-
 

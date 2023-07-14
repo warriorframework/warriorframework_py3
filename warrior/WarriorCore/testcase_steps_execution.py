@@ -25,7 +25,7 @@ from warrior.Framework.Utils.datetime_utils import wait_for_timeout
 from warrior.Framework.Utils.data_Utils import getSystemData, get_object_from_datarepository,\
  update_datarepository
 from warrior.Framework.ClassUtils.confluent_kafka_utils_class import WarriorConfluentKafkaConsumer,\
-        WarriorConfluentKafkaProducer
+        WarriorConfluentKafkaProducer, WarriorConfluentKafkaClient
 
 """This module is used for sequential execution of testcase steps """
 
@@ -181,7 +181,8 @@ class TestCaseStepsExecutionClass:
             common_execution_utils.compute_status(self.current_step,
                                                   self.step_status_list,
                                                   self.step_impact_list,
-                                                  step_status, step_impact)
+                                                  step_status, step_impact,
+                                                  self.current_step_number)
         self.kw_resultfile_list.append(kw_resultfile)
         return step_status
 
@@ -392,12 +393,20 @@ class KafkaBasedExecution:
         conf={'bootstrap.servers' : ip_port,
               'group.id' : 'my-group',
               'auto.offset.reset' : 'latest',
+              'max.poll.interval.ms' : 2400000,
+              'session.timeout.ms' : 900000,
               'enable.auto.commit': False}
 
         consumer = WarriorConfluentKafkaConsumer(conf)
 
+        # Kafka client
+        conf = {'bootstrap.servers' : ip_port,
+                'request.timeout.ms' : 600000}
+        war_kafka_client = WarriorConfluentKafkaClient(conf)
+
         update_datarepository({"step_consumer" : consumer})
         update_datarepository({"step_producer": producer})
+        update_datarepository({"kafka_client": war_kafka_client})
 
         return producer, consumer
 
@@ -490,7 +499,7 @@ class KafkaBasedExecution:
                 print_info("If not received in {0}secs, will continue with next step "
                            "in testcase".format(wait_timeout_secs))
             messages = consumer_inst.get_messages(timeout=wait_timeout_secs,
-                                                  get_all_messages=None)
+                                                  get_all_messages=None, topic=topic_name)
             consumer_inst.kafka_consumer.commit()
         if messages:
             do_continue = self.verify_message(messages)
