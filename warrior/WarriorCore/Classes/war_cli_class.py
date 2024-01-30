@@ -469,12 +469,20 @@ class WarriorCliClass(object):
             help="generate the sample cli/netconf/snmp testcase based on "\
             "user provide type")
 
+        warrior_arg.add_argument('-stage_name', action='store', type=str, default=None,\
+            help="Executes only the provided stage in testcase")
+
+        warrior_arg.add_argument('-kafka_system', action='store', type=str, default=None,\
+            help="use to fetch kafka server details from input data file")
+
         namespace = parser.parse_args(arglist)
         #see if the below line is requried
         if namespace.mock:
             WarriorCliClass.mock = True
         if namespace.sim:
             WarriorCliClass.sim = True
+        if namespace.stage_name and not namespace.kafka_system:
+            parser.error("argument -stage_name can't be used without argument -kafka_system")
         return namespace
 
 class CreateTestSuite(object):

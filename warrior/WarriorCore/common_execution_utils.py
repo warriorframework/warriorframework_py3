@@ -49,12 +49,33 @@ def append_step_list(step_list, step, value, go_next, mode, tag):
         step_list.append(copy_step)
     return step_list
 
+def get_stage_list():
+    """
+    This function creates a list of stages which needs to be executed
+    by default
+
+    :Arguments:
+        NA
+
+    :Return:
+        stage_name_pattern = Stage name
+        default_stage_list = List of stages to be executed
+    """
+
+    default_stage_list = []
+    stage_name_pattern = get_object_from_datarepository("stage_name")
+    default_stage_list += ['setup', 'cleanup']
+    if stage_name_pattern:
+        default_stage_list.append(stage_name_pattern)
+    update_datarepository({"default_stage_list" : default_stage_list})
+    return stage_name_pattern, default_stage_list 
 
 def get_step_list(filepath,
                   step_tag,
                   sub_step_tag,
                   randomize=False,
-                  loop_tag="Loop"):
+                  loop_tag="Loop",
+                  stage_tag="Stage"):
     """
     Takes the location of Testcase/Suite/Project file as input
     Returns a list of all the step/testcase/testsuite elements
@@ -65,17 +86,52 @@ def get_step_list(filepath,
         2. step_tag     = xml tag for group of step in the file
         3. sub_step_tag = xml tag for each step in the file
         4. loop_tag     = xml tag for loop. Loop by default
+        5. stage_tag    = xml tag for stage. Stage by default
     """
     step_list_with_rmt_retry = []
     root = Utils.xml_Utils.getRoot(filepath)
     steps = root.find(step_tag)
+    stage_name_pattern, default_stage_list = get_stage_list() 
+    
     if steps is None:
         print_warning("The file: '{0}' has no {1} to be executed".format(
             filepath, step_tag))
     step_list = []
     for child_node in steps:
         if child_node.tag == sub_step_tag:
+            if stage_name_pattern is not None:
+                child_node.set("skip", "yes")
             step_list.append(child_node)
+        elif child_node.tag == stage_tag:
+            stage_name = child_node.get("name")
+            wait_timeout = child_node.get("wait_timeout")
+            if stage_name is None:
+                print_error('`name` attribute is mandatory in Stage tag.'
+                            ' example : <Stage name="download">')
+                return False
+            stage_steps = child_node.findall(sub_step_tag)
+            if stage_name_pattern is not None:
+                if stage_name not in default_stage_list:
+                    for step in stage_steps:
+                        step.set("skip", "yes")
+                        step_list.append(step)
+                    continue
+
+            if len(stage_steps) == 0:
+                print_warning('There are no steps in Stage={0} and will not'
+                              'be executed'.format(stage_name))
+                continue
+            first_step = copy.deepcopy(stage_steps[0])
+            first_step.set("stage_start", stage_name)
+            first_step.set("stage_step_count", len(stage_steps))
+            if wait_timeout:
+                first_step.set("wait_timeout", wait_timeout)
+            step_list.append(first_step)
+            if len(stage_steps) > 2:
+                step_list += stage_steps[1:-1]
+            last_step = copy.deepcopy(stage_steps[-1])
+            last_step.set("stage_end", stage_name)
+            step_list.append(last_step)
         elif child_node.tag == loop_tag:
             loop_count = child_node.get("id")
             if loop_count is None:
@@ -180,7 +236,6 @@ def get_step_list(filepath,
                                 arg_value, iter_number)
                             argument.set("value", arg_value)
                     step_list.append(copy_step)
-
     if root.tag == 'Project' or root.tag == 'TestSuite':
         step_list = []
         orig_step_list = steps.findall(sub_step_tag)
@@ -403,7 +458,7 @@ def compute_runmode_status(global_status_list, runmode, global_xml):
     return status_value
 
 
-def compute_status(element, status_list, impact_list, status, impact):
+def compute_status(element, status_list, impact_list, status, impact, step_number):
     """
         This function computes the overall status in case/suite/project
         execution
@@ -430,6 +485,8 @@ def compute_status(element, status_list, impact_list, status, impact):
                 impact_list.append(impact)
             elif element.find('runmode').get('status') == 'last_instance' or \
                     element.find('runmode').get('status') == 'expected':
+                if element.find('runmode').get('attempt') != element.find('runmode').get('runmode_val'):
+                    update_datarepository({"RUP_{0}_result".format(step_number): "IGNORE"})
                 if status is True or \
                     (element.find('runmode').get('attempt') ==
                      element.find('runmode').get('runmode_val')):

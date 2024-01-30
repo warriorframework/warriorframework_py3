@@ -27,7 +27,7 @@ from warrior.Framework.Utils.testcase_Utils import pNote
 from warrior.Framework.ClassUtils import database_utils_class
 from warriorcli.ClassUtils.WNetwork.loging import ThreadedLog
 from warriorcli.Utils.list_Utils import get_list_by_separating_strings
-from warrior.Framework.Utils.data_Utils import get_object_from_datarepository
+from warrior.Framework.Utils.data_Utils import get_object_from_datarepository, update_datarepository
 from warrior.WarriorCore.Classes.warmock_class import mocked
 from timeit import itertools
 from warrior.Framework.Utils.config_Utils import data_repository
@@ -241,7 +241,105 @@ class WarriorCli(object):
                     if len(resp_key_list) != i+1:
                         resp_key_list.append({})
                     resp_session_id = session_id + "_td_response"
+                    td_resp_dict = self.update_resp_ref_to_repo(details_dict, resp_key_list, i,
+                                                                key, td_resp_dict, resp_session_id,
+                                                                result)
 
+                    result = (result and rspRes) if "ERROR" not in (
+                        result, rspRes) else "ERROR"
+                    print_debug("<<<")
+                else:
+                    finalresult = "ERROR"
+                    pNote("COMMAND STATUS:{0}".format(finalresult))
+                    print_debug("<<<")
+                    continue
+
+                if result == "ERROR" or finalresult == "ERROR":
+                    result = "ERROR"
+                    finalresult = "ERROR"
+                finalresult = finalresult and result
+                if details_dict["return_on_fail_list"][i] and (result == "ERROR" or result is False):
+                    if details_dict["return_on_fail_list"][i].lower() == "yes":
+                        pNote("skipping remaining commands, if exists")
+                        break
+            responses_dict[key] = {
+                k: v for d in resp_key_list for k, v in d.items()}
+        return finalresult, td_resp_dict
+
+    def publish_commands_to_kafka_from_testdata(self, testdatafile, **args):
+        """
+        - Parses the testdata file and gets the command details
+        for rows marked execute=yes and row=str_rownum.
+        - Publish the obtained commands to the kafka topic.
+        - If the commands have verification attribute set,
+        then verifies the verification text for presence/absence as defined
+        in the respective found attribute in the testdatfile.
+
+        :Arguments:
+            1. testdatafile = the xml file where command details are available
+            2. logfile.
+            3. varconfigfile = xml file from which the values will be taken
+                               for substitution
+            4. var_sub(string) = the pattern [var_sub] in the testdata
+                                 commands, start_prompt, end_prompt,
+                                 verification search will substituted
+                                 with this value.
+            5. args = Optional filter to specify title/rownum
+        :Returns:
+            1. finalresult = boolean
+        """
+        responses_dict = {}
+        resp_key_list = []
+        td_resp_dict = {}
+        varconfigfile = args.get('varconfigfile', None)
+        datafile = args.get("datafile", None)
+        var_sub = args.get('var_sub', None)
+        title = args.get('title', None)
+        row = args.get('row', None)
+        system_name = args.get("system_name")
+        session_name = args.get("session_name")
+        if session_name is not None:
+            system_name = system_name + "." + session_name
+        testdata_dict = Utils.data_Utils.get_command_details_from_testdata(
+            testdatafile, varconfigfile, var_sub=var_sub, title=title, row=row,
+            system_name=system_name, datafile=datafile)
+        finalresult = True if len(testdata_dict) > 0 else False
+        for key, details_dict in testdata_dict.items():
+            responses_dict[key] = ""
+            command_list = details_dict["command_list"]
+            stepdesc = "Send the following commands: "
+            pNote(stepdesc)
+            n = 0
+            for commands in command_list:
+                if details_dict["logmsg_list"][n] and details_dict["logmsg_list"][n].lower() == "false":
+                    commands = "**************"
+                pNote("Command #{0}\t: {1}".format((n+1), commands))
+                n = n + 1
+            intsize = len(command_list)
+            if intsize == 0:
+                finalresult = False
+
+            # Send Commands
+            for i in range(0, intsize):
+                print_info("")
+                print_debug(">>>")
+                command = details_dict["command_list"][i]
+                if not details_dict["logmsg_list"][i] or details_dict["logmsg_list"][i].lower() != "false":
+                    pNote("Command #{0}\t: {1}".format(str(i+1), command))
+                new_obj_session, td_sys, details_dict, session_id = \
+                    self._get_obj_session(
+                        details_dict, system_name, index=i, sess_id=True)
+                if new_obj_session:
+                    result, response = new_obj_session._publish_cmd_to_kafka_get_status(
+                        details_dict, session_id, index=i, system_name=td_sys)
+                    result, response = new_obj_session._send_command_retrials(
+                        details_dict, index=i, result=result,
+                        response=response, system_name=td_sys)
+                    rspRes, resp_key_list = new_obj_session._get_response_dict(
+                        details_dict, i, response, resp_key_list)
+                    if len(resp_key_list) != i+1:
+                        resp_key_list.append({})
+                    resp_session_id = session_id + "_td_response"
                     td_resp_dict = self.update_resp_ref_to_repo(details_dict, resp_key_list, i,
                                                                 key, td_resp_dict, resp_session_id,
                                                                 result)
@@ -261,7 +359,7 @@ class WarriorCli(object):
                 if details_dict["return_on_fail_list"][i] and (result == "ERROR" or result is False):
                     if details_dict["return_on_fail_list"][i].lower() == "yes":
                         pNote("skipping remaining commands, if exists")
-                        break;
+                        break
             responses_dict[key] = {k: v for d in resp_key_list for k, v in d.items()}
         return finalresult, td_resp_dict
 
@@ -329,6 +427,164 @@ class WarriorCli(object):
                                                           log=log)
         return result, response
 
+    def compare_req_res(self, command, msg_cmd):
+        status = False
+        if 'c_tag' in command:
+            request_cmd = command.split('c_tag')[0]
+            if request_cmd in msg_cmd:
+                status = True
+        else:                
+            cmd1 = command.split(':')[0]
+            tid1 = command.split(':')[1]
+            request_cmd = cmd1 + ':' + tid1
+            cmd2 = msg_cmd.split(':')[0]
+            tid2 = msg_cmd.split(':')[1]
+            response_cmd = cmd2 + ':' + tid2
+            if request_cmd == response_cmd:
+                status = True
+        return status
+
+    def verify_through_all_messages(self, topic=None, consumer_inst=None, command=None):
+        response = ''
+        if topic:
+            consumer_inst.assign_to_previous_offset(topic=topic)
+            messages = consumer_inst.get_messages(timeout=60, get_all_messages=None)
+            for message in messages:
+                if command:
+                    msg_cmd = message.get('cmd', '')
+                    #print('command value {}'.format(msg_cmd))
+                    if not msg_cmd:
+                        continue
+                    status = self.compare_req_res(command, msg_cmd)
+                    if status:
+                        response = message
+                        break
+                else:
+                    msg_value = message.get('kafkaPublishTopic', '')
+                    if msg_value:
+                        response = message
+                        break
+        if not response:
+            print_info('---------------------------------------------------------------------------')
+            print_info('List of all messages in topic {}'.format(messages))
+            print_info('---------------------------------------------------------------------------')
+        return response
+
+    def create_tl1_log(self, messages, response):
+        # Create the tl1 log file and append the command, response to it
+        filename = 'tl1_cmd_res.log'
+        if os.path.exists(filename):
+            append_write = 'a'
+        else:
+            append_write = 'w'
+        # Open the file in write mode if not exists else in append mode
+        f = open(filename, append_write)
+        f.write(messages.get('cmd', '') + '\n' + '\n' + response)
+        f.close()
+
+    def _get_cmd_response(self, messages):
+        """
+        method to get the response from kafka message
+        """
+        #if "async response
+        resp = ''
+        if isinstance(messages, list):
+            resp = messages[0].get('cmdRes', '')
+        if isinstance(resp, dict) and "async response" in resp:
+            resp = resp.get("async response", {}).get("rawMsg", "")
+            try:
+                data_repository["cmdRes"].append(messages[0])
+            except KeyError:
+                data_repository["cmdRes"] = [messages[0]]
+
+        return resp
+
+
+    def _publish_cmd_to_kafka(self, session_id, **kwargs):
+        """method to publish command to kafka topic to which
+         session manager will be listening to
+
+        """
+
+        result = False
+        response = ""
+        command = kwargs.get('command')
+        expect = kwargs.get('expect', "")
+        notexpect = kwargs.get('notexpect', "")
+        autonomous = kwargs.get('autonomous', 'false')
+        #cmd_timeout = 300000
+        cmd_timeout = kwargs.get('cmd_timeout') if kwargs.get('cmd_timeout') else 300
+        cmd_timeout = int(cmd_timeout)
+        producer = get_object_from_datarepository(
+            session_id + "_kafka_producer_instance")
+        consumer = get_object_from_datarepository(
+            session_id + "_kafka_consumer_instance")
+        kafka_send_topic = get_object_from_datarepository(
+            session_id + "_kafka_send_topic")
+        kafka_receive_topic = get_object_from_datarepository(
+            session_id + "_kafka_receive_topic")
+        #tid = get_object_from_datarepository("tid")
+        tid = command.split(':')[1]
+        step_impact = get_object_from_datarepository("wt_step_impact","")
+        command_payload = {
+            "tid": tid,
+            "session_validation": "false",
+            "cmd": command,
+            "expect": expect,
+            "notexpect": notexpect,
+            "autonomous": autonomous,
+            "kafka_produc_topic": kafka_receive_topic
+        }
+        producer_result = producer.send_messages(kafka_send_topic, command_payload)
+        if producer_result:
+            print_info(
+                "Command payload successfully published at {} to the kafka topic: {}".format(int(time.time()), kafka_send_topic))
+            print_info("Warrior will wait for {} seconds to get response from session manager".format(
+                cmd_timeout))
+
+            messages = []
+            messages = consumer.get_messages(timeout=cmd_timeout,max_records=1,
+                                             get_all_messages=None)
+            if messages:
+                    print_info(
+                        "Response received from session manager [{}]: {}".format(int(time.time()), messages))
+                    msg_cmd = messages[0].get('cmd', '')
+                    if msg_cmd:
+                        status = self.compare_req_res(command, msg_cmd)
+                        if status:
+                            status = True if messages[0].get("status") in ["True", "true"] else False
+                            #response = messages[0].get('cmdRes', '')
+                            response = self._get_cmd_response(messages)
+                            self.create_tl1_log(messages[0], response)
+                        else:
+                            status = False
+                            print_error("Response payload mismatch from session manager.")
+                            update_datarepository({"FAILURE_REASON": "Response payload mismatch from session manager"})
+                    else:
+                        status = False
+            else:
+                print('Did not get response from SM, checking previous messages in topic')
+                #time.sleep(120)
+                message = self.verify_through_all_messages(topic=kafka_receive_topic, consumer_inst=consumer, command=command)
+                if message:
+                    print_info('Response received from session manager [{}] : {}'.format(int(time.time()), message))
+                    #response = message.get('cmdRes','')
+                    response = self._get_cmd_response([message])
+                    self.create_tl1_log(message, response)
+                    status = True if message.get("status") in ["True", "true"] else False
+                else:
+                    print_error("No response from session manager")
+                    if step_impact != "noimpact":
+                        update_datarepository({"FAILURE_REASON": "No response from session manager while executing command: {}".format(command.split(":")[0])})
+                    status = False
+            #consumer.kafka_consumer.commit()
+            return status, response
+        else:
+            print_error("Failed to publish command to the given kafka topic: {}".format(
+                kafka_send_topic))
+            update_datarepository({"FAILURE_REASON": "Failed to publish command to the given kafka topic"})
+            return result, response
+
     @staticmethod
     def _get_response_dict(details_dict, index, response, resp_key_list):
         """Get the response dict for a command. """
@@ -371,7 +627,7 @@ class WarriorCli(object):
                 response = reobj.group(0) if reobj is not None else ""
                 temp_resp_dict = {resp_ref: response}
                 resp_key_list.append(temp_resp_dict)
-                # storing the value and expected output in data repository 
+                # storing the value and expected output in data repository
                 resp_key_dict = {resp_pat_key: response}
                 data_repository.update(resp_key_dict)
                 print_debug(save_msg1+'.')
@@ -456,7 +712,7 @@ class WarriorCli(object):
 
         :Returns:
         started_thread_for_system (list[str]) = Stores the system names for
-        which threads were succesfully created
+        which threads were successfully created
 
         thread_instance_list (list[str]) = stores the instances of thread
         created for corresponding system in the started_thread_for_system list,
@@ -704,6 +960,125 @@ class WarriorCli(object):
         else:
             pNote("COMMAND STATUS:{0}".format(command_status))
 
+        return result, response
+
+    def _publish_cmd_to_kafka_get_status(self, details_dict, session_id, index, system_name=None):
+        """Publish a command, verifies the response and returns
+        status of the command """
+        command = details_dict["command_list"][index]
+        startprompt = details_dict["startprompt_list"][index]
+        endprompt = details_dict["endprompt_list"][index]
+        expect = details_dict["expect_list"][index]
+        notexpect = details_dict["notexpect_list"][index]
+        autonomous = details_dict["autonomous_list"][index]
+        verify_list = details_dict["verify_list"][index]
+        cmd_timeout = details_dict["timeout_list"][index]
+        verify_text_list = details_dict["verify_text_list"][index]
+        verify_context_list = details_dict["verify_context_list"][index]
+        sleeptime = details_dict["sleeptime_list"][index]
+        resp_ref = details_dict["resp_ref_list"][index]
+        resp_req = details_dict["resp_req_list"][index]
+        resp_pat_req = details_dict["resp_pat_req_list"][index]
+        resp_pat_key = details_dict["resp_pat_key_list"][index]
+        verify_on_list = details_dict["verify_on_list"][index]
+        log_list = details_dict["log_list"][index]
+        inorder_search = details_dict["inorder_search_list"][index]
+        varconfigfile = details_dict["vc_file_list"][index]
+        operator = details_dict["operator_list"][index]
+        cond_value = details_dict["cond_value_list"][index]
+        cond_type = details_dict["cond_type_list"][index]
+        sleeptime_before_match = details_dict["sleeptime_before_match_list"][index]
+        unique_log_verify_list = self.get_unique_log_and_verify_list(
+            log_list, verify_on_list, system_name)
+        log = details_dict["logmsg_list"][index] or "true"
+
+        startprompt = {None: ".*", "": ".*"}.get(startprompt, str(startprompt))
+        resp_req = {None: 'y', '': 'y',
+                    'no': 'n', 'n': 'n'}.get(str(resp_req).lower(), 'y')
+        resp_ref = {None: index+1, '': index+1}.get(resp_ref, str(resp_ref))
+        resp_pat_req = {None: ""}.get(resp_pat_req, str(resp_pat_req))
+        resp_pat_key = {None: index + 1, '': index +
+                        1}.get(resp_pat_key, str(resp_pat_key))
+        sleeptime = {None: 0, "": 0, "none": 0, False: 0, "false": 0}.get(
+            str(sleeptime).lower(), str(sleeptime))
+        sleeptime = int(sleeptime)
+        expect = "" if not expect else str(expect)
+        notexpect = "" if not notexpect else str(notexpect)
+        autonomous = "false" if not autonomous else str(autonomous)
+
+        if inorder_search is not None and \
+           inorder_search.lower().startswith("y"):
+            inorder_search = True
+        else:
+            inorder_search = False
+        if log is None or log.lower() != "false":
+            pNote("System name\t: {0}".format(system_name))
+            pNote("Expect\t: {0}".format(expect))
+            pNote("Notexpect\t: {0}".format(notexpect))
+            pNote("Autonomous\t: {0}".format(autonomous))
+            pNote("Sleeptime\t: {0}".format(sleeptime))
+            pNote("Response required: {0}".format(resp_req))
+            pNote("Response reference: {0}".format(resp_ref))
+            pNote("Response pattern required: {0}".format(resp_pat_req))
+            pNote("Response pattern key: {0}".format(resp_pat_key))
+        if not command:
+            pNote("Received a boolean False or None type instead of a string "
+                  "command, Command not provided or Variable substitution for "
+                  "the command could have gone wrong", "error")
+            pNote("Skipping execution of this command, result will be marked "
+                  "as error", "debug")
+            result = 'ERROR'
+            response = ''
+        else:
+            started_thread_for_system, thread_instance_list, same_system = \
+                self.start_threads([], [], [], unique_log_verify_list,
+                                   system_name)
+
+            result, response = self._publish_cmd_to_kafka(session_id, expect=expect,
+                                                          notexpect=notexpect,
+                                                          autonomous=autonomous,
+                                                          command=command,
+                                                          cmd_timeout=cmd_timeout,
+                                                          sleep_before=sleeptime_before_match,
+                                                          log=log)
+        if sleeptime > 0:
+            if not WarriorCliClass.mock:
+                pNote("Sleep time of '{0} seconds' requested post command "
+                      "execution".format(sleeptime))
+                Utils.datetime_utils.wait_for_timeout(sleeptime)
+            else:
+                pNote("Sleep time is skipped because as it is running in mock mode")
+
+        try:
+            remote_resp_dict = self.get_response_dict(
+                started_thread_for_system, thread_instance_list, same_system,
+                response)
+        except NameError:
+            remote_resp_dict = self.get_response_dict([], [], [], response)
+
+        verify_on_list_as_list = get_list_by_separating_strings(
+            verify_on_list, ",", system_name)
+        if result and result is not 'ERROR':
+            if verify_text_list is not None and verify_list is not None:
+                verify_group = (operator, cond_value, cond_type)
+                if inorder_search is True and len(verify_text_list) > 1:
+                    result = Utils.data_Utils.verify_resp_inorder(
+                        verify_text_list, verify_context_list, command,
+                        response, varconfigfile, verify_on_list_as_list,
+                        verify_list, remote_resp_dict, verify_group)
+                else:
+                    result = Utils.data_Utils.verify_resp_across_sys(
+                        verify_text_list, verify_context_list, command,
+                        response, varconfigfile, verify_on_list_as_list,
+                        verify_list, remote_resp_dict, endprompt, verify_group, log)
+        command_status = {True: "PASS", False: "FAIL", "ERROR": "ERROR"}.get(
+            result)
+        duration = data_repository.get("command_duration", None)
+        if command_status == "PASS":
+            pNote("COMMAND STATUS:{} | Duration: {} sec".format(command_status,
+                                                                duration))
+        else:
+            pNote("COMMAND STATUS:{0}".format(command_status))
         return result, response
 
     def _get_obj_session(self, details_dict, kw_system_name, index, sess_id=False):
@@ -1682,12 +2057,33 @@ class PexpectConnect(object):
                 if self.target_host.after == self.pexpect.TIMEOUT:
                     pNote("EXCEPTION !! Command Timed Out", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "command timed out while executing command: {}".format(command.split(":")[0])
+                    # Below code is specific for nortel vendor
+                    if os.getenv('VENDOR', '') == "nortel":
+                        if "Login incorrect" in response:
+                            data_repository['step_%s_errormessage' % step_num] = "Login incorrect - Invalid username or password"
                 elif self.target_host.after == self.pexpect.EOF:
                     pNote("EXCEPTION !! Device unresponsive", 'error')
                     data_repository['step_%s_errormessage' % step_num] = "device unresponsive while executing command: {}".format(command.split(":")[0])
+                    # Below code is specific for nortel vendor
+                    if os.getenv('VENDOR', '') == "nortel":
+                        if "Login incorrect" in response:
+                            data_repository['step_%s_errormessage' % step_num] = "Login incorrect - Invalid username or password"
                 else:
                     try:
                         response = response + self.target_host.after.decode('utf-8')
+                         # Below code is specific for nortel vendor for better error messages
+                        if os.getenv('VENDOR', '') == "nortel":
+                            if "Unable to connect to remote host: Connection timed out" in response:
+                                update_datarepository({"FAILURE_REASON": "Unable to connect to remote host: Connection timed out"})
+
+                            elif "Unable to connect to remote host: Connection refused" in response:
+                                update_datarepository({"FAILURE_REASON": "Unable to connect to remote host: Connection refused"})
+
+                            elif "Connection closed by remote host" in response:
+                                update_datarepository({"FAILURE_REASON": "Communication Failure - Connection closed by remote host"})
+
+                            elif "Connection closed by foreign host" in response:
+                                update_datarepository({"FAILURE_REASON": "Communication Failure - Connection closed by foreign host"})
                     except:
                         pNote("EXCEPTION !! Cannot decode response", 'error')
                         data_repository['step_%s_errormessage' % step_num] = "Response decode error for command: {}".format(command.split(":")[0])
@@ -1699,3 +2095,5 @@ class PexpectConnect(object):
                                                                    end_time)
                     data_repository.update({"command_duration" : duration})
         return status, response
+
+

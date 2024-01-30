@@ -154,13 +154,16 @@ def file_execution(cli_args, abs_filepath, default_repo):
     a_defects = cli_args.ad
     jiraproj = cli_args.jiraproj
     jiraid = cli_args.jiraid
+    stage_name = cli_args.stage_name
+    kafka_system = cli_args.kafka_system
 
     if Utils.xml_Utils.getRoot(abs_filepath).tag == 'Testcase':
         default_repo['war_file_type'] = "Case"
         result, _, data_repository = testcase_driver.main(
             abs_filepath, data_repository=default_repo,
             runtype='SEQUENTIAL_KEYWORDS',
-            auto_defects=a_defects, jiraproj=jiraproj, jiraid=jiraid)
+            auto_defects=a_defects, jiraproj=jiraproj, jiraid=jiraid,
+            stage_name=stage_name, kafka_system=kafka_system)
         if not Utils.data_Utils.get_object_from_datarepository('genericdatafile'):
             update_jira_by_id(jiraproj, jiraid, os.path.dirname(
                 data_repository['wt_resultsdir']), result)

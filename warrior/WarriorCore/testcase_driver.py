@@ -730,13 +730,13 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
     if data_repository.get("kafka_producer", None):
         war_producer = data_repository.get("kafka_producer")
         war_producer.kafka_producer.flush(60)
-        war_producer.kafka_producer.close()
+        #war_producer.kafka_producer.close()
         print_info("Producer Closed connection with kafka broker")
     elif data_repository.get("kafka_consumer", None):
         war_consumer = data_repository.get("kafka_consumer")
-        war_consumer.kafka_consumer.close()
+        #war_consumer.kafka_consumer.close()
         print_info("Consumer closed connection with kafka broker")
-        
+
     data_file = data_repository["wt_datafile"]
     system_name = ""
     try:
@@ -749,6 +749,9 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                         break
     except:
         pass
+
+    # Setting system_name to empty since not needed to send Kafka message
+    system_name = ""
 
     if system_name:
         junit_file_obj = data_repository['wt_junit_object']
@@ -773,6 +776,8 @@ def execute_testcase(testcase_filepath, data_repository, tc_context,
                     value = ast.literal_eval(item.text)
                 except ValueError:
                     value = item.text
+                except SyntaxError:
+                    value = Utils.data_Utils.sub_from_env_var(item.text)
                 data.update({item.tag: value})
 
             ip_port = ["{}:{}".format(ip_address, ssh_port)]
@@ -894,13 +899,16 @@ def check_robot_wrapper_case(testcase_filepath):
 
 def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
          runtype='SEQUENTIAL_KEYWORDS', tc_parallel=False, auto_defects=False, suite=None,
-         tc_onError_action=None, iter_ts_sys=None, queue=None, jiraproj=None, jiraid=None):
+         tc_onError_action=None, iter_ts_sys=None, queue=None, jiraproj=None, jiraid=None,
+         stage_name=None, kafka_system=None):
 
     """ Executes a testcase """
     tc_start_time = Utils.datetime_utils.get_current_timestamp()
     if Utils.file_Utils.fileExists(testcase_filepath):
         try:
             Utils.config_Utils.set_datarepository(data_repository)
+            Utils.data_Utils.update_datarepository({"stage_name" : stage_name,
+                                                    "kafka_system" : kafka_system})
             if Utils.testrandom_utils.get_generic_datafile(testcase_filepath, data_repository):
                 init_datarepository = copy.deepcopy(data_repository)
                 exec_tag = data_repository.get("gen_exec_tag", 'default')
@@ -953,3 +961,5 @@ def main(testcase_filepath, data_repository={}, tc_context='POSITIVE',
     tc_duration = Utils.datetime_utils.get_time_delta(tc_start_time)
 
     return tc_status, tc_duration, data_repository
+
+
